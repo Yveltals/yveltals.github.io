@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="The Redefine Team">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://yveltals.github.io/post/database/mongodb.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="MongoDB简介   MongoDB是一个高性能，开源，无模式的文档型数据库，是当前NoSQL数据库产品中最热门的一种。数据被分组存储在数据集中，被称为一个集合（Collenction）和对于存储在MongoDB数据库中的文件，我们不需要知道它的任何结构定义的自由模式，在存储数据时是以键-值对的集合键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档。    MongoDB存储在集合中的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB">
+<meta property="og:url" content="https://yveltals.github.io/post/Database/MongoDB.html">
+<meta property="og:site_name" content="Myblog">
+<meta property="og:description" content="MongoDB简介   MongoDB是一个高性能，开源，无模式的文档型数据库，是当前NoSQL数据库产品中最热门的一种。数据被分组存储在数据集中，被称为一个集合（Collenction）和对于存储在MongoDB数据库中的文件，我们不需要知道它的任何结构定义的自由模式，在存储数据时是以键-值对的集合键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档。    MongoDB存储在集合中的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://img.blog.csdn.net/20150707001916072?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150707003604515?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150707003622478?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="article:published_time" content="2020-09-01T02:45:04.000Z">
+<meta property="article:modified_time" content="2023-04-29T09:28:04.000Z">
+<meta property="article:author" content="Yveltals">
+<meta property="article:tag" content="Datebase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20150707001916072?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MongoDB -
+        
+        Yveltals Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    let Global = window.Global || {};
+    Global.hexo_config = {"hostname":"yveltals.github.io","root":"/","language":"en"};
+    Global.theme_config = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":false,"lazyload":true,"recommendation":{"enable":true,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"busuanzi_counter":{"enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"pjax":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Yveltals Blog","subtitle":{"text":["Keep thinking..."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.2.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2019/8/17 11:45:14"};
+    Global.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    Global.data_config = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="main-content-container">
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                Yveltals Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer">
+        <ul class="drawer-navbar-list">
+            
+                
+                    <li class="drawer-navbar-item flex-center">
+                        <a class="" 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                
+                  
+                  
+                    <img src="/img/mongodb.jpeg" alt="MongoDB" />
+                  
+                  <h1 class="article-title-cover">MongoDB</h1>
+                
+              </div>
+              
+                     
+            
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/redefine-avatar.svg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">The Redefine Team</span>
+                            
+                                <span class="author-label">Lv4</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2020-09-01 10:45:04</span>
+        <span class="mobile">2020-09-01 10:45:04</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-04-29 17:28:04</span>
+            <span class="mobile">2023-04-29 17:28:04</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Datebase/">Datebase</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Datebase/">Datebase</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content markdown-body">
+                <h1 id="MongoDB简介"><a href="#MongoDB简介" class="headerlink" title="MongoDB简介"></a>MongoDB简介</h1><p>   MongoDB是一个高性能，开源，无模式的文档型数据库，是当前NoSQL数据库产品中最热门的一种。数据被分组存储在数据集中，被称为一个集合（Collenction）和对于存储在MongoDB数据库中的文件，我们不需要知道它的任何结构定义的自由模式，在存储数据时是以键-值对的集合键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档。</p>
+<p>   MongoDB存储在集合中的所有文件，集合是一组有一组共享公共索引的相关文档，集合类似于关系数据库中的表。在MongoDB中，这些操作修改单个采集数据，为更新和删除、删除操作。我们先认识一下MongDB结构：</p>
+<table>
+<thead>
+<tr>
+<th>MongoDB</th>
+<th>关系数据库</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库(database)</td>
+<td>数据库(database)</td>
+</tr>
+<tr>
+<td>集合(collection)</td>
+<td>表(table)</td>
+</tr>
+<tr>
+<td>文档(document)</td>
+<td>行(row)</td>
+</tr>
+</tbody></table>
+<p><strong>表设计</strong>:	<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/tanqian351/article/details/81774803" >https://blog.csdn.net/tanqian351/article/details/81774803 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<br/>
+
+<h1 id="MongoDB-添加"><a href="#MongoDB-添加" class="headerlink" title="MongoDB 添加"></a>MongoDB 添加</h1><h2 id="添加一个新的文档到集合语法"><a href="#添加一个新的文档到集合语法" class="headerlink" title="添加一个新的文档到集合语法"></a>添加一个新的文档到集合语法</h2><p> <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="http://img.blog.csdn.net/20150707001916072?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"
+                      alt="img"
+                ></p>
+<p>例子：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db. orders.insert(&#123;                              </span><br><span class="line">     &quot;onumber&quot; : &quot;001&quot;,    </span><br><span class="line">     &quot;date&quot; : &quot;2015-07-02&quot;,    </span><br><span class="line">     &quot;cname&quot; : &quot;zcy&quot;,    </span><br><span class="line">&#125;)  </span><br></pre></td></tr></table></figure></div>
+
+<p>相对于SQL语句是：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO orders                      </span><br><span class="line">  (onumber, <span class="built_in">date</span>, cname)        </span><br><span class="line">VALUES     (“001”,” 2015-07-02”,” zcy”）  </span><br></pre></td></tr></table></figure></div>
+
+<h2 id="同时添加多个文档，可以传入数组"><a href="#同时添加多个文档，可以传入数组" class="headerlink" title="同时添加多个文档，可以传入数组"></a>同时添加多个文档，可以传入数组</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> db. orders.insert(  </span><br><span class="line"> [&#123;  </span><br><span class="line">         &quot;onumber&quot; : &quot;001&quot;,    </span><br><span class="line">         &quot;date&quot; : &quot;2015-07-02&quot;,    </span><br><span class="line">         &quot;cname&quot; : &quot;zcy&quot;,    </span><br><span class="line"> &#125;,&#123;  </span><br><span class="line">         &quot;onumber&quot; : &quot;002&quot;,    </span><br><span class="line">         &quot;date&quot; : &quot;2015-07-02&quot;,    </span><br><span class="line">         &quot;cname&quot; : &quot;zcy1&quot;,    </span><br><span class="line"> &#125;  </span><br><span class="line">]) </span><br></pre></td></tr></table></figure></div>
+
+<p><br/><br/></p>
+<h1 id="MongoDB-查询"><a href="#MongoDB-查询" class="headerlink" title="MongoDB 查询"></a>MongoDB 查询</h1><h2 id="查询所有"><a href="#查询所有" class="headerlink" title="查询所有"></a>查询所有</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find()  </span><br></pre></td></tr></table></figure></div>
+
+<p>执行查询所有的记录</p>
+<h2 id="我们可以根据条件查询"><a href="#我们可以根据条件查询" class="headerlink" title="我们可以根据条件查询"></a>我们可以根据条件查询</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.orders.find(&#123;onumber:<span class="string">&#x27;001&#x27;</span>&#125;); </span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/wu-chao/p/8418546.html" >https://www.cnblogs.com/wu-chao/p/8418546.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/wu-chao/p/8418778.html" >https://www.cnblogs.com/wu-chao/p/8418778.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<p><br/><br/></p>
+<h1 id="MongoDB-修改"><a href="#MongoDB-修改" class="headerlink" title="MongoDB 修改"></a>MongoDB 修改</h1><h2 id="对文档进行修改的语法"><a href="#对文档进行修改的语法" class="headerlink" title="对文档进行修改的语法"></a>对文档进行修改的语法</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.collection.update(  </span><br><span class="line">  <span class="operator">&lt;</span>query<span class="operator">&gt;</span>,  </span><br><span class="line">  <span class="operator">&lt;</span><span class="keyword">update</span><span class="operator">&gt;</span>,  </span><br><span class="line">   upsert:<span class="operator">&lt;</span><span class="type">boolean</span><span class="operator">&gt;</span>,  </span><br><span class="line">   multi:<span class="operator">&lt;</span><span class="type">boolean</span><span class="operator">&gt;</span>  </span><br><span class="line">)  </span><br></pre></td></tr></table></figure></div>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>query</td>
+<td>document</td>
+<td>要修改哪些的查询条件，类似于SQL 的 where</td>
+</tr>
+<tr>
+<td>update</td>
+<td>document</td>
+<td>要修改的字段对应的值</td>
+</tr>
+<tr>
+<td>upsert</td>
+<td>boolean</td>
+<td>可选的，默认值是false。如果根据查询条件没找到对应的文档，如果设置为true,相当于执行insert，如果设置为false,不做任何的操作。</td>
+</tr>
+<tr>
+<td>multi</td>
+<td>boolean</td>
+<td>可选的，默认值是false。如果根据查询条件找到对应的多条记录是，如果设置为false时，只修改第一条，如果设置为true，全部更新</td>
+</tr>
+</tbody></table>
+ <br/>
+
+<h2 id="对单个字段进行修改"><a href="#对单个字段进行修改" class="headerlink" title="对单个字段进行修改"></a>对单个字段进行修改</h2><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$inc</td>
+<td>根据要添加的值递增该字段的值。</td>
+</tr>
+<tr>
+<td>$mul</td>
+<td>将该字段的值乘以指定的值</td>
+</tr>
+<tr>
+<td>$rename</td>
+<td>重命名字段</td>
+</tr>
+<tr>
+<td>$setOnInsert</td>
+<td>操作时,操作给相应的字段赋值</td>
+</tr>
+<tr>
+<td>$set</td>
+<td>用来指定一个键的值，如果不存在则创建它</td>
+</tr>
+<tr>
+<td>$unset</td>
+<td>用来指定一个键的值，如果不存在不创建创建它</td>
+</tr>
+<tr>
+<td>$min</td>
+<td>只有当指定的值小于现有字段值时才更新该字段。</td>
+</tr>
+<tr>
+<td>$max</td>
+<td>只有当指定的值大于现有字段值时才更新该字段。</td>
+</tr>
+<tr>
+<td>$currentDate</td>
+<td>设置当前日期字段的值，或者作为一个日期或时间戳。</td>
+</tr>
+</tbody></table>
+<p><strong>1) 采用$set来根据查询条件修改文档，用来指定一个键的值，如果不存在则创建它。</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.orders.update(                            </span><br><span class="line">   &#123;&quot;onumber&quot; : &quot;001&quot;&#125;,  </span><br><span class="line">   &#123; $<span class="keyword">set</span>: &#123; &quot;cname &quot; : &quot;zcy&quot;&#125; &#125;,  </span><br><span class="line">   <span class="literal">false</span>,  </span><br><span class="line">   <span class="literal">true</span>  </span><br><span class="line">)  </span><br></pre></td></tr></table></figure></div>
+
+<p>multi 设置为true，全部更新</p>
+<p><strong>3）$mul 将该字段的值乘以指定的值</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$mul: &#123; field: <span class="operator">&lt;</span>number<span class="operator">&gt;</span> &#125; &#125;  </span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;ino&quot; : &quot;001&quot;&#125;,  </span><br><span class="line">&#123; $mul: &#123;&quot;quantity&quot; :<span class="number">3</span>&#125; &#125;  </span><br><span class="line">) </span><br></pre></td></tr></table></figure></div>
+
+<p><strong>4）$setOnInsert   操作时,操作给相应的字段赋值</strong></p>
+<p>语法：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.collection.update(  </span><br><span class="line">  <span class="operator">&lt;</span>query<span class="operator">&gt;</span>,  </span><br><span class="line">   &#123;$setOnInsert: &#123; <span class="operator">&lt;</span>field1<span class="operator">&gt;</span>: <span class="operator">&lt;</span>value1<span class="operator">&gt;</span>, ... &#125; &#125;,  </span><br><span class="line">   &#123;upsert: <span class="literal">true</span> &#125;  </span><br><span class="line">) </span><br></pre></td></tr></table></figure></div>
+
+<p>例子：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">db.products.update(  </span><br><span class="line">   &#123;&quot;ino&quot; : &quot;001&quot;&#125;,  </span><br><span class="line">   &#123;  </span><br><span class="line">     $<span class="keyword">set</span>:&#123; &quot;quantity&quot;:<span class="number">3</span> &#125;,  </span><br><span class="line">     $setOnInsert:&#123; &quot;defaultQty&quot;:<span class="number">100</span> &#125;  </span><br><span class="line">   &#125;,  </span><br><span class="line">   &#123;upsert: <span class="literal">true</span> &#125;  </span><br><span class="line"> )  </span><br></pre></td></tr></table></figure></div>
+
+<p><strong>5）$inc，指定属性的值加上现在的值，如果键不存在则创建它。</strong></p>
+<p>语法：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; $inc: &#123; <span class="operator">&lt;</span>field1<span class="operator">&gt;</span>: <span class="operator">&lt;</span>amount1<span class="operator">&gt;</span>,<span class="operator">&lt;</span>field2<span class="operator">&gt;</span>: <span class="operator">&lt;</span>amount2<span class="operator">&gt;</span>, ... &#125; &#125; </span><br></pre></td></tr></table></figure></div>
+
+<p>例子：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;onumber&quot; : &quot;001&quot;,&quot;items.ino&quot;:&quot;001&quot;&#125;,  </span><br><span class="line">&#123; $inc: &#123;&quot;items.$.price&quot; : <span class="number">2.0</span>&#125; &#125;  </span><br><span class="line">) </span><br></pre></td></tr></table></figure></div>
+
+<br/>
+
+<h2 id="对数组进行修改"><a href="#对数组进行修改" class="headerlink" title="对数组进行修改"></a>对数组进行修改</h2><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$</td>
+<td>作为一个占位符的更新与查询条件在一个更新的第一要素</td>
+</tr>
+<tr>
+<td>$addToSet</td>
+<td>将元素添加到数组中，仅当它们在集合中不存在</td>
+</tr>
+<tr>
+<td>$pop</td>
+<td>删除数组的第一个或最后一个项</td>
+</tr>
+<tr>
+<td>$pullAll</td>
+<td>从数组中移除所有匹配值</td>
+</tr>
+<tr>
+<td>$pull</td>
+<td>移除匹配指定查询的所有数组元素</td>
+</tr>
+<tr>
+<td>$pushAll</td>
+<td>将所有值添加到数组中</td>
+</tr>
+<tr>
+<td>$push</td>
+<td>将值添加到数组中，如果有的数组存在则向数组末尾添加该值，如果数组不存在则创建该数组并保存该值</td>
+</tr>
+</tbody></table>
+<p><strong>（1）根据查询条件修改文档里内嵌文档（第二层级的）</strong>，例如我们想修改items 字段ino为001下的price的4修改8,语法items.$. price ，更新数组中第一个匹配的子文档，我们内嵌文档的ino是唯一的，满足我们的需求</p>
+<p>例子： </p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;onumber&quot; : &quot;001&quot;,&quot;items.ino&quot;:&quot;001&quot;&#125;,  </span><br><span class="line">&#123; $<span class="keyword">set</span>: &#123;&quot;items.$.price&quot; : <span class="number">8.0</span>&#125; &#125;  </span><br><span class="line">) </span><br></pre></td></tr></table></figure></div>
+
+<p><strong>（2）根据查询条件修改文档里内嵌文档在内嵌文档（第三层级的）</strong>，例如我们想修改items 字段ino等于001下的products并且pno等于001的pName值为ps,语法items.0. products.$. pName,0代表items第一个数组（也就是数组的下标），$ 更新数组中第一个匹配的子文档。</p>
+<p> 例子：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;onumber&quot; : &quot;001&quot;,&quot;items.ino&quot;:&quot;001&quot;,&quot;items.products.pno&quot;:&quot;001&quot;&#125;,  </span><br><span class="line">&#123; $<span class="keyword">set</span>: &#123;&quot;items.0.products.$.pName&quot;: &quot;ps&quot;&#125; &#125;  </span><br><span class="line">)  </span><br></pre></td></tr></table></figure></div>
+
+<p>修改前的数据：</p>
+<p> <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="http://img.blog.csdn.net/20150707003604515?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"
+                      alt="img"
+                ></p>
+<p>修改后的数据：</p>
+<p> <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="http://img.blog.csdn.net/20150707003622478?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center"
+                      alt="img"
+                ></p>
+<p> <strong>（3）$pop删除数组的第一个或最后一个项</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; $pop: &#123; <span class="operator">&lt;</span>field<span class="operator">&gt;</span>: <span class="operator">&lt;</span><span class="number">-1</span> <span class="operator">|</span> <span class="number">1</span><span class="operator">&gt;</span>,... &#125; &#125;  </span><br></pre></td></tr></table></figure></div>
+
+<p>1最后一项  -1是第一项</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;onumber&quot; : &quot;001&quot;&#125;,  </span><br><span class="line">&#123; $pop: &#123;&quot;items&quot; : <span class="number">-1</span>&#125; &#125;  </span><br><span class="line">) </span><br></pre></td></tr></table></figure></div>
+
+
+
+<p><strong>（4）$push将值添加到数组中，</strong>如果有的数组存在则向数组末尾添加该值，如果数组不存在则创建该数组并保存该值</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; $push: &#123; <span class="operator">&lt;</span>field1<span class="operator">&gt;</span>: <span class="operator">&lt;</span>value1<span class="operator">&gt;</span>,... &#125; &#125;  </span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">db. orders.update(                            </span><br><span class="line">&#123;&quot;onumber&quot; : &quot;001&quot;&#125;,  </span><br><span class="line">&#123; $push: &#123;&quot;items&quot; : &#123;  </span><br><span class="line">&quot;ino&quot; : &quot;002&quot;,  </span><br><span class="line">                  &quot;quantity&quot; :<span class="number">2</span>,   </span><br><span class="line">                  &quot;price&quot; : <span class="number">6.0</span>,   </span><br><span class="line">                  &quot;products&quot; : [  </span><br><span class="line">&#123;  </span><br><span class="line">   &quot;pno&quot;:&quot;003&quot;,  </span><br><span class="line">   &quot;pName&quot;:&quot;p3&quot;  </span><br><span class="line">&#125;,  </span><br><span class="line">&#123;  </span><br><span class="line">   &quot;pno&quot;:&quot;004&quot;,  </span><br><span class="line">  &quot;pName&quot;:&quot;p4&quot;  </span><br><span class="line">&#125;  </span><br><span class="line">]  </span><br><span class="line">&#125;  </span><br><span class="line">&#125; &#125;  </span><br><span class="line">)  </span><br></pre></td></tr></table></figure></div>
+
+<p><br/><br/></p>
+<h1 id="MongoDB删除"><a href="#MongoDB删除" class="headerlink" title="MongoDB删除"></a>MongoDB删除</h1><h2 id="删除文档"><a href="#删除文档" class="headerlink" title="删除文档"></a>删除文档</h2><p>1）db. orders.remove({})</p>
+<p> 删除orders集合的所有数据，集合还存在，索引都还存在，相当与SQ的truncate命令 </p>
+<p>2）db. orders.remove({“onumber”: “001”})根据条件删除数据</p>
+<h2 id="删除集合"><a href="#删除集合" class="headerlink" title="删除集合"></a>删除集合</h2><p>db.collection.drop() 集合、索引都不存在了。</p>
+<hr>
+<h1 id="MongodbTemplate"><a href="#MongodbTemplate" class="headerlink" title="MongodbTemplate"></a>MongodbTemplate</h1><h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;SysUser&gt; userList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">userList.add(<span class="keyword">new</span> <span class="title class_">SysUser</span>(<span class="number">11</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;白小飞&quot;</span>,<span class="string">&quot;18888888888&quot;</span>));</span><br><span class="line">userList.add(<span class="keyword">new</span> <span class="title class_">SysUser</span>(<span class="number">9</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;白敬亭&quot;</span>,<span class="string">&quot;13333333333&quot;</span>));</span><br><span class="line">userList.add(<span class="keyword">new</span> <span class="title class_">SysUser</span>(<span class="number">5</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;林宥嘉&quot;</span>,<span class="string">&quot;14444444444&quot;</span>));</span><br><span class="line">mongoTemplate.insert(userList, <span class="string">&quot;userList&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">SysUser</span> <span class="variable">sysUser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SysUser</span>(<span class="number">12</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;黄小飞&quot;</span>,<span class="string">&quot;18888888888&quot;</span>);</span><br><span class="line">mongoTemplate.insert(sysUser, <span class="string">&quot;userList&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>当存入的第一个数据类型是SysUser，名字是userList的时候，第二个存入数据就必须是SysUser类型的数据。</p>
+<hr>
+<h2 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a>查询数据</h2><p>查询单个数据</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> SysUser <span class="title function_">findMongo</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">Pattern</span> <span class="variable">pattern</span> <span class="operator">=</span> Pattern.compile(<span class="string">&quot;^.*8$&quot;</span>,Pattern.CASE_INSENSITIVE);</span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>(Criteria.where(<span class="string">&quot;phone&quot;</span>).regex(pattern));</span><br><span class="line">	<span class="type">SysUser</span> <span class="variable">findOne</span> <span class="operator">=</span> mongoTemplate.findOne(query,SysUser.class,<span class="string">&quot;userList&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> findOne;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>查询多个数据</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;SysUser&gt; <span class="title function_">findListMongo</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="comment">//模糊查询以 ^开始 以$结束 .*相当于Mysql中的%</span></span><br><span class="line">	<span class="type">Pattern</span> <span class="variable">pattern</span> <span class="operator">=</span> Pattern.compile(<span class="string">&quot;^1.*$&quot;</span>,Pattern.CASE_INSENSITIVE);</span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>(Criteria.where(<span class="string">&quot;phone&quot;</span>).regex(pattern));</span><br><span class="line">	<span class="comment">//Query query = new Query(Criteria.where(&quot;status&quot;).is(&quot;1&quot;));</span></span><br><span class="line">	<span class="comment">//query.with(new Sort(Direction.DESC,&quot;phone&quot;));  //按手机号码倒序</span></span><br><span class="line">	 List&lt;SysUser&gt; findList = mongoTemplate.find(query,SysUser.class,<span class="string">&quot;userList&quot;</span>);</span><br><span class="line">	 <span class="keyword">return</span> findList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>多个条件查询</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//多个条件查询(格式1)</span></span><br><span class="line">	<span class="keyword">public</span> List&lt;SysUser&gt; <span class="title function_">findList</span><span class="params">()</span>&#123;</span><br><span class="line">		<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>();</span><br><span class="line">		query.addCriteria(Criteria.where(<span class="string">&quot;name&quot;</span>).is(<span class="string">&quot;秦岚&quot;</span>));</span><br><span class="line">		query.addCriteria(Criteria.where(<span class="string">&quot;phone&quot;</span>).is(<span class="string">&quot;12222222222&quot;</span>));</span><br><span class="line">		List&lt;SysUser&gt; findList = mongoTemplate.find(query, SysUser.class,<span class="string">&quot;userList&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> findList;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//多个条件查询(格式2)</span></span><br><span class="line"><span class="keyword">public</span> List&lt;SysUser&gt; <span class="title function_">findList2</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">Criteria</span> <span class="variable">criteria</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Criteria</span>();</span><br><span class="line">	criteria.and(<span class="string">&quot;name&quot;</span>).is(<span class="string">&quot;秦岚&quot;</span>);</span><br><span class="line">	criteria.and(<span class="string">&quot;phone&quot;</span>).is(<span class="string">&quot;12222222222&quot;</span>);</span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>(criteria);</span><br><span class="line">	List&lt;SysUser&gt; findList = mongoTemplate.find(query, SysUser.class,<span class="string">&quot;userList&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> findList;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//一个模糊关键字匹配多个字段</span></span><br><span class="line">	<span class="keyword">public</span> List&lt;SysUser&gt; <span class="title function_">findList3</span><span class="params">()</span>&#123;</span><br><span class="line">		<span class="type">Pattern</span> <span class="variable">pattern</span> <span class="operator">=</span> Pattern.compile(<span class="string">&quot;^.*222$&quot;</span>,Pattern.CASE_INSENSITIVE);</span><br><span class="line">		<span class="type">Criteria</span>  <span class="variable">criteria</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Criteria</span>();</span><br><span class="line">		<span class="comment">//phone以222结尾的 或者 name以222结尾的  </span></span><br><span class="line">		criteria.orOperator(Criteria.where(<span class="string">&quot;phone&quot;</span>).regex(pattern),Criteria.where(<span class="string">&quot;name&quot;</span>).regex(pattern));</span><br><span class="line">		<span class="comment">//同时满足 phone以222结尾的，和name以222结尾的</span></span><br><span class="line">	  criteria.andOperator(Criteria.where(<span class="string">&quot;phone&quot;</span>).regex(pattern),Criteria.where(<span class="string">&quot;name&quot;</span>).regex(pattern));</span><br><span class="line">		<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>(criteria);</span><br><span class="line">		List&lt;SysUser&gt; find = mongoTemplate.find(query, SysUser.class,<span class="string">&quot;userList&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> find;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></div>
+
+<hr>
+<h2 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h2><p>更新</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">update</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Query</span>(); </span><br><span class="line">	query.addCriteria(Criteria.where(<span class="string">&quot;_id&quot;</span>).is(<span class="number">1</span>));  <span class="comment">//_id区分引号 &quot;1&quot;和1</span></span><br><span class="line">	<span class="type">Update</span> <span class="variable">update</span> <span class="operator">=</span> Update.update(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;zzzzz&quot;</span>);</span><br><span class="line"><span class="comment">//	WriteResult upsert = mongoTemplate.updateMulti(query, update, &quot;userList&quot;); //查询到的全部更新</span></span><br><span class="line"><span class="comment">//	WriteResult upsert = mongoTemplate.updateFirst(query, update, &quot;userList&quot;); //查询更新第一条</span></span><br><span class="line">	<span class="type">WriteResult</span> <span class="variable">upsert</span> <span class="operator">=</span> mongoTemplate.upsert(query, update, <span class="string">&quot;userList&quot;</span>);      <span class="comment">//有则更新，没有则新增</span></span><br><span class="line">	<span class="keyword">return</span> upsert.getN();       <span class="comment">//返回执行的条数</span></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>添加内嵌文档数据（有则直接加入，没有则进行新增）</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">update1</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> Query.query(Criteria.where(<span class="string">&quot;_id&quot;</span>).is(<span class="string">&quot;11&quot;</span>));</span><br><span class="line">		<span class="type">SysUser</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SysUser</span>(<span class="number">1</span>,<span class="string">&quot;1&quot;</span>,<span class="string">&quot;lisi&quot;</span>,<span class="string">&quot;19999998745&quot;</span>);</span><br><span class="line">		<span class="type">Update</span> <span class="variable">update</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Update</span>();</span><br><span class="line">		update.addToSet(<span class="string">&quot;users&quot;</span>, user);</span><br><span class="line">		<span class="type">WriteResult</span> <span class="variable">upsert</span> <span class="operator">=</span> mongoTemplate.upsert(query, update, <span class="string">&quot;userList&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> upsert.getN();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>修改内嵌文档中数据</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">update2</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="comment">//查询_id为11并且其中userList文档的_id为1的</span></span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> Query.query(Criteria.where(<span class="string">&quot;_id&quot;</span>).is(<span class="string">&quot;11&quot;</span>).and(<span class="string">&quot;users._id&quot;</span>).is(<span class="number">1</span>));</span><br><span class="line">	<span class="type">Update</span> <span class="variable">update</span> <span class="operator">=</span> Update.update(<span class="string">&quot;users.$.name&quot;</span>, <span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">	<span class="type">WriteResult</span> <span class="variable">upsert</span> <span class="operator">=</span> mongoTemplate.upsert(query, update, <span class="string">&quot;userList&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> upsert.getN();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>删除内嵌文档中数据</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">delete</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="comment">//查询_id为11并且其中userList文档的_id为1的</span></span><br><span class="line">	<span class="type">Query</span> <span class="variable">query</span> <span class="operator">=</span> Query.query(Criteria.where(<span class="string">&quot;_id&quot;</span>).is(<span class="string">&quot;11&quot;</span>).and(<span class="string">&quot;users._id&quot;</span>).is(<span class="number">1</span>));</span><br><span class="line">	<span class="type">Update</span> <span class="variable">update</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Update</span>();</span><br><span class="line">	update.unset(<span class="string">&quot;users.$&quot;</span>);</span><br><span class="line">	<span class="type">WriteResult</span> <span class="variable">upsert</span> <span class="operator">=</span> mongoTemplate.updateFirst(query, update, <span class="string">&quot;userList&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> upsert.getN();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/Datebase/">#Datebase</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+  <div class="recommended-article">
+   <div class="recommended-desktop">
+    <div class="recommended-article-header">
+     <i aria-hidden="true"></i><span>推荐阅读</span>
+    </div>
+    <div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/Database/MySql的使用.html" title="MySql的使用" rel="bookmark noopener">
+  <img src="/img/mysql.jpeg" alt="MySql的使用">
+  <span class="title">MySql的使用</span>
+</a><a class="recommended-article-item" target="_blank" href="//post/Database/Mysql.html" title="MySQL" rel="bookmark noopener">
+  <img src="/img/mysql.jpeg" alt="MySQL">
+  <span class="title">MySQL</span>
+</a><a class="recommended-article-item" target="_blank" href="//post/Linux.html" title="Linux" rel="bookmark noopener">
+  <img src="/img/linux.jpeg" alt="Linux">
+  <span class="title">Linux</span>
+</a></div>
+   </div>
+   <div class="recommended-mobile">
+   <div class="recommended-article-header">
+     <i aria-hidden="true"></i><span>推荐阅读</span>
+   </div>
+   <div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/Database/MySql的使用.html" title="MySql的使用" rel="bookmark noopener">
+  <img src="/img/mysql.jpeg" alt="MySql的使用">
+  <span class="title">MySql的使用</span>
+</a><a class="recommended-article-item" target="_blank" href="//post/Database/Mysql.html" title="MySQL" rel="bookmark noopener">
+  <img src="/img/mysql.jpeg" alt="MySQL">
+  <span class="title">MySQL</span>
+</a></div>
+   </div>
+  </div>
+
+            
+                <div class="article-nav">
+                    
+                        <div class="article-prev">
+                            <a class="prev"
+                            rel="prev"
+                            href="/post/Software/Docker.html"
+                            >
+                                <span class="left arrow-icon flex-center">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </span>
+                                <span class="title flex-center">
+                                    <span class="post-nav-title-item">Docker</span>
+                                    <span class="post-nav-item">Prev posts</span>
+                                </span>
+                            </a>
+                        </div>
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                            rel="next"
+                            href="/post/Other/Vue.html"
+                            >
+                                <span class="title flex-center">
+                                    <span class="post-nav-title-item">vue</span>
+                                    <span class="post-nav-item">Next posts</span>
+                                </span>
+                                <span class="right arrow-icon flex-center">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MongoDB</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB%E7%AE%80%E4%BB%8B"><span class="nav-text">MongoDB简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-%E6%B7%BB%E5%8A%A0"><span class="nav-text">MongoDB 添加</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E6%96%87%E6%A1%A3%E5%88%B0%E9%9B%86%E5%90%88%E8%AF%AD%E6%B3%95"><span class="nav-text">添加一个新的文档到集合语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E6%B7%BB%E5%8A%A0%E5%A4%9A%E4%B8%AA%E6%96%87%E6%A1%A3%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BC%A0%E5%85%A5%E6%95%B0%E7%BB%84"><span class="nav-text">同时添加多个文档，可以传入数组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-%E6%9F%A5%E8%AF%A2"><span class="nav-text">MongoDB 查询</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%89%80%E6%9C%89"><span class="nav-text">查询所有</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E6%A0%B9%E6%8D%AE%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="nav-text">我们可以根据条件查询</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-%E4%BF%AE%E6%94%B9"><span class="nav-text">MongoDB 修改</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%96%87%E6%A1%A3%E8%BF%9B%E8%A1%8C%E4%BF%AE%E6%94%B9%E7%9A%84%E8%AF%AD%E6%B3%95"><span class="nav-text">对文档进行修改的语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E5%8D%95%E4%B8%AA%E5%AD%97%E6%AE%B5%E8%BF%9B%E8%A1%8C%E4%BF%AE%E6%94%B9"><span class="nav-text">对单个字段进行修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%95%B0%E7%BB%84%E8%BF%9B%E8%A1%8C%E4%BF%AE%E6%94%B9"><span class="nav-text">对数组进行修改</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB%E5%88%A0%E9%99%A4"><span class="nav-text">MongoDB删除</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%96%87%E6%A1%A3"><span class="nav-text">删除文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E9%9B%86%E5%90%88"><span class="nav-text">删除集合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongodbTemplate"><span class="nav-text">MongodbTemplate</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="nav-text">查询数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE"><span class="nav-text">更新数据</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+            </div>
+        
+    </div>
+</div>
+
+
+                
+
+            </div>
+            
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info">
+            &copy;
+            
+              <span>2019</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-regular fa-computer-classic"></i>&nbsp;&nbsp;<a href="/">The Redefine Team</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            <span class="powered-by-container">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" href="https://hexo.io">Hexo</a></span>
+                <br>
+            <span class="theme-version-container">THEME&nbsp;<a class="theme-version" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.2.2</a>
+        </div>
+        
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+        
+            <script async data-pjax>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-expand-width flex-center">
+            <i class="fa-regular fa-expand"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/layouts/navbarShrink.js"></script>
+
+<script src="/js/tools/scrollTopBottom.js"></script>
+
+<script src="/js/tools/lightDarkSwitch.js"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js"></script>
+
+
+
+
+
+
+
+<div class="post-scripts pjax">
+    
+        
+<script src="/js/tools/tocToggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/layouts/toc.js"></script>
+
+<script src="/js/plugins/tabs.js"></script>
+
+    
+</div>
+
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax',
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            Global.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            Global.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            Global.refresh();
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>

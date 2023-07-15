@@ -1,943 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Hexo Theme Redefine">
-    
-    <meta name="author" content="The Redefine Team">
-    <!-- preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    
-    <!--- Seo Part-->
-    
-    <link rel="canonical" href="https://yveltals.github.io/post/os/系统编程.html"/>
-    <meta name="robots" content="index,follow">
-    <meta name="googlebot" content="index,follow">
-    <meta name="revisit-after" content="1 days">
-    
-        <meta name="description" content="字字节byte，内存单元，8位，如68  字word，高低字节，16位，如68 A7  寄存器寄存器16位，两个内存单元(字节) CS-IP：代码；SS-SP：栈顶；DS-SI&#x2F;ES-DI：数据    寄存器 主　要　用　途    AX 乘除运算，字的输入输出，中间结果的缓存   AL 字节的乘、除运算，字节的输入输出   AH 字节的乘、除运算，存放中断的功能号   BX 存储器指针   BP">
-<meta property="og:type" content="article">
-<meta property="og:title" content="系统编程">
-<meta property="og:url" content="https://yveltals.github.io/post/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B.html">
-<meta property="og:site_name" content="Myblog">
-<meta property="og:description" content="字字节byte，内存单元，8位，如68  字word，高低字节，16位，如68 A7  寄存器寄存器16位，两个内存单元(字节) CS-IP：代码；SS-SP：栈顶；DS-SI&#x2F;ES-DI：数据    寄存器 主　要　用　途    AX 乘除运算，字的输入输出，中间结果的缓存   AL 字节的乘、除运算，字节的输入输出   AH 字节的乘、除运算，存放中断的功能号   BX 存储器指针   BP">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png">
-<meta property="article:published_time" content="2020-06-25T04:44:04.000Z">
-<meta property="article:modified_time" content="2022-10-08T12:53:02.000Z">
-<meta property="article:author" content="Yveltals">
-<meta property="article:tag" content="系统编程">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png">
-    
-    
-    <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
-    <meta name="theme-color" content="#A31F34">
-    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
-    <!--- Page Info-->
-    
-    <title>
-        
-            系统编程 -
-        
-        Yveltals Blog
-    </title>
-    
-<link rel="stylesheet" href="/css/style.css">
-
-    
-<link rel="stylesheet" href="/fonts/fonts.css">
-
-    
-<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
-
-    
-<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
-
-    <!--- Font Part-->
-    
-    
-    
-    
-
-    <!--- Inject Part-->
-    
-    <script id="hexo-configurations">
-    let Global = window.Global || {};
-    Global.hexo_config = {"hostname":"yveltals.github.io","root":"/","language":"en"};
-    Global.theme_config = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":false,"lazyload":true,"recommendation":{"enable":true,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"busuanzi_counter":{"enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"pjax":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Yveltals Blog","subtitle":{"text":["Keep thinking..."],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.2.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2019/8/17 11:45:14"};
-    Global.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
-    Global.data_config = {"masonry":false};
-  </script>
-    
-    <!--- Fontawesome Part-->
-    
-<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/brands.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/solid.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/regular.min.css">
-
-    
-    
-    
-    
-<meta name="generator" content="Hexo 6.3.0"></head>
-
-
-<body>
-<div class="progress-bar-container">
-    
-
-    
-        <span class="pjax-progress-bar"></span>
-        <span class="pjax-progress-icon">
-            <i class="fa-solid fa-circle-notch fa-spin"></i>
-        </span>
-    
-</div>
-
-
-<main class="page-container">
-
-    
-
-    <div class="main-content-container">
-
-        <div class="main-content-header">
-            <header class="navbar-container">
-    
-    <div class="navbar-content">
-        <div class="left">
-            
-            <a class="logo-title" href="/">
-                
-                Yveltals Blog
-                
-            </a>
-        </div>
-
-        <div class="right">
-            <!-- PC -->
-            <div class="desktop">
-                <ul class="navbar-list">
-                    
-                        
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="" 
-                                    href="/"  >
-                                    
-                                        
-                                            <i class="fa-regular fa-house"></i>
-                                        
-                                        HOME
-                                    
-                                </a>
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                    
-                </ul>
-            </div>
-            <!-- Mobile -->
-            <div class="mobile">
-                
-                <div class="icon-item navbar-bar">
-                    <div class="navbar-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile drawer -->
-    <div class="navbar-drawer">
-        <ul class="drawer-navbar-list">
-            
-                
-                    <li class="drawer-navbar-item flex-center">
-                        <a class="" 
-                        href="/"  >
-                             
-                                
-                                    <i class="fa-regular fa-house"></i>
-                                
-                                HOME
-                            
-                        </a>
-                    </li>
-                    <!-- Submenu -->
-                    
-            
-
-        </ul>
-    </div>
-
-    <div class="window-mask"></div>
-
-</header>
-
-
-        </div>
-
-        <div class="main-content-body">
-
-            
-
-            <div class="main-content">
-
-                
-                    <div class="fade-in-down-animation">
-    <div class="post-page-container">
-        <div class="article-content-container">
-
-            <div class="article-title">
-                
-                  
-                  
-                    <img src="/img/linux.jpeg" alt="系统编程" />
-                  
-                  <h1 class="article-title-cover">系统编程</h1>
-                
-              </div>
-              
-                     
-            
-            
-                <div class="article-header">
-                    <div class="avatar">
-                        <img src="/images/redefine-avatar.svg">
-                    </div>
-                    <div class="info">
-                        <div class="author">
-                            <span class="name">The Redefine Team</span>
-                            
-                                <span class="author-label">Lv4</span>
-                            
-                        </div>
-                        <div class="meta-info">
-                            <div class="article-meta-info">
-    <span class="article-date article-meta-item">
-        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2020-06-25 12:44:04</span>
-        <span class="mobile">2020-06-25 12:44:04</span>
-        <span class="hover-info">Created</span>
-    </span>
-    
-        <span class="article-date article-meta-item">
-            <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2022-10-08 20:53:02</span>
-            <span class="mobile">2022-10-08 20:53:02</span>
-            <span class="hover-info">Updated</span>
-        </span>
-    
-
-    
-        <span class="article-categories article-meta-item">
-            <i class="fa-regular fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/OS/">OS</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-    
-    
-        <span class="article-tags article-meta-item">
-            <i class="fa-regular fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
-    
-
-    
-    
-    
-    
-</div>
-
-                        </div>
-                    </div>
-                </div>
-            
-
-            <div class="article-content markdown-body">
-                <h1 id="字"><a href="#字" class="headerlink" title="字"></a>字</h1><p>字节<code>byte</code>，内存单元，8位，如<code>68</code> </p>
-<p>字<code>word</code>，高低字节，16位，如<code>68 A7</code></p>
-<hr>
-<h1 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h1><p>寄存器16位，两个内存单元(字节)</p>
-<p><code>CS-IP</code>：代码；<code>SS-SP</code>：栈顶；<code>DS-SI/ES-DI</code>：数据</p>
-<table>
-<thead>
-<tr>
-<th>寄存器</th>
-<th>主　要　用　途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>AX</td>
-<td>乘除运算，字的输入输出，中间结果的缓存</td>
-</tr>
-<tr>
-<td>AL</td>
-<td>字节的乘、除运算，字节的输入输出</td>
-</tr>
-<tr>
-<td>AH</td>
-<td>字节的乘、除运算，存放中断的功能号</td>
-</tr>
-<tr>
-<td>BX</td>
-<td>存储器指针</td>
-</tr>
-<tr>
-<td>BP</td>
-<td>存储器指针、存取堆栈的指针</td>
-</tr>
-<tr>
-<td>CX</td>
-<td>串操作、循环控制的计数器</td>
-</tr>
-<tr>
-<td>CL</td>
-<td>移位操作的计数器</td>
-</tr>
-<tr>
-<td>DX</td>
-<td>字的乘、除运算，间接的输入输出</td>
-</tr>
-<tr>
-<td>SI</td>
-<td>存储器指针、串指令中的源操作数指针</td>
-</tr>
-<tr>
-<td>DI</td>
-<td>存储器指针、串指令中的目的操作数指针</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><blockquote>
-<p>下-栈底-高地址<br>上-栈顶-低地址<br>push ——sp-2  送入<br>pop  ——读取  sp+2</p>
-</blockquote>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png"
-                     
-                ></p>
-<hr>
-<h1 id="寻址方式"><a href="#寻址方式" class="headerlink" title="寻址方式"></a>寻址方式</h1><p>隐性 mov ax,[bp]   显性 mov ax,ds:[bp]  (避免歧义)<br>用[]表示内存单元，如[bx]，mov ax,[bx]<br>用()表示内存单元或寄存器中的内容，如(ax),(20000H)</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F.png"
-                     
-                ></p>
-<hr>
-<h1 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h1><blockquote>
-<p> <code>div</code>    除数8位被除数16位,AX中存放；除数16位被除数32位,DX AX存放高低位</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">div  byte  ptr  ds:[0]  //8位</span><br><span class="line">(al)=((ax)/(ds)*16+0)的商</span><br><span class="line">(ah)=(ax)/((ds)*16+0)的余数</span><br></pre></td></tr></table></figure></div>
-
-<p> <code>mul</code>   8位相乘,乘数默认AL,结果AX；16位相乘,乘数默认AX,DX AX结构高低位</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mul  word ptr [bx+8]  //16位</span><br><span class="line">(ax)=(ax)*((ds)*16+(bx)+8)结果的低16位</span><br><span class="line">(dx)=(ax)*((ds)*16+(bx)+8)结果的高16位</span><br></pre></td></tr></table></figure></div>
-
-<p> <code>db dw dd</code>   定义字节、字、双字型数据</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db  1        //01H</span><br><span class="line">dw  1        //0001H</span><br><span class="line">dd  1        //00000001H</span><br></pre></td></tr></table></figure></div>
-
-<p> <code>dup</code>   定义重复数据</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db  3  dup (1,2) //db 1,2,1,2,1,2</span><br></pre></td></tr></table></figure></div>
-
-<p> <code>movsb  movsw  movsd</code>   数据传送</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">源地址是DS:SI,目的地址是ES:DI</span><br><span class="line">DF=0正向传送,DF=1反向传送</span><br><span class="line">在传送完成之后SI和DI会增或减小对应数据长度</span><br><span class="line">若反复传送，加指令前缀rep并在CX中设置次数 </span><br></pre></td></tr></table></figure></div>
-</blockquote>
-<hr>
-<h1 id="数据长度"><a href="#数据长度" class="headerlink" title="数据长度"></a>数据长度</h1><p>8086CPU中可以指定两种尺寸的数据，byte和word</p>
-<blockquote>
-<ul>
-<li><p>在有寄存器参与的时候使用寄存器的种类区分</p>
-<ol>
-<li>字：mov ax,1</li>
-<li>字节：mov al,1</li>
-</ol>
-</li>
-<li><p>在没有寄存器参与的时候，使用X ptr指明内存单元长度，X是word或byte </p>
-<ol>
-<li><p>字：mov word ptr ds:[0],1 add word ptr [bx],2    </p>
-</li>
-<li><p>字节：mov byte ptr ds:[0],1 add byte ptr [bx],2</p>
-</li>
-</ol>
-</li>
-<li><p>其他默认指明处理类型的指令</p>
-<ol>
-<li>push [1000H]，push默认只进行字操作</li>
-</ol>
-</li>
-</ul>
-</blockquote>
-<p>灵活使用寻址方式的例子，修改下面内存空间中的数据：</p>
-<table>
-<thead>
-<tr>
-<th>起始地址</th>
-<th>内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>00</td>
-<td>‘DEC’</td>
-</tr>
-<tr>
-<td>03</td>
-<td>‘Ken Oslen’</td>
-</tr>
-<tr>
-<td>0C</td>
-<td>137</td>
-</tr>
-<tr>
-<td>0E</td>
-<td>40</td>
-</tr>
-<tr>
-<td>10</td>
-<td>‘PDP’</td>
-</tr>
-</tbody></table>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> ;第三字段改为38</span><br><span class="line">mov word ptr [bx].0ch,38   </span><br><span class="line"></span><br><span class="line"> ;修改最后一个字段的三个字符</span><br><span class="line">mov si,0</span><br><span class="line">mov byte ptr [bx].10h[si],&#x27;v&#x27;  </span><br><span class="line">inc si</span><br><span class="line">mov byte ptr [bx].10h[si],&#x27;A&#x27;</span><br><span class="line">inc si</span><br><span class="line">mov byte ptr [bx].10h[si],&#x27;X&#x27;</span><br><span class="line"></span><br><span class="line">;类似结构体[i]表示第几个字符</span><br></pre></td></tr></table></figure></div>
-
-<hr>
-<h1 id="编译-Debug"><a href="#编译-Debug" class="headerlink" title="编译&amp;Debug"></a>编译&amp;Debug</h1><h2 id="EXE加载过程"><a href="#EXE加载过程" class="headerlink" title="EXE加载过程"></a>EXE加载过程</h2><p>PSP：程序与dos之间通信<br>CX：程序长度<br>DS：程序内存位置<br>CS：程序代码位置(CS&#x3D;DS+10H)</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png"
-                     
-                ></p>
-<h2 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">R：查看，改变CPU寄存器内容</span><br><span class="line">    直接-r查看寄存器内容</span><br><span class="line">    -r 寄存器名，改变寄存器内容</span><br><span class="line">D：查看内存中内容</span><br><span class="line">    -d直接查看</span><br><span class="line">    -d 段地址:偏移地址 查看固定地址开始的内容</span><br><span class="line">    -d 段地址:偏移地址 结尾偏移地址 查看指定范围内存</span><br><span class="line">E：改写内存中内容</span><br><span class="line">    -e 起始地址 数据 数据 数据 …</span><br><span class="line">    提问方式修改 -e 段地址:偏移地址 从这个地址开始一个一个改，空格下一个，回车结束</span><br><span class="line">    也可以写入字符 ‘a’</span><br><span class="line">U：将内存中的机器指令翻译成汇编指令</span><br><span class="line">    -u 段地址:偏移地址</span><br><span class="line">T：执行一条机器指令</span><br><span class="line">    -t 执行cs:ip指向的命令</span><br><span class="line">P：同T单步跟踪，但P命令不会跟踪进入子程序或软中断(跳过循环)</span><br><span class="line">A：以汇编指令格式在内存中写入一条机器指令</span><br><span class="line">    -a 段地址:偏移地址 从这个地址开始一行一行的写入汇编语句</span><br><span class="line">G：g 0012 从当前CS:IP开始一直执行到0012处暂停</span><br></pre></td></tr></table></figure></div>
-
-<hr>
-<h1 id="转移指令"><a href="#转移指令" class="headerlink" title="转移指令"></a>转移指令</h1><p>可以修改IP或同时修改CS，IP的系统指令：</p>
-<ul>
-<li>转移行为：<ol>
-<li>只修改IP，称为段内转移，如jmp ax</li>
-<li>同时修改CS和IP，称为段间转移，如jmp 1000:0</li>
-</ol>
-</li>
-<li>修改范围（段内转移）：<ol>
-<li>短转移：修改IP范围-128~127</li>
-<li>近转移：修改IP范围-32768~32767</li>
-</ol>
-</li>
-<li>转移指令分类：<ol>
-<li>无条件转移：jmp</li>
-<li>条件转移：jcxz</li>
-<li>循环指令：loop</li>
-<li>过程</li>
-<li>中断</li>
-</ol>
-</li>
-</ul>
-<h2 id="offset指令"><a href="#offset指令" class="headerlink" title="offset指令"></a>offset指令</h2><blockquote>
-<p><code>offset  start</code> : 取得偏移地址</p>
-</blockquote>
-<h2 id="jmp指令"><a href="#jmp指令" class="headerlink" title="jmp指令"></a>jmp指令</h2><blockquote>
-<p><code>jmp short 标号</code>：位移字类型8位，段内短转移</p>
-<p><code>jmp near ptr 标号</code>：位移字类型16位，段内近转移</p>
-<p><code>jmp far ptr 标号</code>：段间远转移，机器码中指明目的地址的CS和IP值</p>
-</blockquote>
-<h2 id="jcxz指令"><a href="#jcxz指令" class="headerlink" title="jcxz指令"></a>jcxz指令</h2><blockquote>
-<p><code>jcxz 标号</code>：条件转移指令，短转移，如果(cx)&#x3D;0则跳转</p>
-</blockquote>
-<h2 id="loop指令"><a href="#loop指令" class="headerlink" title="loop指令"></a>loop指令</h2><blockquote>
-<p><code>loop 标号</code>：循环指令，短转移，如果(cx)!&#x3D;0那么跳转到标号处执行</p>
-</blockquote>
-<h2 id="ret-retf-iret指令"><a href="#ret-retf-iret指令" class="headerlink" title="ret&#x2F;retf&#x2F;iret指令"></a>ret&#x2F;retf&#x2F;iret指令</h2><blockquote>
-<p>用栈中的数据修改CS和IP的值，实现近、远转移</p>
-<ul>
-<li><p><code>ret</code> 指令相当于 <code>pop ip</code></p>
-  <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(IP)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><code>retf</code> 指令相当于 <code>pop ip, pop cs</code></p>
-  <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(IP)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br><span class="line">(CS)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><code>iret</code> 指令相当于 <code>pop ip, pop cs, popf</code></p>
-</li>
-</ul>
-</blockquote>
-<h2 id="call指令"><a href="#call指令" class="headerlink" title="call指令"></a>call指令</h2><blockquote>
-<p>将当前的IP或CS和IP入栈，转移，且位移字类型16位</p>
-<p>call不能实现短转移，但它实现转移的原理和jmp相同。</p>
-<ul>
-<li><code>call 标号</code>相当于 <code>push ip, jmp near ptr 标号</code></li>
-<li><code>call far ptr 标号</code> 相当于 <code>push cs, push ip, jmp far ptr 标号</code></li>
-</ul>
-</blockquote>
-<hr>
-<h1 id="标志寄存器"><a href="#标志寄存器" class="headerlink" title="标志寄存器"></a>标志寄存器</h1><p>CPU内部特殊寄存器，用来存储指令执行结果，简称flag寄存器，按位起作用</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png"
-                     
-                ></p>
-<blockquote>
-<p><code>ZF</code>    零标志位，结果是否为0</p>
-<p><code>PF</code>    奇偶标志位，结果二进制位中1的个数是否偶</p>
-<p><code>SF</code>    符号标志位，结果是否为负；得知有符号数结果正负，对无符号数无意义</p>
-<p><code>CF</code>    进位标志位，记录无符号数运算是否向更高位进&#x2F;借位</p>
-<p><code>OF</code>    溢出标志位，记录有符号数运算是否发生溢出</p>
-<p><code>TF</code>    调试标志位，为1时处理器每次只执行一条指令，即单步执行</p>
-<p><code>IF</code>     中断允许标志位，为1时能响应外部中断，反之则屏蔽</p>
-<p><code>DF</code>    方向标志位，为0则<code>si、di</code>递增，为1递减；<code>cld</code>命令置为0，<code>std</code>置为1</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">adc   带进位加法，adc ax, bx 即(ax) = (ax)+(bx)+CF</span><br><span class="line">//计算001EF000H + 00201000H，结果放在ax(高16位)和bx(低16位)中</span><br><span class="line">mov ax, 001EH</span><br><span class="line">mov bx, 0F000H</span><br><span class="line">add bx, 1000H</span><br><span class="line">adc ax, 0020H   </span><br><span class="line">//高位: ax = ax + 0020H +1  (CF保存了进位1)</span><br><span class="line">sbb   带借位减法，sbb ax,bx 即(ax)=(ax)-(bx)-CF</span><br></pre></td></tr></table></figure></div>
-
-<p><code>cmp</code>    比较指令，<code>cmp ax,bx</code>即<code>(ax)-(bx)</code>，结果正负靠SF(正负)和OF(溢出)共同判断</p>
-</blockquote>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png"
-                     
-                ></p>
-<hr>
-<h1 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h1><h2 id="什么是端⼝"><a href="#什么是端⼝" class="headerlink" title="什么是端⼝"></a>什么是端⼝</h2><p>各种存储器都和CPU的地址线、数据线、控制线相连。CPU在操控它们的时候，把它们都当作内存来对待，把它们总的看做⼀个若⼲存储单元组成的逻辑存储器，这个逻辑存储器我们称其为内存地址空间。</p>
-<blockquote>
-<p>在PC机系统中，和CPU通过总线相连的芯⽚除各种存储器外，还有以下3种芯⽚。</p>
-<ul>
-<li>各种接⼝卡（⽐如，⽹卡、显卡）上的接⼝芯⽚，它们控制接⼝卡进⾏⼯作；</li>
-<li>主板上的接⼝芯⽚，CPU通过它们对部分外设进⾏访问；</li>
-<li>其他芯⽚，⽤来存储相关的系统信息，或进⾏相关的输⼊输出处理。</li>
-</ul>
-</blockquote>
-<p>在这些芯⽚中，都有⼀组可以由CPU读写的寄存器。这些寄存器都和CPU的总线相连，CPU进⾏读或写的时候都通过控制线向它们所在的芯⽚发出端⼝读写命令。可⻅，从CPU的⻆度，将这些寄存器都当作端⼝，对它们进⾏统⼀编址，从⽽建⽴了⼀个统⼀的端⼝地址空间。</p>
-<p>CPU可以直接读写以下3个地⽅的数据：CPU内部的寄存器、内存单元、端⼝</p>
-<br/>
-
-<h2 id="端口的读写"><a href="#端口的读写" class="headerlink" title="端口的读写"></a>端口的读写</h2><blockquote>
-<p>在访问端⼝的时候，CPU通过端⼝地址来定位端⼝，因为端⼝所在的芯⽚和CPU通过总线相连，所以，端⼝地址和内存地址⼀样，通过地址总线来传送。在PC系统中，CPU最多可以定位64KB个不同的端⼝。则端⼝地址的范围为0～65535</p>
-<p>端⼝的读写指令只有两条： in 和 out ，分别⽤于从端⼝读取数据和往端⼝写⼊数据</p>
-</blockquote>
-<p>对比CPU执⾏内存访问指令和端⼝访问指令时候，总线上的信息：</p>
-<ol>
-<li><p>访问内存</p>
- <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ds:[8]                 ;假设执⾏前(ds)=0</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>CPU通过地址线将地址信息8发出</li>
-<li>CPU通过控制线发出内存读写命令，选中存储器芯⽚，并通知它，将要从中读取数据</li>
-<li>存储器将8号单元中的数据通过数据线送⼊CPU</li>
-</ul>
-</li>
-<li><p>访问端⼝</p>
- <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">in al,60h                   ;从60h号端⼝读⼊⼀个字节</span><br></pre></td></tr></table></figure></div>
-
-<ul>
-<li>CPU通过地址线将地址信息60h发出</li>
-<li>CPU通过控制线发出端⼝读命令，选中端⼝所在的芯⽚，并通知它，将要从中读取数据</li>
-<li>端⼝所在的芯⽚将60h端⼝中的数据通过数据线送⼊CPU</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>注意：</p>
-<p>在 in 和 out 指令中，只能使⽤ ax 或 al 来存放、发送到端⼝中的数据。<br>访问8位端⼝时⽤ al ，访问16位端⼝时⽤ ax 。</p>
-</blockquote>
-<br/>
-
-<h2 id="CMOS-RAM芯⽚的读写"><a href="#CMOS-RAM芯⽚的读写" class="headerlink" title="CMOS RAM芯⽚的读写"></a>CMOS RAM芯⽚的读写</h2><p>PC机中，有⼀个CMOS RAM芯⽚，⼀般简称为CMOS。此芯⽚的特征如下:</p>
-<blockquote>
-<p>包含⼀个实时时钟和⼀个有128个存储单元的RAM存储器（早期的计算机为64个字节）</p>
-<p>该芯⽚靠电池供电。所以，关机后其内部的实时时钟仍可正常⼯作，RAM中的信息不丢失</p>
-<p>128个字节的RAM中，内部实时时钟占⽤0～0dh单元来保存时间信息，其余⼤部分单元⽤于保存系统配置信息，供系统启动时BIOS程序读取。BIOS也提供了相关的程序，使我们可以在开机的时候配置CMOS RAM中的系统信息</p>
-<p>该芯⽚内部有两个端⼝，端⼝地址为<code>70h</code>和<code>71h</code>。CPU通过这两个端⼝来读写CMOS RAM</p>
-<p><code>70h</code>为地址端⼝，存放要访问的CMOS RAM单元的地址；<code>71h</code>为数据端⼝，存放从选定的CMOS RAM单元中读取的数据，或要写⼊到其中的数据。可⻅，CPU对CMOS RAM的读写分两步进⾏。⽐如，读CMOS RAM的2号单元：将2送⼊端⼝<code>70h</code>；从端⼝<code>71h</code>读出2号单元的内容</p>
-</blockquote>
-<hr>
-<h1 id="程序编写"><a href="#程序编写" class="headerlink" title="程序编写"></a>程序编写</h1><h2 id="显存显示字符串"><a href="#显存显示字符串" class="headerlink" title="显存显示字符串"></a>显存显示字符串</h2><p>:::details Click to see more</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">    db &#x27;welcome to masm!&#x27; </span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">    mov ax,data</span><br><span class="line">    mov ds,ax</span><br><span class="line"></span><br><span class="line">    //显存地址 ES:DI</span><br><span class="line">    mov ax,0b800h</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,10*160+80 ; </span><br><span class="line"></span><br><span class="line">    //数据地址 DS:SI</span><br><span class="line">    mov si,0</span><br><span class="line">    mov cx,16</span><br><span class="line">s1:</span><br><span class="line">    mov al,ds:[si]  //低位字符</span><br><span class="line">    mov ah,00000010B ; //高位颜色</span><br><span class="line">    mov es:[di],ax</span><br><span class="line">    inc si</span><br><span class="line">    add di,2</span><br><span class="line">    loop s1</span><br><span class="line"></span><br><span class="line">    mov ax, 4c00h</span><br><span class="line">    int 21h ;</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div>
-
-<p>:::</p>
-<h2 id="除法溢出中断程序"><a href="#除法溢出中断程序" class="headerlink" title="除法溢出中断程序"></a>除法溢出中断程序</h2><p>:::details Click to see more</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">mov ax,cs</span><br><span class="line">mov ds,ax</span><br><span class="line">mov si,offset do</span><br><span class="line">mov ax,0</span><br><span class="line">mov es,ax</span><br><span class="line">mov di,200h</span><br><span class="line"></span><br><span class="line">mov cx,offset doend-offset do ; 安装中断例程</span><br><span class="line">cld</span><br><span class="line">rep movsb</span><br><span class="line"></span><br><span class="line">mov word ptr es:[0],200h</span><br><span class="line">mov word ptr es:[2],0 ; 设置中断向量表</span><br><span class="line"></span><br><span class="line">mov dx,0ffffh</span><br><span class="line">mov bx,1 ; 测试一下</span><br><span class="line">div bx</span><br><span class="line"></span><br><span class="line">mov ax, 4c00h</span><br><span class="line">int 21h </span><br><span class="line"></span><br><span class="line">do:jmp short dostart</span><br><span class="line">db &#x27;divide error!&#x27;</span><br><span class="line">dostart:</span><br><span class="line">mov ax,0</span><br><span class="line">mov ds,ax</span><br><span class="line">mov si,202h</span><br><span class="line"></span><br><span class="line">mov ax,0b800h</span><br><span class="line">mov es,ax</span><br><span class="line">mov di,160*12+60</span><br><span class="line"></span><br><span class="line">mov cx,13</span><br><span class="line">s:</span><br><span class="line">mov al,ds:[si]</span><br><span class="line">mov ah,2</span><br><span class="line">mov es:[di],ax</span><br><span class="line">inc si</span><br><span class="line">add di,2</span><br><span class="line">loop s</span><br><span class="line"></span><br><span class="line">mov ax, 4c00h</span><br><span class="line">int 21h</span><br><span class="line"></span><br><span class="line">doend:nop</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div>
-
-<p>:::</p>
-<h2 id="利用中断和栈实现loop"><a href="#利用中断和栈实现loop" class="headerlink" title="利用中断和栈实现loop"></a>利用中断和栈实现loop</h2><p>原题：在屏幕中间显示80个<code>！</code></p>
-<p>参数：<code>(cx)</code>&#x3D;循环次数，<code>(bx)</code>&#x3D;位移</p>
-<p>:::details Click to see more</p>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">    mov ax,cs</span><br><span class="line">    mov ds,ax</span><br><span class="line">    mov si,offset lp</span><br><span class="line">    mov ax,0</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,200h</span><br><span class="line"></span><br><span class="line">    mov cx,offset lpend-offset lp ; 安装中断例程</span><br><span class="line">    cld</span><br><span class="line">    rep movsb</span><br><span class="line"></span><br><span class="line">    mov word ptr es:[7ch*4],200h</span><br><span class="line">    mov word ptr es:[7ch*4+2],0 ; 设置中断向量表</span><br><span class="line"></span><br><span class="line">    mov ax,0b800h</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,160*12</span><br><span class="line">    mov bx,offset s-offset se ;设置回退位移</span><br><span class="line">    mov cx,80            ;设置loop次数</span><br><span class="line">s:mov byte ptr es:[di],&#x27;!&#x27; ; 完成第一次显示</span><br><span class="line">    add di,2</span><br><span class="line">    int 7ch ;测试int 7ch</span><br><span class="line">se:nop</span><br><span class="line"></span><br><span class="line">    mov ax, 4c00h</span><br><span class="line">    int 21h</span><br><span class="line"></span><br><span class="line">lp: ;中断例程</span><br><span class="line">    dec cx</span><br><span class="line">    jcxz f</span><br><span class="line">    push bp   ;修改bp前先保存</span><br><span class="line">    mov bp,sp  ;SP指向栈顶，即存入的IP</span><br><span class="line">    add [bp+2],bx  ;指针回退位移....为什么+2？？？？</span><br><span class="line">f: pop bp</span><br><span class="line">    iret</span><br><span class="line">    lpend:nop</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div>
-<p>:::</p>
-<hr>
-<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><blockquote>
-<p>1.对<code>mov ax,[0]</code>，Debug指内存数据，masm指0，可用段前缀区分如<code>mov al，ds:[0]</code></p>
-<p>2.数据不能以字母开头，大于<code>9fffH</code>的数据在开头加0，如<code>0A000H</code></p>
-<p>3.子程序要先将<code>所用到的寄存器</code>存到栈里</p>
-<p>4.使用<code>&#39;xxx&#39;</code>的方式指明数据是以字符形式给出的，编译器会自动将它们转化为ASCII码</p>
-</blockquote>
-
-            </div>
-
-            
-
-            
-                <ul class="post-tags-box">
-                    
-                        <li class="tag-item">
-                            <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">#系统编程</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            
-
-            
-  <div class="recommended-article">
-   <div class="recommended-desktop">
-    <div class="recommended-article-header">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-    </div>
-    <div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/OS/进程线程与中断.html" title="进程线程与中断" rel="bookmark noopener">
-  <img src="/img/os.jpeg" alt="进程线程与中断">
-  <span class="title">进程线程与中断</span>
-</a><a class="recommended-article-item" target="_blank" href="//post/Cpp.html" title="Cpp" rel="bookmark noopener">
-  <img src="/img/C.jpeg" alt="Cpp">
-  <span class="title">Cpp</span>
-</a><a class="recommended-article-item" target="_blank" href="//post/OS/操作系统.html" title="操作系统" rel="bookmark noopener">
-  <img src="/img/os.jpeg" alt="操作系统">
-  <span class="title">操作系统</span>
-</a></div>
-   </div>
-   <div class="recommended-mobile">
-   <div class="recommended-article-header">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-   </div>
-   <div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/OS/进程线程与中断.html" title="进程线程与中断" rel="bookmark noopener">
-  <img src="/img/os.jpeg" alt="进程线程与中断">
-  <span class="title">进程线程与中断</span>
-</a><a class="recommended-article-item" target="_blank" href="//post/Cpp.html" title="Cpp" rel="bookmark noopener">
-  <img src="/img/C.jpeg" alt="Cpp">
-  <span class="title">Cpp</span>
-</a></div>
-   </div>
-  </div>
-
-            
-                <div class="article-nav">
-                    
-                        <div class="article-prev">
-                            <a class="prev"
-                            rel="prev"
-                            href="/post/Other/Financing.html"
-                            >
-                                <span class="left arrow-icon flex-center">
-                                    <i class="fa-solid fa-chevron-left"></i>
-                                </span>
-                                <span class="title flex-center">
-                                    <span class="post-nav-title-item">Financing</span>
-                                    <span class="post-nav-item">Prev posts</span>
-                                </span>
-                            </a>
-                        </div>
-                    
-                    
-                        <div class="article-next">
-                            <a class="next"
-                            rel="next"
-                            href="/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html"
-                            >
-                                <span class="title flex-center">
-                                    <span class="post-nav-title-item">进程线程与中断</span>
-                                    <span class="post-nav-item">Next posts</span>
-                                </span>
-                                <span class="right arrow-icon flex-center">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                </span>
-                            </a>
-                        </div>
-                    
-                </div>
-            
-
-
-            
-        </div>
-
-        
-            <div class="toc-content-container">
-                <div class="post-toc-wrap">
-    <div class="post-toc">
-        <div class="toc-title">On this page</div>
-        <div class="page-title">系统编程</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97"><span class="nav-text">字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%88"><span class="nav-text">栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-text">寻址方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%95%BF%E5%BA%A6"><span class="nav-text">数据长度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-Debug"><span class="nav-text">编译&amp;Debug</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXE%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="nav-text">EXE加载过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Debug"><span class="nav-text">Debug</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AC%E7%A7%BB%E6%8C%87%E4%BB%A4"><span class="nav-text">转移指令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#offset%E6%8C%87%E4%BB%A4"><span class="nav-text">offset指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jmp%E6%8C%87%E4%BB%A4"><span class="nav-text">jmp指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jcxz%E6%8C%87%E4%BB%A4"><span class="nav-text">jcxz指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loop%E6%8C%87%E4%BB%A4"><span class="nav-text">loop指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ret-retf-iret%E6%8C%87%E4%BB%A4"><span class="nav-text">ret&#x2F;retf&#x2F;iret指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#call%E6%8C%87%E4%BB%A4"><span class="nav-text">call指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E5%BF%97%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">标志寄存器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3"><span class="nav-text">端口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%AF%E2%BC%9D"><span class="nav-text">什么是端⼝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%AF%BB%E5%86%99"><span class="nav-text">端口的读写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMOS-RAM%E8%8A%AF%E2%BD%9A%E7%9A%84%E8%AF%BB%E5%86%99"><span class="nav-text">CMOS RAM芯⽚的读写</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BC%96%E5%86%99"><span class="nav-text">程序编写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E5%AD%98%E6%98%BE%E7%A4%BA%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">显存显示字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%A4%E6%B3%95%E6%BA%A2%E5%87%BA%E4%B8%AD%E6%96%AD%E7%A8%8B%E5%BA%8F"><span class="nav-text">除法溢出中断程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E4%B8%AD%E6%96%AD%E5%92%8C%E6%A0%88%E5%AE%9E%E7%8E%B0loop"><span class="nav-text">利用中断和栈实现loop</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li></ol>
-
-    </div>
-</div>
-            </div>
-        
-    </div>
-</div>
-
-
-                
-
-            </div>
-            
-            
-
-        </div>
-
-        <div class="main-content-footer">
-            <footer class="footer">
-    <div class="info-container">
-        <div class="copyright-info">
-            &copy;
-            
-              <span>2019</span>
-              -
-            
-            2023&nbsp;&nbsp;<i class="fa-regular fa-computer-classic"></i>&nbsp;&nbsp;<a href="/">The Redefine Team</a>
-        </div>
-        
-        <div class="theme-info info-item">
-            <span class="powered-by-container">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" href="https://hexo.io">Hexo</a></span>
-                <br>
-            <span class="theme-version-container">THEME&nbsp;<a class="theme-version" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.2.2</a>
-        </div>
-        
-        
-        
-            <div>
-                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
-            </div>
-        
-        
-        
-            <script async data-pjax>
-                try {
-                    function odometer_init() {
-                    const elements = document.querySelectorAll('.odometer');
-                    elements.forEach(el => {
-                        new Odometer({
-                            el,
-                            format: '( ddd).dd',
-                            duration: 200
-                        });
-                    });
-                    }
-                    odometer_init();
-                } catch (error) {}
-            </script>
-        
-        
-        
-    </div>  
-</footer>
-        </div>
-    </div>
-
-    
-        <div class="post-tools">
-            <div class="post-tools-container">
-    <ul class="article-tools-list">
-        <!-- TOC aside toggle -->
-        
-            <li class="right-bottom-tools page-aside-toggle">
-                <i class="fa-regular fa-outdent"></i>
-            </li>
-        
-
-        <!-- go comment -->
-        
-    </ul>
-</div>
-
-        </div>
-    
-
-    <div class="right-side-tools-container">
-        <div class="side-tools-container">
-    <ul class="hidden-tools-list">
-        <li class="right-bottom-tools tool-font-adjust-plus flex-center">
-            <i class="fa-regular fa-magnifying-glass-plus"></i>
-        </li>
-
-        <li class="right-bottom-tools tool-font-adjust-minus flex-center">
-            <i class="fa-regular fa-magnifying-glass-minus"></i>
-        </li>
-
-        <li class="right-bottom-tools tool-expand-width flex-center">
-            <i class="fa-regular fa-expand"></i>
-        </li>
-
-        <li class="right-bottom-tools tool-dark-light-toggle flex-center">
-            <i class="fa-regular fa-moon"></i>
-        </li>
-
-        <!-- rss -->
-        
-
-        
-
-        <li class="right-bottom-tools tool-scroll-to-bottom flex-center">
-            <i class="fa-regular fa-arrow-down"></i>
-        </li>
-    </ul>
-
-    <ul class="visible-tools-list">
-        <li class="right-bottom-tools toggle-tools-list flex-center">
-            <i class="fa-regular fa-cog fa-spin"></i>
-        </li>
-        
-            <li class="right-bottom-tools tool-scroll-to-top flex-center">
-                <i class="arrow-up fas fa-arrow-up"></i>
-                <span class="percent"></span>
-            </li>
-        
-        
-    </ul>
-</div>
-
-    </div>
-
-    <div class="image-viewer-container">
-    <img src="">
-</div>
-
-
-    
-
-
-</main>
-
-
-
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/main.js"></script>
-
-<script src="/js/layouts/navbarShrink.js"></script>
-
-<script src="/js/tools/scrollTopBottom.js"></script>
-
-<script src="/js/tools/lightDarkSwitch.js"></script>
-
-
-
-
-
-    
-<script src="/js/tools/codeBlock.js"></script>
-
-
-
-
-    
-<script src="/js/layouts/lazyload.js"></script>
-
-
-
-
-    
-<script src="/js/tools/runtime.js"></script>
-
-    
-<script src="/js/libs/odometer.min.js"></script>
-
-    
-<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
-
-
-
-
-  
-<script src="/js/libs/Typed.min.js"></script>
-
-  
-<script src="/js/plugins/typed.js"></script>
-
-
-
-
-
-
-
-<div class="post-scripts pjax">
-    
-        
-<script src="/js/tools/tocToggle.js"></script>
-
-<script src="/js/libs/anime.min.js"></script>
-
-<script src="/js/layouts/toc.js"></script>
-
-<script src="/js/plugins/tabs.js"></script>
-
-    
-</div>
-
-
-    
-<script src="/js/libs/pjax.min.js"></script>
-
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        window.pjax = new Pjax({
-            selectors: [
-                'head title',
-                '.page-container',
-                '.pjax',
-            ],
-            history: true,
-            debug: false,
-            cacheBust: false,
-            timeout: 0,
-            analytics: false,
-            currentUrlFullReload: false,
-            scrollRestoration: false,
-            // scrollTo: true,
-        });
-
-        document.addEventListener('pjax:send', () => {
-            Global.utils.pjaxProgressBarStart();
-        });
-
-        document.addEventListener('pjax:complete', () => {
-            Global.utils.pjaxProgressBarEnd();
-            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
-            Global.refresh();
-        });
-    });
-</script>
-
-
-
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="keywords" content="Hexo Theme Redefine"><meta name="author" content="The Redefine Team"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="canonical" href="https://yveltals.github.io/post/os/系统编程.html"><meta name="robots" content="index,follow"><meta name="googlebot" content="index,follow"><meta name="revisit-after" content="1 days"><meta name="description" content="字字节byte，内存单元，8位，如68  字word，高低字节，16位，如68 A7  寄存器寄存器16位，两个内存单元(字节) CS-IP：代码；SS-SP：栈顶；DS-SI&#x2F;ES-DI：数据    寄存器 主　要　用　途    AX 乘除运算，字的输入输出，中间结果的缓存   AL 字节的乘、除运算，字节的输入输出   AH 字节的乘、除运算，存放中断的功能号   BX 存储器指针   BP"><meta property="og:type" content="article"><meta property="og:title" content="系统编程"><meta property="og:url" content="https://yveltals.github.io/post/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B.html"><meta property="og:site_name" content="Myblog"><meta property="og:description" content="字字节byte，内存单元，8位，如68  字word，高低字节，16位，如68 A7  寄存器寄存器16位，两个内存单元(字节) CS-IP：代码；SS-SP：栈顶；DS-SI&#x2F;ES-DI：数据    寄存器 主　要　用　途    AX 乘除运算，字的输入输出，中间结果的缓存   AL 字节的乘、除运算，字节的输入输出   AH 字节的乘、除运算，存放中断的功能号   BX 存储器指针   BP"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F.png"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png"><meta property="article:published_time" content="2020-06-25T04:44:04.000Z"><meta property="article:modified_time" content="2023-07-15T18:03:13.291Z"><meta property="article:author" content="Yveltals"><meta property="article:tag" content="系统编程"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png"><link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192"><link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg"><meta name="theme-color" content="#A31F34"><link rel="shortcut icon" href="/images/redefine-favicon.svg"><title>系统编程 - Yveltals Blog</title><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/fonts/fonts.css"><link rel="stylesheet" href="/fonts/Satoshi/satoshi.css"><link rel="stylesheet" href="/fonts/Chillax/chillax.css"><script id="hexo-configurations">let Global=window.Global||{};Global.hexo_config={hostname:"yveltals.github.io",root:"/",language:"en",path:"search.xml"},Global.theme_config={articles:{style:{font_size:"16px",line_height:1.5,image_border_radius:"14px",image_alignment:"center",image_caption:!1,link_icon:!0},word_count:{enable:!0,count:!0,min2read:!0},author_label:{enable:!0,auto:!1,list:[]},code_block:{copy:!0,style:"mac",font:{enable:!1,family:null,url:null}},toc:{enable:!0,max_depth:3,number:!1,expand:!0,init_open:!0},copyright:!1,lazyload:!0,recommendation:{enable:!0,title:"推荐阅读",limit:3,mobile_limit:2,placeholder:"/images/wallhaven-wqery6-light.webp",skip_dirs:[]}},colors:{primary:"#A31F34",secondary:null},global:{fonts:{chinese:{enable:!1,family:null,url:null},english:{enable:!1,family:null,url:null}},content_max_width:"1000px",sidebar_width:"210px",hover:{shadow:!0,scale:!1},scroll_progress:{bar:!1,percentage:!0},busuanzi_counter:{enable:!1,site_pv:!0,site_uv:!0,post_pv:!0},pjax:!0,open_graph:!0,google_analytics:{enable:!1,id:null}},home_banner:{enable:!0,style:"fixed",image:{light:"/images/wallhaven-wqery6-light.webp",dark:"/images/wallhaven-wqery6-dark.webp"},title:"Yveltals Blog",subtitle:{text:["Keep thinking..."],hitokoto:{enable:!1,api:"https://v1.hitokoto.cn"},typing_speed:100,backing_speed:80,starting_delay:500,backing_delay:1500,loop:!0,smart_backspace:!0},text_color:{light:"#fff",dark:"#d1d1b6"},text_style:{title_size:"2.8rem",subtitle_size:"1.5rem",line_height:1.2},custom_font:{enable:!1,family:null,url:null},social_links:{enable:!1,links:{github:null,instagram:null,zhihu:null,twitter:null,email:null}}},plugins:{feed:{enable:!1},aplayer:{enable:!1,type:"fixed",audios:[{name:null,artist:null,url:null,cover:null}]},mermaid:{enable:!1,version:"9.3.0"}},version:"2.2.2",navbar:{auto_hide:!1,color:{left:"#f78736",right:"#367df7",transparency:35},links:{Home:{path:"/",icon:"fa-regular fa-house"}},search:{enable:!0,preload:!0}},page_templates:{friends_column:2,tags_style:"blur"},home:{sidebar:{enable:!0,position:"left",first_item:"menu",announcement:null,links:{Archives:{path:"/archives",icon:"fa-regular fa-archive"},Tags:{path:"/tags",icon:"fa-regular fa-tags"},Categories:{path:"/categories",icon:"fa-regular fa-folder"}}},article_date_format:"YYYY-MM-DD",categories:{enable:!0,limit:3},tags:{enable:!0,limit:3}},footerStart:"2019/8/17 11:45:14"},Global.language_ago={second:"%s seconds ago",minute:"%s minutes ago",hour:"%s hours ago",day:"%s days ago",week:"%s weeks ago",month:"%s months ago",year:"%s years ago"},Global.data_config={masonry:!1}</script><link rel="stylesheet" href="/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/fontawesome/brands.min.css"><link rel="stylesheet" href="/fontawesome/solid.min.css"><link rel="stylesheet" href="/fontawesome/regular.min.css"><meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body><div class="progress-bar-container"><span class="pjax-progress-bar"></span> <span class="pjax-progress-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></span></div><main class="page-container"><div class="main-content-container"><div class="main-content-header"><header class="navbar-container"><div class="navbar-content"><div class="left"><a class="logo-title" href="/">Yveltals Blog</a></div><div class="right"><div class="desktop"><ul class="navbar-list"><li class="navbar-item"><a href="/"><i class="fa-regular fa-house"></i> HOME</a></li><li class="navbar-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></li></ul></div><div class="mobile"><div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div><div class="icon-item navbar-bar"><div class="navbar-bar-middle"></div></div></div></div></div><div class="navbar-drawer"><ul class="drawer-navbar-list"><li class="drawer-navbar-item flex-center"><a href="/"><i class="fa-regular fa-house"></i> HOME</a></li></ul></div><div class="window-mask"></div></header></div><div class="main-content-body"><div class="main-content"><div class="fade-in-down-animation"><div class="post-page-container"><div class="article-content-container"><div class="article-title"><img src="/img/linux.jpeg" alt="系统编程"><h1 class="article-title-cover">系统编程</h1></div><div class="article-header"><div class="avatar"><img src="/images/redefine-avatar.svg"></div><div class="info"><div class="author"><span class="name">The Redefine Team</span> <span class="author-label">Lv4</span></div><div class="meta-info"><div class="article-meta-info"><span class="article-date article-meta-item"><i class="fa-regular fa-pen-fancy"></i>&nbsp; <span class="desktop">2020-06-25 12:44:04</span> <span class="mobile">2020-06-25 12:44:04</span> <span class="hover-info">Created</span> </span><span class="article-date article-meta-item"><i class="fa-regular fa-wrench"></i>&nbsp; <span class="desktop">2023-07-16 02:03:13</span> <span class="mobile">2023-07-16 02:03:13</span> <span class="hover-info">Updated</span> </span><span class="article-categories article-meta-item"><i class="fa-regular fa-folders"></i>&nbsp;<ul><li><a href="/categories/OS/">OS</a>&nbsp;</li></ul></span><span class="article-tags article-meta-item"><i class="fa-regular fa-tags"></i>&nbsp;<ul><li><a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">系统编程</a>&nbsp;</li></ul></span><span class="article-wordcount article-meta-item"><i class="fa-regular fa-typewriter"></i>&nbsp;<span>3.1k Words</span> </span><span class="article-min2read article-meta-item"><i class="fa-regular fa-clock"></i>&nbsp;<span>12 Mins</span></span></div></div></div></div><div class="article-content markdown-body"><h1 id="字"><a href="#字" class="headerlink" title="字"></a>字</h1><p>字节<code>byte</code>，内存单元，8位，如<code>68</code></p><p>字<code>word</code>，高低字节，16位，如<code>68 A7</code></p><hr><h1 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h1><p>寄存器16位，两个内存单元(字节)</p><p><code>CS-IP</code>：代码；<code>SS-SP</code>：栈顶；<code>DS-SI/ES-DI</code>：数据</p><table><thead><tr><th>寄存器</th><th>主　要　用　途</th></tr></thead><tbody><tr><td>AX</td><td>乘除运算，字的输入输出，中间结果的缓存</td></tr><tr><td>AL</td><td>字节的乘、除运算，字节的输入输出</td></tr><tr><td>AH</td><td>字节的乘、除运算，存放中断的功能号</td></tr><tr><td>BX</td><td>存储器指针</td></tr><tr><td>BP</td><td>存储器指针、存取堆栈的指针</td></tr><tr><td>CX</td><td>串操作、循环控制的计数器</td></tr><tr><td>CL</td><td>移位操作的计数器</td></tr><tr><td>DX</td><td>字的乘、除运算，间接的输入输出</td></tr><tr><td>SI</td><td>存储器指针、串指令中的源操作数指针</td></tr><tr><td>DI</td><td>存储器指针、串指令中的目的操作数指针</td></tr></tbody></table><hr><h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><blockquote><p>下-栈底-高地址<br>上-栈顶-低地址<br>push ——sp-2 送入<br>pop ——读取 sp+2</p></blockquote><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E6%A0%88.png"></p><hr><h1 id="寻址方式"><a href="#寻址方式" class="headerlink" title="寻址方式"></a>寻址方式</h1><p>隐性 mov ax,[bp] 显性 mov ax,ds:[bp] (避免歧义)<br>用[]表示内存单元，如[bx]，mov ax,[bx]<br>用()表示内存单元或寄存器中的内容，如(ax),(20000H)</p><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F.png"></p><hr><h1 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h1><blockquote><p><code>div</code> 除数8位被除数16位,AX中存放；除数16位被除数32位,DX AX存放高低位</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">div  byte  ptr  ds:[0]  //8位</span><br><span class="line">(al)=((ax)/(ds)*16+0)的商</span><br><span class="line">(ah)=(ax)/((ds)*16+0)的余数</span><br></pre></td></tr></table></figure></div><p><code>mul</code> 8位相乘,乘数默认AL,结果AX；16位相乘,乘数默认AX,DX AX结构高低位</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mul  word ptr [bx+8]  //16位</span><br><span class="line">(ax)=(ax)*((ds)*16+(bx)+8)结果的低16位</span><br><span class="line">(dx)=(ax)*((ds)*16+(bx)+8)结果的高16位</span><br></pre></td></tr></table></figure></div><p><code>db dw dd</code> 定义字节、字、双字型数据</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db  1        //01H</span><br><span class="line">dw  1        //0001H</span><br><span class="line">dd  1        //00000001H</span><br></pre></td></tr></table></figure></div><p><code>dup</code> 定义重复数据</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db  3  dup (1,2) //db 1,2,1,2,1,2</span><br></pre></td></tr></table></figure></div><p><code>movsb movsw movsd</code> 数据传送</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">源地址是DS:SI,目的地址是ES:DI</span><br><span class="line">DF=0正向传送,DF=1反向传送</span><br><span class="line">在传送完成之后SI和DI会增或减小对应数据长度</span><br><span class="line">若反复传送，加指令前缀rep并在CX中设置次数 </span><br></pre></td></tr></table></figure></div></blockquote><hr><h1 id="数据长度"><a href="#数据长度" class="headerlink" title="数据长度"></a>数据长度</h1><p>8086CPU中可以指定两种尺寸的数据，byte和word</p><blockquote><ul><li><p>在有寄存器参与的时候使用寄存器的种类区分</p><ol><li>字：mov ax,1</li><li>字节：mov al,1</li></ol></li><li><p>在没有寄存器参与的时候，使用X ptr指明内存单元长度，X是word或byte</p><ol><li><p>字：mov word ptr ds:[0],1 add word ptr [bx],2</p></li><li><p>字节：mov byte ptr ds:[0],1 add byte ptr [bx],2</p></li></ol></li><li><p>其他默认指明处理类型的指令</p><ol><li>push [1000H]，push默认只进行字操作</li></ol></li></ul></blockquote><p>灵活使用寻址方式的例子，修改下面内存空间中的数据：</p><table><thead><tr><th>起始地址</th><th>内容</th></tr></thead><tbody><tr><td>00</td><td>‘DEC’</td></tr><tr><td>03</td><td>‘Ken Oslen’</td></tr><tr><td>0C</td><td>137</td></tr><tr><td>0E</td><td>40</td></tr><tr><td>10</td><td>‘PDP’</td></tr></tbody></table><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> ;第三字段改为38</span><br><span class="line">mov word ptr [bx].0ch,38   </span><br><span class="line"></span><br><span class="line"> ;修改最后一个字段的三个字符</span><br><span class="line">mov si,0</span><br><span class="line">mov byte ptr [bx].10h[si],'v'  </span><br><span class="line">inc si</span><br><span class="line">mov byte ptr [bx].10h[si],'A'</span><br><span class="line">inc si</span><br><span class="line">mov byte ptr [bx].10h[si],'X'</span><br><span class="line"></span><br><span class="line">;类似结构体[i]表示第几个字符</span><br></pre></td></tr></table></figure></div><hr><h1 id="编译-Debug"><a href="#编译-Debug" class="headerlink" title="编译&Debug"></a>编译&amp;Debug</h1><h2 id="EXE加载过程"><a href="#EXE加载过程" class="headerlink" title="EXE加载过程"></a>EXE加载过程</h2><p>PSP：程序与dos之间通信<br>CX：程序长度<br>DS：程序内存位置<br>CS：程序代码位置(CS=DS+10H)</p><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png"></p><h2 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">R：查看，改变CPU寄存器内容</span><br><span class="line">    直接-r查看寄存器内容</span><br><span class="line">    -r 寄存器名，改变寄存器内容</span><br><span class="line">D：查看内存中内容</span><br><span class="line">    -d直接查看</span><br><span class="line">    -d 段地址:偏移地址 查看固定地址开始的内容</span><br><span class="line">    -d 段地址:偏移地址 结尾偏移地址 查看指定范围内存</span><br><span class="line">E：改写内存中内容</span><br><span class="line">    -e 起始地址 数据 数据 数据 …</span><br><span class="line">    提问方式修改 -e 段地址:偏移地址 从这个地址开始一个一个改，空格下一个，回车结束</span><br><span class="line">    也可以写入字符 ‘a’</span><br><span class="line">U：将内存中的机器指令翻译成汇编指令</span><br><span class="line">    -u 段地址:偏移地址</span><br><span class="line">T：执行一条机器指令</span><br><span class="line">    -t 执行cs:ip指向的命令</span><br><span class="line">P：同T单步跟踪，但P命令不会跟踪进入子程序或软中断(跳过循环)</span><br><span class="line">A：以汇编指令格式在内存中写入一条机器指令</span><br><span class="line">    -a 段地址:偏移地址 从这个地址开始一行一行的写入汇编语句</span><br><span class="line">G：g 0012 从当前CS:IP开始一直执行到0012处暂停</span><br></pre></td></tr></table></figure></div><hr><h1 id="转移指令"><a href="#转移指令" class="headerlink" title="转移指令"></a>转移指令</h1><p>可以修改IP或同时修改CS，IP的系统指令：</p><ul><li>转移行为：<ol><li>只修改IP，称为段内转移，如jmp ax</li><li>同时修改CS和IP，称为段间转移，如jmp 1000:0</li></ol></li><li>修改范围（段内转移）：<ol><li>短转移：修改IP范围-128~127</li><li>近转移：修改IP范围-32768~32767</li></ol></li><li>转移指令分类：<ol><li>无条件转移：jmp</li><li>条件转移：jcxz</li><li>循环指令：loop</li><li>过程</li><li>中断</li></ol></li></ul><h2 id="offset指令"><a href="#offset指令" class="headerlink" title="offset指令"></a>offset指令</h2><blockquote><p><code>offset start</code> : 取得偏移地址</p></blockquote><h2 id="jmp指令"><a href="#jmp指令" class="headerlink" title="jmp指令"></a>jmp指令</h2><blockquote><p><code>jmp short 标号</code>：位移字类型8位，段内短转移</p><p><code>jmp near ptr 标号</code>：位移字类型16位，段内近转移</p><p><code>jmp far ptr 标号</code>：段间远转移，机器码中指明目的地址的CS和IP值</p></blockquote><h2 id="jcxz指令"><a href="#jcxz指令" class="headerlink" title="jcxz指令"></a>jcxz指令</h2><blockquote><p><code>jcxz 标号</code>：条件转移指令，短转移，如果(cx)=0则跳转</p></blockquote><h2 id="loop指令"><a href="#loop指令" class="headerlink" title="loop指令"></a>loop指令</h2><blockquote><p><code>loop 标号</code>：循环指令，短转移，如果(cx)!=0那么跳转到标号处执行</p></blockquote><h2 id="ret-retf-iret指令"><a href="#ret-retf-iret指令" class="headerlink" title="ret/retf/iret指令"></a>ret/retf/iret指令</h2><blockquote><p>用栈中的数据修改CS和IP的值，实现近、远转移</p><ul><li><p><code>ret</code> 指令相当于 <code>pop ip</code></p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(IP)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br></pre></td></tr></table></figure></div></li><li><p><code>retf</code> 指令相当于 <code>pop ip, pop cs</code></p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(IP)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br><span class="line">(CS)=((SS)*16+(SP))</span><br><span class="line">(SP)=(SP)+2</span><br></pre></td></tr></table></figure></div></li><li><p><code>iret</code> 指令相当于 <code>pop ip, pop cs, popf</code></p></li></ul></blockquote><h2 id="call指令"><a href="#call指令" class="headerlink" title="call指令"></a>call指令</h2><blockquote><p>将当前的IP或CS和IP入栈，转移，且位移字类型16位</p><p>call不能实现短转移，但它实现转移的原理和jmp相同。</p><ul><li><code>call 标号</code>相当于 <code>push ip, jmp near ptr 标号</code></li><li><code>call far ptr 标号</code> 相当于 <code>push cs, push ip, jmp far ptr 标号</code></li></ul></blockquote><hr><h1 id="标志寄存器"><a href="#标志寄存器" class="headerlink" title="标志寄存器"></a>标志寄存器</h1><p>CPU内部特殊寄存器，用来存储指令执行结果，简称flag寄存器，按位起作用</p><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png"></p><blockquote><p><code>ZF</code> 零标志位，结果是否为0</p><p><code>PF</code> 奇偶标志位，结果二进制位中1的个数是否偶</p><p><code>SF</code> 符号标志位，结果是否为负；得知有符号数结果正负，对无符号数无意义</p><p><code>CF</code> 进位标志位，记录无符号数运算是否向更高位进/借位</p><p><code>OF</code> 溢出标志位，记录有符号数运算是否发生溢出</p><p><code>TF</code> 调试标志位，为1时处理器每次只执行一条指令，即单步执行</p><p><code>IF</code> 中断允许标志位，为1时能响应外部中断，反之则屏蔽</p><p><code>DF</code> 方向标志位，为0则<code>si、di</code>递增，为1递减；<code>cld</code>命令置为0，<code>std</code>置为1</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">adc   带进位加法，adc ax, bx 即(ax) = (ax)+(bx)+CF</span><br><span class="line">//计算001EF000H + 00201000H，结果放在ax(高16位)和bx(低16位)中</span><br><span class="line">mov ax, 001EH</span><br><span class="line">mov bx, 0F000H</span><br><span class="line">add bx, 1000H</span><br><span class="line">adc ax, 0020H   </span><br><span class="line">//高位: ax = ax + 0020H +1  (CF保存了进位1)</span><br><span class="line">sbb   带借位减法，sbb ax,bx 即(ax)=(ax)-(bx)-CF</span><br></pre></td></tr></table></figure></div><p><code>cmp</code> 比较指令，<code>cmp ax,bx</code>即<code>(ax)-(bx)</code>，结果正负靠SF(正负)和OF(溢出)共同判断</p></blockquote><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png"></p><hr><h1 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h1><h2 id="什么是端⼝"><a href="#什么是端⼝" class="headerlink" title="什么是端⼝"></a>什么是端⼝</h2><p>各种存储器都和CPU的地址线、数据线、控制线相连。CPU在操控它们的时候，把它们都当作内存来对待，把它们总的看做⼀个若⼲存储单元组成的逻辑存储器，这个逻辑存储器我们称其为内存地址空间。</p><blockquote><p>在PC机系统中，和CPU通过总线相连的芯⽚除各种存储器外，还有以下3种芯⽚。</p><ul><li>各种接⼝卡（⽐如，⽹卡、显卡）上的接⼝芯⽚，它们控制接⼝卡进⾏⼯作；</li><li>主板上的接⼝芯⽚，CPU通过它们对部分外设进⾏访问；</li><li>其他芯⽚，⽤来存储相关的系统信息，或进⾏相关的输⼊输出处理。</li></ul></blockquote><p>在这些芯⽚中，都有⼀组可以由CPU读写的寄存器。这些寄存器都和CPU的总线相连，CPU进⾏读或写的时候都通过控制线向它们所在的芯⽚发出端⼝读写命令。可⻅，从CPU的⻆度，将这些寄存器都当作端⼝，对它们进⾏统⼀编址，从⽽建⽴了⼀个统⼀的端⼝地址空间。</p><p>CPU可以直接读写以下3个地⽅的数据：CPU内部的寄存器、内存单元、端⼝</p><br><h2 id="端口的读写"><a href="#端口的读写" class="headerlink" title="端口的读写"></a>端口的读写</h2><blockquote><p>在访问端⼝的时候，CPU通过端⼝地址来定位端⼝，因为端⼝所在的芯⽚和CPU通过总线相连，所以，端⼝地址和内存地址⼀样，通过地址总线来传送。在PC系统中，CPU最多可以定位64KB个不同的端⼝。则端⼝地址的范围为0～65535</p><p>端⼝的读写指令只有两条： in 和 out ，分别⽤于从端⼝读取数据和往端⼝写⼊数据</p></blockquote><p>对比CPU执⾏内存访问指令和端⼝访问指令时候，总线上的信息：</p><ol><li><p>访问内存</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov ax,ds:[8]                 ;假设执⾏前(ds)=0</span><br></pre></td></tr></table></figure></div><ul><li>CPU通过地址线将地址信息8发出</li><li>CPU通过控制线发出内存读写命令，选中存储器芯⽚，并通知它，将要从中读取数据</li><li>存储器将8号单元中的数据通过数据线送⼊CPU</li></ul></li><li><p>访问端⼝</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">in al,60h                   ;从60h号端⼝读⼊⼀个字节</span><br></pre></td></tr></table></figure></div><ul><li>CPU通过地址线将地址信息60h发出</li><li>CPU通过控制线发出端⼝读命令，选中端⼝所在的芯⽚，并通知它，将要从中读取数据</li><li>端⼝所在的芯⽚将60h端⼝中的数据通过数据线送⼊CPU</li></ul></li></ol><blockquote><p>注意：</p><p>在 in 和 out 指令中，只能使⽤ ax 或 al 来存放、发送到端⼝中的数据。<br>访问8位端⼝时⽤ al ，访问16位端⼝时⽤ ax 。</p></blockquote><br><h2 id="CMOS-RAM芯⽚的读写"><a href="#CMOS-RAM芯⽚的读写" class="headerlink" title="CMOS RAM芯⽚的读写"></a>CMOS RAM芯⽚的读写</h2><p>PC机中，有⼀个CMOS RAM芯⽚，⼀般简称为CMOS。此芯⽚的特征如下:</p><blockquote><p>包含⼀个实时时钟和⼀个有128个存储单元的RAM存储器（早期的计算机为64个字节）</p><p>该芯⽚靠电池供电。所以，关机后其内部的实时时钟仍可正常⼯作，RAM中的信息不丢失</p><p>128个字节的RAM中，内部实时时钟占⽤0～0dh单元来保存时间信息，其余⼤部分单元⽤于保存系统配置信息，供系统启动时BIOS程序读取。BIOS也提供了相关的程序，使我们可以在开机的时候配置CMOS RAM中的系统信息</p><p>该芯⽚内部有两个端⼝，端⼝地址为<code>70h</code>和<code>71h</code>。CPU通过这两个端⼝来读写CMOS RAM</p><p><code>70h</code>为地址端⼝，存放要访问的CMOS RAM单元的地址；<code>71h</code>为数据端⼝，存放从选定的CMOS RAM单元中读取的数据，或要写⼊到其中的数据。可⻅，CPU对CMOS RAM的读写分两步进⾏。⽐如，读CMOS RAM的2号单元：将2送⼊端⼝<code>70h</code>；从端⼝<code>71h</code>读出2号单元的内容</p></blockquote><hr><h1 id="程序编写"><a href="#程序编写" class="headerlink" title="程序编写"></a>程序编写</h1><h2 id="显存显示字符串"><a href="#显存显示字符串" class="headerlink" title="显存显示字符串"></a>显存显示字符串</h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line"></span><br><span class="line">data segment</span><br><span class="line">    db 'welcome to masm!' </span><br><span class="line">data ends</span><br><span class="line"></span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">    mov ax,data</span><br><span class="line">    mov ds,ax</span><br><span class="line"></span><br><span class="line">    //显存地址 ES:DI</span><br><span class="line">    mov ax,0b800h</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,10*160+80 ; </span><br><span class="line"></span><br><span class="line">    //数据地址 DS:SI</span><br><span class="line">    mov si,0</span><br><span class="line">    mov cx,16</span><br><span class="line">s1:</span><br><span class="line">    mov al,ds:[si]  //低位字符</span><br><span class="line">    mov ah,00000010B ; //高位颜色</span><br><span class="line">    mov es:[di],ax</span><br><span class="line">    inc si</span><br><span class="line">    add di,2</span><br><span class="line">    loop s1</span><br><span class="line"></span><br><span class="line">    mov ax, 4c00h</span><br><span class="line">    int 21h ;</span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div><h2 id="除法溢出中断程序"><a href="#除法溢出中断程序" class="headerlink" title="除法溢出中断程序"></a>除法溢出中断程序</h2><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line">code segment</span><br><span class="line"></span><br><span class="line">start:</span><br><span class="line">mov ax,cs</span><br><span class="line">mov ds,ax</span><br><span class="line">mov si,offset do</span><br><span class="line">mov ax,0</span><br><span class="line">mov es,ax</span><br><span class="line">mov di,200h</span><br><span class="line"></span><br><span class="line">mov cx,offset doend-offset do ; 安装中断例程</span><br><span class="line">cld</span><br><span class="line">rep movsb</span><br><span class="line"></span><br><span class="line">mov word ptr es:[0],200h</span><br><span class="line">mov word ptr es:[2],0 ; 设置中断向量表</span><br><span class="line"></span><br><span class="line">mov dx,0ffffh</span><br><span class="line">mov bx,1 ; 测试一下</span><br><span class="line">div bx</span><br><span class="line"></span><br><span class="line">mov ax, 4c00h</span><br><span class="line">int 21h </span><br><span class="line"></span><br><span class="line">do:jmp short dostart</span><br><span class="line">db 'divide error!'</span><br><span class="line">dostart:</span><br><span class="line">mov ax,0</span><br><span class="line">mov ds,ax</span><br><span class="line">mov si,202h</span><br><span class="line"></span><br><span class="line">mov ax,0b800h</span><br><span class="line">mov es,ax</span><br><span class="line">mov di,160*12+60</span><br><span class="line"></span><br><span class="line">mov cx,13</span><br><span class="line">s:</span><br><span class="line">mov al,ds:[si]</span><br><span class="line">mov ah,2</span><br><span class="line">mov es:[di],ax</span><br><span class="line">inc si</span><br><span class="line">add di,2</span><br><span class="line">loop s</span><br><span class="line"></span><br><span class="line">mov ax, 4c00h</span><br><span class="line">int 21h</span><br><span class="line"></span><br><span class="line">doend:nop</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div><h2 id="利用中断和栈实现loop"><a href="#利用中断和栈实现loop" class="headerlink" title="利用中断和栈实现loop"></a>利用中断和栈实现loop</h2><p>原题：在屏幕中间显示80个<code>！</code></p><p>参数：<code>(cx)</code>=循环次数，<code>(bx)</code>=位移</p><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">assume cs:code</span><br><span class="line">code segment</span><br><span class="line">start:</span><br><span class="line">    mov ax,cs</span><br><span class="line">    mov ds,ax</span><br><span class="line">    mov si,offset lp</span><br><span class="line">    mov ax,0</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,200h</span><br><span class="line"></span><br><span class="line">    mov cx,offset lpend-offset lp ; 安装中断例程</span><br><span class="line">    cld</span><br><span class="line">    rep movsb</span><br><span class="line"></span><br><span class="line">    mov word ptr es:[7ch*4],200h</span><br><span class="line">    mov word ptr es:[7ch*4+2],0 ; 设置中断向量表</span><br><span class="line"></span><br><span class="line">    mov ax,0b800h</span><br><span class="line">    mov es,ax</span><br><span class="line">    mov di,160*12</span><br><span class="line">    mov bx,offset s-offset se ;设置回退位移</span><br><span class="line">    mov cx,80            ;设置loop次数</span><br><span class="line">s:mov byte ptr es:[di],'!' ; 完成第一次显示</span><br><span class="line">    add di,2</span><br><span class="line">    int 7ch ;测试int 7ch</span><br><span class="line">se:nop</span><br><span class="line"></span><br><span class="line">    mov ax, 4c00h</span><br><span class="line">    int 21h</span><br><span class="line"></span><br><span class="line">lp: ;中断例程</span><br><span class="line">    dec cx</span><br><span class="line">    jcxz f</span><br><span class="line">    push bp   ;修改bp前先保存</span><br><span class="line">    mov bp,sp  ;SP指向栈顶，即存入的IP</span><br><span class="line">    add [bp+2],bx  ;指针回退位移....为什么+2？？？？</span><br><span class="line">f: pop bp</span><br><span class="line">    iret</span><br><span class="line">    lpend:nop</span><br><span class="line"></span><br><span class="line">code ends</span><br><span class="line">end start</span><br></pre></td></tr></table></figure></div><hr><h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><blockquote><p>1.对<code>mov ax,[0]</code>，Debug指内存数据，masm指0，可用段前缀区分如<code>mov al，ds:[0]</code></p><p>2.数据不能以字母开头，大于<code>9fffH</code>的数据在开头加0，如<code>0A000H</code></p><p>3.子程序要先将<code>所用到的寄存器</code>存到栈里</p><p>4.使用<code>'xxx'</code>的方式指明数据是以字符形式给出的，编译器会自动将它们转化为ASCII码</p></blockquote></div><ul class="post-tags-box"><li class="tag-item"><a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">#系统编程</a>&nbsp;</li></ul><div class="recommended-article"><div class="recommended-desktop"><div class="recommended-article-header"><i aria-hidden="true"></i><span>推荐阅读</span></div><div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/OS/进程线程与中断.html" title="进程线程与中断" rel="bookmark noopener"><img src="/img/os.jpeg" alt="进程线程与中断"> <span class="title">进程线程与中断</span> </a><a class="recommended-article-item" target="_blank" href="//post/Cpp.html" title="Cpp" rel="bookmark noopener"><img src="/img/C.jpeg" alt="Cpp"> <span class="title">Cpp</span> </a><a class="recommended-article-item" target="_blank" href="//post/OS/操作系统.html" title="操作系统" rel="bookmark noopener"><img src="/img/os.jpeg" alt="操作系统"> <span class="title">操作系统</span></a></div></div><div class="recommended-mobile"><div class="recommended-article-header"><i aria-hidden="true"></i><span>推荐阅读</span></div><div class="recommended-article-group"><a class="recommended-article-item" target="_blank" href="//post/OS/进程线程与中断.html" title="进程线程与中断" rel="bookmark noopener"><img src="/img/os.jpeg" alt="进程线程与中断"> <span class="title">进程线程与中断</span> </a><a class="recommended-article-item" target="_blank" href="//post/Cpp.html" title="Cpp" rel="bookmark noopener"><img src="/img/C.jpeg" alt="Cpp"> <span class="title">Cpp</span></a></div></div></div><div class="article-nav"><div class="article-prev"><a class="prev" rel="prev" href="/post/Other/Financing.html"><span class="left arrow-icon flex-center"><i class="fa-solid fa-chevron-left"></i> </span><span class="title flex-center"><span class="post-nav-title-item">Financing</span> <span class="post-nav-item">Prev posts</span></span></a></div><div class="article-next"><a class="next" rel="next" href="/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html"><span class="title flex-center"><span class="post-nav-title-item">进程线程与中断</span> <span class="post-nav-item">Next posts</span> </span><span class="right arrow-icon flex-center"><i class="fa-solid fa-chevron-right"></i></span></a></div></div></div><div class="toc-content-container"><div class="post-toc-wrap"><div class="post-toc"><div class="toc-title">On this page</div><div class="page-title">系统编程</div><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97"><span class="nav-text">字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%88"><span class="nav-text">栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-text">寻址方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%95%BF%E5%BA%A6"><span class="nav-text">数据长度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-Debug"><span class="nav-text">编译&amp;Debug</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXE%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="nav-text">EXE加载过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Debug"><span class="nav-text">Debug</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AC%E7%A7%BB%E6%8C%87%E4%BB%A4"><span class="nav-text">转移指令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#offset%E6%8C%87%E4%BB%A4"><span class="nav-text">offset指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jmp%E6%8C%87%E4%BB%A4"><span class="nav-text">jmp指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jcxz%E6%8C%87%E4%BB%A4"><span class="nav-text">jcxz指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loop%E6%8C%87%E4%BB%A4"><span class="nav-text">loop指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ret-retf-iret%E6%8C%87%E4%BB%A4"><span class="nav-text">ret&#x2F;retf&#x2F;iret指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#call%E6%8C%87%E4%BB%A4"><span class="nav-text">call指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E5%BF%97%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-text">标志寄存器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3"><span class="nav-text">端口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%AF%E2%BC%9D"><span class="nav-text">什么是端⼝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%AF%BB%E5%86%99"><span class="nav-text">端口的读写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMOS-RAM%E8%8A%AF%E2%BD%9A%E7%9A%84%E8%AF%BB%E5%86%99"><span class="nav-text">CMOS RAM芯⽚的读写</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E7%BC%96%E5%86%99"><span class="nav-text">程序编写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E5%AD%98%E6%98%BE%E7%A4%BA%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">显存显示字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%A4%E6%B3%95%E6%BA%A2%E5%87%BA%E4%B8%AD%E6%96%AD%E7%A8%8B%E5%BA%8F"><span class="nav-text">除法溢出中断程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E4%B8%AD%E6%96%AD%E5%92%8C%E6%A0%88%E5%AE%9E%E7%8E%B0loop"><span class="nav-text">利用中断和栈实现loop</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-text">注意</span></a></li></ol></div></div></div></div></div></div></div><div class="main-content-footer"><footer class="footer"><div class="info-container"><div class="copyright-info">&copy; <span>2019</span> - 2023&nbsp;&nbsp;<i class="fa-regular fa-computer-classic"></i>&nbsp;&nbsp;<a href="/">The Redefine Team</a></div><div class="theme-info info-item"><span class="powered-by-container">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" href="https://hexo.io">Hexo</a></span><br><span class="theme-version-container">THEME&nbsp;<a class="theme-version" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.2.2</a></span></div><div>Blog up for <span class="odometer" id="runtime_days"></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec</div><script async data-pjax>try{function odometer_init(){document.querySelectorAll(".odometer").forEach(e=>{new Odometer({el:e,format:"( ddd).dd",duration:200})})}odometer_init()}catch(e){}</script></div></footer></div></div><div class="post-tools"><div class="post-tools-container"><ul class="article-tools-list"><li class="right-bottom-tools page-aside-toggle"><i class="fa-regular fa-outdent"></i></li></ul></div></div><div class="right-side-tools-container"><div class="side-tools-container"><ul class="hidden-tools-list"><li class="right-bottom-tools tool-font-adjust-plus flex-center"><i class="fa-regular fa-magnifying-glass-plus"></i></li><li class="right-bottom-tools tool-font-adjust-minus flex-center"><i class="fa-regular fa-magnifying-glass-minus"></i></li><li class="right-bottom-tools tool-expand-width flex-center"><i class="fa-regular fa-expand"></i></li><li class="right-bottom-tools tool-dark-light-toggle flex-center"><i class="fa-regular fa-moon"></i></li><li class="right-bottom-tools tool-scroll-to-bottom flex-center"><i class="fa-regular fa-arrow-down"></i></li></ul><ul class="visible-tools-list"><li class="right-bottom-tools toggle-tools-list flex-center"><i class="fa-regular fa-cog fa-spin"></i></li><li class="right-bottom-tools tool-scroll-to-top flex-center"><i class="arrow-up fas fa-arrow-up"></i> <span class="percent"></span></li></ul></div></div><div class="image-viewer-container"><img src=""></div><div class="search-pop-overlay"><div class="popup search-popup"><div class="search-header"><span class="search-input-field-pre"><i class="fa-solid fa-keyboard"></i></span><div class="search-input-container"><input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input"></div><span class="popup-btn-close"><i class="fa-solid fa-times"></i></span></div><div id="search-result"><div id="no-result"><i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i></div></div></div></div></main><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/layouts/navbarShrink.js"></script><script src="/js/tools/scrollTopBottom.js"></script><script src="/js/tools/lightDarkSwitch.js"></script><script src="/js/tools/localSearch.js"></script><script src="/js/tools/codeBlock.js"></script><script src="/js/layouts/lazyload.js"></script><script src="/js/tools/runtime.js"></script><script src="/js/libs/odometer.min.js"></script><link rel="stylesheet" href="/assets/odometer-theme-minimal.css"><script src="/js/libs/Typed.min.js"></script><script src="/js/plugins/typed.js"></script><div class="post-scripts pjax"><script src="/js/tools/tocToggle.js"></script><script src="/js/libs/anime.min.js"></script><script src="/js/layouts/toc.js"></script><script src="/js/plugins/tabs.js"></script></div><script src="/js/libs/pjax.min.js"></script><script>window.addEventListener("DOMContentLoaded",()=>{window.pjax=new Pjax({selectors:["head title",".page-container",".pjax"],history:!0,debug:!1,cacheBust:!1,timeout:0,analytics:!1,currentUrlFullReload:!1,scrollRestoration:!1}),document.addEventListener("pjax:send",()=>{Global.utils.pjaxProgressBarStart()}),document.addEventListener("pjax:complete",()=>{Global.utils.pjaxProgressBarEnd(),window.pjax.executeScripts(document.querySelectorAll("script[data-pjax], .pjax script")),Global.refresh()})})</script></body></html>

@@ -2010,82 +2010,6 @@ ls /bin /user/bin | grep zip
       </tags>
   </entry>
   <entry>
-    <title>Kafuka</title>
-    <url>//post/CPP/Kafuka.html</url>
-    <content><![CDATA[<h2 id="消息系统"><a href="#消息系统" class="headerlink" title="消息系统"></a>消息系统</h2><p>一个消息系统负责将数据从一个应用传递到另外一个应用，应用只需关注于数据，无需关注数据在两个或多个应用间是如何传递的。分布式消息传递基于可靠的消息队列，在客户端应用和消息系统之间异步传递消息。有两种主要的消息传递模式：点对点传递模式、发布-订阅模式。大部分的消息系统选用发布-订阅模式。</p>
-<h3 id="点对点消息系统"><a href="#点对点消息系统" class="headerlink" title="点对点消息系统"></a>点对点消息系统</h3><p>在点对点消息系统中，消息持久化到一个队列中。此时，将有一个或多个消费者消费队列中的数据，但是<strong>一条消息只能被消费一次</strong>。当一个消费者消费了队列中的某条数据之后，该条数据则从消息队列中删除。该模式即使有多个消费者同时消费数据，也能<strong>保证数据处理的顺序</strong>。</p>
-<h3 id="发布-订阅消息系统"><a href="#发布-订阅消息系统" class="headerlink" title="发布-订阅消息系统"></a>发布-订阅消息系统</h3><p>在发布-订阅消息系统中，消息被持久化到一个topic中。与点对点消息系统不同的是，消费者可以订阅一个或多个topic，消费者可以消费该topic中所有的数据，<strong>同一条数据可以被多个消费者消费，数据被消费后不会立马删除</strong>。在发布-订阅消息系统中，消息的生产者称为发布者，消费者称为订阅者。该模式的示例图如下：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85%E6%B6%88%E6%81%AF%E6%A8%A1%E5%BC%8F.png"></p>
-<h2 id="Kafka概述"><a href="#Kafka概述" class="headerlink" title="Kafka概述"></a>Kafka概述</h2><p>Apache Kafka是一个分布式的发布-订阅消息系统，能够支撑海量数据的数据传递。在离线和实时的消息处理业务系统中，Kafka都有广泛的应用。Kafka将消息持久化到磁盘中，并对消息创建了备份保证了数据的安全。Kafka在保证了较高的处理速度的同时，又能保证数据处理的低延迟和数据的零丢失。</p>
-<p>Kafka的优势在于：</p>
-<ul>
-<li>可靠性：Kafka是一个具有分区机制、副本机制和容错机制的分布式消息系统</li>
-<li>可扩展性：Kafka消息系统支持集群规模的热扩展</li>
-<li>高性能：Kafka在数据发布和订阅过程中都能保证数据的高吞吐量。即便在TB级数据存储的情况下，仍然能保证稳定的性能。</li>
-</ul>
-<h2 id="Kafka术语"><a href="#Kafka术语" class="headerlink" title="Kafka术语"></a>Kafka术语</h2><p>在深入理解Kafka之前，先介绍一下Kafka中的术语。下图展示了Kafka的相关术语以及之间的关系：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Term.png"></p>
-<p>上图中一个topic配置了3个partition，Partition1有两个offset：0和1，Partition2有4个offset。副本的id和副本所在的机器的id恰好相同。</p>
-<p>如果一个topic的副本数为3，那么Kafka将在集群中为每个partition创建3个相同的副本。集群中的每个broker存储一个或多个partition。多个producer和consumer可同时生产和消费数据。</p>
-<p>各个术语的详细介绍如下：</p>
-<ul>
-<li>Topic：在Kafka中，使用一个类别属性来划分数据的所属类，划分数据的这个类称为topic。如果把Kafka看做为一个数据库，topic可以理解为数据库中的一张表，topic的名字即为表名。</li>
-<li>Partition：topic中的数据分割为一个或多个partition。每个topic至少有一个partition。每个partition中的数据使用多个segment文件存储。<strong>partition中的数据是有序的，partition间的数据丢失了数据的顺序</strong>。如果topic有多个partition，消费数据时就不能保证数据的顺序。在需要严格保证消息的消费顺序的场景下，需要将partition数目设为1。</li>
-<li>Partition offset：每条消息都有一个当前Partition下唯一的64字节的offset，它指明了这条消息的起始位置。</li>
-<li>Replicas of partition：副本是一个分区的备份。<strong>副本不会被消费者消费</strong>，副本只用于防止数据丢失，即消费者不从为follower的partition中消费数据，而是从为leader的partition中读取数据。</li>
-<li>Broker：<ul>
-<li>Kafka 集群包含一个或多个服务器，服务器节点称为broker。</li>
-<li>broker存储topic的数据。如果某topic有N个partition，集群有N个broker，那么每个broker存储该topic的一个partition。</li>
-<li>如果某topic有N个partition，集群有(N+M)个broker，那么其中有N个broker存储该topic的一个partition，剩下的M个broker不存储该topic的partition数据。</li>
-<li>如果某topic有N个partition，集群中broker数目少于N个，那么一个broker存储该topic的一个或多个partition。在实际生产环境中，尽量避免这种情况的发生，这种情况容易导致Kafka集群数据不均衡。</li>
-</ul>
-</li>
-<li>Producer：生产者即数据的发布者，该角色将消息发布到Kafka的topic中。broker接收到生产者发送的消息后，broker将该消息追加到当前用于追加数据的segment文件中。生产者发送的消息，存储到一个partition中，生产者也可以指定数据存储的partition。</li>
-<li>Consumer：消费者可以从broker中读取数据。消费者可以消费多个topic中的数据。</li>
-<li>Leader：每个partition有多个副本，其中有且仅有一个作为Leader，Leader是当前负责数据的读写的partition。</li>
-<li>Follower：Follower跟随Leader，所有写请求都通过Leader路由，数据变更会广播给所有Follower，Follower与Leader保持数据同步。如果Leader失效，则从Follower中选举出一个新的Leader。当Follower与Leader挂掉、卡住或者同步太慢，leader会把这个follower从“in sync replicas”（ISR）列表中删除，重新创建一个Follower。</li>
-</ul>
-<h2 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h2><p>Kafka的架构示意图如下：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Ecosystem.png"></p>
-<ul>
-<li>Broker：Kafka的broker是无状态的，broker使用Zookeeper维护集群的状态。Leader的选举也由Zookeeper负责。</li>
-<li>Zookeeper：Zookeeper负责维护和协调broker。当Kafka系统中新增了broker或者某个broker发生故障失效时，由ZooKeeper通知生产者和消费者。生产者和消费者依据Zookeeper的broker状态信息与broker协调数据的发布和订阅任务。</li>
-<li>Producer：生产者将数据推送到broker上，当集群中出现新的broker时，所有的生产者将会搜寻到这个新的broker，并自动将数据发送到这个broker上。</li>
-<li>Consumer：因为Kafka的broker是无状态的，所以consumer必须使用partition offset来记录消费了多少数据。如果一个consumer指定了一个topic的offset，意味着该consumer已经消费了该offset之前的所有数据。consumer可以通过指定offset，从topic的指定位置开始消费数据。consumer的offset存储在Zookeeper中。</li>
-</ul>
-<h2 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h2><p>Kafka将某topic的数据存储到一个或多个partition中。一个partition内数据是有序的，每条数据都有一个唯一的index，这个index叫做offset。新来的数据追加到partition的尾部。每条数据可以在不同的broker上做备份，从而保证了Kafka使用的可靠性。</p>
-<p>生产者将消息发送到topic中，消费者可以选择多种消费方式消费Kafka中的数据。下面介绍两种消费方式的流程。</p>
-<h3 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h3><ol>
-<li>生产者将数据发送到指定topic中</li>
-<li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
-<li>消费者订阅指定topic的数据</li>
-<li>当消费者订阅topic中消息时，Kafka将当前的offset发给消费者，同时将offset存储到Zookeeper中</li>
-<li>消费者以特定的间隔（如100ms）向Kafka请求数据</li>
-<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者</li>
-<li>消费者受到Kafka推送的数据，并进行处理</li>
-<li>当消费者处理完该条消息后，消费者向Kafka broker发送一个该消息已被消费的反馈</li>
-<li>当Kafka接到消费者的反馈后，Kafka更新offset包括Zookeeper中的offset。</li>
-<li>以上过程一直重复，直到消费者停止请求数据</li>
-<li>消费者可以重置offset，从而可以灵活消费存储在Kafka上的数据</li>
-</ol>
-<h3 id="消费者组数据消费流程"><a href="#消费者组数据消费流程" class="headerlink" title="消费者组数据消费流程"></a>消费者组数据消费流程</h3><p>Kafka支持消费者组内的多个消费者同时消费一个topic，一个消费者组由具有同一个Group ID的多个消费者组成。具体流程如下：</p>
-<ol>
-<li>生产者发送数据到指定的topic</li>
-<li>Kafka将数据存储到broker上的partition中</li>
-<li>假设现在有一个消费者订阅了一个topic，topic名字为“test”，消费者的Group ID为“Group1”</li>
-<li>此时Kafka的处理方式与只有一个消费者的情况一样</li>
-<li>当Kafka接收到一个同样Group ID为“Group1”、消费的topic同样为“test”的消费者的请求时，Kafka把数据操作模式切换为分享模式，此时数据将在两个消费者上共享。</li>
-<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>CPP</category>
-      </categories>
-      <tags>
-        <tag>CPP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>STL</title>
     <url>//post/CPP/STL.html</url>
     <content><![CDATA[<h1 id="STL函数"><a href="#STL函数" class="headerlink" title="STL函数"></a>STL函数</h1><h2 id="1-非修改式"><a href="#1-非修改式" class="headerlink" title="1. 非修改式"></a>1. 非修改式</h2><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">find</span>(i,j,t)  <span class="comment">//区间内首个值t的迭代器</span></span><br><span class="line"><span class="built_in">search</span>(i,j,p,q)<span class="comment">//区间[i,j)中首个与[p,q)相同的迭代器</span></span><br><span class="line"><span class="built_in">count</span>(i,j,t)  <span class="comment">//区间内值t个数</span></span><br><span class="line"><span class="built_in">equal</span>(i,j,p,q) <span class="comment">//两区间内值是否相同</span></span><br></pre></td></tr></table></figure></div>
@@ -5419,135 +5343,6 @@ ls /bin /user/bin | grep zip
       </categories>
   </entry>
   <entry>
-    <title>Git</title>
-    <url>//post/Software/Git.html</url>
-    <content><![CDATA[<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git.jpg?raw=true"></p>
-<h2 id="HEAD、Index、Working-Directory"><a href="#HEAD、Index、Working-Directory" class="headerlink" title="HEAD、Index、Working Directory"></a>HEAD、Index、Working Directory</h2><p>Git里有三个区域很重要，下图解释了这三个区域的状态的变化过程：</p>
-<ul>
-<li>HEAD 指向最近一次commit里的所有snapshot</li>
-<li>Index 缓存区域，只有Index区域里的东西才可以被commit</li>
-<li>Working Directory 用户操作区域</li>
-</ul>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git1.png?raw=true"></p>
-<h3 id="初始状态"><a href="#初始状态" class="headerlink" title="初始状态"></a>初始状态</h3><p>当 checkout 分支的时候，git做了三件事情：</p>
-<ol>
-<li>将HEAD指向那个分支的最后一次commit</li>
-<li>将HEAD指向的commit里所有文件的snapshot替换掉Index区域里原来的内容</li>
-<li>将Index区域里的内容填充到Working Directory里</li>
-</ol>
-<p>所以可以发现，此时 HEAD、Index、Working Directory 里的内容都是一模一样的。</p>
-<p>注意：一般会误解为，Index中的内容是空的，只有git add后才会有东西。实际上不是，Index里一直是有东西的。所以，Git的所有操作就是对这三个区域的状态（或内容）的操作。</p>
-<h3 id="Changed"><a href="#Changed" class="headerlink" title="Changed"></a>Changed</h3><p>如果你在Working Directory里修改了文件，git会发现Working Directory里的内容和Index区域里的内容不一致了。 </p>
-<p>这个时候git status的结果是：Changes not staged for commit</p>
-<h3 id="Staged"><a href="#Staged" class="headerlink" title="Staged"></a>Staged</h3><p>一个文件仅仅changed是不能被commit的，Git要求只能提交Index里的东西。</p>
-<p>所以需要git add。这个命令的意思是，把Changed的文件的内容同步到Index区域里。这样Working Directory和Index区域的内容就一致了。这个过程被称之为stage</p>
-<p>这个时候git status的结果是：Changes to be committed</p>
-<h3 id="Committed"><a href="#Committed" class="headerlink" title="Committed"></a>Committed</h3><p>最后，通过 <code>git commit</code> 提交后，HEAD 的状态和 Index 以及 Working Directory 就形成一致了。</p>
-<hr>
-<h2 id="撤销操作"><a href="#撤销操作" class="headerlink" title="撤销操作"></a>撤销操作</h2><h3 id="区别-reset-和-revert"><a href="#区别-reset-和-revert" class="headerlink" title="区别 reset 和 revert"></a>区别 reset 和 revert</h3><ul>
-<li><code>git reset</code> 是会修改版本历史的，他会<strong>丢弃掉一些版本历史</strong>。</li>
-<li><code>git revert</code> 是根据那个commit逆向生成一个新的commit，版本历史是不会被破坏的。</li>
-</ul>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git2.png?raw=true"></p>
-<h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><h4 id="1-用于file"><a href="#1-用于file" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure></div>
-
-<p><strong>撤销add操作</strong>，把文件从index退回workspace，并将更改保存在workspace中</p>
-<h4 id="2-用于commit"><a href="#2-用于commit" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD^^  <span class="comment">#回退到上上个版本</span></span><br><span class="line">git reset HEAD~2</span><br><span class="line">git reset d130664a3e6da2d2478f3c6eee8e9dc67a61b1c2</span><br></pre></td></tr></table></figure></div>
-
-<p><strong>撤销commit操作</strong>，必须是<strong>未被提交到remote</strong>的改动。除了移动当前分支的HEAD，还可以更改workspace和index：</p>
-<ul>
-<li>–soft：修改HEAD，不修改index和workspace</li>
-<li>–mixed：修改HEAD和index，不修改workspace，<strong>默认</strong></li>
-<li>–hard：修改HEAD、index、workspace</li>
-</ul>
-<div class="note-large red"><div class="notel-title"><p>已经push到远程仓库的commit不允许reset，只能用revert</p>
-</div><div class="notel-content"><p>如果commit已经被push到远程仓库上了，也就意味着其他开发人员就可能基于这个commit形成了新的commit，这时你去reset，就会造成其他开发人员的提交历史莫名其妙的丢失，或者其他灾难性的后果。</p>
-</div></div>
-
-<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git3.png?raw=true"></p>
-<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><h4 id="1-用于file-1"><a href="#1-用于file-1" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure></div>
-
-<p>清除文件在workspace的修改，类似于 <code>git restore file</code></p>
-<h4 id="2-用于commit-1"><a href="#2-用于commit-1" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout b4f2fa40955cc34f441466f820b1b84350a31491   <span class="comment"># 分离HEAD模式，HEAD可以不指向main等</span></span><br><span class="line">git checkout main</span><br></pre></td></tr></table></figure></div>
-
-<p>只是移动HEAD到不同的commit，如果有unstaged的文件，git会阻止操作并提示。</p>
-<p>checkout会修改HEAD的指向，变更Index区域里的内容，修改Working Directory里的内容。</p>
-<p>这看上去很像reset –hard，但和reset –hard相比有两个重要的差别</p>
-<ol>
-<li>reset会把working directory里的所有内容都更新掉</li>
-<li>checkout不会去修改你在Working Directory里修改过的文件</li>
-<li>reset把branch移动到HEAD指向的地方</li>
-<li>checkout则把HEAD移动到另一个分支</li>
-</ol>
-<p>对于第二个区别：假设两个分支master和develop 指向不一样的commit，现在在develop分支上（HEAD指向）</p>
-<ul>
-<li>如果 git reset master，那么develop就会指向master所指向的那个commit。</li>
-<li>如果 git checkout master，那么develop不会动，只有HEAD会移动指向master。</li>
-</ul>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://segmentfault.com/img/bVz7pB?w=500&h=366"></p>
-<h3 id="revert"><a href="#revert" class="headerlink" title="revert"></a>revert</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git revert HEAD   <span class="comment">#revert该版本的修改，相当于 git reset HEAD^</span></span><br></pre></td></tr></table></figure></div>
-
-<p>通过新建一个commit来撤销一次commit所做的修改，是一种安全的方式，并没有修改commit history。</p>
-<hr>
-<h2 id="分支相关"><a href="#分支相关" class="headerlink" title="分支相关"></a>分支相关</h2><ol>
-<li><code>git branch</code> 查看分支</li>
-<li><code>git checkout -b name</code> 创建并转到分支</li>
-<li><code>git branch -d name</code> 删除本地分支</li>
-<li><code>git remote prune</code> 远程分支删除后，本地分支同步</li>
-<li><code>git push origin --delete name</code> 删除远程分支</li>
-<li><code>git branch -u origin/xxx</code> 关联远程分支</li>
-<li><code>git branch -vv</code> 查看本地分支与远端分支关联关系</li>
-<li><code>git remote show origin</code> 查看远程分支和本地分支对应关系</li>
-</ol>
-<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><ol>
-<li><code>git status -s</code> 查看当前修改、提交状态</li>
-<li><code>git diff &lt;file&gt;</code> 比较工作区和暂存区</li>
-<li><code>git diff HEAD -- &lt;file&gt;</code> 比较工作区和版本库的最新版本</li>
-<li><code>git log -stat</code>显示commit历史及变更文件 </li>
-<li><code>git reflog</code> 显示每个commit如何产生</li>
-</ol>
-<h2 id="SSH-key"><a href="#SSH-key" class="headerlink" title="SSH key"></a>SSH key</h2><ol>
-<li>创建密钥 <code>ssh-keygen -t ed25519</code></li>
-<li>查看密钥 <code>cat ~/.ssh/xxx</code></li>
-<li>添加密钥 Settings -&gt; SSH and GPG keys -&gt; New SSH key</li>
-<li>确定一下ssh-key是否添加成功 <code>ssh -T git@github.com</code></li>
-</ol>
-<h2 id="重新关联远程仓库"><a href="#重新关联远程仓库" class="headerlink" title="重新关联远程仓库"></a>重新关联远程仓库</h2><ol>
-<li><p>查看远程仓库的链接方式，将http方式改成git方式 <code>git remote show origin</code></p>
-</li>
-<li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
-</li>
-<li><p>重新添加成<a class="link" href="mailto:&#103;&#105;&#x74;&#64;&#x67;&#x69;&#x74;&#104;&#x75;&#98;&#x2e;&#99;&#111;&#109;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></div></li>
-</ol>
-<h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><ol>
-<li><p>查看配置</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global -l</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p>修改 pull 的默认配置为 rebase</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p>配置pushautoSetupRemote，push时可以省略–set-upstream关联</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add push.autoSetupRemote <span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p>配置git用户名邮箱</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">"YOURUSERNAME"</span></span><br><span class="line">git config --global user.email <span class="string">"YOUREMAIL"</span></span><br><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p>在 .gitconfig 中加入</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]</span><br><span class="line">  lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --abbrev-commit</span><br></pre></td></tr></table></figure></div></li>
-</ol>
-<h2 id="在线演示"><a href="#在线演示" class="headerlink" title="在线演示"></a>在线演示</h2><blockquote>
-<p> <a class="link" href="https://learngitbranching.js.org/?locale=zh_CN">https://learngitbranching.js.org/?locale=zh_CN <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>Software</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>UML</title>
     <url>//post/Software/UML.html</url>
     <content><![CDATA[<p>UML从考虑系统的不同<code>角度</code>出发，定义了<code>用况图</code>、<code>类图</code>、<code>对象图</code>、<code>包图</code>、<code>状态图</code>、<code>活动图</code>、<code>序列图</code>、<code>通信图</code>、<code>构件图、部署图等</code>10种图</p>
@@ -8039,6 +7834,327 @@ ls /bin /user/bin | grep zip
       </categories>
       <tags>
         <tag>Other</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git</title>
+    <url>//post/Git.html</url>
+    <content><![CDATA[<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git.jpg?raw=true"></p>
+<h2 id="HEAD、Index、Working-Directory"><a href="#HEAD、Index、Working-Directory" class="headerlink" title="HEAD、Index、Working Directory"></a>HEAD、Index、Working Directory</h2><p>Git里有三个区域很重要，下图解释了这三个区域的状态的变化过程：</p>
+<ul>
+<li>HEAD 指向最近一次commit里的所有snapshot</li>
+<li>Index 缓存区域，只有Index区域里的东西才可以被commit</li>
+<li>Working Directory 用户操作区域</li>
+</ul>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git1.png?raw=true"></p>
+<h3 id="初始状态"><a href="#初始状态" class="headerlink" title="初始状态"></a>初始状态</h3><p>当 checkout 分支的时候，git做了三件事情：</p>
+<ol>
+<li>将HEAD指向那个分支的最后一次commit</li>
+<li>将HEAD指向的commit里所有文件的snapshot替换掉Index区域里原来的内容</li>
+<li>将Index区域里的内容填充到Working Directory里</li>
+</ol>
+<p>所以可以发现，此时 HEAD、Index、Working Directory 里的内容都是一模一样的。</p>
+<p>注意：一般会误解为，Index中的内容是空的，只有git add后才会有东西。实际上不是，Index里一直是有东西的。所以，Git的所有操作就是对这三个区域的状态（或内容）的操作。</p>
+<h3 id="Changed"><a href="#Changed" class="headerlink" title="Changed"></a>Changed</h3><p>如果你在Working Directory里修改了文件，git会发现Working Directory里的内容和Index区域里的内容不一致了。 </p>
+<p>这个时候git status的结果是：Changes not staged for commit</p>
+<h3 id="Staged"><a href="#Staged" class="headerlink" title="Staged"></a>Staged</h3><p>一个文件仅仅changed是不能被commit的，Git要求只能提交Index里的东西。</p>
+<p>所以需要git add。这个命令的意思是，把Changed的文件的内容同步到Index区域里。这样Working Directory和Index区域的内容就一致了。这个过程被称之为stage</p>
+<p>这个时候git status的结果是：Changes to be committed</p>
+<h3 id="Committed"><a href="#Committed" class="headerlink" title="Committed"></a>Committed</h3><p>最后，通过 <code>git commit</code> 提交后，HEAD 的状态和 Index 以及 Working Directory 就形成一致了。</p>
+<hr>
+<h2 id="撤销操作"><a href="#撤销操作" class="headerlink" title="撤销操作"></a>撤销操作</h2><h3 id="区别-reset-和-revert"><a href="#区别-reset-和-revert" class="headerlink" title="区别 reset 和 revert"></a>区别 reset 和 revert</h3><ul>
+<li><code>git reset</code> 是会修改版本历史的，他会<strong>丢弃掉一些版本历史</strong>。</li>
+<li><code>git revert</code> 是根据那个commit逆向生成一个新的commit，版本历史是不会被破坏的。</li>
+</ul>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git2.png?raw=true"></p>
+<h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><h4 id="1-用于file"><a href="#1-用于file" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>撤销add操作</strong>，把文件从index退回workspace，并将更改保存在workspace中</p>
+<h4 id="2-用于commit"><a href="#2-用于commit" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD^^  <span class="comment">#回退到上上个版本</span></span><br><span class="line">git reset HEAD~2</span><br><span class="line">git reset d130664a3e6da2d2478f3c6eee8e9dc67a61b1c2</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>撤销commit操作</strong>，必须是<strong>未被提交到remote</strong>的改动。除了移动当前分支的HEAD，还可以更改workspace和index：</p>
+<ul>
+<li>–soft：修改HEAD，不修改index和workspace</li>
+<li>–mixed：修改HEAD和index，不修改workspace，<strong>默认</strong></li>
+<li>–hard：修改HEAD、index、workspace</li>
+</ul>
+<div class="note-large red"><div class="notel-title"><p>已经push到远程仓库的commit不允许reset，只能用revert</p>
+</div><div class="notel-content"><p>如果commit已经被push到远程仓库上了，也就意味着其他开发人员就可能基于这个commit形成了新的commit，这时你去reset，就会造成其他开发人员的提交历史莫名其妙的丢失，或者其他灾难性的后果。</p>
+</div></div>
+
+<p><img lazyload="" src="/images/loading.svg" data-src="https://github.com/Yveltals/Picgo/blob/master/git3.png?raw=true"></p>
+<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><h4 id="1-用于file-1"><a href="#1-用于file-1" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>清除文件在workspace的修改，类似于 <code>git restore file</code></p>
+<h4 id="2-用于commit-1"><a href="#2-用于commit-1" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout b4f2fa40955cc34f441466f820b1b84350a31491   <span class="comment"># 分离HEAD模式，HEAD可以不指向main等</span></span><br><span class="line">git checkout main</span><br></pre></td></tr></table></figure></div>
+
+<p>只是移动HEAD到不同的commit，如果有unstaged的文件，git会阻止操作并提示。</p>
+<p>checkout会修改HEAD的指向，变更Index区域里的内容，修改Working Directory里的内容。</p>
+<p>这看上去很像reset –hard，但和reset –hard相比有两个重要的差别</p>
+<ol>
+<li>reset会把working directory里的所有内容都更新掉</li>
+<li>checkout不会去修改你在Working Directory里修改过的文件</li>
+<li>reset把branch移动到HEAD指向的地方</li>
+<li>checkout则把HEAD移动到另一个分支</li>
+</ol>
+<p>对于第二个区别：假设两个分支master和develop 指向不一样的commit，现在在develop分支上（HEAD指向）</p>
+<ul>
+<li>如果 git reset master，那么develop就会指向master所指向的那个commit。</li>
+<li>如果 git checkout master，那么develop不会动，只有HEAD会移动指向master。</li>
+</ul>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://segmentfault.com/img/bVz7pB?w=500&h=366"></p>
+<h3 id="revert"><a href="#revert" class="headerlink" title="revert"></a>revert</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git revert HEAD   <span class="comment">#revert该版本的修改，相当于 git reset HEAD^</span></span><br></pre></td></tr></table></figure></div>
+
+<p>通过新建一个commit来撤销一次commit所做的修改，是一种安全的方式，并没有修改commit history。</p>
+<hr>
+<h2 id="分支相关"><a href="#分支相关" class="headerlink" title="分支相关"></a>分支相关</h2><ol>
+<li><code>git branch</code> 查看分支</li>
+<li><code>git checkout -b name</code> 创建并转到分支</li>
+<li><code>git branch -d name</code> 删除本地分支</li>
+<li><code>git remote prune</code> 远程分支删除后，本地分支同步</li>
+<li><code>git push origin --delete name</code> 删除远程分支</li>
+<li><code>git branch -u origin/xxx</code> 关联远程分支</li>
+<li><code>git branch -vv</code> 查看本地分支与远端分支关联关系</li>
+<li><code>git remote show origin</code> 查看远程分支和本地分支对应关系</li>
+</ol>
+<h2 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h2><ol>
+<li><code>git status -s</code> 查看当前修改、提交状态</li>
+<li><code>git diff &lt;file&gt;</code> 比较工作区和暂存区</li>
+<li><code>git diff HEAD -- &lt;file&gt;</code> 比较工作区和版本库的最新版本</li>
+<li><code>git log -stat</code>显示commit历史及变更文件 </li>
+<li><code>git reflog</code> 显示每个commit如何产生</li>
+</ol>
+<h2 id="SSH-key"><a href="#SSH-key" class="headerlink" title="SSH key"></a>SSH key</h2><ol>
+<li>创建密钥 <code>ssh-keygen -t ed25519</code></li>
+<li>查看密钥 <code>cat ~/.ssh/xxx</code></li>
+<li>添加密钥 Settings -&gt; SSH and GPG keys -&gt; New SSH key</li>
+<li>确定一下ssh-key是否添加成功 <code>ssh -T git@github.com</code></li>
+</ol>
+<h2 id="重新关联远程仓库"><a href="#重新关联远程仓库" class="headerlink" title="重新关联远程仓库"></a>重新关联远程仓库</h2><ol>
+<li><p>查看远程仓库的链接方式，将http方式改成git方式 <code>git remote show origin</code></p>
+</li>
+<li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
+</li>
+<li><p>重新添加成<a class="link" href="mailto:&#103;&#105;&#x74;&#x40;&#103;&#105;&#116;&#104;&#x75;&#x62;&#46;&#x63;&#x6f;&#109;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><ol>
+<li><p>查看配置</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global -l</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>修改 pull 的默认配置为 rebase</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>配置pushautoSetupRemote，push时可以省略–set-upstream关联</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add push.autoSetupRemote <span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>配置git用户名邮箱</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">"YOURUSERNAME"</span></span><br><span class="line">git config --global user.email <span class="string">"YOUREMAIL"</span></span><br><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>在 .gitconfig 中加入</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]</span><br><span class="line">  lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --abbrev-commit</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h2 id="在线演示"><a href="#在线演示" class="headerlink" title="在线演示"></a>在线演示</h2><blockquote>
+<p> <a class="link" href="https://learngitbranching.js.org/?locale=zh_CN">https://learngitbranching.js.org/?locale=zh_CN <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Software</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kafuka</title>
+    <url>//post/Kafuka.html</url>
+    <content><![CDATA[<h2 id="消息系统"><a href="#消息系统" class="headerlink" title="消息系统"></a>消息系统</h2><p>一个消息系统负责将数据从一个应用传递到另外一个应用，应用只需关注于数据，无需关注数据在两个或多个应用间是如何传递的。分布式消息传递基于可靠的消息队列，在客户端应用和消息系统之间异步传递消息。有两种主要的消息传递模式：点对点传递模式、发布-订阅模式。大部分的消息系统选用发布-订阅模式。</p>
+<h3 id="点对点消息系统"><a href="#点对点消息系统" class="headerlink" title="点对点消息系统"></a>点对点消息系统</h3><p>在点对点消息系统中，消息持久化到一个队列中。此时，将有一个或多个消费者消费队列中的数据，但是<strong>一条消息只能被消费一次</strong>。当一个消费者消费了队列中的某条数据之后，该条数据则从消息队列中删除。该模式即使有多个消费者同时消费数据，也能<strong>保证数据处理的顺序</strong>。</p>
+<h3 id="发布-订阅消息系统"><a href="#发布-订阅消息系统" class="headerlink" title="发布-订阅消息系统"></a>发布-订阅消息系统</h3><p>在发布-订阅消息系统中，消息被持久化到一个topic中。与点对点消息系统不同的是，消费者可以订阅一个或多个topic，消费者可以消费该topic中所有的数据，<strong>同一条数据可以被多个消费者消费，数据被消费后不会立马删除</strong>。在发布-订阅消息系统中，消息的生产者称为发布者，消费者称为订阅者。该模式的示例图如下：</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85%E6%B6%88%E6%81%AF%E6%A8%A1%E5%BC%8F.png"></p>
+<h2 id="Kafka概述"><a href="#Kafka概述" class="headerlink" title="Kafka概述"></a>Kafka概述</h2><p>Apache Kafka是一个分布式的发布-订阅消息系统，能够支撑海量数据的数据传递。在离线和实时的消息处理业务系统中，Kafka都有广泛的应用。Kafka将消息持久化到磁盘中，并对消息创建了备份保证了数据的安全。Kafka在保证了较高的处理速度的同时，又能保证数据处理的低延迟和数据的零丢失。</p>
+<p>Kafka的优势在于：</p>
+<ul>
+<li>可靠性：Kafka是一个具有分区机制、副本机制和容错机制的分布式消息系统</li>
+<li>可扩展性：Kafka消息系统支持集群规模的热扩展</li>
+<li>高性能：Kafka在数据发布和订阅过程中都能保证数据的高吞吐量。即便在TB级数据存储的情况下，仍然能保证稳定的性能。</li>
+</ul>
+<h2 id="Kafka术语"><a href="#Kafka术语" class="headerlink" title="Kafka术语"></a>Kafka术语</h2><p>在深入理解Kafka之前，先介绍一下Kafka中的术语。下图展示了Kafka的相关术语以及之间的关系：</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Term.png"></p>
+<p>上图中一个topic配置了3个partition，Partition1有两个offset：0和1，Partition2有4个offset。副本的id和副本所在的机器的id恰好相同。</p>
+<p>如果一个topic的副本数为3，那么Kafka将在集群中为每个partition创建3个相同的副本。集群中的每个broker存储一个或多个partition。多个producer和consumer可同时生产和消费数据。</p>
+<p>各个术语的详细介绍如下：</p>
+<ul>
+<li>Topic：在Kafka中，使用一个类别属性来划分数据的所属类，划分数据的这个类称为topic。如果把Kafka看做为一个数据库，topic可以理解为数据库中的一张表，topic的名字即为表名。</li>
+<li>Partition：topic中的数据分割为一个或多个partition。每个topic至少有一个partition。每个partition中的数据使用多个segment文件存储。<strong>partition中的数据是有序的，partition间的数据丢失了数据的顺序</strong>。如果topic有多个partition，消费数据时就不能保证数据的顺序。在需要严格保证消息的消费顺序的场景下，需要将partition数目设为1。</li>
+<li>Partition offset：每条消息都有一个当前Partition下唯一的64字节的offset，它指明了这条消息的起始位置。</li>
+<li>Replicas of partition：副本是一个分区的备份。<strong>副本不会被消费者消费</strong>，副本只用于防止数据丢失，即消费者不从为follower的partition中消费数据，而是从为leader的partition中读取数据。</li>
+<li>Broker：<ul>
+<li>Kafka 集群包含一个或多个服务器，服务器节点称为broker。</li>
+<li>broker存储topic的数据。如果某topic有N个partition，集群有N个broker，那么每个broker存储该topic的一个partition。</li>
+<li>如果某topic有N个partition，集群有(N+M)个broker，那么其中有N个broker存储该topic的一个partition，剩下的M个broker不存储该topic的partition数据。</li>
+<li>如果某topic有N个partition，集群中broker数目少于N个，那么一个broker存储该topic的一个或多个partition。在实际生产环境中，尽量避免这种情况的发生，这种情况容易导致Kafka集群数据不均衡。</li>
+</ul>
+</li>
+<li>Producer：生产者即数据的发布者，该角色将消息发布到Kafka的topic中。broker接收到生产者发送的消息后，broker将该消息追加到当前用于追加数据的segment文件中。生产者发送的消息，存储到一个partition中，生产者也可以指定数据存储的partition。</li>
+<li>Consumer：消费者可以从broker中读取数据。消费者可以消费多个topic中的数据。</li>
+<li>Leader：每个partition有多个副本，其中有且仅有一个作为Leader，Leader是当前负责数据的读写的partition。</li>
+<li>Follower：Follower跟随Leader，所有写请求都通过Leader路由，数据变更会广播给所有Follower，Follower与Leader保持数据同步。如果Leader失效，则从Follower中选举出一个新的Leader。当Follower与Leader挂掉、卡住或者同步太慢，leader会把这个follower从“in sync replicas”（ISR）列表中删除，重新创建一个Follower。</li>
+</ul>
+<h2 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h2><p>Kafka的架构示意图如下：</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Ecosystem.png"></p>
+<ul>
+<li>Broker：Kafka的broker是无状态的，broker使用Zookeeper维护集群的状态。Leader的选举也由Zookeeper负责。</li>
+<li>Zookeeper：Zookeeper负责维护和协调broker。当Kafka系统中新增了broker或者某个broker发生故障失效时，由ZooKeeper通知生产者和消费者。生产者和消费者依据Zookeeper的broker状态信息与broker协调数据的发布和订阅任务。</li>
+<li>Producer：生产者将数据推送到broker上，当集群中出现新的broker时，所有的生产者将会搜寻到这个新的broker，并自动将数据发送到这个broker上。</li>
+<li>Consumer：因为Kafka的broker是无状态的，所以consumer必须使用partition offset来记录消费了多少数据。如果一个consumer指定了一个topic的offset，意味着该consumer已经消费了该offset之前的所有数据。consumer可以通过指定offset，从topic的指定位置开始消费数据。consumer的offset存储在Zookeeper中。</li>
+</ul>
+<h2 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h2><p>Kafka将某topic的数据存储到一个或多个partition中。一个partition内数据是有序的，每条数据都有一个唯一的index，这个index叫做offset。新来的数据追加到partition的尾部。每条数据可以在不同的broker上做备份，从而保证了Kafka使用的可靠性。</p>
+<p>生产者将消息发送到topic中，消费者可以选择多种消费方式消费Kafka中的数据。下面介绍两种消费方式的流程。</p>
+<h3 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h3><ol>
+<li>生产者将数据发送到指定topic中</li>
+<li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
+<li>消费者订阅指定topic的数据</li>
+<li>当消费者订阅topic中消息时，Kafka将当前的offset发给消费者，同时将offset存储到Zookeeper中</li>
+<li>消费者以特定的间隔（如100ms）向Kafka请求数据</li>
+<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者</li>
+<li>消费者受到Kafka推送的数据，并进行处理</li>
+<li>当消费者处理完该条消息后，消费者向Kafka broker发送一个该消息已被消费的反馈</li>
+<li>当Kafka接到消费者的反馈后，Kafka更新offset包括Zookeeper中的offset。</li>
+<li>以上过程一直重复，直到消费者停止请求数据</li>
+<li>消费者可以重置offset，从而可以灵活消费存储在Kafka上的数据</li>
+</ol>
+<h3 id="消费者组数据消费流程"><a href="#消费者组数据消费流程" class="headerlink" title="消费者组数据消费流程"></a>消费者组数据消费流程</h3><p>Kafka支持消费者组内的多个消费者同时消费一个topic，一个消费者组由具有同一个Group ID的多个消费者组成。具体流程如下：</p>
+<ol>
+<li>生产者发送数据到指定的topic</li>
+<li>Kafka将数据存储到broker上的partition中</li>
+<li>假设现在有一个消费者订阅了一个topic，topic名字为“test”，消费者的Group ID为“Group1”</li>
+<li>此时Kafka的处理方式与只有一个消费者的情况一样</li>
+<li>当Kafka接收到一个同样Group ID为“Group1”、消费的topic同样为“test”的消费者的请求时，Kafka把数据操作模式切换为分享模式，此时数据将在两个消费者上共享。</li>
+<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Arch</category>
+      </categories>
+      <tags>
+        <tag>Arch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Zookeeper</title>
+    <url>//post/Zookeeper.html</url>
+    <content><![CDATA[<p><code>ZooKeeper</code> 由 <code>Yahoo</code> 开发，后来捐赠给了 <code>Apache</code> ，现已成为 <code>Apache</code> 顶级项目。<code>ZooKeeper</code> 是一个开源的分布式应用程序协调服务器，其为分布式系统提供一致性服务。其一致性是通过基于 <code>Paxos</code> 算法的 <code>ZAB</code> 协议完成的。其主要功能包括：配置维护、分布式同步、集群管理、分布式事务等。</p>
+<h2 id="ZAB"><a href="#ZAB" class="headerlink" title="ZAB"></a>ZAB</h2><h3 id="Zookeeper-架构"><a href="#Zookeeper-架构" class="headerlink" title="Zookeeper 架构"></a>Zookeeper 架构</h3><p>作为一个优秀高效且可靠的分布式协调框架，ZooKeeper 在解决分布式数据一致性问题时并没有直接使用 Paxos ，而是专门定制了一致性协议叫做 ZAB(ZooKeeper Automic Broadcast) 原子广播协议，该协议能够很好地支持 崩溃恢复 。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E6%9E%B6%E6%9E%84.jpg"></p>
+<h3 id="ZAB-中的三个角色"><a href="#ZAB-中的三个角色" class="headerlink" title="ZAB 中的三个角色"></a>ZAB 中的三个角色</h3><ul>
+<li><code>Leader</code> ：集群中 <strong>唯一的写请求处理者</strong> ，能够发起投票（投票也是为了进行写请求）。</li>
+<li><code>Follower</code>：能够接收客户端的请求，如果是读请求则可以自己处理，<strong>如果是写请求则要转发给 <code>Leader</code></strong> 。在选举过程中会参与投票，<strong>有选举权和被选举权</strong> 。</li>
+<li><code>Observer</code> ：就是没有选举权和被选举权的 <code>Follower</code> 。</li>
+</ul>
+<p>在 <code>ZAB</code> 协议中对 <code>zkServer</code>(即上面我们说的三个角色的总称) 还有两种模式的定义，分别是 <strong>消息广播</strong> 和 <strong>崩溃恢复</strong> 。</p>
+<h3 id="消息广播模式"><a href="#消息广播模式" class="headerlink" title="消息广播模式"></a>消息广播模式</h3><p>说白了就是 ZAB 协议是如何处理写请求的，只有 Leader 能处理写请求，那么 Follower 和 Observer 也需要同步更新数据，即在<strong>整个集群中保持数据的一致性</strong></p>
+<p>第一步需要 Leader 将写请求 <strong>广播</strong> 出去，问 Followers 是否同意更新，如果超过半数以上的同意那么就进行 Follower 和 Observer 的更新（和 Paxos 一样）</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E5%B9%BF%E6%92%AD.jpg"></p>
+<p>两个 <code>Queue</code> 的作用是 <strong><code>ZAB</code> 需要让 <code>Follower</code> 和 <code>Observer</code> 保证顺序性</strong> 。何为顺序性，比如我现在有一个写请求A，此时 <code>Leader</code> 将请求A广播出去，因为只需要半数同意就行，所以可能这个时候有一个 <code>Follower</code> F1因为网络原因没有收到，而 <code>Leader</code> 又广播了一个请求B，因为网络原因，F1竟然先收到了请求B然后才收到了请求A，这个时候请求处理的顺序不同就会导致数据的不同，从而 <strong>产生数据不一致问题</strong> 。</p>
+<p>所以在 <code>Leader</code> 这端，它为每个其他的 <code>zkServer</code> 准备了一个 <strong>队列</strong> ，采用先进先出的方式发送消息。由于协议是 **通过 <code>TCP</code> **来进行网络通信的，保证了消息的发送顺序性，接受顺序性也得到了保证。</p>
+<p>除此之外，在 <code>ZAB</code> 中还定义了一个 <strong>全局单调递增的事务ID <code>ZXID</code></strong> ，它是一个64位long型，其中高32位表示 <code>epoch</code> 年代（对应leader），低32位表示事务id。定义这个的原因也是为了顺序性，每个 <code>proposal</code> 在 <code>Leader</code> 中生成后需要 <strong>通过其 <code>ZXID</code> 来进行排序</strong> ，才能得到处理。</p>
+<h3 id="崩溃恢复模式"><a href="#崩溃恢复模式" class="headerlink" title="崩溃恢复模式"></a>崩溃恢复模式</h3><p>首先要提到 <code>ZAB</code> 中的 <code>Leader</code> 选举算法，可以分为两个不同的阶段：</p>
+<ol>
+<li><code>Zookeeper</code> 启动时如何初始化选举</li>
+</ol>
+<p>   假设我们集群中有3台机器，那也就意味着我们需要两台以上同意（超过半数）。比如这个时候我们启动了 <code>server1</code> ，它会首先 <strong>投票给自己</strong> ，投票内容为服务器的 <code>myid</code> 和 <code>ZXID</code> ，因为初始化所以 <code>ZXID</code> 都为0，此时 <code>server1</code> 发出的投票为 (1,0)。但此时 <code>server1</code> 的投票仅为1，所以不能作为 <code>Leader</code> ，此时还在选举阶段所以整个集群处于 <strong><code>Looking</code> 状态</strong>。</p>
+<p>   接着 <code>server2</code> 启动了，它首先也会将投票选给自己(2,0)，并将投票信息广播出去（<code>server1</code>也会，只是它那时没有其他的服务器了），<code>server1</code> 在收到 <code>server2</code> 的投票信息后会将投票信息与自己的作比较。<strong>首先它会比较 <code>ZXID</code> ，<code>ZXID</code> 大的优先为 Leader，如果相同则比较 <code>myid</code>，<code>myid</code> 大的优先作为 Leader</strong>。所以此时<code>server1</code> 发现 <code>server2</code> 更适合做 <code>Leader</code>，它就会将自己的投票信息更改为(2,0)然后再广播出去，之后<code>server2</code>  收到之后发现和自己的一样无需做更改，并且自己的 <strong>投票已经超过半数</strong> ，则 **确定 <code>server2</code> 为 <code>Leader</code>**，<code>server1</code> 也会将自己服务器设置为 <code>Following</code> 变为 <code>Follower</code>。整个服务器就从 <code>Looking</code> 变为了正常状态。</p>
+<p>   当 <code>server3</code> 启动发现集群没有处于 <code>Looking</code> 状态时，它会直接以 <code>Follower</code> 的身份加入集群。</p>
+<ol start="2">
+<li><p><code>Leader</code>宕机时如何重新选举</p>
+<p>假设 <code>Leader (server2)</code> 宕机，首先剩下的两个 <code>Follower</code> 的状态 <strong>从 <code>Following</code> 变为 <code>Looking</code> 状态</strong> ，然后每个 <code>server</code> 会向初始化投票一样首先给自己投票（这不过这里的 <code>zxid</code> 可能不是0了）。</p>
+<p>假设 <code>server1</code> 给自己投票为(1,99)，然后广播给其他 server，<code>server3</code> 首先也会给自己投票(3,95)，然后也广播给其他 server。<code>server1</code> 和 <code>server3</code> 此时会收到彼此的投票信息，和一开始选举一样，他们也会比较自己的投票和收到的投票（<code>zxid</code> 大的优先，如果相同那么就 <code>myid</code> 大的优先）。这个时候 <code>server1</code> 收到了 <code>server3</code> 的投票发现没自己的合适故不变，<code>server3</code> 收到 <code>server1</code> 的投票结果后发现比自己的合适于是更改投票为(1,99)然后广播出去，最后 <code>server1</code> 收到了发现自己的投票已经超过半数就把自己设为 <code>Leader</code>，<code>server3</code> 也随之变为 <code>Follower</code>。</p>
+</li>
+</ol>
+<p><strong>崩溃恢复</strong> 就是 <strong>当集群中有机器挂了，整个集群如何保证数据一致性</strong></p>
+<p>如果只是 <code>Follower</code> 挂了，而且挂的没超过半数的时候，因为在 <code>Leader</code> 中会维护队列，所以不用担心后面的数据没接收到导致数据不一致性。</p>
+<p>如果 <code>Leader</code> 挂了需要先暂停服务变为 <code>Looking</code> 状态然后进行 <code>Leader</code> 的重新选举，要分为两种情况了：</p>
+<ol>
+<li><p><strong>确保已经被Leader提交的提案最终能够被所有的Follower提交</strong></p>
+<p>假设 <code>Leader (server2)</code> 发送 <code>commit</code> 请求，他发送给了 <code>server3</code>，然后要发给 <code>server1</code> 的时候突然挂了。这个时候重新选举的时候我们如果把 <code>server1</code> 作为 <code>Leader</code> 的话，那么肯定会产生数据不一致性，因为 <code>server3</code> 肯定会提交刚刚 <code>server2</code> 发送的 <code>commit</code> 请求的提案，而 <code>server1</code> 根本没收到所以会丢弃。</p>
+<p>但实际这时 <code>server1</code> 已经不可能成为 <code>Leader</code> 了，因为进行投票选举的时候会比较 <code>ZXID</code> ，而此时 <code>server3</code> 的 <code>ZXID</code> 肯定比 <code>server1</code> 的大。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E5%B4%A9%E6%BA%83%E6%81%A2%E5%A4%8D1.jpg"></p>
+</li>
+<li><p><strong>跳过那些已经被丢弃的提案</strong></p>
+<p>假设 <code>Leader (server2)</code> 此时同意了提案N1，自身提交了这个事务并且要发送给所有 <code>Follower</code> 要 <code>commit</code> 的请求，却在这个时候挂了，此时肯定要重新进行 <code>Leader</code> 的选举，比如说此时选 <code>server1</code> 为 <code>Leader</code> （这无所谓）。但是过了一会，这个 <strong>挂掉的 Leader 又重新恢复了</strong> ，此时它肯定会作为 <code>Follower</code> 的身份进入集群中，需要注意的是刚刚 <code>server2</code> 已经同意提交了提案N1，但其他 <code>server</code> 并没有收到它的 <code>commit</code> 信息，所以其他 <code>server</code> 不可能再提交这个提案N1了，这样就会出现数据不一致性问题了，所以 <strong>该提案N1最终需要被抛弃掉</strong> 。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E5%B4%A9%E6%BA%83%E6%81%A2%E5%A4%8D2.jpg"></p>
+</li>
+</ol>
+<h2 id="Zookeeper的几个理论知识"><a href="#Zookeeper的几个理论知识" class="headerlink" title="Zookeeper的几个理论知识"></a>Zookeeper的几个理论知识</h2><h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p><code>zookeeper</code> 数据存储结构与标准的 <code>Unix</code> 文件系统非常相似，都是在根节点下挂很多子节点(树型)。但是 <code>zookeeper</code> 中没有文件系统中目录与文件的概念，而是 <strong>使用了 <code>znode</code> 作为数据节点</strong> 。<code>znode</code> 是 <code>zookeeper</code> 中的最小数据单元，每个 <code>znode</code> 上都可以保存数据，同时还可以挂载子节点，形成一个树形化命名空间。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B.jpg"></p>
+<p>每个 <code>znode</code> 都有自己所属的 <strong>节点类型</strong> 和 <strong>节点状态</strong>。</p>
+<p>其中节点类型可以分为 <strong>持久节点</strong>、<strong>持久顺序节点</strong>、<strong>临时节点</strong> 和 <strong>临时顺序节点</strong>。</p>
+<ul>
+<li>持久节点：一旦创建就一直存在，直到将其删除。</li>
+<li>持久顺序节点：一个父节点可以为其子节点 <strong>维护一个创建的先后顺序</strong> ，这个顺序体现在 <strong>节点名称</strong> 上，是节点名称后自动添加一个由 10 位数字组成的数字串，从 0 开始计数。</li>
+<li>临时节点：临时节点的生命周期是与 <strong>客户端会话</strong> 绑定的，<strong>会话消失则节点消失</strong> 。临时节点 <strong>只能做叶子节点</strong> ，不能创建子节点。</li>
+<li>临时顺序节点：父节点可以创建一个维持了顺序的临时节点(和前面的持久顺序性节点一样)。</li>
+</ul>
+<p>节点状态中包含了很多节点的属性，在 <code>zookeeper</code> 中是使用 <code>Stat</code> 这个类来维护的。</p>
+<ul>
+<li><code>czxid</code>：<code>Created ZXID</code>，该数据节点被 <strong>创建</strong> 时的事务ID。</li>
+<li><code>mzxid</code>：<code>Modified ZXID</code>，节点 <strong>最后一次被更新时</strong> 的事务ID。</li>
+<li><code>ctime</code>：<code>Created Time</code>，该节点被创建的时间。</li>
+<li><code>mtime</code>： <code>Modified Time</code>，该节点最后一次被修改的时间。</li>
+<li><code>version</code>：节点的版本号。</li>
+<li><code>cversion</code>：<strong>子节点</strong> 的版本号。</li>
+<li><code>aversion</code>：节点的 <code>ACL</code> 版本号。</li>
+<li><code>ephemeralOwner</code>：创建该节点的会话的 <code>sessionID</code> ，如果该节点为持久节点，该值为0。</li>
+<li><code>dataLength</code>：节点数据内容的长度。</li>
+<li><code>numChildre</code>：该节点的子节点个数，如果为临时节点为0。</li>
+<li><code>pzxid</code>：该节点子节点列表最后一次被修改时的事务ID，注意是子节点的 <strong>列表</strong> ，不是内容。</li>
+</ul>
+<h3 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h3><p>客户端和服务端是通过 <strong>TCP 长连接</strong> 维持的会话机制，其实对于会话来说可以理解为 <strong>保持连接状态</strong> 。</p>
+<p>在 <code>zookeeper</code> 中，会话还有对应的事件，比如CONNECTION_LOSS 连接丢失事件、SESSION_MOVED 会话转移事件、SESSION_EXPIRED 会话超时失效事件。</p>
+<h3 id="ACL"><a href="#ACL" class="headerlink" title="ACL"></a>ACL</h3><p><code>ACL</code> 为 <code>Access Control Lists</code> ，它是一种权限控制。在 <code>zookeeper</code> 中定义了5种权限，它们分别为：</p>
+<ul>
+<li><code>CREATE</code> ：创建子节点的权限。</li>
+<li><code>READ</code>：获取节点数据和子节点列表的权限。</li>
+<li><code>WRITE</code>：更新节点数据的权限。</li>
+<li><code>DELETE</code>：删除子节点的权限。</li>
+<li><code>ADMIN</code>：设置节点 ACL 的权限。</li>
+</ul>
+<h3 id="Watcher机制"><a href="#Watcher机制" class="headerlink" title="Watcher机制"></a>Watcher机制</h3><p><code>Watcher</code> 为事件监听器，是 <code>zk</code> 非常重要的一个特性，很多功能都依赖于它，它有点类似于订阅的方式，即客户端向服务端 <strong>注册</strong> 指定的 <code>watcher</code> ，当服务端符合了 <code>watcher</code> 的某些事件或要求则会 <strong>向客户端发送事件通知</strong> ，客户端收到通知后找到自己定义的 <code>Watcher</code> 然后 <strong>执行相应的回调方法</strong> 。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_watcher.jpg"></p>
+<h2 id="Zookeeper的几个典型应用场景"><a href="#Zookeeper的几个典型应用场景" class="headerlink" title="Zookeeper的几个典型应用场景"></a>Zookeeper的几个典型应用场景</h2><h3 id="选主"><a href="#选主" class="headerlink" title="选主"></a>选主</h3><p>因为 <code>Zookeeper</code> 的强一致性，能够很好地在保证 <strong>在高并发的情况下保证节点创建的全局唯一性</strong> (即无法重复创建同样的节点)。利用这个特性，我们可以 <strong>让多个客户端创建一个指定的节点</strong> ，创建成功的就是 <code>master</code>。</p>
+<p>可以 <strong>让其他不是 master 的节点监听节点的状态</strong> ，比如监听临时节点的父节点，如果子节点个数变了就代表 <code>master</code> 挂了，这个时候 <strong>触发回调函数进行重新选举</strong>；或者直接监听节点的状态，可以通过节点是否已经失去连接来判断 <code>master</code> 是否挂了等等。</p>
+<p>总的来说，可以完全 <strong>利用临时节点、节点状态 和 <code>watcher</code> 来实现选主的功能</strong>，临时节点主要用来选举，节点状态和<code>watcher</code> 可以用来判断 <code>master</code> 的活性和进行重新选举。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E9%80%89%E4%B8%BB.jpg"></p>
+<h3 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h3><p>分布式锁的实现方式有很多种，比如 <code>Redis</code> 、数据库 、<code>zookeeper</code> 等。</p>
+<ol>
+<li><p>使用 <code>zookeeper</code> 实现<strong>互斥锁</strong> —— <strong>zk在高并发的情况下保证节点创建的全局唯一性</strong></p>
+<p>因为创建节点的唯一性，可以让多个客户端同时创建一个临时节点，<strong>创建成功的就说明获取到了锁</strong> 。</p>
+<p>然后没有获取到锁的客户端也像上面选主的非主节点创建一个 <code>watcher</code> 进行节点状态的监听，如果这个互斥锁被释放了（获取锁的客户端宕机或主动释放了锁）可以调用回调函数重新获得锁。</p>
+<blockquote>
+<p>不需要向 <code>redis</code> 那样考虑锁得不到释放的问题了，因为当客户端挂了，节点也挂了，锁也释放了。</p>
+</blockquote>
+</li>
+<li><p>使用 <code>zookeeper</code> 同时实现 <strong>共享锁和独占锁</strong> —— 采用<strong>有序节点</strong></p>
+<p>若为读请求（获取共享锁），若 <strong>没有比自己更小的节点，或比自己小的节点都是读请求</strong> ，则可以获取到读锁。<strong>若比自己小的节点中有写请求</strong> ，则当前客户端无法获取到读锁，只能等待前面的写请求完成。</p>
+<p>若为写请求（获取独占锁），若 <strong>没有比自己更小的节点</strong> ，则表示客户端可以直接获取到写锁。若发现 <strong>有比自己更小的节点，无论是读操作还是写操作，当前客户端都无法获取到写锁</strong> ，等待所有前面的操作完成。</p>
+<blockquote>
+<p>优化：当一个锁得到释放它会通知所有等待的客户端从而造成 <strong>羊群效应</strong> 。此时可以通过让等待的节点只监听他们前面的节点 —— 让<strong>读请求监听比自己小的最后一个写请求节点，写请求只监听比自己小的最后一个节点</strong> 。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="集群管理"><a href="#集群管理" class="headerlink" title="集群管理"></a>集群管理</h3><p>如果需要了解整个集群中有多少机器在工作，对每台机器的运行时状态进行数据采集，对集群中机器进行上下线操作等时， <code>zookeeper</code> 的 <code>watcher</code> 和 临时节点能很好的实现这些需求。</p>
+<p>可以为每条机器创建临时节点，并监控其父节点，如果子节点列表有变动（我们可能创建删除了临时节点），那么我们可以使用在其父节点绑定的 <code>watcher</code> 进行状态监控和回调。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86.jpg"></p>
+<h3 id="注册中心"><a href="#注册中心" class="headerlink" title="注册中心"></a>注册中心</h3><p>同样也是让 <strong>服务提供者</strong> 在 <code>zookeeper</code> 中创建一个临时节点并且将自己的 <code>ip、port、调用方式</code> 写入节点，当 <strong>服务消费者</strong> 需要进行调用的时候会 <strong>通过注册中心找到相应的服务的地址列表(IP端口什么的)</strong> ，并缓存到本地(方便以后调用)，当消费者调用服务时，不会再去请求注册中心，而是直接通过负载均衡算法从地址列表中取一个服务提供者的服务器调用服务。</p>
+<p>当服务提供者的某台服务器宕机或下线时，相应的地址会从服务提供者地址列表中移除。同时，注册中心会将新的服务地址列表发送给服务消费者的机器并缓存在消费者本机。</p>
+<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/zookeeper_%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83.jpg"></p>
+]]></content>
+      <categories>
+        <category>Arch</category>
+      </categories>
+      <tags>
+        <tag>Arch</tag>
       </tags>
   </entry>
 </search>

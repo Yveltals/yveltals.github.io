@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="keywords" content="Hexo Theme Redefine"><meta name="author" content="The Redefine Team"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="canonical" href="https://yveltals.github.io/post/os/cpu缓存.html"><meta name="robots" content="index,follow"><meta name="googlebot" content="index,follow"><meta name="revisit-after" content="1 days"><meta name="description" content="内存体系 寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。 内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统"><meta property="og:type" content="article"><meta property="og:title" content="CPU Cache"><meta property="og:url" content="https://yveltals.github.io/post/OS/CPU%E7%BC%93%E5%AD%98.html"><meta property="og:site_name" content="Myblog"><meta property="og:description" content="内存体系 寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。 内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png"><meta property="og:image" content="https://cdn.xiaolincoding.com/gh/xiaolincoder/ImageHost3@main/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7/%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98%E4%BE%8B%E5%AD%902.png"><meta property="article:published_time" content="2023-08-14T17:14:36.000Z"><meta property="article:modified_time" content="2023-08-14T18:10:23.893Z"><meta property="article:author" content="Yveltals"><meta property="article:tag" content="OSS"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png"><link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192"><link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg"><meta name="theme-color" content="#A31F34"><link rel="shortcut icon" href="/images/redefine-favicon.svg"><title>CPU Cache - Yveltals Blog</title><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/fonts/fonts.css"><link rel="stylesheet" href="/fonts/Satoshi/satoshi.css"><link rel="stylesheet" href="/fonts/Chillax/chillax.css"><script id="hexo-configurations">let Global=window.Global||{};Global.hexo_config={hostname:"yveltals.github.io",root:"/",language:"en",path:"search.xml"},Global.theme_config={articles:{style:{font_size:"16px",line_height:1.5,image_border_radius:"14px",image_alignment:"center",image_caption:!1,link_icon:!0},word_count:{enable:!0,count:!0,min2read:!0},author_label:{enable:!0,auto:!1,list:[]},code_block:{copy:!0,style:"mac",font:{enable:!1,family:null,url:null}},toc:{enable:!0,max_depth:3,number:!1,expand:!0,init_open:!0},copyright:!1,lazyload:!0,recommendation:{enable:!1,title:"推荐阅读",limit:3,mobile_limit:2,placeholder:"/images/wallhaven-wqery6-light.webp",skip_dirs:[]}},colors:{primary:"#A31F34",secondary:null},global:{fonts:{chinese:{enable:!1,family:null,url:null},english:{enable:!1,family:null,url:null}},content_max_width:"1000px",sidebar_width:"210px",hover:{shadow:!0,scale:!1},scroll_progress:{bar:!1,percentage:!0},busuanzi_counter:{enable:!1,site_pv:!0,site_uv:!0,post_pv:!0},pjax:!0,open_graph:!0,google_analytics:{enable:!1,id:null}},home_banner:{enable:!0,style:"fixed",image:{light:"/images/wallhaven-wqery6-light.webp",dark:"/images/wallhaven-wqery6-dark.webp"},title:"Yveltals Blog",subtitle:{text:["Keep thinking..."],hitokoto:{enable:!1,api:"https://v1.hitokoto.cn"},typing_speed:100,backing_speed:80,starting_delay:500,backing_delay:1500,loop:!0,smart_backspace:!0},text_color:{light:"#fff",dark:"#d1d1b6"},text_style:{title_size:"2.8rem",subtitle_size:"1.5rem",line_height:1.2},custom_font:{enable:!1,family:null,url:null},social_links:{enable:!1,links:{github:null,instagram:null,zhihu:null,twitter:null,email:null}}},plugins:{feed:{enable:!1},aplayer:{enable:!1,type:"fixed",audios:[{name:null,artist:null,url:null,cover:null}]},mermaid:{enable:!1,version:"9.3.0"}},version:"2.2.2",navbar:{auto_hide:!1,color:{left:"#f78736",right:"#367df7",transparency:35},links:{Home:{path:"/",icon:"fa-regular fa-house"}},search:{enable:!0,preload:!0}},page_templates:{friends_column:2,tags_style:"blur"},home:{sidebar:{enable:!0,position:"left",first_item:"menu",announcement:null,links:{Archives:{path:"/archives",icon:"fa-regular fa-archive"},Tags:{path:"/tags",icon:"fa-regular fa-tags"},Categories:{path:"/categories",icon:"fa-regular fa-folder"}}},article_date_format:"YYYY-MM-DD",categories:{enable:!0,limit:3},tags:{enable:!0,limit:3}},footerStart:"2019/8/17 11:45:14"},Global.language_ago={second:"%s seconds ago",minute:"%s minutes ago",hour:"%s hours ago",day:"%s days ago",week:"%s weeks ago",month:"%s months ago",year:"%s years ago"},Global.data_config={masonry:!1}</script><link rel="stylesheet" href="/fontawesome/fontawesome.min.css"><link rel="stylesheet" href="/fontawesome/brands.min.css"><link rel="stylesheet" href="/fontawesome/solid.min.css"><link rel="stylesheet" href="/fontawesome/regular.min.css"><meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body><div class="progress-bar-container"><span class="pjax-progress-bar"></span> <span class="pjax-progress-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></span></div><main class="page-container"><div class="main-content-container"><div class="main-content-header"><header class="navbar-container"><div class="navbar-content"><div class="left"><a class="logo-title" href="/">Yveltals Blog</a></div><div class="right"><div class="desktop"><ul class="navbar-list"><li class="navbar-item"><a href="/"><i class="fa-regular fa-house"></i> HOME</a></li><li class="navbar-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></li></ul></div><div class="mobile"><div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div><div class="icon-item navbar-bar"><div class="navbar-bar-middle"></div></div></div></div></div><div class="navbar-drawer"><ul class="drawer-navbar-list"><li class="drawer-navbar-item flex-center"><a href="/"><i class="fa-regular fa-house"></i> HOME</a></li></ul></div><div class="window-mask"></div></header></div><div class="main-content-body"><div class="main-content"><div class="fade-in-down-animation"><div class="post-page-container"><div class="article-content-container"><div class="article-title"><img src="/img/os.jpeg" alt="CPU Cache"><h1 class="article-title-cover">CPU Cache</h1></div><div class="article-header"><div class="avatar"><img src="/images/redefine-avatar.svg"></div><div class="info"><div class="author"><span class="name">The Redefine Team</span> <span class="author-label">Lv4</span></div><div class="meta-info"><div class="article-meta-info"><span class="article-date article-meta-item"><i class="fa-regular fa-pen-fancy"></i>&nbsp; <span class="desktop">2023-08-15 01:14:36</span> <span class="mobile">2023-08-15 01:14:36</span> <span class="hover-info">Created</span> </span><span class="article-date article-meta-item"><i class="fa-regular fa-wrench"></i>&nbsp; <span class="desktop">2023-08-15 02:10:23</span> <span class="mobile">2023-08-15 02:10:23</span> <span class="hover-info">Updated</span> </span><span class="article-categories article-meta-item"><i class="fa-regular fa-folders"></i>&nbsp;<ul><li><a href="/categories/OS/">OS</a>&nbsp;</li></ul></span><span class="article-tags article-meta-item"><i class="fa-regular fa-tags"></i>&nbsp;<ul><li><a href="/tags/OSS/">OSS</a>&nbsp;</li></ul></span><span class="article-wordcount article-meta-item"><i class="fa-regular fa-typewriter"></i>&nbsp;<span>2.2k Words</span> </span><span class="article-min2read article-meta-item"><i class="fa-regular fa-clock"></i>&nbsp;<span>7 Mins</span></span></div></div></div></div><div class="article-content markdown-body"><h2 id="内存体系"><a href="#内存体系" class="headerlink" title="内存体系"></a>内存体系</h2><p><img lazyload="" src="/images/loading.svg" data-src="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png"></p><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p><p><strong>内存排序缓冲</strong>：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统时正在执行的操作。store缓冲是一个完全的相关性队列，可以用于搜索已经存在store操作，这些store操作在等待L1缓存的时候被队列化。在数据与缓存子系统传输时， 缓冲可以让处理器异步运转。当处理器异步读或者异步写的时候，结果可以乱序返回。为了使之与已发布的内存模型一致，MOB用于消除load和store的顺序。</p><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的32K数据缓存和32K指令缓存。访问需要3个时钟周期，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。L2缓存大小为256K，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为12个时钟周期。</p><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的延迟平均为65ns。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p><p><strong>NUMA</strong>：在一个多插槽的服务器上，会使用非一致性内存访问（Non-Uniform Memory Access）。所谓的非一致性是指，需要访问的内存可能在另一个插槽上。只有当CPU访问自身直接attach内存时，才会有较短的响应时间（Local Access）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（Remote Access）。</p><h2 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h2><h3 id="缓存和内存的一致性"><a href="#缓存和内存的一致性" class="headerlink" title="缓存和内存的一致性"></a>缓存和内存的一致性</h3><ul><li><strong>写直达</strong>：只要有数据写入，都会直接把数据写入到内存里面，简单直观但是性能受限。</li><li><strong>写回</strong>：对于已经缓存在 Cache 的数据的写入，只需要更新其数据就可以，不用写入到内存，只有在需要把缓存里面的脏数据交换出去的时候，才把数据同步到内存里。</li></ul><h3 id="缓存的一致性问题"><a href="#缓存的一致性问题" class="headerlink" title="缓存的一致性问题"></a>缓存的一致性问题</h3><p>现在 CPU 都是多核的，由于 L1/L2 Cache 是多个核心各自独有的，那么会带来多核心的缓存一致性（Cache Coherence）的问题，如果不能保证缓存一致性的问题，就可能造成结果错误。假设 A 和 B 号核心同时运行两个线程，且都操作共同的变量 i（采用写回策略），将导致不一致。</p><p>要想实现缓存一致性，关键是要满足 2 点：</p><ol><li><strong>写传播</strong>：当某个 CPU 核心发生写入操作时，需要把该事件广播通知给其他核心；</li><li><strong>事物的串行化</strong>：保障数据是真正一致的，程序在各个不同的核心上运行的结果也是一致的；</li></ol><p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.xiaolincoding.com/gh/xiaolincoder/ImageHost3@main/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7/%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98%E4%BE%8B%E5%AD%902.png"></p><h3 id="MESI-协议"><a href="#MESI-协议" class="headerlink" title="MESI 协议"></a>MESI 协议</h3><p>MESI 协议用四个状态来标记 Cache Line 四个不同的状态：</p><ul><li><p>Modified，已修改</p></li><li><p>Exclusive，独占</p></li><li><p>Shared，共享</p></li><li><p>Invalidated，已失效</p></li></ul><p><strong>已修改</strong> 状态代表该 Cache Block 上的数据已经被更新过，但是还没有写到内存里。<strong>已失效</strong> 状态表示 Cache Block 里的数据已经失效了，不可以读取该状态的数据。</p><p><strong>独占</strong> 和 <strong>共享</strong> 状态都代表 Cache Block 里的数据是干净的，即这时候 Cache Block 里的数据和内存是一致的。</p><p><strong>独占</strong> 和 <strong>共享</strong> 的差别在于，独占状态的时候，数据只存储在一个 CPU 核心的 Cache 里，而其他 CPU 核心的 Cache 没有该数据。这个时候，如果要向独占的 Cache 写数据，就可以直接自由地写入，而不需要通知其他 CPU 核心。如果有其他核心从内存读取了相同的数据到各自的 Cache ，独占状态下的数据就会变成共享状态。</p><p><strong>共享</strong> 状态代表着相同的数据在多个 CPU 核心的 Cache 里都有，所以更新 Cache 时不能直接修改，而是要先向所有的其他 CPU 核心广播一个请求，要求先把其他核心的 Cache 中对应的 Cache Line 标记为「无效」状态，然后再更新当前 Cache 里面的数据。</p><h2 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h2><p>如果我们的缓存总是保证一致性，那么为什么我们在写并发程序时要担心可见性？这是因为核心为了得到更好的性能，对于其它线程来说，可能会出现<strong>数据修改的乱序</strong>。这么做主要有两个理由：</p><ol><li><p>编译器在生成程序代码时，为了性能，可能让变量在寄存器中存在很长的时间，例如，变量在一个循环中重复使用。如果我们需要这些变量在核心之间可见，那么变量就不能在寄存器分配。可以添加 volatile 关键字达到这个目标。但是 volatile 并不能保证让编译器不重排我们的指令，因此需要使用内存屏障。</p></li><li><p>一个线程写了一个变量，然后很快读取，有可能从读缓冲中获得比缓存子系统中最新值要旧的值。这对于遵循单写入者原则（Single Writer Principle）的程序来说没有任何问题，但是对于 Dekker 和Peterson锁算法就是个很大问题。为了克服这一点，并且确保最新值可见，线程不能从本地读缓冲中读取值。可以使用屏障指令，防止下一个读操作在另一线程的写操作之前发生。</p></li></ol><h2 id="误区"><a href="#误区" class="headerlink" title="误区"></a>误区</h2><p>回到作为并发算法中的一部分的“刷新缓存”误区上，我想，可以说我们永远不会在用户空间的程序上“刷新”CPU缓存。我相信这个误区的来源是由于在某些并发算法需要刷新、标记或者清空store缓冲以使下一个读操作可以看到最新值。为了达到这点，我们需要内存屏障而非刷新缓存。</p><p>这个误解的另一个可能来源是，L1缓存，或者 TLB，在上下文切换的时候可能需要根据地址索引策略进行刷新。ARM，在ARMv6之前，没有在TLB条目上使用地址空间标签，因此在上下文切换的时候需要刷新整个L1缓存。许多处理器因为类似的理由需要L1指令缓存刷新，在许多场景下，仅仅是因为指令缓存没有必要保持一致。上下文切换消耗很大，除了污染L2缓存之外，上下文切换还会导致TLB和/或者L1缓存刷新。Intel x86处理器在上下文切换时仅仅需要TLB刷新。</p></div><ul class="post-tags-box"><li class="tag-item"><a href="/tags/OSS/">#OSS</a>&nbsp;</li></ul><div class="article-nav"><div class="article-prev"><a class="prev" rel="prev" href="/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html"><span class="left arrow-icon flex-center"><i class="fa-solid fa-chevron-left"></i> </span><span class="title flex-center"><span class="post-nav-title-item">进程线程与中断</span> <span class="post-nav-item">Prev posts</span></span></a></div><div class="article-next"><a class="next" rel="next" href="/post/Notes.html"><span class="title flex-center"><span class="post-nav-title-item">Notes</span> <span class="post-nav-item">Next posts</span> </span><span class="right arrow-icon flex-center"><i class="fa-solid fa-chevron-right"></i></span></a></div></div></div><div class="toc-content-container"><div class="post-toc-wrap"><div class="post-toc"><div class="toc-title">On this page</div><div class="page-title">CPU Cache</div><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB"><span class="nav-text">内存体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-text">缓存一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%85%E5%AD%98%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-text">缓存和内存的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-text">缓存的一致性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MESI-%E5%8D%8F%E8%AE%AE"><span class="nav-text">MESI 协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-text">并发编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AF%E5%8C%BA"><span class="nav-text">误区</span></a></li></ol></div></div></div></div></div></div></div><div class="main-content-footer"><footer class="footer"><div class="info-container"><div class="copyright-info">&copy; <span>2019</span> - 2023&nbsp;&nbsp;<i class="fa-regular fa-computer-classic"></i>&nbsp;&nbsp;<a href="/">The Redefine Team</a></div><div class="theme-info info-item"><span class="powered-by-container">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" href="https://hexo.io">Hexo</a></span><br><span class="theme-version-container">THEME&nbsp;<a class="theme-version" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.2.2</a></span></div><div>Blog up for <span class="odometer" id="runtime_days"></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec</div><script async data-pjax>try{function odometer_init(){document.querySelectorAll(".odometer").forEach(e=>{new Odometer({el:e,format:"( ddd).dd",duration:200})})}odometer_init()}catch(e){}</script></div></footer></div></div><div class="post-tools"><div class="post-tools-container"><ul class="article-tools-list"><li class="right-bottom-tools page-aside-toggle"><i class="fa-regular fa-outdent"></i></li></ul></div></div><div class="right-side-tools-container"><div class="side-tools-container"><ul class="hidden-tools-list"><li class="right-bottom-tools tool-font-adjust-plus flex-center"><i class="fa-regular fa-magnifying-glass-plus"></i></li><li class="right-bottom-tools tool-font-adjust-minus flex-center"><i class="fa-regular fa-magnifying-glass-minus"></i></li><li class="right-bottom-tools tool-expand-width flex-center"><i class="fa-regular fa-expand"></i></li><li class="right-bottom-tools tool-dark-light-toggle flex-center"><i class="fa-regular fa-moon"></i></li><li class="right-bottom-tools tool-scroll-to-bottom flex-center"><i class="fa-regular fa-arrow-down"></i></li></ul><ul class="visible-tools-list"><li class="right-bottom-tools toggle-tools-list flex-center"><i class="fa-regular fa-cog fa-spin"></i></li><li class="right-bottom-tools tool-scroll-to-top flex-center"><i class="arrow-up fas fa-arrow-up"></i> <span class="percent"></span></li></ul></div></div><div class="image-viewer-container"><img src=""></div><div class="search-pop-overlay"><div class="popup search-popup"><div class="search-header"><span class="search-input-field-pre"><i class="fa-solid fa-keyboard"></i></span><div class="search-input-container"><input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input"></div><span class="popup-btn-close"><i class="fa-solid fa-times"></i></span></div><div id="search-result"><div id="no-result"><i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i></div></div></div></div></main><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/layouts/navbarShrink.js"></script><script src="/js/tools/scrollTopBottom.js"></script><script src="/js/tools/lightDarkSwitch.js"></script><script src="/js/tools/localSearch.js"></script><script src="/js/tools/codeBlock.js"></script><script src="/js/layouts/lazyload.js"></script><script src="/js/tools/runtime.js"></script><script src="/js/libs/odometer.min.js"></script><link rel="stylesheet" href="/assets/odometer-theme-minimal.css"><script src="/js/libs/Typed.min.js"></script><script src="/js/plugins/typed.js"></script><div class="post-scripts pjax"><script src="/js/tools/tocToggle.js"></script><script src="/js/libs/anime.min.js"></script><script src="/js/layouts/toc.js"></script><script src="/js/plugins/tabs.js"></script></div><script src="/js/libs/pjax.min.js"></script><script>window.addEventListener("DOMContentLoaded",()=>{window.pjax=new Pjax({selectors:["head title",".page-container",".pjax"],history:!0,debug:!1,cacheBust:!1,timeout:0,analytics:!1,currentUrlFullReload:!1,scrollRestoration:!1}),document.addEventListener("pjax:send",()=>{Global.utils.pjaxProgressBarStart()}),document.addEventListener("pjax:complete",()=>{Global.utils.pjaxProgressBarEnd(),window.pjax.executeScripts(document.querySelectorAll("script[data-pjax], .pjax script")),Global.refresh()})})</script></body></html>

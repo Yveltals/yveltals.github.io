@@ -4412,7 +4412,22 @@ ls /bin /user/bin | grep zip
   <entry>
     <title>进程线程与中断</title>
     <url>//post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html</url>
-    <content><![CDATA[<h1 id="进程与线程的区别"><a href="#进程与线程的区别" class="headerlink" title="进程与线程的区别"></a>进程与线程的区别</h1><h2 id="内核中对线程的表示"><a href="#内核中对线程的表示" class="headerlink" title="内核中对线程的表示"></a>内核中对线程的表示</h2><p>在 Linux 中，无论进程还是线程，都是抽象成了 task 任务，在源码里都是用 task_struct 结构来实现的。</p>
+    <content><![CDATA[<h1 id="进程与线程的区别"><a href="#进程与线程的区别" class="headerlink" title="进程与线程的区别"></a>进程与线程的区别</h1><h2 id="老八股版本"><a href="#老八股版本" class="headerlink" title="老八股版本"></a>老八股版本</h2><blockquote>
+<ul>
+<li>一个线程属于一个进程，一个进程包含多个线程</li>
+<li>进程是资源分配的基本单位</li>
+<li>有独立的地址空间，拥有CPU资源、内存资源、文件资源等</li>
+<li>线程是CPU调度的基本单位</li>
+<li>私有（线程上下文）：线程栈，寄存器，程序计数器</li>
+<li>共享：进程地址空间中除线程上下文之外的所有内容：堆、全局变量、静态变量、代码段、文件等公共资源</li>
+<li>数据共享：进程有独立的地址空间，数据隔离，共享复杂，需要IPC；线程共享进程数据，共享简单</li>
+<li>上下文切换：进程切换需要刷新TLB（对于不同进程，相同虚拟地址会映射不同物理地址产生歧义）并获取新的地址空间、然后切换硬件上下文和内核栈；线程切换时只需要切换硬件上下文和内核栈</li>
+<li>可靠性：多进程更可靠，一个进程崩溃后，在保护模式下不会对其他进程产生影响；但线程之间没有隔离性，一个线程崩溃时可能已经破坏了其他线程的内存，导致整个进程kill</li>
+<li>分布式：进程适应于多核、多机分布，易扩展到多机；线程适用于多核</li>
+<li>通信方式：线程共享进程数据，线程通信主要用于线程同步，所以没有进程通信中数据交换的机制</li>
+</ul>
+</blockquote>
+<h2 id="内核中对线程的表示"><a href="#内核中对线程的表示" class="headerlink" title="内核中对线程的表示"></a>内核中对线程的表示</h2><p>在 Linux 中，无论进程还是线程，都是抽象成了 task 任务，在源码里都是用 task_struct 结构来实现的。</p>
 <p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/task_struct_.png"></p>
 <p>对于线程来讲，所有的字段都是和进程一样的（本来就是一个结构体）。包括状态、pid、task 树关系、地址空间、文件系统信息、打开的文件信息等等字段，线程也都有。</p>
 <p>在 Linux 中，每一个 task_struct 都需要被唯一的标识，它的 pid 就是唯一标识号，即每个进程/线程的pid都不同。对于线程，还需通过 tgid 字段来表示其所归属的进程 ID。</p>

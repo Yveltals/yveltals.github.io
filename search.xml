@@ -8356,6 +8356,7 @@ ls /bin /user/bin | grep zip
 </ol>
 <h1 id="误区"><a href="#误区" class="headerlink" title="误区"></a>误区</h1><p>回到作为并发算法中的一部分的“刷新缓存”误区上，我想，可以说我们永远不会在用户空间的程序上“刷新”CPU缓存。我相信这个误区的来源是由于在某些并发算法需要刷新、标记或者清空store缓冲以使下一个读操作可以看到最新值。为了达到这点，我们需要内存屏障而非刷新缓存。</p>
 <p>这个误解的另一个可能来源是，L1缓存，或者 TLB，在上下文切换的时候可能需要根据地址索引策略进行刷新。ARM，在ARMv6之前，没有在TLB条目上使用地址空间标签，因此在上下文切换的时候需要刷新整个L1缓存。许多处理器因为类似的理由需要L1指令缓存刷新，在许多场景下，仅仅是因为指令缓存没有必要保持一致。上下文切换消耗很大，除了污染L2缓存之外，上下文切换还会导致TLB和/或者L1缓存刷新。Intel x86处理器在上下文切换时仅仅需要TLB刷新。</p>
+<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><p><a class="link" href="https://zhuanlan.zhihu.com/p/43526907">https://zhuanlan.zhihu.com/p/43526907 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
 ]]></content>
       <categories>
         <category>OS</category>

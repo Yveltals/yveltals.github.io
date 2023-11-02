@@ -3496,8 +3496,7 @@
   <entry>
     <title>Notes</title>
     <url>//post/Other/Notes.html</url>
-    <content><![CDATA[<p>计算机使用过程中的经验总结(安装、配置、bug)</p>
-<h2 id="Centos编程环境"><a href="#Centos编程环境" class="headerlink" title="Centos编程环境"></a>Centos编程环境</h2><p><a class="link" href="https://yulan.work/posts/centos-beginning-programming-configuration/">参考链接 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+    <content><![CDATA[<h2 id="Centos编程环境"><a href="#Centos编程环境" class="headerlink" title="Centos编程环境"></a>Centos编程环境</h2><p><a class="link" href="https://yulan.work/posts/centos-beginning-programming-configuration/">参考链接 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
 <h3 id="系统配置"><a href="#系统配置" class="headerlink" title="系统配置"></a>系统配置</h3><ol>
 <li>切换默认shell <code>chsh -s /bin/bash root</code></li>
 <li>配代理</li>
@@ -3524,7 +3523,9 @@
 <h3 id="make"><a href="#make" class="headerlink" title="make"></a>make</h3><p>官网 <a class="link" href="https://ftp.gnu.org/gnu/make/">Index of /gnu/make <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 获取最新版 make-x.x.tar.gz 下载地址</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://ftp.gnu.org/gnu/make/make-4.3.tar.gz</span><br><span class="line">tar -zxvf make-4.3.tar.gz</span><br><span class="line"><span class="built_in">cd</span> make-4.3/</span><br><span class="line"><span class="comment"># 指定 make 的安装路径</span></span><br><span class="line">./configure --prefix=/usr/local/make</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"><span class="comment"># 备份原版 make</span></span><br><span class="line"><span class="built_in">mv</span> /usr/bin/make /usr/bin/make.bak</span><br><span class="line"><span class="comment"># 创建软连接</span></span><br><span class="line"><span class="built_in">ln</span> -s /usr/local/make/bin/make /usr/bin/make</span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">make -v</span><br></pre></td></tr></table></figure></div>
 
-<h3 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h3><p>官网 <a class="link" href="https://cmake.org/download/">Download | CMake <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 获取最新版 cmake-x.xx.x.tar.gz 下载地址</p>
+<h3 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h3><h4 id="二进制方式安装"><a href="#二进制方式安装" class="headerlink" title="二进制方式安装"></a>二进制方式安装</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在系统源代码目录下载二进制分发压缩包</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/src</span><br><span class="line">curl -LO https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-linux-x86_64.tar.gz</span><br><span class="line"><span class="comment"># 解压 直接安装</span></span><br><span class="line">tar -xvf cmake-3.22.2.tar.gz</span><br><span class="line"><span class="built_in">mv</span> cmake-3.22.2 /usr/local/cmake</span><br><span class="line">vim /etc/profile</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"/usr/local/cmake/bin:<span class="variable">$PATH</span>"</span></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line">cmake --version</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="源码安装"><a href="#源码安装" class="headerlink" title="源码安装"></a>源码安装</h4><p>官网 <a class="link" href="https://cmake.org/download/">Download | CMake <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 获取最新版 cmake-x.xx.x.tar.gz 下载地址</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://github.com/Kitware/CMake/releases/download/v3.23.0/cmake-3.23.0.tar.gz</span><br><span class="line">tar -zxvf cmake-3.23.0.tar.gz</span><br><span class="line"><span class="built_in">cd</span> cmake-3.23.0/</span><br><span class="line">./configure --prefix=/usr/local/cmake</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"><span class="comment"># 卸载原有 CMake</span></span><br><span class="line">yum -y remove cmake</span><br><span class="line"><span class="comment"># 创建软连接</span></span><br><span class="line"><span class="built_in">ln</span> -s /usr/local/cmake/bin/cmake /usr/bin/cmake</span><br><span class="line"><span class="comment"># 配置环境变量</span></span><br><span class="line">vim /etc/profile</span><br><span class="line"><span class="built_in">export</span> CMAKE_HOME=/usr/local/cmake</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$CMAKE_HOME</span>/bin</span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line"><span class="comment"># 检验</span></span><br><span class="line">cmake --version</span><br></pre></td></tr></table></figure></div>
 
 <blockquote>
@@ -7120,7 +7121,11 @@
   <entry>
     <title>Linux</title>
     <url>//post/%E5%85%AB%E8%82%A1/Linux.html</url>
-    <content><![CDATA[<h1 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C/C++编译"></a>C/C++编译</h1><h2 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h2><ul>
+    <content><![CDATA[<h1 id="Cgroup"><a href="#Cgroup" class="headerlink" title="Cgroup"></a>Cgroup</h1><p>进程绑核</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/fs/cgroup/cpuset</span><br><span class="line"><span class="built_in">mkdir</span> mygroup &amp;&amp; <span class="built_in">cd</span> mygroup</span><br><span class="line"><span class="comment"># 避免报错 write error: No space left on device</span></span><br><span class="line"><span class="built_in">echo</span> 0 &gt; cpuset.mems</span><br><span class="line"><span class="comment"># 限制进程运行在对应的 processor</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"0-19,40-59"</span> &gt; cpuset.cpus</span><br><span class="line"><span class="comment"># 进程加入 cgroup</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; cgroup.proc</span><br><span class="line"><span class="comment"># 加入上级解除限制（或等进程结束）</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; ../cgroup.procs</span><br></pre></td></tr></table></figure></div>
+
+<p>[限制内存使用]( <a class="link" href="https://segmentfault.com/a/1190000008125359">Linux Cgroup系列（04）：限制cgroup的内存使用（subsystem之memory） - Linux程序员 - SegmentFault 思否 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> )</p>
+<h1 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C/C++编译"></a>C/C++编译</h1><h2 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h2><ul>
 <li><p><code>-g</code> 编译带调试信息的可执行文件</p>
 </li>
 <li><p><code>-o</code> 指定输出文件名</p>
@@ -8088,6 +8093,62 @@ ls /bin /user/bin | grep zip
       </categories>
       <tags>
         <tag>音视频</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SVN</title>
+    <url>//post/SVN.html</url>
+    <content><![CDATA[<h3 id="配合Phabricator工作流"><a href="#配合Phabricator工作流" class="headerlink" title="配合Phabricator工作流"></a>配合Phabricator工作流</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存修改</span></span><br><span class="line">svn add,delete</span><br><span class="line"><span class="comment"># code review</span></span><br><span class="line">arc diff</span><br><span class="line">arc commit </span><br></pre></td></tr></table></figure></div>
+
+<h3 id="代码检出-checkout"><a href="#代码检出-checkout" class="headerlink" title="代码检出 checkout"></a>代码检出 checkout</h3><p>把 SVN 服务器上的代码下载到电脑上，checkout 也可以简写为 co</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">svn checkout svn://svnbucket.com/xxx/xxx</span><br><span class="line"><span class="comment"># 指定存储目录</span></span><br><span class="line">svn checkout svn://svnbucket.com/xxx/xxx save-dir</span><br><span class="line"><span class="comment"># 指定用户名密码</span></span><br><span class="line">svn checkout svn://svnbucket.com/xxx/xxx --username xxxx --password xxx</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="提交代码-commit"><a href="#提交代码-commit" class="headerlink" title="提交代码 commit"></a>提交代码 commit</h3><p>commit 可以简写为 ci，-m 参数后面跟的是本次提交的描述内容</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 描述是必须的，但是可以填写空字符串，不指定</span></span><br><span class="line">svn commit -m <span class="string">"提交描述"</span></span><br><span class="line"><span class="comment"># 只提交指定文件或目录</span></span><br><span class="line">svn commit /path/to/file-or-dir -m <span class="string">"提交指定文件"</span></span><br><span class="line"><span class="comment"># 指定后缀的所有文件</span></span><br><span class="line">svn commit *.js -m <span class="string">"提交所有 js 文件"</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="更新代码-update"><a href="#更新代码-update" class="headerlink" title="更新代码 update"></a>更新代码 update</h3><p>update 也可以简写为 up</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 更新到最新</span></span><br><span class="line">svn update</span><br><span class="line"><span class="comment"># 更新到指定版本的代码。特别是最新版本代码有问题时，我们可以用这个命令回到之前的版本</span></span><br><span class="line">svn update -r xxx </span><br><span class="line"><span class="comment"># 仅更新指定文件或者目录</span></span><br><span class="line">svn up /path/to/file-or-dir</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="添加文件-add"><a href="#添加文件-add" class="headerlink" title="添加文件 add"></a>添加文件 add</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 添加指定文件或目录</span></span><br><span class="line">svn add /path/to/file-or-dir</span><br><span class="line"><span class="comment"># 添加当前目录下所有 php 文件</span></span><br><span class="line">svn add *.php</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="删除文件-delete"><a href="#删除文件-delete" class="headerlink" title="删除文件 delete"></a>删除文件 delete</h3><p>此命令会从 SVN 移除版本控制，移除后需要提交一下</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">svn delete /path/to/file-or-dir</span><br><span class="line"><span class="comment"># 删除版本控制，但是本地依旧保留文件</span></span><br><span class="line">svn delete /path/to/file-or-dir --keep-local</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看日志-log"><a href="#查看日志-log" class="headerlink" title="查看日志 log"></a>查看日志 log</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看当前目录的日志</span></span><br><span class="line">svn <span class="built_in">log</span></span><br><span class="line"><span class="comment"># 查看指定文件或目录的提交日志</span></span><br><span class="line">svn <span class="built_in">log</span> /path/to/file-or-dir</span><br><span class="line"><span class="comment"># 查看日志，并且输出变动的文件列表</span></span><br><span class="line">svn <span class="built_in">log</span> -v</span><br><span class="line"><span class="comment"># 限定只输出最新的 5 条日志</span></span><br><span class="line">svn <span class="built_in">log</span> -l 5</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看变动-diff"><a href="#查看变动-diff" class="headerlink" title="查看变动 diff"></a>查看变动 diff</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看当前工作区的改动</span></span><br><span class="line">svn diff</span><br><span class="line"><span class="comment"># 查看指定文件或目录的改动</span></span><br><span class="line">svn diff /path/to/file-or-dir</span><br><span class="line"><span class="comment"># 本地文件跟指定版本号比较差异</span></span><br><span class="line">svn diff /path/to/file-or-dir -r xxx</span><br><span class="line"><span class="comment"># 指定版本号比较差异</span></span><br><span class="line">svn diff /path/to/file-or-dir -r 1:2 </span><br></pre></td></tr></table></figure></div>
+
+<h3 id="撤销修改-revert"><a href="#撤销修改-revert" class="headerlink" title="撤销修改 revert"></a>撤销修改 revert</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 撤销文件的本地修改</span></span><br><span class="line">svn revert test.php</span><br><span class="line"><span class="comment"># 递归撤销目录中的本地修改</span></span><br><span class="line">svn revert -R /path/to/dir</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="添加忽略-ignore"><a href="#添加忽略-ignore" class="headerlink" title="添加忽略 ignore"></a>添加忽略 ignore</h3><p>SVN 的忽略是通过设置目录的属性 prop 来实现的，添加后会有一个目录属性变动的修改需要提交</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 忽略所有 log 文件。点号表示在当前目录设置忽略属性</span></span><br><span class="line">svn propset svn:ignore <span class="string">"*.log"</span> .</span><br><span class="line"><span class="comment"># 递归忽略 global-ignores</span></span><br><span class="line">svn propset svn:global-ignores <span class="string">"*.log"</span> .</span><br><span class="line"><span class="comment"># 从文件读取忽略规则，一行一个规则</span></span><br><span class="line">svn propset svn:ignore -F filename.txt .</span><br><span class="line"><span class="comment"># 打开编辑器修改忽略属性</span></span><br><span class="line">svn propedit svn:ignore .</span><br><span class="line"><span class="comment"># 查看当前目录的属性配置</span></span><br><span class="line">svn proplist . -v</span><br><span class="line"><span class="comment"># 删除当前目录的忽略设置</span></span><br><span class="line">svn propdel svn:ignore .</span><br></pre></td></tr></table></figure></div>
+
+<p>忽略仅对还未添加到版本库的文件生效，已经在版本库里的文件，添加忽略后是不会自动删除的也不会忽略，需要手动 delete 命令删除下才行。</p>
+<h3 id="查看状态-status"><a href="#查看状态-status" class="headerlink" title="查看状态 status"></a>查看状态 status</h3><p>任何时候，你可以用下面的命令查看当前工作目录的 SVN 状态喔，会列出来哪些文件有变动。</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">svn status</span><br><span class="line">svn status /path/to/file-or-dir</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="清理-cleanup"><a href="#清理-cleanup" class="headerlink" title="清理 cleanup"></a>清理 cleanup</h3><p>SVN 出现报错时可以执行一下，会清理掉本地的一些缓存</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">svn cleanup</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看信息-info"><a href="#查看信息-info" class="headerlink" title="查看信息 info"></a>查看信息 info</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn info</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看文件列表-ls"><a href="#查看文件列表-ls" class="headerlink" title="查看文件列表 ls"></a>查看文件列表 ls</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">svn <span class="built_in">ls</span> </span><br><span class="line"><span class="comment"># 指定版本号</span></span><br><span class="line">svn <span class="built_in">ls</span> -r 100</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看文件内容"><a href="#查看文件内容" class="headerlink" title="查看文件内容"></a>查看文件内容</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看指定版本的文件内容，不加版本号就是查看最新版本的</span></span><br><span class="line">svn <span class="built_in">cat</span> test.py -r 2</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="查看-blame"><a href="#查看-blame" class="headerlink" title="查看 blame"></a>查看 blame</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn blame filename.php</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="地址重定向"><a href="#地址重定向" class="headerlink" title="地址重定向"></a>地址重定向</h3><p>如果你的 SVN 地址变了，不需要重新 checkout 代码，只需要这样重定向一下就可以了</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn switch --relocate 原 SVN 地址 新 SVN 地址</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="分支操作"><a href="#分支操作" class="headerlink" title="分支操作"></a>分支操作</h3><div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 创建分支，从主干 trunk 创建一个分支保存到 branches/online1.0</span><br><span class="line">svn cp -m "描述内容" http://svnbucket.com/repos/trunk http://svnbucket.com/repos/branches/online1.0</span><br><span class="line"># 合并主干上的最新代码到分支上</span><br><span class="line">cd branches/online1.0</span><br><span class="line">svn merge http://svnbucket.com/repos/trunk </span><br><span class="line"># 分支合并到主干</span><br><span class="line">svn merge --reintegrate http://svnbucket.com/repos/branches/online1.0</span><br><span class="line"># 切换分支</span><br><span class="line">svn switch svn://svnbucket.com/test/branches/online1.0</span><br><span class="line"># 删除分支</span><br><span class="line">svn rm http://svnbucket.com/repos/branches/online1.0</span><br></pre></td></tr></table></figure></div>
+
+]]></content>
+      <categories>
+        <category>Software</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
       </tags>
   </entry>
 </search>

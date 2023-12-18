@@ -2728,7 +2728,7 @@
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a class="link" href="mailto:&#103;&#x69;&#116;&#64;&#103;&#105;&#x74;&#104;&#x75;&#x62;&#x2e;&#99;&#x6f;&#109;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
+<li><p>重新添加成<a class="link" href="mailto:&#x67;&#105;&#116;&#x40;&#x67;&#x69;&#116;&#x68;&#x75;&#x62;&#46;&#99;&#111;&#109;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></div></li>
 </ol>
 <h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><ol>
@@ -2747,6 +2747,14 @@
 <li><p>在 .gitconfig 中加入</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]</span><br><span class="line">  lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --abbrev-commit</span><br></pre></td></tr></table></figure></div></li>
 </ol>
+<h2 id="Merge和Rebase"><a href="#Merge和Rebase" class="headerlink" title="Merge和Rebase"></a>Merge和Rebase</h2><ul>
+<li><p><code>git merge</code> 保留了分支的结构与历史提交目录，但提交历史会被大量的 <code>merge</code> 污染</p>
+</li>
+<li><p><code>git rebase</code> 把所有的提交压缩成一个 <code>patch</code> ，然后把 <code>patch</code> 添加到目标分支里</p>
+<p>优势：项目历史记录线性的，消除不必要的Merge提交</p>
+<p>缺点：丢失了合并提交的上下文：无法看到真实的更改是何时合并到目标分支上的</p>
+</li>
+</ul>
 <h2 id="在线演示"><a href="#在线演示" class="headerlink" title="在线演示"></a>在线演示</h2><blockquote>
 <p> <a class="link" href="https://learngitbranching.js.org/?locale=zh_CN">https://learngitbranching.js.org/?locale=zh_CN <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
 </blockquote>
@@ -7119,508 +7127,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux</title>
-    <url>//post/%E5%85%AB%E8%82%A1/Linux.html</url>
-    <content><![CDATA[<h1 id="Cgroup"><a href="#Cgroup" class="headerlink" title="Cgroup"></a>Cgroup</h1><p>进程绑核</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/fs/cgroup/cpuset</span><br><span class="line"><span class="built_in">mkdir</span> mygroup &amp;&amp; <span class="built_in">cd</span> mygroup</span><br><span class="line"><span class="comment"># 避免报错 write error: No space left on device</span></span><br><span class="line"><span class="built_in">echo</span> 0 &gt; cpuset.mems</span><br><span class="line"><span class="comment"># 限制进程运行在对应的 processor</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"0-19,40-59"</span> &gt; cpuset.cpus</span><br><span class="line"><span class="comment"># 进程加入 cgroup</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; cgroup.proc</span><br><span class="line"><span class="comment"># 加入上级解除限制（或等进程结束）</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; ../cgroup.procs</span><br></pre></td></tr></table></figure></div>
-
-<p>[限制内存使用]( <a class="link" href="https://segmentfault.com/a/1190000008125359">Linux Cgroup系列（04）：限制cgroup的内存使用（subsystem之memory） - Linux程序员 - SegmentFault 思否 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> )</p>
-<h1 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C/C++编译"></a>C/C++编译</h1><h2 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h2><ul>
-<li><p><code>-g</code> 编译带调试信息的可执行文件</p>
-</li>
-<li><p><code>-o</code> 指定输出文件名</p>
-</li>
-<li><p><code>-O2</code> 优化源代码</p>
-</li>
-<li><p><code>-Wall</code> 打印警告信息，<code>-w</code> 关闭警告信息</p>
-</li>
-<li><p><code>-std=c++11</code> 设置编译标准</p>
-</li>
-<li><p><code>-D</code> 定义宏</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">g++ -D USERM test.cpp</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><code>-l</code> 指定库文件  <code>-L</code>指定库文件路径</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 库文件在/lib和/usr/lib和/usr/local/lib里直接用-l链接</span></span><br><span class="line">g++ -lpthread test.cpp</span><br><span class="line"><span class="comment"># 库文件不在上面三个目录里用-L指定库文件目录</span></span><br><span class="line">g++ -L/home/yveltal/mylibfolder -lmytest test.cpp</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><code>-I</code> 指定头文件搜索目录</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 头文件不在/usr/include里用I参数指定，相对路径可以用-I.来指定</span></span><br><span class="line">g++ -I/myinclude test.cpp</span><br></pre></td></tr></table></figure></div></li>
-</ul>
-<h2 id="Cmake"><a href="#Cmake" class="headerlink" title="Cmake"></a>Cmake</h2><h3 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h3><ul>
-<li><p><strong>add_library</strong> - 生成库文件</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_library(libname [SHARED|STATIC] <span class="variable">${SRC}</span>)</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><strong>add_compile_options</strong> - 添加编译参数</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_compile_options(-Wall -std=c++11 -O2)</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><strong>add_executable</strong> - 生成可执行文件</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_executable(main main.cpp test.cpp)</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><strong>add_subdirectory</strong> - 向工程添加存放源文件的子目录，其中需有一个CMakeLists.txt</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_subdirectory(src)</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><strong>include_directories</strong> - 引入头文件目录</p>
-</li>
-<li><p><strong>link_directories</strong> - 引入库目录，如工程编译时可能用到第三方库的 lib 文件</p>
-</li>
-<li><p><strong>link_libraries</strong> - 引入库文件到当前工程（全路径）</p>
-</li>
-<li><p><strong>target_link_libraries</strong> - 引入库文件到子工程，即<strong>分配</strong>，故需指定子工程</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">target_link_libraries(子工程名 库文件1 库文件2 ...)</span><br></pre></td></tr></table></figure></div>
-</li>
-<li><p><strong>target_include_directories</strong> - 引入头文件目录到子工程，同5</p>
-</li>
-</ul>
-<h3 id="编译工程"><a href="#编译工程" class="headerlink" title="编译工程"></a>编译工程</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">vim CMakeLists.txt</span><br><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure></div>
-
-<hr>
-<h1 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h1><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>c</td>
-<td>到下个断点</td>
-</tr>
-<tr>
-<td>n</td>
-<td>下一条指令</td>
-</tr>
-<tr>
-<td>s</td>
-<td>下一条指令（进入函数）</td>
-</tr>
-<tr>
-<td>p</td>
-<td>打印信息</td>
-</tr>
-<tr>
-<td>bt</td>
-<td>打印栈信息（调用关系）</td>
-</tr>
-<tr>
-<td>info thread</td>
-<td>打印线程列表</td>
-</tr>
-<tr>
-<td>thread N</td>
-<td>切换线程</td>
-</tr>
-<tr>
-<td>thread apply all bt</td>
-<td>查看线程堆栈信息</td>
-</tr>
-</tbody></table>
-<hr>
-<h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><p>Merge和Rebase</p>
-<ul>
-<li><p><code>git merge</code> 保留了分支的结构与历史提交目录，但提交历史会被大量的 <code>merge</code> 污染</p>
-</li>
-<li><p><code>git rebase</code> 把所有的提交压缩成一个 <code>patch</code> ，然后把 <code>patch</code> 添加到目标分支里</p>
-<p>优势：项目历史记录线性的，消除不必要的Merge提交</p>
-<p>缺点：丢失了合并提交的上下文：无法看到真实的更改是何时合并到目标分支上的</p>
-</li>
-</ul>
-<hr>
-<h1 id="Linux指令"><a href="#Linux指令" class="headerlink" title="Linux指令"></a>Linux指令</h1><h2 id="网络相关命令"><a href="#网络相关命令" class="headerlink" title="网络相关命令"></a>网络相关命令</h2><ul>
-<li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
-<li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
-<li><code>fdisk</code> 创建和维护分区表</li>
-<li><code>tcpdump</code> 抓包</li>
-<li><code>route</code> 查看路由</li>
-</ul>
-<h2 id="进程管理命令"><a href="#进程管理命令" class="headerlink" title="进程管理命令"></a>进程管理命令</h2><ul>
-<li><code>ps aux</code> 查看当前正在运行的全部进程</li>
-<li><code>top</code>  动态显示系统中进程的CPU、物理内存占用</li>
-<li><code>free</code> 查看物理内存、交换内存和内核缓冲区内存</li>
-<li><code>pstree</code>  以树状图的形式现实系统中的进程</li>
-<li><code>kill [选项] pid</code>   默认<code>-15</code>  强制终止<code>-9</code></li>
-</ul>
-<h2 id="文件查找命令"><a href="#文件查找命令" class="headerlink" title="文件查找命令"></a>文件查找命令</h2><ul>
-<li><code>sed</code>替换文件内容，<code>sed -i "s/查找字段/替换字段/g" lishan.txt</code></li>
-<li><code>grep</code>输出文件匹配内容，<code>grep 指定字符 源文件</code></li>
-<li><code>more</code> 分⻚查看,通过 <code>cat [文件] | more</code>; <code>f/ 空格</code>下一⻚,<code>回⻋</code>下一行, <code>Q/q</code> 退出</li>
-<li><code>less</code> 是 <code>more</code> 的加强版, 可以随意浏览文件,不像<code>more</code> 仅能向前移动</li>
-<li><code>head</code>查看前n行，<code>head -n filename</code>，<code>tail</code>后n行</li>
-<li><code>which</code> 查找某一命令所在的路径,格式为 <code>which 命令</code> </li>
-<li><code>whereis</code> 命令与其类似,但是 <code>whereis</code> 还能展示命令帮助文档所在的路径</li>
-<li><code>find</code> 格式为 <code>find 路径 [选项] 关键字</code> ,常用选项为 <code>-name</code> , <code>-size</code> , -<code>user</code> </li>
-<li><code>locate</code> 功能与 <code>find -name</code> 相同,find 是遍历了搜索路径下的每个文件,而 locate 是搜索<code>/var/lib/locatedb</code> 里的一个数据库,相当于散列查找。在使用 locate 命令之前,可先使用 <code>updatedb</code> 命令手动更新数据库。</li>
-</ul>
-<h2 id="用户权限命令"><a href="#用户权限命令" class="headerlink" title="用户权限命令"></a>用户权限命令</h2><ul>
-<li><code>chmod</code>文件目录权限<ul>
-<li><code>chmod  {augo}  {+-=}  {rwx}  file</code> </li>
-<li><code>chmod 754 file</code>，<code>rwx=421</code></li>
-</ul>
-</li>
-<li><code>chown</code>文件所有者<code>chown usr file</code><ul>
-<li><code>chgrp</code> 文件所有组，同</li>
-</ul>
-</li>
-<li><code>useradd  [选项] 用户名</code>，-g组 -d目录 -e期限 -u指定ID<br>   <code>passwd [-d] 用户名</code>，设置/删除密码<br>   <code>userdel [-r] 用户名</code>，删除用户(及文件)<br>   <code>usermod 选项 参数 用户名</code>，-l用户名,其余同<code>useradd</code></li>
-<li><code>groupadd [选项] 参数</code>   -g指定用户组ID  -r创建系统用户/组<br><code>groupmod 选项 参数 用户组</code>   -g新ID  -n修改组名<br><code>groupdel 组名</code></li>
-</ul>
-<h2 id="压缩解压命令"><a href="#压缩解压命令" class="headerlink" title="压缩解压命令"></a>压缩解压命令</h2><ul>
-<li><code>zip</code>，解压<code>unzip file.zip</code></li>
-<li><code>tar</code>，压缩<code>-zcvf</code> 解压<code>-zxvf</code></li>
-</ul>
-<h2 id="文件操作命令"><a href="#文件操作命令" class="headerlink" title="文件操作命令"></a>文件操作命令</h2><ul>
-<li><code>pwd</code> 查看当前路径。</li>
-<li><code>mkdir</code> 创建目录, <code>-p</code>依次创建目录。</li>
-<li><code>touch</code> 修改时间属性,也用于创建文件。</li>
-<li><code>cp</code> 复制文件,格式 <code>cp [源路径] [目的路径]</code> 。</li>
-<li><code>mv</code> 移动文件,格式 <code>mv [源路径] [目的路径]</code> 。</li>
-<li><code>rm</code> 删除文件或目录, <code>-r</code> 递归删除, <code>-f</code> 强制。</li>
-<li><code>rmdir</code> 删除目录 <code>rmdir [路径]</code> 。</li>
-<li><code>wget</code>下载,<code>-c</code>断点续传,<code>-b</code>后台下载并用<code>tail -f wget-log</code>查看进度</li>
-<li><code>mount</code>挂载<ul>
-<li>硬盘:<code>mount 设备 挂载点</code></li>
-<li>镜像:<code>mount -o  rw  -t  iso9660 设备  挂载点</code>,<code>rw</code>读写,<code>ro</code>只读</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h1 id="Shell编程"><a href="#Shell编程" class="headerlink" title="Shell编程"></a>Shell编程</h1><h2 id="基础变量"><a href="#基础变量" class="headerlink" title="基础变量"></a>基础变量</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$#</span> <span class="comment">#参数数量</span></span><br><span class="line">$* <span class="comment">#所有参数内容</span></span><br><span class="line"><span class="variable">$2</span> <span class="comment">#第2个参数</span></span><br><span class="line">$? <span class="comment">#命令(函数)返回状态</span></span><br><span class="line"><span class="variable">$0</span> <span class="comment">#当前进程名</span></span><br><span class="line">$$ <span class="comment">#当前进程号</span></span><br><span class="line"></span><br><span class="line"><span class="string">""</span> <span class="comment">#包含的变量被解释</span></span><br><span class="line"><span class="string">''</span> <span class="comment">#视作字符串不解释</span></span><br><span class="line">`` <span class="comment">#视作系统命令执行 echo "today is `date`"</span></span><br></pre></td></tr></table></figure></div>
-
-<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">str=<span class="string">"12345"</span></span><br><span class="line">str2=<span class="string">"67"</span></span><br><span class="line"><span class="comment">#连接与切片</span></span><br><span class="line"><span class="built_in">echo</span> $str<span class="variable">$str2</span> <span class="comment">#123456</span></span><br><span class="line"><span class="variable">${#str}</span>    <span class="comment">#5</span></span><br><span class="line"><span class="variable">${str:2}</span>   <span class="comment">#345</span></span><br><span class="line"><span class="variable">${str:2:2}</span> <span class="comment">#34</span></span><br><span class="line"><span class="comment">#运算符</span></span><br><span class="line">-z    <span class="comment">#长度是否0</span></span><br><span class="line">=     <span class="comment">#字符串是否相等</span></span><br></pre></td></tr></table></figure></div>
-
-<h3 id="运算"><a href="#运算" class="headerlink" title="运算"></a>运算</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">a=3</span><br><span class="line">a=`<span class="built_in">expr</span> <span class="variable">$a</span> + 10` <span class="comment"># expr</span></span><br><span class="line">((a+=<span class="number">10</span>))        <span class="comment"># (())</span></span><br></pre></td></tr></table></figure></div>
-
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">array=(a b c d)</span><br><span class="line"><span class="variable">${array[@]}</span>  <span class="comment">#a b c d</span></span><br><span class="line"><span class="variable">${array[1]}</span>  <span class="comment">#b</span></span><br><span class="line"><span class="variable">${#array[@]}</span> <span class="comment">#4</span></span><br></pre></td></tr></table></figure></div>
-
-<h2 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h2><h3 id="IF"><a href="#IF" class="headerlink" title="IF"></a>IF</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="variable">$a</span> -eq 1 ]; <span class="keyword">then</span></span><br><span class="line"><span class="keyword">if</span> (( <span class="variable">$a</span> == <span class="number">1</span>)); <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"execute 1"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"execute 2"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></div>
-
-<details class="blue" data-header-exclude=""><summary><i class="fa-solid fa-chevron-right"></i>例: 若文件不存在，则创建文件夹与文件 </summary>
-              <div class="content">
-              <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">dirName=<span class="string">"tmpDir"</span></span><br><span class="line">fileName=<span class="string">"tmp.txt"</span></span><br><span class="line"><span class="keyword">if</span> [ -e <span class="variable">$dirName</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">cd</span> <span class="variable">$dirName</span></span><br><span class="line">    <span class="keyword">if</span> [ -e <span class="variable">$fileName</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"exist!"</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">touch</span> <span class="variable">$fileName</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">mkdir</span> <span class="variable">$dirName</span></span><br><span class="line">    <span class="built_in">cd</span> <span class="variable">$dirName</span></span><br><span class="line">    <span class="built_in">touch</span> <span class="variable">$fileName</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></div>
-              </div>
-            </details>
-
-<h3 id="FOR"><a href="#FOR" class="headerlink" title="FOR"></a>FOR</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> ((i=<span class="number">0</span>; i&lt;<span class="number">10</span>; ++i))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"i = <span class="variable">$i</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> var <span class="keyword">in</span> v1 v2 v2</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"var = <span class="variable">$var</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
-
-<details class="blue" data-header-exclude=""><summary><i class="fa-solid fa-chevron-right"></i>例: 遍历当前目录文件 </summary>
-              <div class="content">
-              <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `<span class="built_in">ls</span>`</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="keyword">if</span> [ -d <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">"目录 <span class="variable">$file</span>"</span></span><br><span class="line">	<span class="keyword">elif</span> [ -f <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">"文件 <span class="variable">$file</span>"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
-              </div>
-            </details>
-
-<h3 id="WHILE"><a href="#WHILE" class="headerlink" title="WHILE"></a>WHILE</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">count=1</span><br><span class="line"><span class="built_in">sum</span>=0</span><br><span class="line"><span class="keyword">while</span>((count&lt;<span class="number">101</span>))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    ((sum+=count))</span><br><span class="line">	((count+=<span class="number">1</span>))</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
-
-<h3 id="CASE"><a href="#CASE" class="headerlink" title="CASE"></a>CASE</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="variable">$num</span> <span class="keyword">in</span></span><br><span class="line">	0) <span class="built_in">echo</span> <span class="string">"true"</span>;;</span><br><span class="line">	1|2|4) <span class="built_in">echo</span> <span class="string">"false"</span>;;</span><br><span class="line">	*) <span class="built_in">echo</span> <span class="string">"out of range"</span>;;</span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure></div>
-
-<h3 id="FUNCTION"><a href="#FUNCTION" class="headerlink" title="FUNCTION"></a>FUNCTION</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">fun</span></span>() {</span><br><span class="line">	var1=<span class="variable">$1</span></span><br><span class="line">	var2=<span class="variable">$2</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$var1</span> <span class="variable">$var2</span></span><br><span class="line">	<span class="built_in">return</span> 0</span><br><span class="line">}</span><br><span class="line">fun 1 2</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"return $?"</span></span><br></pre></td></tr></table></figure></div>
-
-<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><table>
-<thead>
-<tr>
-<th>通配符</th>
-<th>含义</th>
-<th>实例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>*</td>
-<td>匹配任意字符串</td>
-<td><code>file_*.txt</code>，匹配file_qseawd.txt等</td>
-</tr>
-<tr>
-<td>?</td>
-<td>匹配一个字符</td>
-<td><code>file_?.txt</code>，匹配file_1.txt等</td>
-</tr>
-<tr>
-<td>[…]</td>
-<td>匹配其中一个字符</td>
-<td><code>file_[ab].txt</code>，匹配 file_a.txt 和 file_b.txt</td>
-</tr>
-<tr>
-<td>[ - ]</td>
-<td>匹配范围中一个字符</td>
-<td><code>file_[a-z].txt</code>，匹配 file_a.txt 至 file_z.txt</td>
-</tr>
-<tr>
-<td>[^…]</td>
-<td>匹配之外的字符</td>
-<td><code>file_[^ab].txt</code>，排除 file_a.txt, file_b.txt</td>
-</tr>
-</tbody></table>
-<h2 id="管道与重定向"><a href="#管道与重定向" class="headerlink" title="管道与重定向"></a>管道与重定向</h2><p><strong>重定向标准输入</strong>：<code>&lt;</code></p>
-<p><strong>重定向标准输出</strong>： <code>&gt;</code>和<code>&gt;&gt;</code>(追加)</p>
-<p><strong>重定向标准错误</strong>：<code>2&gt;</code></p>
-<p><strong>重定向同一文件</strong></p>
-<pre><code>ls -l /bin/user &gt; ls-output.txt 2&gt;&amp;1
-ls -l /bin/user &amp;&gt; ls-output.txt
-</code></pre>
-<p><strong>不处理输出</strong></p>
-<pre><code>ls -l /bin/user 2&gt; /dev/null
-</code></pre>
-<p><strong>管道</strong>：<code>|</code> ，将一个命令的标准输出传送到另一个命令的标准输入中。</p>
-<pre><code>ls -l /user/bin | less
-ls /bin /user/bin | grep zip
-</code></pre>
-<hr>
-<h1 id="Vim"><a href="#Vim" class="headerlink" title="Vim"></a>Vim</h1><h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><table>
-<thead>
-<tr>
-<th>级别</th>
-<th>操作符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>行级</td>
-<td>0</td>
-<td>光标移动到当前行首字符</td>
-</tr>
-<tr>
-<td>行级</td>
-<td>$</td>
-<td>光标移动到当前行尾字符</td>
-</tr>
-<tr>
-<td>段落级</td>
-<td>{</td>
-<td>光标移动到段落首字符</td>
-</tr>
-<tr>
-<td>段落级</td>
-<td>}</td>
-<td>光标移动到段落尾字符</td>
-</tr>
-<tr>
-<td>屏幕级</td>
-<td>H</td>
-<td>光标移动到屏幕首行首字符</td>
-</tr>
-<tr>
-<td>屏幕级</td>
-<td>L</td>
-<td>光标移动到屏幕尾行首字符</td>
-</tr>
-<tr>
-<td>文档级</td>
-<td>nG</td>
-<td>光标移动到文档第n行首字符</td>
-</tr>
-<tr>
-<td>文档级</td>
-<td>G</td>
-<td>光标移动到文档尾行首字符</td>
-</tr>
-<tr>
-<td>字符级</td>
-<td>y←或yh</td>
-<td>复制前一个字符</td>
-</tr>
-<tr>
-<td>字符级</td>
-<td>y→或yl</td>
-<td>复制当前字符</td>
-</tr>
-<tr>
-<td>单词级</td>
-<td>yb</td>
-<td>从单词首字符开始复制直到当前字符(不包括)</td>
-</tr>
-<tr>
-<td>单词级</td>
-<td>ye或yw</td>
-<td>从当前字符开始复制直到单词尾字符(包括)</td>
-</tr>
-<tr>
-<td>行级</td>
-<td>y0</td>
-<td>从行首字符开始复制直到当前字符(不包括)</td>
-</tr>
-<tr>
-<td>行级</td>
-<td>y$</td>
-<td>从当前字符开始复制直到行尾字符(包括)</td>
-</tr>
-<tr>
-<td>行级</td>
-<td>yy</td>
-<td>复制当前行</td>
-</tr>
-<tr>
-<td>行级</td>
-<td>nyy</td>
-<td>复制包括当前行在内的后面n行</td>
-</tr>
-<tr>
-<td>段落级</td>
-<td>y{</td>
-<td>从段落首字符开始复制直到当前字符(不包括)</td>
-</tr>
-<tr>
-<td>段落级</td>
-<td>y}</td>
-<td>从当前字符开始复制直到段落尾字符(包括)</td>
-</tr>
-<tr>
-<td>屏幕级</td>
-<td>yH</td>
-<td>从屏幕首行开始复制直到当前行(包括)</td>
-</tr>
-<tr>
-<td>屏幕级</td>
-<td>yL</td>
-<td>从当前行开始复制直到屏幕尾行(包括)</td>
-</tr>
-<tr>
-<td>文档级</td>
-<td>yG</td>
-<td>从当前行开始复制直到文档尾行(包括)</td>
-</tr>
-<tr>
-<td>文档级</td>
-<td>ynG</td>
-<td>从第n行开始复制直到当前行(包括)</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>操作符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>p</td>
-<td>粘贴</td>
-</tr>
-<tr>
-<td>x</td>
-<td>删除当前字符</td>
-</tr>
-<tr>
-<td>dd</td>
-<td>删除当前行</td>
-</tr>
-<tr>
-<td>ndd</td>
-<td>删除后面n行</td>
-</tr>
-<tr>
-<td>u</td>
-<td>撤销命令</td>
-</tr>
-<tr>
-<td>.</td>
-<td>重复上一命令</td>
-</tr>
-<tr>
-<td>J</td>
-<td>合并两行内容</td>
-</tr>
-<tr>
-<td>r</td>
-<td>快速替换当前字符</td>
-</tr>
-</tbody></table>
-<h2 id="插入模式"><a href="#插入模式" class="headerlink" title="插入模式"></a>插入模式</h2><table>
-<thead>
-<tr>
-<th>操作符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>a</td>
-<td>后移进入编辑</td>
-</tr>
-<tr>
-<td>s</td>
-<td>删除当前字符</td>
-</tr>
-<tr>
-<td>o</td>
-<td>向下新起一行</td>
-</tr>
-<tr>
-<td>A</td>
-<td>光标移到行尾</td>
-</tr>
-<tr>
-<td>O</td>
-<td>向上新起一行</td>
-</tr>
-</tbody></table>
-<h2 id="底行模式"><a href="#底行模式" class="headerlink" title="底行模式"></a>底行模式</h2><table>
-<thead>
-<tr>
-<th>操作符</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>:n</td>
-<td>光标移动到第n行</td>
-</tr>
-<tr>
-<td>/查找内容</td>
-<td>n下一个,N上一个</td>
-</tr>
-<tr>
-<td>：s/被替换/替换/</td>
-<td>替换当前行的第一目标</td>
-</tr>
-<tr>
-<td>：s/被替换/替换/g</td>
-<td>替换当前行的全部目标</td>
-</tr>
-<tr>
-<td>:%s/被替换/替换/g</td>
-<td>替换整个文档的全部目标</td>
-</tr>
-<tr>
-<td>:%s/被替换/替换/gc</td>
-<td>替换文档全部目标并询问</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>设置</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>set number</td>
-<td>设置行号</td>
-</tr>
-<tr>
-<td>set smartindent</td>
-<td>智能对⻬</td>
-</tr>
-<tr>
-<td>set cindent</td>
-<td>C语言格式对⻬</td>
-</tr>
-<tr>
-<td>set showmatch</td>
-<td>括号匹配</td>
-</tr>
-<tr>
-<td>set tabstop=4</td>
-<td>Tab为4个空格</td>
-</tr>
-<tr>
-<td>set mouse=a</td>
-<td>鼠标支持</td>
-</tr>
-</tbody></table>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>流媒体协议</title>
     <url>//post/%E9%9F%B3%E8%A7%86%E9%A2%91/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE.html</url>
     <content><![CDATA[<h1 id="RTMP"><a href="#RTMP" class="headerlink" title="RTMP"></a>RTMP</h1><blockquote>
@@ -8149,6 +7655,473 @@ ls /bin /user/bin | grep zip
       </categories>
       <tags>
         <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux</title>
+    <url>//post/Linux.html</url>
+    <content><![CDATA[<h1 id="Cgroup"><a href="#Cgroup" class="headerlink" title="Cgroup"></a>Cgroup</h1><p>进程绑核</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/fs/cgroup/cpuset</span><br><span class="line"><span class="built_in">mkdir</span> mygroup &amp;&amp; <span class="built_in">cd</span> mygroup</span><br><span class="line"><span class="comment"># 避免报错 write error: No space left on device</span></span><br><span class="line"><span class="built_in">echo</span> 0 &gt; cpuset.mems</span><br><span class="line"><span class="comment"># 限制进程运行在对应的 processor</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"0-19,40-59"</span> &gt; cpuset.cpus</span><br><span class="line"><span class="comment"># 进程加入 cgroup</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; cgroup.proc</span><br><span class="line"><span class="comment"># 加入上级解除限制（或等进程结束）</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; ../cgroup.procs</span><br></pre></td></tr></table></figure></div>
+
+<p><a class="link" href="https://segmentfault.com/a/1190000008125359">Linux Cgroup系列（04）：限制cgroup的内存使用 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h1 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h1><h2 id="网络相关命令"><a href="#网络相关命令" class="headerlink" title="网络相关命令"></a>网络相关命令</h2><ul>
+<li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
+<li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
+<li><code>iftop</code> 显示进程级别的网络IO</li>
+<li><code>fdisk</code> 创建和维护分区表</li>
+<li><code>tcpdump</code> 抓包</li>
+<li><code>route</code> 查看路由</li>
+</ul>
+<h2 id="进程管理命令"><a href="#进程管理命令" class="headerlink" title="进程管理命令"></a>进程管理命令</h2><ul>
+<li><code>ps aux | grep -w 'hello' | grep -v grep | awk '{print $2}' | xargs kill -9</code></li>
+<li><code>pstree</code>  以树状图的形式现实系统中的进程</li>
+</ul>
+<h2 id="文件查找命令"><a href="#文件查找命令" class="headerlink" title="文件查找命令"></a>文件查找命令</h2><ul>
+<li><code>sed -i "s/查找字段/替换字段/g" src.txt</code></li>
+<li><code>grep {xxx} src.txt</code></li>
+<li><code>less</code> 浏览文件</li>
+<li><code>head -n log.txt</code> 查看前 n 行</li>
+<li><code>tail -f log.txt</code> 查看尾行（实时刷新）</li>
+<li><code>which</code> 查找某一命令所在的路径,格式为 <code>which 命令</code> </li>
+<li><code>whereis</code> 命令与其类似,但是 <code>whereis</code> 还能展示命令帮助文档所在的路径</li>
+<li><code>find</code> 格式为 <code>find {path} -name {xxx}</code></li>
+<li><code>locate</code> 功能与 <code>find -name</code> 相同,find 是遍历了搜索路径下的每个文件,而 locate 是搜索<code>/var/lib/locatedb</code> 里的一个数据库,相当于散列查找。在使用 locate 命令之前,可先使用 <code>updatedb</code> 命令手动更新数据库。</li>
+</ul>
+<h2 id="用户权限命令"><a href="#用户权限命令" class="headerlink" title="用户权限命令"></a>用户权限命令</h2><ul>
+<li><code>chmod</code>文件目录权限<ul>
+<li><code>chmod  {augo}  {+-=}  {rwx}  file</code> </li>
+<li><code>chmod 754 file</code>，<code>rwx=421</code></li>
+</ul>
+</li>
+<li><code>chown</code>文件所有者<code>chown usr file</code><ul>
+<li><code>chgrp</code> 文件所有组，同</li>
+</ul>
+</li>
+<li><code>useradd  [选项] 用户名</code>，-g组 -d目录 -e期限 -u指定ID<br>   <code>passwd [-d] 用户名</code>，设置/删除密码<br>   <code>userdel [-r] 用户名</code>，删除用户(及文件)<br>   <code>usermod 选项 参数 用户名</code>，-l用户名,其余同<code>useradd</code></li>
+<li><code>groupadd [选项] 参数</code>   -g指定用户组ID  -r创建系统用户/组<br><code>groupmod 选项 参数 用户组</code>   -g新ID  -n修改组名<br><code>groupdel 组名</code></li>
+</ul>
+<h2 id="压缩解压命令"><a href="#压缩解压命令" class="headerlink" title="压缩解压命令"></a>压缩解压命令</h2><ul>
+<li><code>zcvf src_dir/ dst.tar.gz</code></li>
+<li><code>zxvf xxx.tar.gz -C dst_dir/ &gt; /dev/null 2&gt;&amp;1</code></li>
+</ul>
+<h2 id="文件操作命令"><a href="#文件操作命令" class="headerlink" title="文件操作命令"></a>文件操作命令</h2><ul>
+<li><code>headlink -f .</code> 查看当前路径</li>
+<li><code>mkdir -p</code> 依次创建目录</li>
+<li><code>wget</code>下载,<code>-c</code>断点续传,<code>-b</code>后台下载（wget-log）</li>
+<li><code>mount</code>挂载<ul>
+<li>硬盘:<code>mount 设备 挂载点</code></li>
+<li>镜像:<code>mount -o  rw  -t  iso9660 设备  挂载点</code>,<code>rw</code>读写,<code>ro</code>只读</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="Shell编程"><a href="#Shell编程" class="headerlink" title="Shell编程"></a>Shell编程</h1><h2 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h2><p>中控机命令</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">scp /home/web_server/mazhuang/load.sh web_server@<span class="variable">${host}</span>:/home/web_server/mazhuang/</span><br><span class="line">ssh -n <span class="variable">${host}</span> <span class="string">"sh /home/web_server/mazhuang/load.sh"</span></span><br></pre></td></tr></table></figure></div>
+<p>Kill进程</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">pkill -f <span class="variable">$directory</span>/dummy</span><br><span class="line"><span class="keyword">until</span> [[ -z `ps aux | awk <span class="string">'{print $11}'</span> | grep -v grep | grep <span class="string">"<span class="variable">$directory</span>/dummy"</span>` ]]; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">sleep</span> 1s</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="keyword">if</span> [[ -z `ps aux | awk <span class="string">'{print $11}'</span> | grep -v grep | grep <span class="string">"dummy"</span>` ]]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> -e <span class="string">"\e[31mWARNING: Failed to kill a process. \e[0m"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="基础变量"><a href="#基础变量" class="headerlink" title="基础变量"></a>基础变量</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$#</span> <span class="comment">#参数数量</span></span><br><span class="line">$* <span class="comment">#所有参数内容</span></span><br><span class="line"><span class="variable">$2</span> <span class="comment">#第2个参数</span></span><br><span class="line">$? <span class="comment">#命令(函数)返回状态</span></span><br><span class="line"><span class="variable">$0</span> <span class="comment">#当前进程名</span></span><br><span class="line">$$ <span class="comment">#当前进程号</span></span><br><span class="line"></span><br><span class="line"><span class="string">""</span> <span class="comment">#包含的变量被解释</span></span><br><span class="line"><span class="string">''</span> <span class="comment">#视作字符串不解释</span></span><br><span class="line">`` <span class="comment">#视作系统命令执行 echo "today is `date`"</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">str=<span class="string">"12345"</span></span><br><span class="line">str2=<span class="string">"67"</span></span><br><span class="line"><span class="comment">#连接与切片</span></span><br><span class="line"><span class="built_in">echo</span> $str<span class="variable">$str2</span> <span class="comment">#123456</span></span><br><span class="line"><span class="variable">${#str}</span>    <span class="comment">#5</span></span><br><span class="line"><span class="variable">${str:2}</span>   <span class="comment">#345</span></span><br><span class="line"><span class="variable">${str:2:2}</span> <span class="comment">#34</span></span><br><span class="line"><span class="comment">#运算符</span></span><br><span class="line">-z    <span class="comment">#长度是否0</span></span><br><span class="line">=     <span class="comment">#字符串是否相等</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="运算"><a href="#运算" class="headerlink" title="运算"></a>运算</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">a=`<span class="built_in">expr</span> <span class="variable">$a</span> + 10` <span class="comment"># expr</span></span><br><span class="line">((a+=<span class="number">10</span>))        <span class="comment"># (())</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">array=(a b c d)</span><br><span class="line"><span class="variable">${array[@]}</span>  <span class="comment">#a b c d</span></span><br><span class="line"><span class="variable">${array[1]}</span>  <span class="comment">#b</span></span><br><span class="line"><span class="variable">${#array[@]}</span> <span class="comment">#4</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h2><h3 id="IF"><a href="#IF" class="headerlink" title="IF"></a>IF</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="variable">$a</span> -eq 1 ]; <span class="keyword">then</span></span><br><span class="line"><span class="keyword">if</span> (( <span class="variable">$a</span> == <span class="number">1</span>)); <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"execute 1"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"execute 2"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></div>
+
+
+<h3 id="FOR"><a href="#FOR" class="headerlink" title="FOR"></a>FOR</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> ((i=<span class="number">0</span>; i&lt;<span class="number">10</span>; ++i)); <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"i = <span class="variable">$i</span>"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `<span class="built_in">ls</span>`; <span class="keyword">do</span></span><br><span class="line">	<span class="keyword">if</span> [ -d <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">"目录 <span class="variable">$file</span>"</span></span><br><span class="line">	<span class="keyword">elif</span> [ -f <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">"文件 <span class="variable">$file</span>"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="WHILE"><a href="#WHILE" class="headerlink" title="WHILE"></a>WHILE</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">count=1</span><br><span class="line"><span class="built_in">sum</span>=0</span><br><span class="line"><span class="keyword">while</span>((count&lt;<span class="number">101</span>)); <span class="keyword">do</span></span><br><span class="line">    ((sum+=count))</span><br><span class="line">	((count+=<span class="number">1</span>))</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="CASE"><a href="#CASE" class="headerlink" title="CASE"></a>CASE</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="variable">$num</span> <span class="keyword">in</span></span><br><span class="line">	0) <span class="built_in">echo</span> <span class="string">"true"</span>;;</span><br><span class="line">	1|2|4) <span class="built_in">echo</span> <span class="string">"false"</span>;;</span><br><span class="line">	*) <span class="built_in">echo</span> <span class="string">"out of range"</span>;;</span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="FUNCTION"><a href="#FUNCTION" class="headerlink" title="FUNCTION"></a>FUNCTION</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">fun</span></span>() {</span><br><span class="line">	var1=<span class="variable">$1</span></span><br><span class="line">	var2=<span class="variable">$2</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$var1</span> <span class="variable">$var2</span></span><br><span class="line">	<span class="built_in">return</span> 0</span><br><span class="line">}</span><br><span class="line">fun 1 2</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"return $?"</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>含义</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>*</td>
+<td>匹配任意字符串</td>
+<td><code>file_*.txt</code>，匹配file_qseawd.txt等</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配一个字符</td>
+<td><code>file_?.txt</code>，匹配file_1.txt等</td>
+</tr>
+<tr>
+<td>[abc]</td>
+<td>匹配abc其中一个字符</td>
+<td><code>file_[ab].txt</code>，匹配 file_a.txt 和 file_b.txt</td>
+</tr>
+<tr>
+<td>[a-z]</td>
+<td>匹配范围中一个字符</td>
+<td><code>file_[a-z].txt</code>，匹配 file_a.txt 至 file_z.txt</td>
+</tr>
+<tr>
+<td>[^abc]</td>
+<td>匹配之外的字符</td>
+<td><code>file_[^ab].txt</code>，排除 file_a.txt, file_b.txt</td>
+</tr>
+</tbody></table>
+<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><ul>
+<li><p>重定向标准输入 <code>&lt;</code></p>
+</li>
+<li><p>重定向标准输出 <code>&gt;</code>和<code>&gt;&gt;</code>(追加)</p>
+</li>
+<li><p>重定向标准错误 <code>2&gt;</code></p>
+</li>
+<li><p>重定向同一文件 <code>./bin &gt; r.log 2&gt;&amp;1</code></p>
+</li>
+<li><p>不处理输出 <code>./bin 2&gt; /dev/null</code></p>
+</li>
+</ul>
+<hr>
+<h1 id="Vim"><a href="#Vim" class="headerlink" title="Vim"></a>Vim</h1><h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>行级</td>
+<td>0</td>
+<td>光标移动到当前行首字符</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>$</td>
+<td>光标移动到当前行尾字符</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>{</td>
+<td>光标移动到段落首字符</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>}</td>
+<td>光标移动到段落尾字符</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>H</td>
+<td>光标移动到屏幕首行首字符</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>L</td>
+<td>光标移动到屏幕尾行首字符</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>nG</td>
+<td>光标移动到文档第n行首字符</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>G</td>
+<td>光标移动到文档尾行首字符</td>
+</tr>
+<tr>
+<td>字符级</td>
+<td>y←或yh</td>
+<td>复制前一个字符</td>
+</tr>
+<tr>
+<td>字符级</td>
+<td>y→或yl</td>
+<td>复制当前字符</td>
+</tr>
+<tr>
+<td>单词级</td>
+<td>yb</td>
+<td>从单词首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>单词级</td>
+<td>ye或yw</td>
+<td>从当前字符开始复制直到单词尾字符(包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>y0</td>
+<td>从行首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>y$</td>
+<td>从当前字符开始复制直到行尾字符(包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>yy</td>
+<td>复制当前行</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>y{</td>
+<td>从段落首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>y}</td>
+<td>从当前字符开始复制直到段落尾字符(包括)</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>yH</td>
+<td>从屏幕首行开始复制直到当前行(包括)</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>yL</td>
+<td>从当前行开始复制直到屏幕尾行(包括)</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>yG</td>
+<td>从当前行开始复制直到文档尾行(包括)</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>ynG</td>
+<td>从第n行开始复制直到当前行(包括)</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p</td>
+<td>粘贴</td>
+</tr>
+<tr>
+<td>x</td>
+<td>删除当前字符</td>
+</tr>
+<tr>
+<td>dd</td>
+<td>删除当前行</td>
+</tr>
+<tr>
+<td>u</td>
+<td>撤销命令</td>
+</tr>
+<tr>
+<td>.</td>
+<td>重复上一命令</td>
+</tr>
+<tr>
+<td>J</td>
+<td>合并两行内容</td>
+</tr>
+<tr>
+<td>r</td>
+<td>快速替换当前字符</td>
+</tr>
+</tbody></table>
+<h2 id="插入模式"><a href="#插入模式" class="headerlink" title="插入模式"></a>插入模式</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>后移进入编辑</td>
+</tr>
+<tr>
+<td>s</td>
+<td>删除当前字符</td>
+</tr>
+<tr>
+<td>o</td>
+<td>向下新起一行</td>
+</tr>
+<tr>
+<td>A</td>
+<td>光标移到行尾</td>
+</tr>
+<tr>
+<td>O</td>
+<td>向上新起一行</td>
+</tr>
+</tbody></table>
+<h2 id="底行模式"><a href="#底行模式" class="headerlink" title="底行模式"></a>底行模式</h2><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:n</td>
+<td>光标移动到第n行</td>
+</tr>
+<tr>
+<td>/查找内容</td>
+<td>n下一个,N上一个</td>
+</tr>
+<tr>
+<td>:s/被替换/替换/</td>
+<td>替换当前行的第一目标</td>
+</tr>
+<tr>
+<td>:s/被替换/替换/g</td>
+<td>替换当前行的全部目标</td>
+</tr>
+<tr>
+<td>:%s/被替换/替换/g</td>
+<td>替换整个文档的全部目标</td>
+</tr>
+<tr>
+<td>:%s/被替换/替换/gc</td>
+<td>替换文档全部目标并询问</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>set number</td>
+<td>设置行号</td>
+</tr>
+<tr>
+<td>set smartindent</td>
+<td>智能对⻬</td>
+</tr>
+<tr>
+<td>set cindent</td>
+<td>C语言格式对⻬</td>
+</tr>
+<tr>
+<td>set showmatch</td>
+<td>括号匹配</td>
+</tr>
+<tr>
+<td>set tabstop=4</td>
+<td>Tab为4个空格</td>
+</tr>
+<tr>
+<td>set mouse=a</td>
+<td>鼠标支持</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h1><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>c</td>
+<td>到下个断点</td>
+</tr>
+<tr>
+<td>n</td>
+<td>下一条指令</td>
+</tr>
+<tr>
+<td>s</td>
+<td>下一条指令（进入函数）</td>
+</tr>
+<tr>
+<td>p</td>
+<td>打印信息</td>
+</tr>
+<tr>
+<td>bt</td>
+<td>打印栈信息（调用关系）</td>
+</tr>
+<tr>
+<td>info thread</td>
+<td>打印线程列表</td>
+</tr>
+<tr>
+<td>thread N</td>
+<td>切换线程</td>
+</tr>
+<tr>
+<td>thread apply all bt</td>
+<td>查看线程堆栈信息</td>
+</tr>
+</tbody></table>
+<hr>
+<h1 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C/C++编译"></a>C/C++编译</h1><h2 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h2><ul>
+<li><p><code>-g</code> 编译带调试信息的可执行文件</p>
+</li>
+<li><p><code>-o</code> 指定输出文件名</p>
+</li>
+<li><p><code>-O2</code> 优化源代码</p>
+</li>
+<li><p><code>-Wall</code> 打印警告信息，<code>-w</code> 关闭警告信息</p>
+</li>
+<li><p><code>-std=c++11</code> 设置编译标准</p>
+</li>
+<li><p><code>-D</code> 定义宏</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">g++ -D USERM test.cpp</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>-l</code> 指定库文件  <code>-L</code>指定库文件路径</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 库文件在/lib和/usr/lib和/usr/local/lib里直接用-l链接</span></span><br><span class="line">g++ -lpthread test.cpp</span><br><span class="line"><span class="comment"># 库文件不在上面三个目录里用-L指定库文件目录</span></span><br><span class="line">g++ -L/home/yveltal/mylibfolder -lmytest test.cpp</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><code>-I</code> 指定头文件搜索目录</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 头文件不在/usr/include里用I参数指定，相对路径可以用-I.来指定</span></span><br><span class="line">g++ -I/myinclude test.cpp</span><br></pre></td></tr></table></figure></div></li>
+</ul>
+<h2 id="Cmake"><a href="#Cmake" class="headerlink" title="Cmake"></a>Cmake</h2><h3 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h3><ul>
+<li><p><strong>add_library</strong> - 生成库文件</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_library(libname [SHARED|STATIC] <span class="variable">${SRC}</span>)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>add_compile_options</strong> - 添加编译参数</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_compile_options(-Wall -std=c++11 -O2)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>add_executable</strong> - 生成可执行文件</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_executable(main main.cpp test.cpp)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>add_subdirectory</strong> - 向工程添加存放源文件的子目录，其中需有一个CMakeLists.txt</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_subdirectory(src)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>include_directories</strong> - 引入头文件目录</p>
+</li>
+<li><p><strong>link_directories</strong> - 引入库目录，如工程编译时可能用到第三方库的 lib 文件</p>
+</li>
+<li><p><strong>link_libraries</strong> - 引入库文件到当前工程（全路径）</p>
+</li>
+<li><p><strong>target_link_libraries</strong> - 引入库文件到子工程，即<strong>分配</strong>，故需指定子工程</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">target_link_libraries(子工程名 库文件1 库文件2 ...)</span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>target_include_directories</strong> - 引入头文件目录到子工程，同5</p>
+</li>
+</ul>
+<h3 id="编译工程"><a href="#编译工程" class="headerlink" title="编译工程"></a>编译工程</h3><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">vim CMakeLists.txt</span><br><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure></div>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
       </tags>
   </entry>
 </search>

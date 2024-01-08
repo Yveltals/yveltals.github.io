@@ -421,7 +421,21 @@
 <p>为防止回路，将访问过的结点记录下来</p>
 </li>
 </ol>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99.png"></p>
+<pre class="mermaid">flowchart LR
+  classDef red stroke:#f00
+  classDef green stroke:#0f0
+
+  hit:::red
+  hit((hit))---hot
+  hot((hot))---dot((dot))
+  hot---lot((lot))
+  dot---dog((dog))
+  lot---log((log))
+  dog---cog:::green
+  log---cog((cog))
+  dot---lot
+  dog---log</pre>
+
 <div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">queue&lt;string&gt; q;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">ladderLength</span><span class="params">(string beginWord, string endWord, vector&lt;string&gt;&amp; wordList)</span> </span>{</span><br><span class="line">    <span class="function">unordered_set&lt;string&gt; <span class="title">dic</span><span class="params">(wordList.begin(),wordList.end())</span></span>;</span><br><span class="line">    <span class="keyword">if</span>(!dic.<span class="built_in">count</span>(endWord)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> step=<span class="number">1</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(beginWord);</span><br><span class="line">    dic.<span class="built_in">erase</span>(beginWord);<span class="comment">//访问后直接删除，防止回路</span></span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>()){</span><br><span class="line">        <span class="type">int</span> k=q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">while</span>(k--){</span><br><span class="line">            string s=q.<span class="built_in">front</span>(); q.<span class="built_in">pop</span>();</span><br><span class="line">			<span class="comment">//判断更改一个字符后是否满足结果</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">check</span>(s,endWord,dic)){</span><br><span class="line">                <span class="keyword">return</span> step+<span class="number">1</span>;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        step++;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">check</span><span class="params">(string cur,string target,unordered_set&lt;string&gt;&amp; dic)</span></span>{</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;cur.<span class="built_in">size</span>();++i){</span><br><span class="line">        <span class="type">char</span> tmp=cur[i];</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">char</span> c=<span class="string">'a'</span>;c&lt;=<span class="string">'z'</span>;c++){</span><br><span class="line">            <span class="keyword">if</span>(tmp==c) <span class="keyword">continue</span>;</span><br><span class="line">            cur[i]=c;</span><br><span class="line">            <span class="keyword">if</span>(dic.<span class="built_in">count</span>(cur)){</span><br><span class="line">                <span class="keyword">if</span>(cur==target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">else</span>{</span><br><span class="line">                    q.<span class="built_in">push</span>(cur);</span><br><span class="line">                    dic.<span class="built_in">erase</span>(cur);<span class="comment">//访问后直接删除，防止回路</span></span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line"></span><br><span class="line">        }</span><br><span class="line">        cur[i]=tmp;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
 
 <p><a class="link" href="https://leetcode.cn/problems/water-and-jug-problem/">水壶问题 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>：两水壶容量<code>x</code>,<code>y</code>，能否经操作使得盛水之和为<code>z</code>：①装满一水壶 ②清空一水壶 ③相互倒水至满或空</p>
@@ -2639,7 +2653,13 @@
 <li>Index 缓存区域，只有Index区域里的东西才可以被commit</li>
 <li>Working Directory 用户操作区域</li>
 </ul>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/git1.png"></p>
+<pre class="mermaid">sequenceDiagram
+  participant HEAD
+  participant Index
+  HEAD -&gt;&gt; Working Directory: Checkout the project
+  Working Directory -&gt;&gt; Index: Stage files
+  Index -&gt;&gt; HEAD: Commit</pre>
+
 <h3 id="初始状态"><a href="#初始状态" class="headerlink" title="初始状态"></a>初始状态</h3><p>当 checkout 分支的时候，git做了三件事情：</p>
 <ol>
 <li>将HEAD指向那个分支的最后一次commit</li>
@@ -2659,7 +2679,6 @@
 <li><code>git reset</code> 是会修改版本历史的，他会<strong>丢弃掉一些版本历史</strong>。</li>
 <li><code>git revert</code> 是根据那个commit逆向生成一个新的commit，版本历史是不会被破坏的。</li>
 </ul>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/git2.png"></p>
 <h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><h4 id="1-用于file"><a href="#1-用于file" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure></div>
 
 <p><strong>撤销add操作</strong>，把文件从index退回workspace，并将更改保存在workspace中</p>
@@ -2737,7 +2756,7 @@
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a class="link" href="mailto:&#x67;&#x69;&#x74;&#64;&#x67;&#105;&#x74;&#104;&#x75;&#x62;&#x2e;&#x63;&#x6f;&#109;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
+<li><p>重新添加成<a class="link" href="mailto:&#x67;&#x69;&#116;&#64;&#103;&#105;&#116;&#x68;&#x75;&#98;&#x2e;&#99;&#111;&#x6d;">git@github.com <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>的方式并关联</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></div></li>
 </ol>
 <h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><ol>
@@ -4840,16 +4859,13 @@
 </ul>
 <p>所以 future\promise 编程模型本质上还是message pass（任务线程与主线程消息传递）。在future模型中阻塞和非阻塞都有：<strong>拉起一个新线程</strong>（非阻塞），在主线程 <code>.get()</code> （阻塞）。整个流程见下图：</p>
 <pre class="mermaid">sequenceDiagram
-    Thread1-&gt;&gt;Thread1: Create Promise obj
-    Thread1-&gt;&gt;Thread1: Fetch Future obj from Promise
+    Thread1-&gt;&gt;Thread1: Create Promise obj and fetch Future obj
     Thread1-&gt;&gt;Thread2: Pass Promise obj
     Thread1-&gt;&gt;Thread1: Do some work
     Thread1-&gt;&gt;Thread1: Get blocked on future::get()
     Thread2-&gt;&gt;Thread2: Set value in passed Promise
-    Thread1-&gt;&gt;Thread1: Future return value, set in Promise
-    Thread1-&gt;&gt;Thread1: Continue work</pre>
+    Thread1-&gt;&gt;Thread1: future::get() return value, Continue work</pre>
 
-<p><img lazyload="" src="/images/loading.svg" data-src="https://pic1.zhimg.com/80/v2-a2a18d224893562269dc98581b1a6110_1440w.webp"></p>
 <p>其实future/promise最强大的功能是能够：</p>
 <ol>
 <li><strong>获得结果返回值</strong></li>

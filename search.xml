@@ -4233,10 +4233,45 @@
   <entry>
     <title>Cpp</title>
     <url>//post/%E5%85%AB%E8%82%A1/Cpp.html</url>
-    <content><![CDATA[<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>什么是copy elision?<br>Copy elision是指编译器为了优化，将不需要的copy/move 操作（含析构函数，为了行文简洁，本文忽略析构函数的省略）直接去掉了。<br>RVO<br><a class="link" href="https://abseil.io/tips/11">https://abseil.io/tips/11 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br><a class="link" href="https://jasonkayzk.github.io/2022/05/11/C++%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96%E4%B8%AD%E7%9A%84RVO%E5%92%8CNRVO/">https://jasonkayzk.github.io/2022/05/11/C++%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96%E4%B8%AD%E7%9A%84RVO%E5%92%8CNRVO/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
-<p>RVO是返回值优化，就是将返回值的创建省略了。NRVO是函数内具有名字的局部变量充当返回值的时候，它的创建也被省略了。它们的省略结果都是在最终的变量里创建对象。</p>
-<p>在C++没有move的时候，很多编译器实现就支持RVO(return value optimization)和NRVO(named return value optimization)。这两种优化用于在返回值的时候避免不必要的copy。在C++11以后，引入了move，move的存在与copy elision交织在一起。在这里直接给出答案，写法一是推荐的，写法二场景需要就推荐，而写法三是不推荐的。大家可以通过运行代码查看对应的输出从而得到答案。</p>
-<p>C++17以后，RVO是保证会发生的，因为标准这么定义了。而NRVO并没有保证会发生，但是大部分编译器都会实现。所以在C++17里面，没有copy elision的时候只有一个moved，因为RVO也存在，而这个moved，是由于NRVO没有开启生成的。如果开启优化，那么一个moved也没有，因为NRVO把这个moved给优化掉了。当用prvalue创建对象的时候，直接会构造对象，而不用调用那几个构造函数。</p>
+    <content><![CDATA[<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><h2 id="Copy-elision"><a href="#Copy-elision" class="headerlink" title="Copy elision"></a>Copy elision</h2><p>Copy elision是指编译器为了优化，将不需要的copy/move 操作（含析构函数，为了行文简洁，本文忽略析构函数的省略）直接去掉了。</p>
+<ul>
+<li><strong>RVO</strong> 是返回值优化，就是将返回值的创建省略了。</li>
+<li><strong>NRVO</strong> 是函数内具有名字的局部变量充当返回值的时候，它的创建也被省略了。</li>
+</ul>
+<p>它们的省略结果都是在最终的变量里创建对象。C++17以后，RVO是保证会发生的，因为标准这么定义了。而NRVO并没有保证会发生，但是大部分编译器都会实现。</p>
+<h2 id="RVO"><a href="#RVO" class="headerlink" title="RVO"></a>RVO</h2><div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">Obj <span class="title">fun</span><span class="params">()</span> </span>{</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Obj</span>();</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj = <span class="built_in">fun</span>();</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+
+<p>在编译器不进行优化的情况下，这段代码一共会调用：</p>
+<ul>
+<li>1 次构造函数：对应代码 Obj()</li>
+<li>2 次拷贝构造函数：<ul>
+<li>函数返回使用到的临时对象的拷贝构造</li>
+<li>对象 obj 的拷贝构造</li>
+</ul>
+</li>
+<li>3 次析构函数：将上述构造出的对象析构</li>
+</ul>
+<p>当一个未具名且未绑定到任何引用的临时变量被移动或复制到一个相同的对象时，拷贝和移动构造可以被省略。当这个临时对象在被构造的时候，它会直接被构造在将要拷贝/移动到的对象。编译器明确知道函数会返回哪一个局部对象，那么编译器会把存储这个局部对象的地址和存储返回临时对象的地址进行复用，也就是说避免了从局部对象到临时对象的拷贝操作。</p>
+<p>在这个例子中，代码会被优化成这样：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(Obj &amp;_obj)</span> </span>{</span><br><span class="line">  _obj.Obj::<span class="built_in">Obj</span>();  <span class="comment">// 构造函数</span></span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj;  <span class="comment">// 仅定义不构造</span></span><br><span class="line">  <span class="built_in">fun</span>(obj);</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+
+<p>另外，这种针对未具名临时对象的拷贝构造优化同样也发生在容器操作中，在使用 <code>vector::push_back</code> 操作时，根据 push_back 的内容，会执行不同的步骤：</p>
+<ul>
+<li>编译器优化：如果 push_back 的参数是 T 的一个对象，那么会直接调用拷贝构造函数在 vector 中构造对象，这时行为和 emplace_back 一致</li>
+<li>正常行为：如果 push_back 的参数和 T 的某一个 implicit 构造函数一致，那么就会先调用该构造函数构造一个临时对象，然后调用移动构造函数将该临时对象移动到 vector 中</li>
+</ul>
+<h2 id="NRVO"><a href="#NRVO" class="headerlink" title="NRVO"></a>NRVO</h2><p>在RVO的基础上，NRVO 优化以下代码中的一次多余的拷贝构造</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">Obj <span class="title">fun</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj;</span><br><span class="line">  <span class="keyword">return</span> obj;</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj = <span class="built_in">fun</span>();</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="优化失效"><a href="#优化失效" class="headerlink" title="优化失效"></a>优化失效</h2><p><strong>1.返回对象不为局部对象</strong><br>当返回的对象不是局部对象而是全局变量、函数参数或者成员变量时，会禁用 (N)RVO。<br><strong>2.返回对象类型和函数返回类型不同</strong><br>这时会触发隐式类型转换，会禁用 (N)RVO。<br><strong>3.运行时依赖</strong><br>当编译器无法单纯通过函数来决定返回哪个实例对象时，会禁用 (N)RVO。</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">Obj <span class="title">fun</span><span class="params">(<span class="type">bool</span> flag)</span> </span>{</span><br><span class="line">  Obj o1;</span><br><span class="line">  Obj o2;</span><br><span class="line">  <span class="keyword">if</span> (flag) {</span><br><span class="line">    <span class="keyword">return</span> o1;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> o2;</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj = <span class="built_in">fun</span>(<span class="literal">true</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+<p>如果逻辑上允许，最好优化成这样：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">Obj <span class="title">fun</span><span class="params">(<span class="type">bool</span> flag)</span> </span>{</span><br><span class="line">  Obj obj;</span><br><span class="line">  <span class="keyword">if</span> (flag) {</span><br><span class="line">    <span class="keyword">return</span> obj;</span><br><span class="line">  }</span><br><span class="line">  obj.n = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">return</span> obj;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj = <span class="built_in">fun</span>(<span class="literal">true</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+<p><strong>4.存在赋值行为</strong><br>(N)RVO 只能在从返回值创建对象时发送，在现有对象上使用 <code>operator=</code> 而不是拷贝/移动构造函数，这样是不会进行优化的。</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">Obj <span class="title">fun</span><span class="params">()</span> </span>{</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Obj</span>();</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">  Obj obj;</span><br><span class="line">  obj = <span class="built_in">fun</span>();</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>5.使用std::move()返回</strong><br>在返回值上调用 <code>std::move()</code> 进行返回是一种错误的方式。它会尝试强制调用移动构造函数，但这样会导致 (N)RVO 失效。因为即使没有显示调用 std::move()，编译器优化中也会执行 move 操作。</p>
+<hr>
 <h1 id="C-11新特性"><a href="#C-11新特性" class="headerlink" title="C++11新特性"></a>C++11新特性</h1><h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><p>智能指针是一个类，用来存储指向动态分配对象的指针，负责自动释放动态分配的对象，防止堆内存泄漏。动态分配的资源，交给一个类对象去管理，当类对象声明周期结束时，自动调用析构函数释放资源</p>
 <h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><p>保证同⼀时间内只有⼀个智能指针可以指向该对象。转移一个unique_ptr将会把所有权从源指针转移给目标指针，源指针被置空。</p>
 <p>unique_ptr不支持拷贝构造和赋值操作，但可以配合 <code>move()</code> 支持移动构造和移动赋值。拷贝操作有一个例外，可以从函数中返回unique_ptr。</p>

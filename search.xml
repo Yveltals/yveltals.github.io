@@ -2374,49 +2374,174 @@
   <entry>
     <title>Kafuka</title>
     <url>//post/Kafuka.html</url>
-    <content><![CDATA[<h2 id="消息系统"><a href="#消息系统" class="headerlink" title="消息系统"></a>消息系统</h2><p>一个消息系统负责将数据从一个应用传递到另外一个应用，应用只需关注于数据，无需关注数据在两个或多个应用间是如何传递的。分布式消息传递基于可靠的消息队列，在客户端应用和消息系统之间异步传递消息。有两种主要的消息传递模式：点对点传递模式、发布-订阅模式。大部分的消息系统选用发布-订阅模式。</p>
-<h3 id="点对点消息系统"><a href="#点对点消息系统" class="headerlink" title="点对点消息系统"></a>点对点消息系统</h3><p>在点对点消息系统中，消息持久化到一个队列中。此时，将有一个或多个消费者消费队列中的数据，但是<strong>一条消息只能被消费一次</strong>。当一个消费者消费了队列中的某条数据之后，该条数据则从消息队列中删除。该模式即使有多个消费者同时消费数据，也能<strong>保证数据处理的顺序</strong>。</p>
-<h3 id="发布-订阅消息系统"><a href="#发布-订阅消息系统" class="headerlink" title="发布-订阅消息系统"></a>发布-订阅消息系统</h3><p>在发布-订阅消息系统中，消息被持久化到一个topic中。与点对点消息系统不同的是，消费者可以订阅一个或多个topic，消费者可以消费该topic中所有的数据，<strong>同一条数据可以被多个消费者消费，数据被消费后不会立马删除</strong>。在发布-订阅消息系统中，消息的生产者称为发布者，消费者称为订阅者。该模式的示例图如下：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%8F%91%E5%B8%83-%E8%AE%A2%E9%98%85%E6%B6%88%E6%81%AF%E6%A8%A1%E5%BC%8F.png"></p>
-<h2 id="Kafka概述"><a href="#Kafka概述" class="headerlink" title="Kafka概述"></a>Kafka概述</h2><p>Apache Kafka是一个分布式的发布-订阅消息系统，能够支撑海量数据的数据传递。在离线和实时的消息处理业务系统中，Kafka都有广泛的应用。Kafka将消息持久化到磁盘中，并对消息创建了备份保证了数据的安全。Kafka在保证了较高的处理速度的同时，又能保证数据处理的低延迟和数据的零丢失。</p>
-<p>Kafka的优势在于：</p>
+    <content><![CDATA[<h1 id="kafka的使用场景"><a href="#kafka的使用场景" class="headerlink" title="kafka的使用场景"></a>kafka的使用场景</h1><h2 id="为什么要使用-Kafka-消息队列"><a href="#为什么要使用-Kafka-消息队列" class="headerlink" title="为什么要使用 Kafka 消息队列"></a>为什么要使用 Kafka 消息队列</h2><p>解耦、削峰：传统的方式上游发送数据下游需要实时接收，如果上游在某些业务场景：例如上午十点会流量激增至顶峰，那么下游资源可能会扛不住压力。但如果使用消息队列，就可以将消息暂存在消息管道中，下游可以按照自己的速度逐步处理；</p>
 <ul>
-<li>可靠性：Kafka是一个具有分区机制、副本机制和容错机制的分布式消息系统</li>
-<li>可扩展性：Kafka消息系统支持集群规模的热扩展</li>
-<li>高性能：Kafka在数据发布和订阅过程中都能保证数据的高吞吐量。即便在TB级数据存储的情况下，仍然能保证稳定的性能。</li>
+<li>可扩展：通过横向扩展生产者、消费者和broker, Kafka可以轻松处理巨大的消息流；</li>
+<li>高吞吐、低延迟：在一台普通的服务器上既可以达到10W/s的吞吐速率；</li>
+<li>容灾性：kafka通过副本replication的设置和leader／follower的容灾机制保障了消息的安全性。</li>
 </ul>
-<h2 id="Kafka术语"><a href="#Kafka术语" class="headerlink" title="Kafka术语"></a>Kafka术语</h2><p>在深入理解Kafka之前，先介绍一下Kafka中的术语。下图展示了Kafka的相关术语以及之间的关系：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Term.png"></p>
-<p>上图中一个topic配置了3个partition，Partition1有两个offset：0和1，Partition2有4个offset。副本的id和副本所在的机器的id恰好相同。</p>
-<p>如果一个topic的副本数为3，那么Kafka将在集群中为每个partition创建3个相同的副本。集群中的每个broker存储一个或多个partition。多个producer和consumer可同时生产和消费数据。</p>
-<p>各个术语的详细介绍如下：</p>
+<h1 id="kafka的高吞吐、低延迟是如何实现的"><a href="#kafka的高吞吐、低延迟是如何实现的" class="headerlink" title="kafka的高吞吐、低延迟是如何实现的"></a>kafka的高吞吐、低延迟是如何实现的</h1><p>1.顺序读写</p>
+<p>Kafka使用磁盘顺序读写来提升性能。Kafka的message是不断追加到本地磁盘文件末尾的，而不是随机的写入，这使得Kafka写入吞吐量得到了显著提升 。每一个Partition其实都是一个文件 ，收到消息后Kafka会把数据插入到文件末尾。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-4527EUBVQVvGkfA9tU.png"></p>
+<p>2.页缓存（pageCache）</p>
+<p>PageCache是系统级别的缓存，它把尽可能多的空闲内存当作磁盘缓存使用来进一步提高IO效率；</p>
+<p>PageCache同时可以避免在JVM内部缓存数据，避免不必要的GC、以及内存空间占用。对于In-Process Cache，如果Kafka重启，它会失效，而操作系统管理的PageCache依然可以继续使用。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-45eXTVs6CWR7stIvZ.png"></p>
 <ul>
-<li>Topic：在Kafka中，使用一个类别属性来划分数据的所属类，划分数据的这个类称为topic。如果把Kafka看做为一个数据库，topic可以理解为数据库中的一张表，topic的名字即为表名。</li>
-<li>Partition：topic中的数据分割为一个或多个partition。每个topic至少有一个partition。每个partition中的数据使用多个segment文件存储。<strong>partition中的数据是有序的，partition间的数据丢失了数据的顺序</strong>。如果topic有多个partition，消费数据时就不能保证数据的顺序。在需要严格保证消息的消费顺序的场景下，需要将partition数目设为1。</li>
-<li>Partition offset：每条消息都有一个当前Partition下唯一的64字节的offset，它指明了这条消息的起始位置。</li>
-<li>Replicas of partition：副本是一个分区的备份。<strong>副本不会被消费者消费</strong>，副本只用于防止数据丢失，即消费者不从为follower的partition中消费数据，而是从为leader的partition中读取数据。</li>
-<li>Broker：<ul>
-<li>Kafka 集群包含一个或多个服务器，服务器节点称为broker。</li>
-<li>broker存储topic的数据。如果某topic有N个partition，集群有N个broker，那么每个broker存储该topic的一个partition。</li>
-<li>如果某topic有N个partition，集群有(N+M)个broker，那么其中有N个broker存储该topic的一个partition，剩下的M个broker不存储该topic的partition数据。</li>
-<li>如果某topic有N个partition，集群中broker数目少于N个，那么一个broker存储该topic的一个或多个partition。在实际生产环境中，尽量避免这种情况的发生，这种情况容易导致Kafka集群数据不均衡。</li>
+<li>producer把消息发到broker后，数据并不是直接落入磁盘的，而是先进入PageCache。PageCache中的数据会被内核中的处理线程采用同步或异步的方式定期刷盘至磁盘。</li>
+<li>Consumer消费消息时，会先从PageCache获取消息，获取不到才回去磁盘读取，并且会预读出一些相邻的块放入PageCache，以方便下一次读取。</li>
+<li>如果Kafka producer的生产速率与consumer的消费速率相差不大，那么几乎只靠对broker PageCache的读写就能完成整个生产和消费过程，磁盘访问非常少</li>
+</ul>
+<p>3.零拷贝</p>
+<p>正常过程：</p>
+<ol>
+<li>操作系统将数据从磁盘上读入到内核空间的读缓冲区中</li>
+<li>应用程序（也就是Kafka）从内核空间的读缓冲区将数据拷贝到用户空间的缓冲区中</li>
+<li>应用程序将数据从用户空间的缓冲区再写回到内核空间的socket缓冲区中</li>
+<li>操作系统将socket缓冲区中的数据拷贝到NIC缓冲区中，然后通过网络发送给客户端<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-28ie6ARrIIpiuuxYH.png"></li>
+</ol>
+<p>在这个过程中，可以发现， 数据从磁盘到最终发出去，要经历4次拷贝，而在这四次拷贝过程中， 有两次拷贝是浪费的。  </p>
+<ol>
+<li>从内核空间拷贝到用户空间；  </li>
+<li>从用户空间再次拷贝到内核空间；</li>
+</ol>
+<p>除此之外，由于用户空间和内核空间的切换，会带来Cpu上下文切换，对于Cpu的性能也会造成影响；<br>零拷贝省略了数据在内核空间和用户空间之间的重复穿梭；用户态和内核态切换时产生中断，耗时；</p>
+<p>4.分区分段索引</p>
+<p>Kafka的message是按topic分类存储的，topic中的数据又是按照一个一个的partition即分区存储到不同broker节点。每个partition对应了操作系统上的一个文件夹，partition实际上又是按照segment分段存储的。符合分布式系统分区分桶的设计思想。</p>
+<p>通过这种分区分段的设计，Kafka的message消息实际上是分布式存储在一个一个小的segment中的，每次文件操作也是直接操作的segment。为了进一步的查询优化，Kafka又默认为分段后的数据文件建立了索引文件，就是文件系统上的.index文件。这种分区分段+索引的设计，不仅提升了数据读取的效率，同时也提高了数据操作的并行度。</p>
+<p>5.批量处理</p>
+<p>kafka发送消息不是一条一条发送的，而是批量发送，很大的提高了发送消息的吞吐量。</p>
+<p>假设发送一条消息的时间是1ms，而此时的吞吐量就是1000TPS。但是假如我们将消息批量发送，1000条消息需要10ms，而此时的吞吐量就达到了1000*100TPS。而且这样也很大程度的减少了请求Broker的次数，提升了总体的效率。</p>
+<h1 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><table>
+<thead>
+<tr>
+<th>名词</th>
+<th>概念</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Producer</td>
+<td>生产者（发送消息）</td>
+</tr>
+<tr>
+<td>Consumer</td>
+<td>消费者（接收消息）</td>
+</tr>
+<tr>
+<td>ConsumerGroup</td>
+<td>消费者组，可以并行消费同一topic中的消息</td>
+</tr>
+<tr>
+<td>Broker</td>
+<td>一个独立的kafka服务器被称为broker。broker接收来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存。broker为消费者提供服务，对读取分区的请求作出相应，返回已经提交到磁盘上的消息。可起到负载均衡、容错的作用。</td>
+</tr>
+<tr>
+<td>Topic</td>
+<td>主题，一个队列，可理解为按照消息的逻辑分类将消息划分为不同的topic</td>
+</tr>
+<tr>
+<td>Partition</td>
+<td>topic的物理分组，一个topic可以分为多个partition，每个partition是一个有序队列。可起到提高可扩展性，应对高并发场景的作用。</td>
+</tr>
+<tr>
+<td>replica</td>
+<td>副本，为保证集群的高可用性，kafka提供副本机制，一个topic的每个分区都有若干个副本，一个leader和若干个follower</td>
+</tr>
+<tr>
+<td>leader</td>
+<td>每个分区多个副本的主节点，生产者发送数据的对象，以及消费者消费数据的对象都是leader</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>对于Kafka中的分区而言，它的每条消息都有唯一的offset，用来表示消息在分区中对应的位置。</td>
+</tr>
+</tbody></table>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-30NWlL27127HVd68t7r.png"><br>Q1：Topic的分区及副本在broker上是如何分配的呢？</p>
+<p>这里涉及到两个参数：</p>
+<ul>
+<li>startIndex：第一个分区的第一个副本放置位置（P0-R0）</li>
+<li>nextReplicaShift：其他分区的副本的放置是依次后移的，间隔距离就是 nextReplicaShift 值。</li>
+</ul>
+<p>Q2：Kafka的架构是基于什么设计思想呢？</p>
+<p>分治思想：</p>
+<ol>
+<li>topic分治：对于kafka的topic，我们在创建之初可以设置多个partition来存放数据，对于同一个topic的数据，每条数据的key通过哈希取模被路由到不同的partition中（如果没有设置key，则根据消息本身取模），以此达到分治的目的。</li>
+<li>partition分治：为了方便数据的消费，kafka将原始的数据转化为”索引+数据“的形式进行分治，将一个partition对应一个文件转变为一个partition对应多个人不同类型的文件，分别为：<ul>
+<li>.index文件：索引文件，用来记录log文件中真实消息的相对偏移量和物理位置，为了减少索引文件的大小，使用了稀疏索引</li>
+<li>.log文件：用来记录producer写入的真实消息，即消息体本身；</li>
+<li>.timeindex文件：时间索引文件，类比.index文件，用来记录log文件中真实消息写入的时间情况，跟offset索引文件功能一样，只不过这个以时间作为索引，用来快速定位目标时间点的数据；</li>
 </ul>
 </li>
-<li>Producer：生产者即数据的发布者，该角色将消息发布到Kafka的topic中。broker接收到生产者发送的消息后，broker将该消息追加到当前用于追加数据的segment文件中。生产者发送的消息，存储到一个partition中，生产者也可以指定数据存储的partition。</li>
-<li>Consumer：消费者可以从broker中读取数据。消费者可以消费多个topic中的数据。</li>
-<li>Leader：每个partition有多个副本，其中有且仅有一个作为Leader，Leader是当前负责数据的读写的partition。</li>
-<li>Follower：Follower跟随Leader，所有写请求都通过Leader路由，数据变更会广播给所有Follower，Follower与Leader保持数据同步。如果Leader失效，则从Follower中选举出一个新的Leader。当Follower与Leader挂掉、卡住或者同步太慢，leader会把这个follower从“in sync replicas”（ISR）列表中删除，重新创建一个Follower。</li>
-</ul>
-<h2 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h2><p>Kafka的架构示意图如下：</p>
-<p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Kafuka_Ecosystem.png"></p>
+<li>底层文件分治：不能将partition全部文件都放入一套 ”.index+.log+.timeindex“ 文件中，因此需要对文件进行拆分。kafka对单个.index文件、.timeindex文件、.log文件的大小都有限定（通过不同参数配置），且这3个文件互为一组。当.log文件的大小达到阈值则会自动拆分形成一组新的文件，这种将数据拆分成多个的小文件叫做segment，一个log文件代表一个segment。</li>
+</ol>
+<h1 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h1><h2 id="生产流程"><a href="#生产流程" class="headerlink" title="生产流程"></a>生产流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-31fvgQd8sR0WQP8IX.png"></p>
+<ol>
+<li>先从zk获取对应分区的leader在哪个broker</li>
+<li>broker进程上的leader将消息写入到本地log中</li>
+<li>follower从leader上拉取消息，写入到本地log，并向leader发送ACK</li>
+<li>leader接收到所有的ISR中的Replica的ACK后，并向生产者返回ACK</li>
+</ol>
+<h2 id="消费流程"><a href="#消费流程" class="headerlink" title="消费流程"></a>消费流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-32eB6wFdDn24ZICw32J.png"></p>
+<ol>
+<li>每个consumer都可以根据分配策略，获得要消费的分区</li>
+<li>获取到consumer对应的leader处于哪个broker以及offset</li>
+<li>拉取数据</li>
+<li>消费者提交offset</li>
+</ol>
+<h1 id="分区策略"><a href="#分区策略" class="headerlink" title="分区策略"></a>分区策略</h1><p>##生产者分区策略<br>生产者写入消息到topic，Kafka将依据不同的策略将数据分配到不同的分区中：</p>
+<ol>
+<li><p>轮询分区策略<br>即按消息顺序进行分区顺序分配，是默认的策略，也是使用最多的策略，可以最大限度保证所有消息平均分配到一个分区；key为null，则使用轮询算法均衡地分配分区；</p>
+</li>
+<li><p>按key分区分配策略<br>key不为null，key.hash() % n。但是按照key决定分区有可能会造成数据倾斜</p>
+</li>
+<li><p>随机分区策略<br>随机分区，不建议使用</p>
+</li>
+<li><p>自定义分区策略<br>根据业务需要制定以分区策略。乱序问题在Kafka中生产者是有写入策略，如果topic有多个分区，就会将数据分散在不同的partition中存储当partition数量大于1的时候，数据（消息）会打散分布在不同的partition中如果只有一个分区，消息是有序的</p>
+</li>
+</ol>
+<h2 id="消费者分区策略"><a href="#消费者分区策略" class="headerlink" title="消费者分区策略"></a>消费者分区策略</h2><p>同一时刻，一条消息只能被组中的一个消费者实例消费：</p>
+<ol>
+<li>消费者数=分区数：一个分区对应一个消费者</li>
+<li>消费者数&lt;分区数：一个消费者对应多个分区</li>
+<li>消费者数&gt;分区数：多出来的消费者将不会消费任何消息</li>
+</ol>
+<p>分区分配策略：保障每个消费者尽量能够均衡地消费分区的数据，不能出现某个消费者消费分区的数量特别多，某个消费者消费的分区特别少</p>
+<ol>
+<li><p>Range分配策略（范围分配策略）：Kafka默认的分配策略<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png"><br>计算公式：<br>n=分区数量/消费者数量<br>m=分区数量%消费者数量<br>前m个消费者消费n+1个，剩余消费者消费n个<br>以上图为例：n=8/3=2m=8%3=2因此前2个消费者消费2+1=3个分区，剩下1个消费者消费2个分区</p>
+</li>
+<li><p>RoundRobin分配策略（轮询分配策略）<br>消费者挨个分配消费的分区：<br>如下图，3个消费者共同消费8个分区<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-37UOhiopzeORskk9D.png"><br>第一轮：Consumer0–&gt;A-Partition0；Consumer1–&gt;A-Partition1；Consumer2–&gt;A-Partition2<br>第二轮：Consumer0–&gt;A-Partition3；Consumer1–&gt;B-Partition0；Consumer2–&gt;B-Partition1<br>第三轮：Consumer0–&gt;B-Partition2；Consumer1–&gt;B-Partition3</p>
+</li>
+<li><p>Striky粘性分配策略<br>在没有发生rebalance跟轮询分配策略是一致的<br>发生了rebalance（例如Consumer2故障宕机），轮询分配策略，重新走一遍轮询分配的过程。而粘性会保证跟上一次的尽量一致，只是将新的需要分配的分区，均匀的分配到现有可用的消费者中即可，这样就减少了上下文的切换<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-39tg0DzeFdwhw12OWx.png"></p>
+</li>
+</ol>
+<h1 id="副本的ACK机制"><a href="#副本的ACK机制" class="headerlink" title="副本的ACK机制"></a>副本的ACK机制</h1><p>acks = 0：生产者只管写入，不管是否写入成功，可能会数据丢失。性能是最好的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40ZCwkIxhdQAGrmER.png"><br>acks = 1：生产者会等到leader分区写入成功后，返回成功，接着发送下一条<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40oa9SBiWlmefVkK7.png"><br>acks = -1/all：确保消息写入到leader分区、还确保消息写入到对应副本都成功后，接着发送下一条，性能是最差的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-41pgmqsHkGcdCNcKD.png"><br>分区中是有leader和follower的概念，为了确保消费者消费的数据是一致的，只能从分区leader去读写消息，follower做的事情就是同步数据。</p>
+<h1 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&A"></a>Q&amp;A</h1><h2 id="offset存在哪里？"><a href="#offset存在哪里？" class="headerlink" title="offset存在哪里？"></a>offset存在哪里？</h2><p>0.9版本前默认存在zk，但是由于频繁访问zk，zk需要一个一个节点更新offset，不能批量或分组更新，导致offset更新成了瓶颈。</p>
+<p>在新版 Kafka 以及之后的版本，Kafka 消费的offset都会默认存放在 Kafka 集群中的一个叫 __consumer_offsets 的topic中。offset以消息形式发送到该topic并保存在broker中。这样consumer提交offset时，只需连接到broker，不用访问zk，避免了zk节点更新瓶颈。</p>
+<h2 id="leader选举策略"><a href="#leader选举策略" class="headerlink" title="leader选举策略"></a>leader选举策略</h2><p>2种leader：①broker的leader即controller leader ② partition的leader</p>
+<h3 id="Controller-leader"><a href="#Controller-leader" class="headerlink" title="Controller leader"></a>Controller leader</h3><p>当broker启动的时候，都会创建KafkaController对象，但是集群中只能有一个leader对外提供服务，这些每个节点上的KafkaController会在指定的zookeeper路径下创建临时节点，只有第一个成功创建的节点的KafkaController才可以成为leader，其余的都是follower。当leader故障后，所有的follower会收到通知，再次竞争在该路径下创建节点从而选举新的leader</p>
+<h3 id="Partition-leader"><a href="#Partition-leader" class="headerlink" title="Partition leader"></a>Partition leader</h3><p>由controller leader执行</p>
 <ul>
-<li>Broker：Kafka的broker是无状态的，broker使用Zookeeper维护集群的状态。Leader的选举也由Zookeeper负责。</li>
-<li>Zookeeper：Zookeeper负责维护和协调broker。当Kafka系统中新增了broker或者某个broker发生故障失效时，由ZooKeeper通知生产者和消费者。生产者和消费者依据Zookeeper的broker状态信息与broker协调数据的发布和订阅任务。</li>
-<li>Producer：生产者将数据推送到broker上，当集群中出现新的broker时，所有的生产者将会搜寻到这个新的broker，并自动将数据发送到这个broker上。</li>
-<li>Consumer：因为Kafka的broker是无状态的，所以consumer必须使用partition offset来记录消费了多少数据。如果一个consumer指定了一个topic的offset，意味着该consumer已经消费了该offset之前的所有数据。consumer可以通过指定offset，从topic的指定位置开始消费数据。consumer的offset存储在Zookeeper中。</li>
+<li>从Zookeeper中读取当前分区的所有ISR(in-sync replicas)集合</li>
+<li>调用配置的分区选择算法选择分区的leader</li>
 </ul>
-<h2 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h2><p>Kafka将某topic的数据存储到一个或多个partition中。一个partition内数据是有序的，每条数据都有一个唯一的index，这个index叫做offset。新来的数据追加到partition的尾部。每条数据可以在不同的broker上做备份，从而保证了Kafka使用的可靠性。</p>
-<p>生产者将消息发送到topic中，消费者可以选择多种消费方式消费Kafka中的数据。下面介绍两种消费方式的流程。</p>
+<p>如何处理所有Replica都不工作？在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某个Partition的所有Replica都宕机了，就无法保证数据不丢失了。这种情况下有两种可行的方案：等待ISR中的任一个Replica“活”过来，并且选它作为Leader选择第一个“活”过来的Replica（不一定是ISR中的）作为Leader这就需要在可用性和一致性当中作出一个简单的折衷。如果一定要等待ISR中的Replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有Replica都无法“活”过来了，或者数据都丢失了，这个Partition将永远不可用。选择第一个“活”过来的Replica作为Leader，而这个Replica不是ISR中的Replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为Leader而作为consumer的数据源（前文有说明，所有读写都由Leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。</p>
+<h2 id="分区越多越好吗"><a href="#分区越多越好吗" class="headerlink" title="分区越多越好吗"></a>分区越多越好吗</h2><p>分区并不是越多越好，分区过多存在着以下弊端：</p>
+<ul>
+<li>producer内存成本增大、consumer线程开销增大partition是kafka管理数据的基本逻辑组织单元，越多的partition意味着越多的数据存储文件（一个partition对应至少3个数据文件）</li>
+<li>分区增多数据连续性下降</li>
+<li>可用性降低</li>
+</ul>
+<h2 id="与数据库相比kafka的优势"><a href="#与数据库相比kafka的优势" class="headerlink" title="与数据库相比kafka的优势"></a>与数据库相比kafka的优势</h2><p>业务场景不同，底层数据结构不同，kafka数据存储对于功能要求较少，因此读写更快kafka存储数据（消息本身）的文件的数据结构是数组，数组的特点就是：数据间位置连续，如果按照顺序读取，或者追加写入的话，其时间复杂度为O(1)，效率最高。</p>
+<h2 id="消费偏移的更新方式"><a href="#消费偏移的更新方式" class="headerlink" title="消费偏移的更新方式"></a>消费偏移的更新方式</h2><p>1.自动提交（默认方式）</p>
+<p>Kafka中偏移量的自动提交是由参数enable_auto_commit和auto_commit_interval_ms控制的，当enable_auto_commit=True时，Kafka在消费的过程中会以频率为auto_commit_interval_ms向Kafka自带的topic(__consumer_offsets)进行偏移量提交，具体提交到哪个Partation：Math.abs(groupID.hashCode()) % numPartitions。</p>
+<p>这种方式也被称为at most once，fetch到消息后就可以更新offset，无论是否消费成功。</p>
+<p>2.手动提交</p>
+<p>鉴于Kafka自动提交offset的不灵活性和不精确性(只能是按指定频率的提交)，Kafka提供了手动提交offset策略。手动提交能对偏移量更加灵活精准地控制，以保证消息不被重复消费以及消息不被丢失。</p>
+<p>对于手动提交offset主要有3种方式：</p>
+<ol>
+<li>同步提交：提交失败的时候一直尝试提交，直到遇到无法重试的情况下才会结束，同步方式下消费者线程在拉取消息会被阻塞，在broker对提交的请求做出响应之前，会一直阻塞直到偏移量提交操作成功或者在提交过程中发生异常，限制了消息的吞吐量。</li>
+<li>异步提交：异步手动提交offset时，消费者线程不会阻塞，提交失败的时候也不会进行重试，并且可以配合回调函数在broker做出响应的时候记录错误信息。 对于异步提交，由于不会进行失败重试，当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失。</li>
+<li>异步+同步：针对异步提交偏移量丢失的问题，通过对消费者进行异步批次提交并且在关闭时同步提交的方式，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试，直到提交成功。 通过finally在最后不管是否异常都会触发consumer.commit()来同步补救一次，确保偏移量不会丢失</li>
+</ol>
+<hr>
 <h3 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h3><ol>
 <li>生产者将数据发送到指定topic中</li>
 <li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
@@ -6915,7 +7040,10 @@
 <li><p><code>-I</code> 指定头文件搜索目录</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 头文件不在/usr/include里用I参数指定，相对路径可以用-I.来指定</span></span><br><span class="line">g++ -I/myinclude test.cpp</span><br></pre></td></tr></table></figure></div></li>
 </ul>
-<h2 id="Cmake"><a href="#Cmake" class="headerlink" title="Cmake"></a>Cmake</h2><h3 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h3><ul>
+<h2 id="Cmake"><a href="#Cmake" class="headerlink" title="Cmake"></a>Cmake</h2><h3 id="指定特定版本gcc"><a href="#指定特定版本gcc" class="headerlink" title="指定特定版本gcc"></a>指定特定版本gcc</h3><p>服务器上有多个版本gcc时，cmake可能会使用老版本的gcc/g++<br>通过 <code>which gcc</code> 和 <code>gcc/g++ --version</code> 确定正确版本路径后，在cmake命令时加入对应gcc和g++的位置：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">cmake .. -D CMAKE_C_COMPILER=/path/to/gcc/bin/gcc -D CMAKE_CXX_COMPILER=/path/to/gcc/bin/g++</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h3><ul>
 <li><p><strong>add_library</strong> - 生成库文件</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">add_library(libname [SHARED|STATIC] <span class="variable">${SRC}</span>)</span><br></pre></td></tr></table></figure></div>
 </li>

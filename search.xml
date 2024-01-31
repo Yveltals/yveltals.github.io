@@ -3162,7 +3162,7 @@
 
 
 <hr>
-<h2 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h2><h3 id="最新"><a href="#最新" class="headerlink" title="最新"></a>最新</h3><p><strong>1. 命令安装</strong></p>
+<h2 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h2><p><strong>1. 命令安装</strong></p>
    <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install mysql-server</span><br></pre></td></tr></table></figure></div>
 
 <blockquote>
@@ -3195,15 +3195,16 @@
    <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">use mysql</span><br><span class="line"><span class="keyword">select</span> host,user,authentication_string from user;</span><br></pre></td></tr></table></figure></div>
 
 
-<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><p><strong>1. 服务状态管理</strong></p>
+<p><strong>6. 常用命令</strong></p>
+<p>服务状态管理</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">service mysql status</span><br><span class="line">service mysql start</span><br><span class="line">service mysql restart</span><br><span class="line">service mysql stop</span><br></pre></td></tr></table></figure></div>
-
-<p><strong>2. 卸载 MySQL</strong></p>
+<p>卸载 MySQL</p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## MySQL 5.7</span></span><br><span class="line">sudo apt-get remove mysql-common</span><br><span class="line">sudo apt-get autoremove --purge mysql-server-5.7</span><br><span class="line"><span class="comment">## MySQL 8.0</span></span><br><span class="line">sudo apt-get autoremove mysql-server</span><br><span class="line"></span><br><span class="line">dpkg -l |grep ^rc|awk <span class="string">'{print $2}'</span> |sudo xargs dpkg -P</span><br><span class="line">sudo apt-get autoremove --purge mysql-apt-config</span><br></pre></td></tr></table></figure></div>
 
 
 
-<h2 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h2><h3 id="环境管理"><a href="#环境管理" class="headerlink" title="环境管理"></a>环境管理</h3><ul>
+<h2 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h2><p><strong>1. 环境管理</strong> </p>
+<ul>
 <li>查看环境</li>
 </ul>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">conda info -e</span><br><span class="line">python -V</span><br></pre></td></tr></table></figure></div>
@@ -3228,7 +3229,8 @@
 </ul>
 <div class="highlight-container" data-rel="Text"><figure class="iseeu highlight text"><table><tr><td class="code"><pre><span class="line">conda remove -n py34 --all</span><br></pre></td></tr></table></figure></div>
 
-<h3 id="包管理"><a href="#包管理" class="headerlink" title="包管理"></a>包管理</h3><ul>
+<p><strong>2. 包管理</strong></p>
+<ul>
 <li>换镜像</li>
 </ul>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/</span><br><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/</span><br><span class="line">conda config --<span class="built_in">set</span> show_channel_urls <span class="built_in">yes</span></span><br></pre></td></tr></table></figure></div>
@@ -3350,14 +3352,16 @@
 <hr>
 <h2 id="Ventoy多合一启动盘"><a href="#Ventoy多合一启动盘" class="headerlink" title="Ventoy多合一启动盘"></a><a class="link" href="https://www.iplaysoft.com/ventoy.html">Ventoy多合一启动盘 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><hr>
 <h2 id="GNOME美化"><a href="#GNOME美化" class="headerlink" title="GNOME美化"></a><a class="link" href="https://blog.csdn.net/YV_LING/article/details/122785030">GNOME美化 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><hr>
-<h2 id="IOS相关"><a href="#IOS相关" class="headerlink" title="IOS相关"></a>IOS相关</h2><h3 id="IOS越狱"><a href="#IOS越狱" class="headerlink" title="IOS越狱"></a>IOS越狱</h3><ol>
+<h2 id="IOS相关"><a href="#IOS相关" class="headerlink" title="IOS相关"></a>IOS相关</h2><p><strong>1. IOS越狱</strong></p>
+<ol>
 <li><a class="link" href="https://checkra.in/releases/">下载 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>Linux x86_64版本</li>
 <li>chmod 777 ，sudo ./checkra1n</li>
 <li>设置允许越狱未测试的iOS新版本</li>
 <li>开机后用4G安装Cydia</li>
 </ol>
 <p>​	<img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/ios_uncover.jpg"></p>
-<h3 id="IOS跳ID锁"><a href="#IOS跳ID锁" class="headerlink" title="IOS跳ID锁"></a>IOS跳ID锁</h3><ol>
+<p><strong>2. IOS跳ID锁</strong></p>
+<ol>
 <li><p>通过爱思助手打开SSH通道</p>
 </li>
 <li><p>打开激活工具，按提示选择数字进行激活</p>
@@ -3367,17 +3371,14 @@
 </ol>
 <p>​	<img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/ios_skipID.jpg"></p>
 <hr>
-<h2 id="Android相关"><a href="#Android相关" class="headerlink" title="Android相关"></a>Android相关</h2><h3 id="去APK弹窗"><a href="#去APK弹窗" class="headerlink" title="去APK弹窗"></a>去APK弹窗</h3><blockquote>
-<p>针对部分破解软件的开屏提示，强迫症自救</p>
-</blockquote>
-<p><strong>去弹窗</strong></p>
+<h2 id="Android相关"><a href="#Android相关" class="headerlink" title="Android相关"></a>Android相关</h2><p><strong>1. 去APK弹窗</strong></p>
 <ol>
 <li>MT管理器查看apk，用dex编辑器++打开dex文件(全选)</li>
 <li>搜索内容<code>show</code>，搜索类型<code>代码</code> （或搜弹窗内容等）</li>
 <li>找到类似<code>invoke-virtual{v0},LandroidlapplAlertDialog$Builder;-&gt;show()Landroidl...</code></li>
 <li>点击跳转到相应代码，用<code>#</code>注释该句</li>
 </ol>
-<p><strong>去浮窗</strong></p>
+<p><strong>2. 去APK浮窗</strong></p>
 <ol>
 <li>同理搜索相应浮窗内容，搜索类型<code>字符串</code></li>
 <li>跳转将对应方法注释</li>

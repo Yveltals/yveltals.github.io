@@ -1294,6 +1294,26 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>因为在内核中线程和进程都是用 task_struct 来表示，只不过<strong>线程和进程的区别是会和创建它的父进程共享打开文件列表、目录信息、虚拟地址空间等数据结构，会更轻量一些</strong>，所以在 Linux 下的线程也叫轻量级进程。</p>
 <p>在打开文件列表、目录信息、内存虚拟地址空间中，内存虚拟地址空间是最重要的。因此区分一个 Task 任务该叫线程还是该叫进程，一般习惯上就看它是否有独立的地址空间。如果有，就叫做进程，没有，就叫做线程。</p>
 <p>对于内核任务来说，无论有多少个任务，其使用地址空间都是同一个。所以一般都叫内核线程，而不是内核进程。</p>
+<hr>
+<h1 id="CPU核心、线程数概念"><a href="#CPU核心、线程数概念" class="headerlink" title="CPU核心、线程数概念"></a>CPU核心、线程数概念</h1><h2 id="CPU物理数"><a href="#CPU物理数" class="headerlink" title="CPU物理数"></a>CPU物理数</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">'physical id'</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure></div>
+<p>物理CPU数量，普通电脑一般只有一个CPU插槽，也就是只有一个物理CPU</p>
+<h2 id="CORE核心数-物理核心数"><a href="#CORE核心数-物理核心数" class="headerlink" title="CORE核心数(物理核心数)"></a>CORE核心数(物理核心数)</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">'core id'</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure></div>
+<p>一个物理CPU拥有的运算单元个数，每个运算单元有一套寄存器、L1、L2私有缓存。一个核心同一时刻只能运行一个线程，不论这个线程是哪个进程的。每隔一定时间就会切换线程，如果切换到其它进程的线程，会切换CR3（进程切换时，会将该进程页表的指针加载到CR3寄存器）。</p>
+<h2 id="THREAD线程数-逻辑核心数"><a href="#THREAD线程数-逻辑核心数" class="headerlink" title="THREAD线程数(逻辑核心数)"></a>THREAD线程数(逻辑核心数)</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">'processor id'</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure></div>
+<p>英特尔的<strong>超线程</strong>技术，可以实现一个核心同时执行多个线程，即逻辑核心数的说法：8核16线程，一个核心能跑二个线程，</p>
+<p>CPU在执行一条机器指令时，并不会完全地利用所有的CPU资源，是有大量资源被闲置着的。超线程技术允许两个线程同时不冲突地使用CPU中的资源。比如一条整数运算指令只会用到整数运算单元，此时浮点运算单元就空闲了，若使用了超线程技术，且另一个线程刚好此时要执行一个浮点运算指令，CPU就允许属于两个不同线程的整数运算指令和浮点运算指令同时执行，这是真的并行。</p>
+<p>超线程”可能”是并行的,也可能不是并行的，但这也并不意味着两个线程在同一个CPU(也就是同一个核心)中一直都可以并行执行，只是恰好碰到两个线程当前要执行的指令不使用相同的CPU资源时才可以真正地并行执行。</p>
+<h2 id="进程的多个线程能多核并行吗"><a href="#进程的多个线程能多核并行吗" class="headerlink" title="进程的多个线程能多核并行吗"></a>进程的多个线程能多核并行吗</h2><p>内核态线程</p>
+<ul>
+<li>优点：一个进程的多个线程可以分配到多个CORE核心同时执行，并且由于内核级线程只有很小的数据结构和堆栈，切换速度快，本身也可以用多线程技术实现提高系统的运行速率。</li>
+<li>缺点：线程在用户态的运行，而线程的调度和管理在内核实现，在控制权从一个线程传送到另一个线程需要用户态到内核态再到用户态的模式切换，比较占用系统资源。</li>
+</ul>
+<p>用户态线程</p>
+<ul>
+<li>优点：线程的调度不需要内核直接参与，控制简单，可以在不支持线程的操作系统中实现</li>
+<li>缺点：没有办法使用多核心并行执行</li>
+</ul>
+<hr>
 <h1 id="内中断"><a href="#内中断" class="headerlink" title="内中断"></a>内中断</h1><h2 id="内中断的产生"><a href="#内中断的产生" class="headerlink" title="内中断的产生"></a>内中断的产生</h2><blockquote>
 <ol>
 <li>除法错误:0</li>
@@ -2372,207 +2392,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Kafuka</title>
-    <url>//post/Kafuka.html</url>
-    <content><![CDATA[<h1 id="kafka的使用场景"><a href="#kafka的使用场景" class="headerlink" title="kafka的使用场景"></a>kafka的使用场景</h1><h2 id="为什么要使用-Kafka-消息队列"><a href="#为什么要使用-Kafka-消息队列" class="headerlink" title="为什么要使用 Kafka 消息队列"></a>为什么要使用 Kafka 消息队列</h2><p>解耦、削峰：传统的方式上游发送数据下游需要实时接收，如果上游在某些业务场景：例如上午十点会流量激增至顶峰，那么下游资源可能会扛不住压力。但如果使用消息队列，就可以将消息暂存在消息管道中，下游可以按照自己的速度逐步处理；</p>
-<ul>
-<li>可扩展：通过横向扩展生产者、消费者和broker, Kafka可以轻松处理巨大的消息流；</li>
-<li>高吞吐、低延迟：在一台普通的服务器上既可以达到10W/s的吞吐速率；</li>
-<li>容灾性：kafka通过副本replication的设置和leader／follower的容灾机制保障了消息的安全性。</li>
-</ul>
-<h1 id="kafka的高吞吐、低延迟是如何实现的"><a href="#kafka的高吞吐、低延迟是如何实现的" class="headerlink" title="kafka的高吞吐、低延迟是如何实现的"></a>kafka的高吞吐、低延迟是如何实现的</h1><p>1.顺序读写</p>
-<p>Kafka使用磁盘顺序读写来提升性能。Kafka的message是不断追加到本地磁盘文件末尾的，而不是随机的写入，这使得Kafka写入吞吐量得到了显著提升 。每一个Partition其实都是一个文件 ，收到消息后Kafka会把数据插入到文件末尾。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-4527EUBVQVvGkfA9tU.png"></p>
-<p>2.页缓存（pageCache）</p>
-<p>PageCache是系统级别的缓存，它把尽可能多的空闲内存当作磁盘缓存使用来进一步提高IO效率；</p>
-<p>PageCache同时可以避免在JVM内部缓存数据，避免不必要的GC、以及内存空间占用。对于In-Process Cache，如果Kafka重启，它会失效，而操作系统管理的PageCache依然可以继续使用。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-45eXTVs6CWR7stIvZ.png"></p>
-<ul>
-<li>producer把消息发到broker后，数据并不是直接落入磁盘的，而是先进入PageCache。PageCache中的数据会被内核中的处理线程采用同步或异步的方式定期刷盘至磁盘。</li>
-<li>Consumer消费消息时，会先从PageCache获取消息，获取不到才回去磁盘读取，并且会预读出一些相邻的块放入PageCache，以方便下一次读取。</li>
-<li>如果Kafka producer的生产速率与consumer的消费速率相差不大，那么几乎只靠对broker PageCache的读写就能完成整个生产和消费过程，磁盘访问非常少</li>
-</ul>
-<p>3.零拷贝</p>
-<p>正常过程：</p>
-<ol>
-<li>操作系统将数据从磁盘上读入到内核空间的读缓冲区中</li>
-<li>应用程序（也就是Kafka）从内核空间的读缓冲区将数据拷贝到用户空间的缓冲区中</li>
-<li>应用程序将数据从用户空间的缓冲区再写回到内核空间的socket缓冲区中</li>
-<li>操作系统将socket缓冲区中的数据拷贝到NIC缓冲区中，然后通过网络发送给客户端<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-28ie6ARrIIpiuuxYH.png"></li>
-</ol>
-<p>在这个过程中，可以发现， 数据从磁盘到最终发出去，要经历4次拷贝，而在这四次拷贝过程中， 有两次拷贝是浪费的。  </p>
-<ol>
-<li>从内核空间拷贝到用户空间；  </li>
-<li>从用户空间再次拷贝到内核空间；</li>
-</ol>
-<p>除此之外，由于用户空间和内核空间的切换，会带来Cpu上下文切换，对于Cpu的性能也会造成影响；<br>零拷贝省略了数据在内核空间和用户空间之间的重复穿梭；用户态和内核态切换时产生中断，耗时；</p>
-<p>4.分区分段索引</p>
-<p>Kafka的message是按topic分类存储的，topic中的数据又是按照一个一个的partition即分区存储到不同broker节点。每个partition对应了操作系统上的一个文件夹，partition实际上又是按照segment分段存储的。符合分布式系统分区分桶的设计思想。</p>
-<p>通过这种分区分段的设计，Kafka的message消息实际上是分布式存储在一个一个小的segment中的，每次文件操作也是直接操作的segment。为了进一步的查询优化，Kafka又默认为分段后的数据文件建立了索引文件，就是文件系统上的.index文件。这种分区分段+索引的设计，不仅提升了数据读取的效率，同时也提高了数据操作的并行度。</p>
-<p>5.批量处理</p>
-<p>kafka发送消息不是一条一条发送的，而是批量发送，很大的提高了发送消息的吞吐量。</p>
-<p>假设发送一条消息的时间是1ms，而此时的吞吐量就是1000TPS。但是假如我们将消息批量发送，1000条消息需要10ms，而此时的吞吐量就达到了1000*100TPS。而且这样也很大程度的减少了请求Broker的次数，提升了总体的效率。</p>
-<h1 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><table>
-<thead>
-<tr>
-<th>名词</th>
-<th>概念</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Producer</td>
-<td>生产者（发送消息）</td>
-</tr>
-<tr>
-<td>Consumer</td>
-<td>消费者（接收消息）</td>
-</tr>
-<tr>
-<td>ConsumerGroup</td>
-<td>消费者组，可以并行消费同一topic中的消息</td>
-</tr>
-<tr>
-<td>Broker</td>
-<td>一个独立的kafka服务器被称为broker。broker接收来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存。broker为消费者提供服务，对读取分区的请求作出相应，返回已经提交到磁盘上的消息。可起到负载均衡、容错的作用。</td>
-</tr>
-<tr>
-<td>Topic</td>
-<td>主题，一个队列，可理解为按照消息的逻辑分类将消息划分为不同的topic</td>
-</tr>
-<tr>
-<td>Partition</td>
-<td>topic的物理分组，一个topic可以分为多个partition，每个partition是一个有序队列。可起到提高可扩展性，应对高并发场景的作用。</td>
-</tr>
-<tr>
-<td>replica</td>
-<td>副本，为保证集群的高可用性，kafka提供副本机制，一个topic的每个分区都有若干个副本，一个leader和若干个follower</td>
-</tr>
-<tr>
-<td>leader</td>
-<td>每个分区多个副本的主节点，生产者发送数据的对象，以及消费者消费数据的对象都是leader</td>
-</tr>
-<tr>
-<td>offset</td>
-<td>对于Kafka中的分区而言，它的每条消息都有唯一的offset，用来表示消息在分区中对应的位置。</td>
-</tr>
-</tbody></table>
-<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-30NWlL27127HVd68t7r.png"><br>Q1：Topic的分区及副本在broker上是如何分配的呢？</p>
-<p>这里涉及到两个参数：</p>
-<ul>
-<li>startIndex：第一个分区的第一个副本放置位置（P0-R0）</li>
-<li>nextReplicaShift：其他分区的副本的放置是依次后移的，间隔距离就是 nextReplicaShift 值。</li>
-</ul>
-<p>Q2：Kafka的架构是基于什么设计思想呢？</p>
-<p>分治思想：</p>
-<ol>
-<li>topic分治：对于kafka的topic，我们在创建之初可以设置多个partition来存放数据，对于同一个topic的数据，每条数据的key通过哈希取模被路由到不同的partition中（如果没有设置key，则根据消息本身取模），以此达到分治的目的。</li>
-<li>partition分治：为了方便数据的消费，kafka将原始的数据转化为”索引+数据“的形式进行分治，将一个partition对应一个文件转变为一个partition对应多个人不同类型的文件，分别为：<ul>
-<li>.index文件：索引文件，用来记录log文件中真实消息的相对偏移量和物理位置，为了减少索引文件的大小，使用了稀疏索引</li>
-<li>.log文件：用来记录producer写入的真实消息，即消息体本身；</li>
-<li>.timeindex文件：时间索引文件，类比.index文件，用来记录log文件中真实消息写入的时间情况，跟offset索引文件功能一样，只不过这个以时间作为索引，用来快速定位目标时间点的数据；</li>
-</ul>
-</li>
-<li>底层文件分治：不能将partition全部文件都放入一套 ”.index+.log+.timeindex“ 文件中，因此需要对文件进行拆分。kafka对单个.index文件、.timeindex文件、.log文件的大小都有限定（通过不同参数配置），且这3个文件互为一组。当.log文件的大小达到阈值则会自动拆分形成一组新的文件，这种将数据拆分成多个的小文件叫做segment，一个log文件代表一个segment。</li>
-</ol>
-<h1 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h1><h2 id="生产流程"><a href="#生产流程" class="headerlink" title="生产流程"></a>生产流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-31fvgQd8sR0WQP8IX.png"></p>
-<ol>
-<li>先从zk获取对应分区的leader在哪个broker</li>
-<li>broker进程上的leader将消息写入到本地log中</li>
-<li>follower从leader上拉取消息，写入到本地log，并向leader发送ACK</li>
-<li>leader接收到所有的ISR中的Replica的ACK后，并向生产者返回ACK</li>
-</ol>
-<h2 id="消费流程"><a href="#消费流程" class="headerlink" title="消费流程"></a>消费流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-32eB6wFdDn24ZICw32J.png"></p>
-<ol>
-<li>每个consumer都可以根据分配策略，获得要消费的分区</li>
-<li>获取到consumer对应的leader处于哪个broker以及offset</li>
-<li>拉取数据</li>
-<li>消费者提交offset</li>
-</ol>
-<h1 id="分区策略"><a href="#分区策略" class="headerlink" title="分区策略"></a>分区策略</h1><p>##生产者分区策略<br>生产者写入消息到topic，Kafka将依据不同的策略将数据分配到不同的分区中：</p>
-<ol>
-<li><p>轮询分区策略<br>即按消息顺序进行分区顺序分配，是默认的策略，也是使用最多的策略，可以最大限度保证所有消息平均分配到一个分区；key为null，则使用轮询算法均衡地分配分区；</p>
-</li>
-<li><p>按key分区分配策略<br>key不为null，key.hash() % n。但是按照key决定分区有可能会造成数据倾斜</p>
-</li>
-<li><p>随机分区策略<br>随机分区，不建议使用</p>
-</li>
-<li><p>自定义分区策略<br>根据业务需要制定以分区策略。乱序问题在Kafka中生产者是有写入策略，如果topic有多个分区，就会将数据分散在不同的partition中存储当partition数量大于1的时候，数据（消息）会打散分布在不同的partition中如果只有一个分区，消息是有序的</p>
-</li>
-</ol>
-<h2 id="消费者分区策略"><a href="#消费者分区策略" class="headerlink" title="消费者分区策略"></a>消费者分区策略</h2><p>同一时刻，一条消息只能被组中的一个消费者实例消费：</p>
-<ol>
-<li>消费者数=分区数：一个分区对应一个消费者</li>
-<li>消费者数&lt;分区数：一个消费者对应多个分区</li>
-<li>消费者数&gt;分区数：多出来的消费者将不会消费任何消息</li>
-</ol>
-<p>分区分配策略：保障每个消费者尽量能够均衡地消费分区的数据，不能出现某个消费者消费分区的数量特别多，某个消费者消费的分区特别少</p>
-<ol>
-<li><p>Range分配策略（范围分配策略）：Kafka默认的分配策略<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png"><br>计算公式：<br>n=分区数量/消费者数量<br>m=分区数量%消费者数量<br>前m个消费者消费n+1个，剩余消费者消费n个<br>以上图为例：n=8/3=2m=8%3=2因此前2个消费者消费2+1=3个分区，剩下1个消费者消费2个分区</p>
-</li>
-<li><p>RoundRobin分配策略（轮询分配策略）<br>消费者挨个分配消费的分区：<br>如下图，3个消费者共同消费8个分区<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-37UOhiopzeORskk9D.png"><br>第一轮：Consumer0–&gt;A-Partition0；Consumer1–&gt;A-Partition1；Consumer2–&gt;A-Partition2<br>第二轮：Consumer0–&gt;A-Partition3；Consumer1–&gt;B-Partition0；Consumer2–&gt;B-Partition1<br>第三轮：Consumer0–&gt;B-Partition2；Consumer1–&gt;B-Partition3</p>
-</li>
-<li><p>Striky粘性分配策略<br>在没有发生rebalance跟轮询分配策略是一致的<br>发生了rebalance（例如Consumer2故障宕机），轮询分配策略，重新走一遍轮询分配的过程。而粘性会保证跟上一次的尽量一致，只是将新的需要分配的分区，均匀的分配到现有可用的消费者中即可，这样就减少了上下文的切换<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-39tg0DzeFdwhw12OWx.png"></p>
-</li>
-</ol>
-<h1 id="副本的ACK机制"><a href="#副本的ACK机制" class="headerlink" title="副本的ACK机制"></a>副本的ACK机制</h1><p>acks = 0：生产者只管写入，不管是否写入成功，可能会数据丢失。性能是最好的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40ZCwkIxhdQAGrmER.png"><br>acks = 1：生产者会等到leader分区写入成功后，返回成功，接着发送下一条<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40oa9SBiWlmefVkK7.png"><br>acks = -1/all：确保消息写入到leader分区、还确保消息写入到对应副本都成功后，接着发送下一条，性能是最差的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-41pgmqsHkGcdCNcKD.png"><br>分区中是有leader和follower的概念，为了确保消费者消费的数据是一致的，只能从分区leader去读写消息，follower做的事情就是同步数据。</p>
-<h1 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&A"></a>Q&amp;A</h1><h2 id="offset存在哪里？"><a href="#offset存在哪里？" class="headerlink" title="offset存在哪里？"></a>offset存在哪里？</h2><p>0.9版本前默认存在zk，但是由于频繁访问zk，zk需要一个一个节点更新offset，不能批量或分组更新，导致offset更新成了瓶颈。</p>
-<p>在新版 Kafka 以及之后的版本，Kafka 消费的offset都会默认存放在 Kafka 集群中的一个叫 __consumer_offsets 的topic中。offset以消息形式发送到该topic并保存在broker中。这样consumer提交offset时，只需连接到broker，不用访问zk，避免了zk节点更新瓶颈。</p>
-<h2 id="leader选举策略"><a href="#leader选举策略" class="headerlink" title="leader选举策略"></a>leader选举策略</h2><p>2种leader：①broker的leader即controller leader ② partition的leader</p>
-<h3 id="Controller-leader"><a href="#Controller-leader" class="headerlink" title="Controller leader"></a>Controller leader</h3><p>当broker启动的时候，都会创建KafkaController对象，但是集群中只能有一个leader对外提供服务，这些每个节点上的KafkaController会在指定的zookeeper路径下创建临时节点，只有第一个成功创建的节点的KafkaController才可以成为leader，其余的都是follower。当leader故障后，所有的follower会收到通知，再次竞争在该路径下创建节点从而选举新的leader</p>
-<h3 id="Partition-leader"><a href="#Partition-leader" class="headerlink" title="Partition leader"></a>Partition leader</h3><p>由controller leader执行</p>
-<ul>
-<li>从Zookeeper中读取当前分区的所有ISR(in-sync replicas)集合</li>
-<li>调用配置的分区选择算法选择分区的leader</li>
-</ul>
-<p>如何处理所有Replica都不工作？在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某个Partition的所有Replica都宕机了，就无法保证数据不丢失了。这种情况下有两种可行的方案：等待ISR中的任一个Replica“活”过来，并且选它作为Leader选择第一个“活”过来的Replica（不一定是ISR中的）作为Leader这就需要在可用性和一致性当中作出一个简单的折衷。如果一定要等待ISR中的Replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有Replica都无法“活”过来了，或者数据都丢失了，这个Partition将永远不可用。选择第一个“活”过来的Replica作为Leader，而这个Replica不是ISR中的Replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为Leader而作为consumer的数据源（前文有说明，所有读写都由Leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。</p>
-<h2 id="分区越多越好吗"><a href="#分区越多越好吗" class="headerlink" title="分区越多越好吗"></a>分区越多越好吗</h2><p>分区并不是越多越好，分区过多存在着以下弊端：</p>
-<ul>
-<li>producer内存成本增大、consumer线程开销增大partition是kafka管理数据的基本逻辑组织单元，越多的partition意味着越多的数据存储文件（一个partition对应至少3个数据文件）</li>
-<li>分区增多数据连续性下降</li>
-<li>可用性降低</li>
-</ul>
-<h2 id="与数据库相比kafka的优势"><a href="#与数据库相比kafka的优势" class="headerlink" title="与数据库相比kafka的优势"></a>与数据库相比kafka的优势</h2><p>业务场景不同，底层数据结构不同，kafka数据存储对于功能要求较少，因此读写更快kafka存储数据（消息本身）的文件的数据结构是数组，数组的特点就是：数据间位置连续，如果按照顺序读取，或者追加写入的话，其时间复杂度为O(1)，效率最高。</p>
-<h2 id="消费偏移的更新方式"><a href="#消费偏移的更新方式" class="headerlink" title="消费偏移的更新方式"></a>消费偏移的更新方式</h2><p>1.自动提交（默认方式）</p>
-<p>Kafka中偏移量的自动提交是由参数enable_auto_commit和auto_commit_interval_ms控制的，当enable_auto_commit=True时，Kafka在消费的过程中会以频率为auto_commit_interval_ms向Kafka自带的topic(__consumer_offsets)进行偏移量提交，具体提交到哪个Partation：Math.abs(groupID.hashCode()) % numPartitions。</p>
-<p>这种方式也被称为at most once，fetch到消息后就可以更新offset，无论是否消费成功。</p>
-<p>2.手动提交</p>
-<p>鉴于Kafka自动提交offset的不灵活性和不精确性(只能是按指定频率的提交)，Kafka提供了手动提交offset策略。手动提交能对偏移量更加灵活精准地控制，以保证消息不被重复消费以及消息不被丢失。</p>
-<p>对于手动提交offset主要有3种方式：</p>
-<ol>
-<li>同步提交：提交失败的时候一直尝试提交，直到遇到无法重试的情况下才会结束，同步方式下消费者线程在拉取消息会被阻塞，在broker对提交的请求做出响应之前，会一直阻塞直到偏移量提交操作成功或者在提交过程中发生异常，限制了消息的吞吐量。</li>
-<li>异步提交：异步手动提交offset时，消费者线程不会阻塞，提交失败的时候也不会进行重试，并且可以配合回调函数在broker做出响应的时候记录错误信息。 对于异步提交，由于不会进行失败重试，当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失。</li>
-<li>异步+同步：针对异步提交偏移量丢失的问题，通过对消费者进行异步批次提交并且在关闭时同步提交的方式，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试，直到提交成功。 通过finally在最后不管是否异常都会触发consumer.commit()来同步补救一次，确保偏移量不会丢失</li>
-</ol>
-<hr>
-<h3 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h3><ol>
-<li>生产者将数据发送到指定topic中</li>
-<li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
-<li>消费者订阅指定topic的数据</li>
-<li>当消费者订阅topic中消息时，Kafka将当前的offset发给消费者，同时将offset存储到Zookeeper中</li>
-<li>消费者以特定的间隔（如100ms）向Kafka请求数据</li>
-<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者</li>
-<li>消费者受到Kafka推送的数据，并进行处理</li>
-<li>当消费者处理完该条消息后，消费者向Kafka broker发送一个该消息已被消费的反馈</li>
-<li>当Kafka接到消费者的反馈后，Kafka更新offset包括Zookeeper中的offset。</li>
-<li>以上过程一直重复，直到消费者停止请求数据</li>
-<li>消费者可以重置offset，从而可以灵活消费存储在Kafka上的数据</li>
-</ol>
-<h3 id="消费者组数据消费流程"><a href="#消费者组数据消费流程" class="headerlink" title="消费者组数据消费流程"></a>消费者组数据消费流程</h3><p>Kafka支持消费者组内的多个消费者同时消费一个topic，一个消费者组由具有同一个Group ID的多个消费者组成。具体流程如下：</p>
-<ol>
-<li>生产者发送数据到指定的topic</li>
-<li>Kafka将数据存储到broker上的partition中</li>
-<li>假设现在有一个消费者订阅了一个topic，topic名字为“test”，消费者的Group ID为“Group1”</li>
-<li>此时Kafka的处理方式与只有一个消费者的情况一样</li>
-<li>当Kafka接收到一个同样Group ID为“Group1”、消费的topic同样为“test”的消费者的请求时，Kafka把数据操作模式切换为分享模式，此时数据将在两个消费者上共享。</li>
-<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Arch</category>
-      </categories>
-      <tags>
-        <tag>Arch</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Zookeeper</title>
     <url>//post/Zookeeper.html</url>
     <content><![CDATA[<p><code>ZooKeeper</code> 由 <code>Yahoo</code> 开发，后来捐赠给了 <code>Apache</code> ，现已成为 <code>Apache</code> 顶级项目。<code>ZooKeeper</code> 是一个开源的分布式应用程序协调服务器，其为分布式系统提供一致性服务。其一致性是通过基于 <code>Paxos</code> 算法的 <code>ZAB</code> 协议完成的。其主要功能包括：配置维护、分布式同步、集群管理、分布式事务等。</p>
@@ -3309,14 +3128,14 @@
 <p><strong>2. 开关机异常缓慢</strong></p>
 <ul>
 <li>开机动画<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">sudo systemctl mask plymouth-quit-wait.service</span><br><span class="line"><span class="comment">##关闭mask 开启unmask</span></span><br></pre></td></tr></table></figure></div></li>
-<li>关机重启等待 90 秒<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/systemd/system.conf</span><br><span class="line"><span class="comment">## 修改为1s</span></span><br><span class="line">DefaultTimeoutStartSec=1s</span><br><span class="line">DefaultTimeoutStopSec=1s</span><br><span class="line"><span class="comment">## 使其生效</span></span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure></div>
-<strong>3. 双系统扩容</strong><br>预留给 Ubuntu 系统的预留空间不足时需要扩容，可 <a class="link" href="https://blog.csdn.net/Carina_Cao/article/details/90270389">参考流程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 与 <a class="link" href="https://www.bilibili.com/video/av25957885/">gparted使用方法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+<li>关机重启等待 90 秒<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/systemd/system.conf</span><br><span class="line"><span class="comment">## 修改为1s</span></span><br><span class="line">DefaultTimeoutStartSec=1s</span><br><span class="line">DefaultTimeoutStopSec=1s</span><br><span class="line"><span class="comment">## 使其生效</span></span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure></div></li>
 </ul>
-<ol>
+<p><strong>3. 双系统扩容</strong><br>预留给 Ubuntu 系统的预留空间不足时需要扩容，可 <a class="link" href="https://blog.csdn.net/Carina_Cao/article/details/90270389">参考流程 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 与 <a class="link" href="https://www.bilibili.com/video/av25957885/">gparted使用方法 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<ul>
 <li>启动盘进入系统，使用自带的<code>gparted</code>分区工具</li>
 <li>将多余空间分区并格式化</li>
 <li>通过一系列对未分配分区的调换，移到待扩容分区后方相邻合并</li>
-</ol>
+</ul>
 <p><strong>4. Linux开机挂载硬盘</strong></p>
 <div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">##修改开机配置</span></span><br><span class="line">sudo vim /etc/fstab</span><br><span class="line"><span class="comment">##添加如下一行</span></span><br><span class="line">UUID=[1] [2] [3] defaults 0 1</span><br><span class="line"><span class="comment">##测试是否正确</span></span><br><span class="line">mount -a</span><br></pre></td></tr></table></figure></div>
 
@@ -3353,36 +3172,36 @@
 <h2 id="Ventoy多合一启动盘"><a href="#Ventoy多合一启动盘" class="headerlink" title="Ventoy多合一启动盘"></a><a class="link" href="https://www.iplaysoft.com/ventoy.html">Ventoy多合一启动盘 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><hr>
 <h2 id="GNOME美化"><a href="#GNOME美化" class="headerlink" title="GNOME美化"></a><a class="link" href="https://blog.csdn.net/YV_LING/article/details/122785030">GNOME美化 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><hr>
 <h2 id="IOS相关"><a href="#IOS相关" class="headerlink" title="IOS相关"></a>IOS相关</h2><p><strong>1. IOS越狱</strong></p>
-<ol>
+<ul>
 <li><a class="link" href="https://checkra.in/releases/">下载 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>Linux x86_64版本</li>
 <li>chmod 777 ，sudo ./checkra1n</li>
 <li>设置允许越狱未测试的iOS新版本</li>
 <li>开机后用4G安装Cydia</li>
-</ol>
+</ul>
 <p>​	<img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/ios_uncover.jpg"></p>
 <p><strong>2. IOS跳ID锁</strong></p>
-<ol>
+<ul>
 <li><p>通过爱思助手打开SSH通道</p>
 </li>
 <li><p>打开激活工具，按提示选择数字进行激活</p>
 </li>
 <li><p>激活完毕后，会发现IOS跳过了验证环节，可以直接进入桌面</p>
 </li>
-</ol>
+</ul>
 <p>​	<img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/ios_skipID.jpg"></p>
 <hr>
 <h2 id="Android相关"><a href="#Android相关" class="headerlink" title="Android相关"></a>Android相关</h2><p><strong>1. 去APK弹窗</strong></p>
-<ol>
+<ul>
 <li>MT管理器查看apk，用dex编辑器++打开dex文件(全选)</li>
 <li>搜索内容<code>show</code>，搜索类型<code>代码</code> （或搜弹窗内容等）</li>
 <li>找到类似<code>invoke-virtual{v0},LandroidlapplAlertDialog$Builder;-&gt;show()Landroidl...</code></li>
 <li>点击跳转到相应代码，用<code>#</code>注释该句</li>
-</ol>
+</ul>
 <p><strong>2. 去APK浮窗</strong></p>
-<ol>
+<ul>
 <li>同理搜索相应浮窗内容，搜索类型<code>字符串</code></li>
 <li>跳转将对应方法注释</li>
-</ol>
+</ul>
 <hr>
 <h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><p><strong>代码字体</strong> ‘Droid Sans Mono’,’monospace’, monospace,’Droid Sans Fallback’</p>
 <p><strong>图片压缩</strong>  </p>
@@ -8341,6 +8160,270 @@
 <p><a class="link" href="https://leetcode.cn/problems/range-sum-query-mutable/">区域和检索 - 数组可修改 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>：求区间和且会更新数组元素</p>
 <div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; tree; <span class="comment">//tree[i]为前i-1前缀和</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; &amp;nums; <span class="comment">//原数组</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lowBit</span><span class="params">(<span class="type">int</span> x)</span> </span>{</span><br><span class="line">    <span class="keyword">return</span> x &amp; -x;</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">int</span> index, <span class="type">int</span> val)</span> </span>{</span><br><span class="line">    <span class="keyword">while</span> (index &lt; tree.<span class="built_in">size</span>()) {</span><br><span class="line">        tree[index] += val;</span><br><span class="line">        index += <span class="built_in">lowBit</span>(index);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">prefixSum</span><span class="params">(<span class="type">int</span> index)</span> </span>{</span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (index &gt; <span class="number">0</span>) {</span><br><span class="line">        sum += tree[index];</span><br><span class="line">        index -= <span class="built_in">lowBit</span>(index);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">}</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span></span>{</span><br><span class="line">    nums = nums;</span><br><span class="line">    <span class="comment">// 初始化tree为全0数组，遍历更新</span></span><br><span class="line">    tree.<span class="built_in">assign</span>(nums.<span class="built_in">size</span>()+<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;nums.<span class="built_in">size</span>();++i){</span><br><span class="line">        <span class="built_in">add</span>(i+<span class="number">1</span>,nums[i]);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
 ]]></content>
+      <categories>
+        <category>CPP</category>
+      </categories>
+      <tags>
+        <tag>CPP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kafka</title>
+    <url>//post/Kafka.html</url>
+    <content><![CDATA[<blockquote>
+<p><a class="link" href="https://yhyr.github.io/2018/12/15/Kafka%E7%90%86%E8%AE%BA%E4%B9%8BPartition-Replication/">补充参考链接 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<h1 id="kafka的使用场景"><a href="#kafka的使用场景" class="headerlink" title="kafka的使用场景"></a>kafka的使用场景</h1><h2 id="为什么要使用-Kafka-消息队列"><a href="#为什么要使用-Kafka-消息队列" class="headerlink" title="为什么要使用 Kafka 消息队列"></a>为什么要使用 Kafka 消息队列</h2><p>解耦、削峰：传统的方式上游发送数据下游需要实时接收，如果上游在某些业务场景：例如上午十点会流量激增至顶峰，那么下游资源可能会扛不住压力。但如果使用消息队列，就可以将消息暂存在消息管道中，下游可以按照自己的速度逐步处理；</p>
+<ul>
+<li>可扩展：通过横向扩展生产者、消费者和broker, Kafka可以轻松处理巨大的消息流；</li>
+<li>高吞吐、低延迟：在一台普通的服务器上既可以达到10W/s的吞吐速率；</li>
+<li>容灾性：kafka通过副本replication的设置和leader／follower的容灾机制保障了消息的安全性。</li>
+</ul>
+<h1 id="kafka的高吞吐、低延迟是如何实现的"><a href="#kafka的高吞吐、低延迟是如何实现的" class="headerlink" title="kafka的高吞吐、低延迟是如何实现的"></a>kafka的高吞吐、低延迟是如何实现的</h1><p>1.顺序读写</p>
+<p>Kafka使用磁盘顺序读写来提升性能。Kafka的message是不断追加到本地磁盘文件末尾的，而不是随机的写入，这使得Kafka写入吞吐量得到了显著提升 。每一个Partition其实都是一个文件 ，收到消息后Kafka会把数据插入到文件末尾。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-4527EUBVQVvGkfA9tU.png"></p>
+<p>2.页缓存（pageCache）</p>
+<p>PageCache是系统级别的缓存，它把尽可能多的空闲内存当作磁盘缓存使用来进一步提高IO效率；</p>
+<p>PageCache同时可以避免在JVM内部缓存数据，避免不必要的GC、以及内存空间占用。对于In-Process Cache，如果Kafka重启，它会失效，而操作系统管理的PageCache依然可以继续使用。<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-18-45eXTVs6CWR7stIvZ.png"></p>
+<ul>
+<li>producer把消息发到broker后，数据并不是直接落入磁盘的，而是先进入PageCache。PageCache中的数据会被内核中的处理线程采用同步或异步的方式定期刷盘至磁盘。</li>
+<li>Consumer消费消息时，会先从PageCache获取消息，获取不到才回去磁盘读取，并且会预读出一些相邻的块放入PageCache，以方便下一次读取。</li>
+<li>如果Kafka producer的生产速率与consumer的消费速率相差不大，那么几乎只靠对broker PageCache的读写就能完成整个生产和消费过程，磁盘访问非常少</li>
+</ul>
+<p>3.零拷贝</p>
+<p>正常过程：</p>
+<ol>
+<li>操作系统将数据从磁盘上读入到内核空间的读缓冲区中</li>
+<li>应用程序（也就是Kafka）从内核空间的读缓冲区将数据拷贝到用户空间的缓冲区中</li>
+<li>应用程序将数据从用户空间的缓冲区再写回到内核空间的socket缓冲区中</li>
+<li>操作系统将socket缓冲区中的数据拷贝到NIC缓冲区中，然后通过网络发送给客户端<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-28ie6ARrIIpiuuxYH.png"></li>
+</ol>
+<p>在这个过程中，可以发现， 数据从磁盘到最终发出去，要经历4次拷贝，而在这四次拷贝过程中， 有两次拷贝是浪费的。  </p>
+<ol>
+<li>从内核空间拷贝到用户空间；  </li>
+<li>从用户空间再次拷贝到内核空间；</li>
+</ol>
+<p>除此之外，由于用户空间和内核空间的切换，会带来Cpu上下文切换，对于Cpu的性能也会造成影响；<br>零拷贝省略了数据在内核空间和用户空间之间的重复穿梭；用户态和内核态切换时产生中断，耗时；</p>
+<p>4.分区分段索引</p>
+<p>Kafka的message是按topic分类存储的，topic中的数据又是按照一个一个的partition即分区存储到不同broker节点。每个partition对应了操作系统上的一个文件夹，partition实际上又是按照segment分段存储的。符合分布式系统分区分桶的设计思想。</p>
+<p>通过这种分区分段的设计，Kafka的message消息实际上是分布式存储在一个一个小的segment中的，每次文件操作也是直接操作的segment。为了进一步的查询优化，Kafka又默认为分段后的数据文件建立了索引文件，就是文件系统上的.index文件。这种分区分段+索引的设计，不仅提升了数据读取的效率，同时也提高了数据操作的并行度。</p>
+<p>5.批量处理</p>
+<p>kafka发送消息不是一条一条发送的，而是批量发送，很大的提高了发送消息的吞吐量。</p>
+<p>假设发送一条消息的时间是1ms，而此时的吞吐量就是1000TPS。但是假如我们将消息批量发送，1000条消息需要10ms，而此时的吞吐量就达到了1000*100TPS。而且这样也很大程度的减少了请求Broker的次数，提升了总体的效率。</p>
+<h1 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><table>
+<thead>
+<tr>
+<th>名词</th>
+<th>概念</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Producer</td>
+<td>生产者（发送消息）</td>
+</tr>
+<tr>
+<td>Consumer</td>
+<td>消费者（接收消息）</td>
+</tr>
+<tr>
+<td>ConsumerGroup</td>
+<td>消费者组，可以并行消费同一topic中的消息</td>
+</tr>
+<tr>
+<td>Broker</td>
+<td>一个独立的kafka服务器被称为broker。broker接收来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存。broker为消费者提供服务，对读取分区的请求作出相应，返回已经提交到磁盘上的消息。可起到负载均衡、容错的作用。</td>
+</tr>
+<tr>
+<td>Topic</td>
+<td>主题，一个队列，可理解为按照消息的逻辑分类将消息划分为不同的topic</td>
+</tr>
+<tr>
+<td>Partition</td>
+<td>topic的物理分组，一个topic可以分为多个partition，每个partition是一个有序队列。可起到提高可扩展性，应对高并发场景的作用。</td>
+</tr>
+<tr>
+<td>replica</td>
+<td>副本，为保证集群的高可用性，kafka提供副本机制，一个topic的每个分区都有若干个副本，一个leader和若干个follower</td>
+</tr>
+<tr>
+<td>leader</td>
+<td>每个分区多个副本的主节点，生产者发送数据的对象，以及消费者消费数据的对象都是leader</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>对于Kafka中的分区而言，它的每条消息都有唯一的offset，用来表示消息在分区中对应的位置。</td>
+</tr>
+</tbody></table>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-30NWlL27127HVd68t7r.png"><br>Q1：Topic的分区及副本在broker上是如何分配的呢？</p>
+<p>这里涉及到两个参数：</p>
+<ul>
+<li>startIndex：第一个分区的第一个副本放置位置（P0-R0）</li>
+<li>nextReplicaShift：其他分区的副本的放置是依次后移的，间隔距离就是 nextReplicaShift 值。</li>
+</ul>
+<p>Q2：Kafka的架构是基于什么设计思想呢？</p>
+<p>分治思想：</p>
+<ol>
+<li>topic分治：对于kafka的topic，我们在创建之初可以设置多个partition来存放数据，对于同一个topic的数据，每条数据的key通过哈希取模被路由到不同的partition中（如果没有设置key，则根据消息本身取模），以此达到分治的目的。</li>
+<li>partition分治：为了方便数据的消费，kafka将原始的数据转化为”索引+数据“的形式进行分治，将一个partition对应一个文件转变为一个partition对应多个人不同类型的文件，分别为：<ul>
+<li>.index文件：索引文件，用来记录log文件中真实消息的相对偏移量和物理位置，为了减少索引文件的大小，使用了稀疏索引</li>
+<li>.log文件：用来记录producer写入的真实消息，即消息体本身；</li>
+<li>.timeindex文件：时间索引文件，类比.index文件，用来记录log文件中真实消息写入的时间情况，跟offset索引文件功能一样，只不过这个以时间作为索引，用来快速定位目标时间点的数据；</li>
+</ul>
+</li>
+<li>底层文件分治：不能将partition全部文件都放入一套 ”.index+.log+.timeindex“ 文件中，因此需要对文件进行拆分。kafka对单个.index文件、.timeindex文件、.log文件的大小都有限定（通过不同参数配置），且这3个文件互为一组。当.log文件的大小达到阈值则会自动拆分形成一组新的文件，这种将数据拆分成多个的小文件叫做segment，一个log文件代表一个segment。</li>
+</ol>
+<h1 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h1><h2 id="生产流程"><a href="#生产流程" class="headerlink" title="生产流程"></a>生产流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-31fvgQd8sR0WQP8IX.png"></p>
+<ol>
+<li>先从zk获取对应分区的leader在哪个broker</li>
+<li>broker进程上的leader将消息写入到本地log中</li>
+<li>follower从leader上拉取消息，写入到本地log，并向leader发送ACK</li>
+<li>leader接收到所有的ISR中的Replica的ACK后，并向生产者返回ACK</li>
+</ol>
+<h2 id="消费流程"><a href="#消费流程" class="headerlink" title="消费流程"></a>消费流程</h2><p><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-32eB6wFdDn24ZICw32J.png"></p>
+<ol>
+<li>每个consumer都可以根据分配策略，获得要消费的分区</li>
+<li>获取到consumer对应的leader处于哪个broker以及offset</li>
+<li>拉取数据</li>
+<li>消费者提交offset</li>
+</ol>
+<h1 id="分区策略"><a href="#分区策略" class="headerlink" title="分区策略"></a>分区策略</h1><p>##生产者分区策略<br>生产者写入消息到topic，Kafka将依据不同的策略将数据分配到不同的分区中：</p>
+<ol>
+<li><p>轮询分区策略<br>即按消息顺序进行分区顺序分配，是默认的策略，也是使用最多的策略，可以最大限度保证所有消息平均分配到一个分区；key为null，则使用轮询算法均衡地分配分区；</p>
+</li>
+<li><p>按key分区分配策略<br>key不为null，key.hash() % n。但是按照key决定分区有可能会造成数据倾斜</p>
+</li>
+<li><p>随机分区策略<br>随机分区，不建议使用</p>
+</li>
+<li><p>自定义分区策略<br>根据业务需要制定以分区策略。乱序问题在Kafka中生产者是有写入策略，如果topic有多个分区，就会将数据分散在不同的partition中存储当partition数量大于1的时候，数据（消息）会打散分布在不同的partition中如果只有一个分区，消息是有序的</p>
+</li>
+</ol>
+<h2 id="消费者分区策略"><a href="#消费者分区策略" class="headerlink" title="消费者分区策略"></a>消费者分区策略</h2><p>同一时刻，一条消息只能被组中的一个消费者实例消费：</p>
+<ol>
+<li>消费者数=分区数：一个分区对应一个消费者</li>
+<li>消费者数&lt;分区数：一个消费者对应多个分区</li>
+<li>消费者数&gt;分区数：多出来的消费者将不会消费任何消息</li>
+</ol>
+<p>分区分配策略：保障每个消费者尽量能够均衡地消费分区的数据，不能出现某个消费者消费分区的数量特别多，某个消费者消费的分区特别少</p>
+<ol>
+<li><p>Range分配策略（范围分配策略）：Kafka默认的分配策略<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png"><br>计算公式：<br>n=分区数量/消费者数量<br>m=分区数量%消费者数量<br>前m个消费者消费n+1个，剩余消费者消费n个<br>以上图为例：n=8/3=2m=8%3=2因此前2个消费者消费2+1=3个分区，剩下1个消费者消费2个分区</p>
+</li>
+<li><p>RoundRobin分配策略（轮询分配策略）<br>消费者挨个分配消费的分区：<br>如下图，3个消费者共同消费8个分区<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-37UOhiopzeORskk9D.png"><br>第一轮：Consumer0–&gt;A-Partition0；Consumer1–&gt;A-Partition1；Consumer2–&gt;A-Partition2<br>第二轮：Consumer0–&gt;A-Partition3；Consumer1–&gt;B-Partition0；Consumer2–&gt;B-Partition1<br>第三轮：Consumer0–&gt;B-Partition2；Consumer1–&gt;B-Partition3</p>
+</li>
+<li><p>Striky粘性分配策略<br>在没有发生rebalance跟轮询分配策略是一致的<br>发生了rebalance（例如Consumer2故障宕机），轮询分配策略，重新走一遍轮询分配的过程。而粘性会保证跟上一次的尽量一致，只是将新的需要分配的分区，均匀的分配到现有可用的消费者中即可，这样就减少了上下文的切换<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-39tg0DzeFdwhw12OWx.png"></p>
+</li>
+</ol>
+<h1 id="副本的ACK机制"><a href="#副本的ACK机制" class="headerlink" title="副本的ACK机制"></a>副本的ACK机制</h1><p>acks = 0：生产者只管写入，不管是否写入成功，可能会数据丢失。性能是最好的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40ZCwkIxhdQAGrmER.png"><br>acks = 1：生产者会等到leader分区写入成功后，返回成功，接着发送下一条<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40oa9SBiWlmefVkK7.png"><br>acks = -1/all：确保消息写入到leader分区、还确保消息写入到对应副本都成功后，接着发送下一条，性能是最差的<br><img lazyload="" src="/images/loading.svg" data-src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-41pgmqsHkGcdCNcKD.png"><br>分区中是有leader和follower的概念，为了确保消费者消费的数据是一致的，只能从分区leader去读写消息，follower做的事情就是同步数据。</p>
+<h1 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&A"></a>Q&amp;A</h1><h2 id="offset存在哪里？"><a href="#offset存在哪里？" class="headerlink" title="offset存在哪里？"></a>offset存在哪里？</h2><p>0.9版本前默认存在zk，但是由于频繁访问zk，zk需要一个一个节点更新offset，不能批量或分组更新，导致offset更新成了瓶颈。</p>
+<p>在新版 Kafka 以及之后的版本，Kafka 消费的offset都会默认存放在 Kafka 集群中的一个叫 __consumer_offsets 的topic中。offset以消息形式发送到该topic并保存在broker中。这样consumer提交offset时，只需连接到broker，不用访问zk，避免了zk节点更新瓶颈。</p>
+<h2 id="leader选举策略"><a href="#leader选举策略" class="headerlink" title="leader选举策略"></a>leader选举策略</h2><p>2种leader：①broker的leader即controller leader ② partition的leader</p>
+<h3 id="Controller-leader"><a href="#Controller-leader" class="headerlink" title="Controller leader"></a>Controller leader</h3><p>当broker启动的时候，都会创建KafkaController对象，但是集群中只能有一个leader对外提供服务，这些每个节点上的KafkaController会在指定的zookeeper路径下创建临时节点，只有第一个成功创建的节点的KafkaController才可以成为leader，其余的都是follower。当leader故障后，所有的follower会收到通知，再次竞争在该路径下创建节点从而选举新的leader</p>
+<h3 id="Partition-leader"><a href="#Partition-leader" class="headerlink" title="Partition leader"></a>Partition leader</h3><p>由controller leader执行</p>
+<ul>
+<li>从Zookeeper中读取当前分区的所有ISR(in-sync replicas)集合</li>
+<li>调用配置的分区选择算法选择分区的leader</li>
+</ul>
+<p>如何处理所有Replica都不工作？在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某个Partition的所有Replica都宕机了，就无法保证数据不丢失了。这种情况下有两种可行的方案：等待ISR中的任一个Replica“活”过来，并且选它作为Leader选择第一个“活”过来的Replica（不一定是ISR中的）作为Leader这就需要在可用性和一致性当中作出一个简单的折衷。如果一定要等待ISR中的Replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有Replica都无法“活”过来了，或者数据都丢失了，这个Partition将永远不可用。选择第一个“活”过来的Replica作为Leader，而这个Replica不是ISR中的Replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为Leader而作为consumer的数据源（前文有说明，所有读写都由Leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。</p>
+<h2 id="分区越多越好吗"><a href="#分区越多越好吗" class="headerlink" title="分区越多越好吗"></a>分区越多越好吗</h2><p>分区并不是越多越好，分区过多存在着以下弊端：</p>
+<ul>
+<li>producer内存成本增大、consumer线程开销增大partition是kafka管理数据的基本逻辑组织单元，越多的partition意味着越多的数据存储文件（一个partition对应至少3个数据文件）</li>
+<li>分区增多数据连续性下降</li>
+<li>可用性降低</li>
+</ul>
+<h2 id="与数据库相比kafka的优势"><a href="#与数据库相比kafka的优势" class="headerlink" title="与数据库相比kafka的优势"></a>与数据库相比kafka的优势</h2><p>业务场景不同，底层数据结构不同，kafka数据存储对于功能要求较少，因此读写更快kafka存储数据（消息本身）的文件的数据结构是数组，数组的特点就是：数据间位置连续，如果按照顺序读取，或者追加写入的话，其时间复杂度为O(1)，效率最高。</p>
+<h2 id="消费偏移的更新方式"><a href="#消费偏移的更新方式" class="headerlink" title="消费偏移的更新方式"></a>消费偏移的更新方式</h2><p>1.自动提交（默认方式）</p>
+<p>Kafka中偏移量的自动提交是由参数enable_auto_commit和auto_commit_interval_ms控制的，当enable_auto_commit=True时，Kafka在消费的过程中会以频率为auto_commit_interval_ms向Kafka自带的topic(__consumer_offsets)进行偏移量提交，具体提交到哪个Partation：Math.abs(groupID.hashCode()) % numPartitions。</p>
+<p>这种方式也被称为at most once，fetch到消息后就可以更新offset，无论是否消费成功。</p>
+<p>2.手动提交</p>
+<p>鉴于Kafka自动提交offset的不灵活性和不精确性(只能是按指定频率的提交)，Kafka提供了手动提交offset策略。手动提交能对偏移量更加灵活精准地控制，以保证消息不被重复消费以及消息不被丢失。</p>
+<p>对于手动提交offset主要有3种方式：</p>
+<ol>
+<li>同步提交：提交失败的时候一直尝试提交，直到遇到无法重试的情况下才会结束，同步方式下消费者线程在拉取消息会被阻塞，在broker对提交的请求做出响应之前，会一直阻塞直到偏移量提交操作成功或者在提交过程中发生异常，限制了消息的吞吐量。</li>
+<li>异步提交：异步手动提交offset时，消费者线程不会阻塞，提交失败的时候也不会进行重试，并且可以配合回调函数在broker做出响应的时候记录错误信息。 对于异步提交，由于不会进行失败重试，当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失。</li>
+<li>异步+同步：针对异步提交偏移量丢失的问题，通过对消费者进行异步批次提交并且在关闭时同步提交的方式，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试，直到提交成功。 通过finally在最后不管是否异常都会触发consumer.commit()来同步补救一次，确保偏移量不会丢失</li>
+</ol>
+<hr>
+<h3 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h3><ol>
+<li>生产者将数据发送到指定topic中</li>
+<li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
+<li>消费者订阅指定topic的数据</li>
+<li>当消费者订阅topic中消息时，Kafka将当前的offset发给消费者，同时将offset存储到Zookeeper中</li>
+<li>消费者以特定的间隔（如100ms）向Kafka请求数据</li>
+<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者</li>
+<li>消费者受到Kafka推送的数据，并进行处理</li>
+<li>当消费者处理完该条消息后，消费者向Kafka broker发送一个该消息已被消费的反馈</li>
+<li>当Kafka接到消费者的反馈后，Kafka更新offset包括Zookeeper中的offset。</li>
+<li>以上过程一直重复，直到消费者停止请求数据</li>
+<li>消费者可以重置offset，从而可以灵活消费存储在Kafka上的数据</li>
+</ol>
+<h3 id="消费者组数据消费流程"><a href="#消费者组数据消费流程" class="headerlink" title="消费者组数据消费流程"></a>消费者组数据消费流程</h3><p>Kafka支持消费者组内的多个消费者同时消费一个topic，一个消费者组由具有同一个Group ID的多个消费者组成。具体流程如下：</p>
+<ol>
+<li>生产者发送数据到指定的topic</li>
+<li>Kafka将数据存储到broker上的partition中</li>
+<li>假设现在有一个消费者订阅了一个topic，topic名字为“test”，消费者的Group ID为“Group1”</li>
+<li>此时Kafka的处理方式与只有一个消费者的情况一样</li>
+<li>当Kafka接收到一个同样Group ID为“Group1”、消费的topic同样为“test”的消费者的请求时，Kafka把数据操作模式切换为分享模式，此时数据将在两个消费者上共享。</li>
+<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Arch</category>
+      </categories>
+      <tags>
+        <tag>Arch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>锁机制与CAS</title>
+    <url>//post/CPP/CAS.html</url>
+    <content><![CDATA[<h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><ul>
+<li>假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作。</li>
+<li>悲观锁的实现，往往依靠底层提供的锁机制。</li>
+<li>悲观锁会导致其它所有需要锁的线程挂起，等待持有锁的线程释放锁。</li>
+</ul>
+<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><ul>
+<li>假设不会发生并发冲突，每次不加锁而是假设没有冲突而去完成某项操作，只在提交操作时检查是否违反数据完整性。</li>
+<li>如果因为冲突失败就重试，直到成功为止。</li>
+<li>乐观锁的缺点是不能解决脏读的问题。</li>
+</ul>
+<p>乐观锁大多是基于数据版本记录机制实现：</p>
+<ul>
+<li>为数据增加一个版本标识，比如在基于数据库表的版本解决方案中，一般是通过为数据库表增加一个 “version” 字段来实现。读取出数据时，将此版本号一同读出，之后更新时，对此版本号加一。</li>
+<li>此时，将提交数据的版本数据与数据库表对应记录的当前版本信息进行比对，如果提交的数据版本号大于数据库表当前版本号，则予以更新，否则认为是过期数据。</li>
+</ul>
+<blockquote>
+<p>如果并发量不大且不允许脏读，可以使用悲观锁解决并发问题。否则并发量大后悲观锁定会带来非常大的性能问题，要选择乐观锁的方法。</p>
+</blockquote>
+<h2 id="锁机制存在的问题"><a href="#锁机制存在的问题" class="headerlink" title="锁机制存在的问题"></a>锁机制存在的问题</h2><ul>
+<li>在多线程竞争下，加锁、释放锁会导致比较多的上下文切换和调度延时，引起性能问题。</li>
+<li>一个线程持有锁会导致其它所有需要此锁的线程挂起。</li>
+<li>如果一个优先级高的线程等待一个优先级低的线程释放锁会导致优先级倒置，引起性能风险。</li>
+</ul>
+<hr>
+<h1 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>CAS（Compare-and-Swap）是用于多线程以实现同步的原子指令。CAS 使用了乐观锁的概念执行原子操作，其内部的执行原理为：</p>
+<p>获取内存中的当前值，然后传入期待值(expect)和新的值(desire)，比较当前值和期待值(Compare)，若相等，则将内存中的当前值更新为新的值(Swap)；若不相等，则重复该操作(原子操作失败，完全不执行，回滚至初始状态后重新操作)。</p>
+<p>这种操作是CPU的一条原子指令，需要CPU支持，现在绝大部分CPU指令都支持CAS的原子操作。</p>
+<h2 id="Std-atomic"><a href="#Std-atomic" class="headerlink" title="Std::atomic"></a>Std::atomic</h2><p>C++提供了 <code>atomic</code> 模板支持一系列原子操作的类，提供的方法能保证操作具有原子性，即获取该类型变量的值时，永远能获得修改前或修改后的值，不会获得修改过程中的值，以确保不会在并发操作时产生不明确的行为。</p>
+<p>该类提供了如下几种接口：</p>
+<ul>
+<li>stroe 原子写操作</li>
+<li>load 原子读操作</li>
+<li>exchange 修改当前值，并保证过程具有原子性</li>
+<li>compare_exchange_weak</li>
+<li>compare_exchange_strong</li>
+</ul>
+<p><code>compare_exchange_weak</code> 和 <code>compare_exchange_strong</code> 即为CAS操作，参数传入期待值 <code>expected</code> 和设定值 <code>val</code>：</p>
+<ul>
+<li>若当前值（原子对象包含）与期待值相等，则将当前值修改为设定值，返回true</li>
+<li>若当前值与期待值不等，则将期待值修改为当前值，返回false</li>
+</ul>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">compare_exchange_weak</span> <span class="params">(T&amp; expected, T val, memory_order sync = memory_order_seq_cst)</span> <span class="keyword">volatile</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">compare_exchange_weak</span> <span class="params">(T&amp; expected, T val, memory_order sync = memory_order_seq_cst)</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">compare_exchange_weak</span> <span class="params">(T&amp; expected, T val, memory_order success, memory_order failure)</span> <span class="keyword">volatile</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">compare_exchange_weak</span> <span class="params">(T&amp; expected, T val, memory_order success, memory_order failure)</span> <span class="keyword">noexcept</span></span>;</span><br></pre></td></tr></table></figure></div>
+
+
+<p><code>compare_exchange_weak</code> 和 <code>compare_exchange_strong</code> 的区别：</p>
+<ul>
+<li>weak允许偶然出乎意料的返回，比如当前值和期待值相等时候返回false，但在多数循环算法中是可以接受的，通常比strong具有更高的性能。</li>
+</ul>
+<p>根据上述概念，可以使用C++实现一个简单的CAS无锁栈:</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*  CAS无锁栈  */</span></span><br><span class="line"><span class="keyword">template</span>&lt; <span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConcurrentStack</span> {</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(<span class="type">const</span> T&amp; val)</span> </span>{</span><br><span class="line">    Node* new_node = <span class="keyword">new</span> <span class="built_in">Node</span>(val);</span><br><span class="line">    new_node-&gt;m_next = m_head;</span><br><span class="line">    <span class="keyword">while</span> (!m_head.<span class="built_in">compare_exchange_weak</span>(new_node-&gt;m_next, new_node));</span><br><span class="line">  }</span><br><span class="line">  <span class="function">T <span class="title">pop</span><span class="params">()</span> </span>{</span><br><span class="line">    Node* _now = m_head.<span class="built_in">load</span>();</span><br><span class="line">    Node* _next = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">do</span> {</span><br><span class="line">      <span class="keyword">if</span> (_now == <span class="literal">nullptr</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">      _next = _now-&gt;m_next;</span><br><span class="line">    } <span class="keyword">while</span> (!m_head.<span class="built_in">compare_exchange_weak</span>(_now, _next));</span><br><span class="line">    T _tmp = _now-&gt;m_data;</span><br><span class="line">    <span class="keyword">delete</span> _now;</span><br><span class="line">    <span class="keyword">return</span> _tmp;</span><br><span class="line">  }</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">Node</span> {</span><br><span class="line">    <span class="built_in">Node</span>(<span class="type">const</span> T&amp; data)</span><br><span class="line">        : <span class="built_in">m_data</span>(data), <span class="built_in">m_next</span>(<span class="literal">nullptr</span>) {}</span><br><span class="line">    T m_data;</span><br><span class="line">    Node* m_next;</span><br><span class="line">  };</span><br><span class="line">  std::atomic&lt;Node*&gt; m_head = <span class="literal">nullptr</span>;</span><br><span class="line">};</span><br></pre></td></tr></table></figure></div>]]></content>
       <categories>
         <category>CPP</category>
       </categories>

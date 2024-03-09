@@ -1304,15 +1304,14 @@
 </ul>
 </li>
 <li>线程是CPU调度的基本单位<ul>
-<li>私有（线程上下文）：线程栈，寄存器，程序计数器</li>
+<li>私有（线程上下文）：线程栈（但能通过指针被另一个线程修改），寄存器，程序计数器</li>
 <li>共享：进程地址空间中除线程上下文之外的所有内容：堆、全局变量、静态变量、代码段、文件等公共资源</li>
 </ul>
 </li>
-<li>数据共享：进程有独立的地址空间，数据隔离，共享复杂，需要IPC；线程共享进程数据，共享简单</li>
+<li>数据共享：进程有独立的地址空间，数据隔离，共享复杂，需要IPC；线程共享进程数据</li>
 <li>上下文切换：进程切换需要刷新TLB（对于不同进程，相同虚拟地址会映射不同物理地址产生歧义）并获取新的地址空间、然后切换硬件上下文和内核栈；线程切换时只需要切换硬件上下文和内核栈</li>
 <li>可靠性：多进程更可靠，一个进程崩溃后，在保护模式下不会对其他进程产生影响；但线程之间没有隔离性，一个线程崩溃时可能已经破坏了其他线程的内存，导致整个进程kill</li>
-<li>分布式：进程适应于多核、多机分布，易扩展到多机；线程适用于多核</li>
-<li>通信方式：线程共享进程数据，线程通信主要用于线程同步，所以没有进程通信中数据交换的机制</li>
+<li>通信方式：线程共享进程数据，线程通信主要用于线程同步，所以没有IPC数据交换的机制</li>
 </ul>
 </blockquote>
 <h2 id="内核中对线程的表示"><a href="#内核中对线程的表示" class="headerlink" title="内核中对线程的表示"></a>内核中对线程的表示</h2><p>在 Linux 中，无论进程还是线程，都是抽象成了 task 任务，在源码里都是用 task_struct 结构来实现的。</p>
@@ -1331,7 +1330,6 @@
 <p>对于进程来讲，没传 flags，地址空间 mm_struct、挂载点 fs_struct、打开文件列表 files_struct 都要是独立拥有的，都需要去申请内存并初始化它们。</p>
 <p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/copy_process_.png"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>因为在内核中线程和进程都是用 task_struct 来表示，只不过<strong>线程和进程的区别是会和创建它的父进程共享打开文件列表、目录信息、虚拟地址空间等数据结构，会更轻量一些</strong>，所以在 Linux 下的线程也叫轻量级进程。</p>
-<p>在打开文件列表、目录信息、内存虚拟地址空间中，内存虚拟地址空间是最重要的。因此区分一个 Task 任务该叫线程还是该叫进程，一般习惯上就看它是否有独立的地址空间。如果有，就叫做进程，没有，就叫做线程。</p>
 <p>对于内核任务来说，无论有多少个任务，其使用地址空间都是同一个。所以一般都叫内核线程，而不是内核进程。</p>
 <hr>
 <h1 id="CPU核心、线程数概念"><a href="#CPU核心、线程数概念" class="headerlink" title="CPU核心、线程数概念"></a>CPU核心、线程数概念</h1><h2 id="CPU物理数"><a href="#CPU物理数" class="headerlink" title="CPU物理数"></a>CPU物理数</h2><div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">'physical id'</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure></div>
@@ -3940,12 +3938,8 @@
 </ul>
 <p><strong>锁的思想</strong></p>
 <ul>
-<li><p><strong>悲观锁</strong>：对数据冲突悲观态度，认为写多读少。在修改数据之前把数据锁住，然后再对数据进行读写，在它释放锁之前任何人都不能对其数据进行操作，直到前一个人把锁释放后下一个才可加锁，一般数据库锁都是基于悲观锁的机制实现的</p>
-<p>特点：可以完全保证数据的独占性和正确性，因为每次请求都会对数据先加锁再解锁，会造成消耗性能不高</p>
-</li>
-<li><p><strong>乐观锁</strong>：对数据冲突乐观态度，认为读多写少。不加锁，使得多个任务并行对数据操作，只有到数据提交的时候才通过一种机制来验证数据是否存在冲突(版本号的对比)</p>
-<p>特点：乐观锁是一种并发类型的锁，其本身不对数据进行加锁通而是通过业务实现锁的功能，省掉了加锁和解锁的过程，提高操作的性能。但高并发下，大量的请求冲突导致很多操作失败，性能不如悲观锁</p>
-</li>
+<li>悲观锁</li>
+<li>乐观锁</li>
 </ul>
 <p><strong>锁的粒度</strong></p>
 <ul>
@@ -4710,28 +4704,7 @@
   <entry>
     <title>操作系统</title>
     <url>//post/%E5%85%AB%E8%82%A1/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html</url>
-    <content><![CDATA[<h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><h2 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a>线程与进程区别</h2><blockquote>
-<p>加粗为<strong>多线程</strong>与<strong>多进程</strong>的区别</p>
-<p>为什么要有线程？①进程创建、切换开销大 ②进程通信困难</p>
-</blockquote>
-<ul>
-<li>一个线程属于一个进程，一个进程包含多个线程</li>
-<li>进程是资源分配的基本单位<ul>
-<li>有独立的地址空间，拥有CPU资源、内存资源、文件资源等</li>
-</ul>
-</li>
-<li>线程是CPU调度的基本单位<ul>
-<li>私有（线程上下文）：线程栈，寄存器，程序计数器</li>
-<li>共享：进程地址空间中除线程上下文之外的所有内容：堆、全局变量、静态变量、代码段、文件等公共资源</li>
-</ul>
-</li>
-<li><strong>数据共享</strong>：进程有独立的地址空间，数据隔离，共享复杂，需要IPC；线程共享进程数据，共享简单</li>
-<li><strong>上下文切换</strong>：进程切换需要刷新TLB（对于不同进程，相同虚拟地址会映射不同物理地址产生歧义）并获取新的地址空间、然后切换硬件上下文和内核栈；线程切换时只需要切换硬件上下文和内核栈</li>
-<li><strong>可靠性</strong>：多进程更可靠，一个进程崩溃后，在保护模式下不会对其他进程产生影响；但线程之间没有隔离性，一个线程崩溃时可能已经破坏了其他线程的内存，导致整个进程kill</li>
-<li><strong>分布式</strong>：进程适应于多核、多机分布，易扩展到多机；线程适用于多核</li>
-<li>通信方式：线程共享进程数据，线程通信主要用于线程同步，所以没有进程通信中数据交换的机制</li>
-</ul>
-<h2 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h2><ul>
+    <content><![CDATA[<h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><h2 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a href="https://yveltals.github.io/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC">线程与进程区别</a></h2><h2 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h2><ul>
 <li>协程是一种用户态的<strong>轻量级线程</strong>，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的</li>
 <li><strong>创建开销</strong>：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程</li>
 <li><strong>切换开销</strong>：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上下文和栈，不涉及内核切换的开销，提高了性能，但也失去了使用多CPU的能力</li>
@@ -5215,12 +5188,25 @@
 <li>若要显示至屏幕，显示设备的驱动程序会定时从<strong>读缓冲区队列</strong>读取数据放到<strong>写缓冲区队列</strong>，最后把数据写入到显示设备的控制器的寄存器数据缓冲区中，显示在屏幕里</li>
 </ol>
 <h2 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a class="link" href="https://zhuanlan.zhihu.com/p/447890038">零拷贝 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p>一种 I/O 操作优化技术，是指 IO 操作时 CPU不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户/内核态的切换以及CPU拷贝的次数</p>
-<p><strong>mmap+write</strong>：借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，mmap借助这个原理，将内核中的读缓冲区（page cache）与用户空间的缓冲区映射到一起，只需从外设拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作IO都在内核中完成，但是写过程依旧用户缓冲区-&gt;socket缓冲区 -之间的拷贝操作</p>
-<blockquote>
-<h2 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a class="link" href="https://juejin.cn/post/6844903855235268615#comment">mmap原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p><code>mmap</code> 是一种内存映射文件的方法，即将一个文件或者其它对象（实际是页缓存）映射到进程的虚拟地址空间，建立文件磁盘地址和进程虚拟地址空间的一一映射。进程就可以采用指针的方式读写这一段内存，而系统会自动回写脏页面到磁盘上，<strong>省去了调用read,write等系统调用函数</strong></p>
-<p><code>mmap</code> 还可以<strong>减少内存的拷贝次数</strong>，read调用需要：<code>磁盘文件</code> -&gt; <code>页缓存</code> -&gt; <code>用户读缓冲区</code>，而<code>mmap</code>只需 <code>磁盘文件</code> -&gt; <code>页缓存</code>，然后用户就可以直接通过指针的方式操作 <code>mmap</code> 映射的内存，减少了从内核态到用户态的数据拷贝</p>
-<p>页缓存同步到磁盘的方式：<code>msync</code>主动同步、<code>munmap</code>解除映射关系</p>
-</blockquote>
+<p>以<strong>读SSD+写网卡</strong>为例，两种实现方式：<br><strong>1. mmap+write</strong>：<strong>4次</strong>用户/内核态切换，2次DMA拷贝和1次CPU拷贝<br>借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，因此 mmap 将 page cache 与用户空间的缓冲区映射到一起，只需从磁盘拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作 IO 都在内核中完成<br><img lazyload="" src="/images/loading.svg" data-src="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp"></p>
+<p><strong>2. sendfile</strong>：<strong>2次</strong>用户/内核态切换，2次DMA拷贝和1次CPU拷贝<br>在两个文件描述符之间传输数据，全程由内核操作的，彻底避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作<br><img lazyload="" src="/images/loading.svg" data-src="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp"></p>
+<h2 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a class="link" href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png"><br><strong>2. 内存映射原理</strong></p>
+<ol>
+<li>进程启动映射过程，并在虚拟地址空间中为映射创建虚拟映射区域</li>
+<li>调用内核空间的系统调用函数mmap（不同于用户空间函数），实现文件物理地址和进程虚拟地址的一一映射关系</li>
+<li>进程发起对这片映射空间的访问，引发缺页异常，实现文件内容到物理内存主存的拷贝</li>
+</ol>
+<p><strong>3. 优点</strong></p>
+<ol>
+<li>相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代I/O读写，提高了文件读取效率。</li>
+<li>实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
+<li>一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
+</ol>
+<p><strong>4. 细节</strong></p>
+<ol>
+<li>mmap映射区域大小必须是 4K 大小的整倍数，否则实际映射区域向上取整，padding 部分填充为0且无法写入</li>
+<li>映射的是磁盘地址和文件无关，只要映射范围的数据合法即可，和文件扩张/关闭没有直接联系</li>
+</ol>
 <h2 id="指令乱序"><a href="#指令乱序" class="headerlink" title="指令乱序"></a>指令乱序</h2><p>编译器：优化会将源代码中的一些指令顺序进行重排序，或者使用寄存器进行优化</p>
 <p>处理器：CPU可能将没有数据依赖的指令执行顺序重排；现代 CPU 都是流水线结构，因此在 CPU 上多条指令并行执行，如果一个除法的指令占据了很久的除法器，可能下一条加法指令会更早执行完，导致代码执行后的内存顺序和我们预想的不一样。</p>
 <p>内存屏障：编译器和CPU可以在<strong>保证输出结果一样</strong>的情况下对指令重排序，使性能得到优化。</p>
@@ -5228,10 +5214,6 @@
 <li>阻止屏障两侧的指令重排序：插入一个内存屏障，相当于告诉CPU和编译器先于这个命令的必须先执行，后于这个命令的必须后执行</li>
 <li>强制把写缓冲区/高速缓存中的脏数据等写回主存，让缓存中相应的数据失效</li>
 </ul>
-<h2 id="CPU多级缓存"><a href="#CPU多级缓存" class="headerlink" title="CPU多级缓存"></a>CPU多级缓存</h2><p>一般采用write back写入cache，再异步写入主存</p>
-<p>寄存器 <code>-&gt;</code> L1 (逻辑核独占) <code>-&gt;</code> L2 (物理核独占,逻辑核共享) <code>-&gt;</code> L3 (物理核共享) <code>-&gt;</code> 主存</p>
-<p><a class="link" href="https://zhuanlan.zhihu.com/p/370057417">多级缓存一致性MESI <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
-<p>多核CPU的情况下有多个一级缓存，需要保证缓存内部数据的一致</p>
 <blockquote>
 <h2 id="并发和并行"><a href="#并发和并行" class="headerlink" title="并发和并行"></a>并发和并行</h2><ul>
 <li>并发：指宏观上在一段时间内能同时运行多个程序，通过引入进程和线程使得程序并发运行。</li>
@@ -6918,7 +6900,8 @@
   <entry>
     <title>Linux内存与存储</title>
     <url>//post/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8.html</url>
-    <content><![CDATA[<h1 id="内存资源管理"><a href="#内存资源管理" class="headerlink" title="内存资源管理"></a>内存资源管理</h1><h2 id="Buffers／Cached"><a href="#Buffers／Cached" class="headerlink" title="Buffers／Cached"></a>Buffers／Cached</h2><p>在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cache。</p>
+    <content><![CDATA[<p><a class="link" href="https://www.cnblogs.com/huxiao-tee/p/4657851.html#_label5">从内核文件系统看文件读写过程  <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h1 id="内存资源管理"><a href="#内存资源管理" class="headerlink" title="内存资源管理"></a>内存资源管理</h1><h2 id="Buffers／Cached"><a href="#Buffers／Cached" class="headerlink" title="Buffers／Cached"></a>Buffers／Cached</h2><p>在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cache。</p>
 <p>如果有内存是以page进行分配管理的，都可以使用page cache来缓存。以 block 进行管理的内存可以通过buffer cache来缓存。 <strong>Page Cache 用于缓存文件的页数据，buffer cache 用于缓存块设备（如磁盘）的块数据。</strong> 块的长度主要是根据所使用的块设备决定的，而页长度都是4k。 </p>
 <p><strong>什么是page cache</strong></p>
 <p>Page cache主要用来作为文件系统上的文件数据的缓存来用，尤其是针对当进程对文件有read／write操作的时候。仔细想想的话，作为可以映射文件到内存的系统调用：mmap是不是很自然的也应该用到page cache？malloc会不会用到page cache？</p>
@@ -6969,7 +6952,7 @@
 <h1 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h1><h2 id="共享内存-1"><a href="#共享内存-1" class="headerlink" title="共享内存"></a>共享内存</h2><p>共享内存就是多个进程间共同使用同一段物理内存空间，它是通过将同一段物理内存映射到不同进程的虚空间中来实现的。由于映射到不同进程的虚拟地址空间中，不同进程可以直接使用，不需要进行内存的复制，所以共享内存的效率很高。</p>
 <p><strong>优点</strong>：共享内存（shared memory）是最简单的最大自由度的Linux进程间通信方式之一。使用共享内存，不同进程可以对同一块内存进行读写。由于所有进程对共享内存的访问就和访问自己的内存空间一样，而不需要进行额外系统调用或内核操作，同时还避免了多余的内存拷贝，这种方式是效率最高、速度最快的进程间通信方式。</p>
 <p><strong>缺点</strong>：内核并不提供任何对共享内存访问的同步机制，比如同时对共享内存的相同地址进行写操作，则后写的数据会覆盖之前的数据。所以，使用共享内存一般还需要使用其他IPC机制（如信号量）进行读写同步与互斥。</p>
-<p><strong>原理</strong>：内核对内存的管理是以页（page）为单位的，Linux下一般一个page大小是4k。而程序本身的虚拟地址空间是线性的，所以内核管理了进程从虚拟地址空间到起对应的页的映射。创建共享内存空间后，内核将不同进程虚拟地址的映射到同一个页面。所以在不同进程中，对共享内存所在的内存地址的访问最终都被映射到同一页面。</p>
+<p><strong>原理</strong>：内核对内存的管理是以页为单位的（4k）。而程序本身的虚拟地址空间是线性的，创建共享内存空间后，内核将不同进程虚拟地址的映射到同一个页面。所以在不同进程中，对共享内存所在的内存地址的访问最终都被映射到同一页面。</p>
 <h2 id="Linux的实现机制"><a href="#Linux的实现机制" class="headerlink" title="Linux的实现机制"></a>Linux的实现机制</h2><ol>
 <li><code>System V</code>共享内存：持久化的，除非被进程明确的删除，否则关机前始终存在于内存中</li>
 <li><code>POSIX</code> mmap文件映射实现共享内存：非持久化的，随着进程关闭，映射会随即失效</li>
@@ -6997,7 +6980,6 @@
 <div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/***** writer.c *******/</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ipc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/shm.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">    <span class="type">key_t</span> key = <span class="built_in">ftok</span>(<span class="string">"."</span>,<span class="number">1</span>);        					<span class="comment">//1. 写入端先用ftok函数获得key</span></span><br><span class="line">    <span class="type">int</span> shmid = <span class="built_in">shmget</span>(key,<span class="number">4096</span>,IPC_CREAT); 	<span class="comment">//2. 写入端用shmget函数创建共享内存段</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"key = %d shmid = %d\n"</span>, key, shmid);</span><br><span class="line">    <span class="type">char</span> *p = (<span class="type">char</span> *)<span class="built_in">shmat</span>(shmid, <span class="literal">NULL</span>, <span class="number">0</span>);  <span class="comment">//3. 获得共享内存段的首地址</span></span><br><span class="line">    <span class="built_in">memset</span>(p, <span class="number">0</span>, <span class="number">4096</span>);                      </span><br><span class="line">    <span class="built_in">memcpy</span>(p, <span class="string">"hello world"</span>, <span class="number">4096</span>);         	<span class="comment">//4. 往共享内存段中写入内容</span></span><br><span class="line">    <span class="built_in">shmdt</span>(p);                               	<span class="comment">//5. 关闭共享内存段</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
 
 <div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/***** reader.c *******/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">    <span class="type">key_t</span> key = <span class="built_in">ftok</span>(<span class="string">"."</span>,<span class="number">1</span>);</span><br><span class="line">    <span class="type">int</span> shmid = <span class="built_in">shmget</span>(key,<span class="number">4096</span>,IPC_CREAT);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"key = %d shmid = %d\n"</span>, key, shmid);</span><br><span class="line">    <span class="type">char</span> *p = (<span class="type">char</span> *)<span class="built_in">shmat</span>(shmid, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"receive the data:%s\n"</span>,p);		    <span class="comment">//4. 读取共享内存段中的内容</span></span><br><span class="line">    <span class="built_in">shmctl</span>(shmid, IPC_RMID, <span class="number">0</span>);			 					<span class="comment">//5. 删除共享内存段, 否则数据会一直存在的</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
-
 
 
 <h2 id="POSIX-mmap实现共享内存"><a href="#POSIX-mmap实现共享内存" class="headerlink" title="POSIX mmap实现共享内存"></a>POSIX mmap实现共享内存</h2><h3 id="基本介绍-1"><a href="#基本介绍-1" class="headerlink" title="基本介绍"></a>基本介绍</h3><p><code>POSIX</code> 表示可移植操作系统接口（Portable Operating System Interface），<code>POSIX</code> 标准定义了操作系统应该为应用程序提供的接口标准，是IEEE为要在各种UNIX操作系统上运行的软件而定义的一系列API标准的总称，其正式称呼为 IEEE 1003，而国际标准名称为 ISO/IEC 9945。</p>
@@ -7413,12 +7395,21 @@
 <li>new 调用 <code>operator new</code> 的标准库函数分配空间并调用对象的构造函数，delete 先运行析构函数再调用 <code>operator delete</code> 的标准库函数释放内存。</li>
 <li>new 封装了malloc，直接free不会报错，但是这只是释放内存，而不会析构对象</li>
 </ul>
-<h2 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a class="link" href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><ol>
-<li>这两个函数底层是由<code>brk</code>、<code>mmap</code>、<code>munmap</code>这些系统调用实现的。<code>brk</code>是将数据段的最高地址指针_edata往高地址推，<code>mmap</code>是在进程的虚拟地址空间中（堆和栈中间，称为文件映射区域的地方）找一块空闲的虚拟内存。这两种方式分配的都是虚拟内存，没有分配物理内存。在第一次访问分配的虚拟地址空间时发生缺页中断，操作系统负责分配物理内存，然后建立虚拟内存和物理内存的映射关系；</li>
-<li>malloc小于128k的内存，使用<code>brk</code>分配内存，将_edata往高地址推。<code>brk</code>分配的内存需要等到高地址内存释放以后才能释放，但在此之前可以重用（减少系统调用和缺页中断）。在 free 的时候，若最高地址的空闲内存超过128K则执行内存紧缩操作；</li>
-<li>malloc大于128k的内存，使用<code>mmap</code>分配内存，在堆和栈之间找一块空闲内存分配，可以直接单独释放；</li>
-<li>malloc是从堆里面申请内存，也就是说函数返回的指针是指向堆里面的一块内存。操作系统中有一个记录空闲内存地址的链表，当收到程序的申请时，会遍历该链表找到第一个空间大小满足的堆结点，将其从空闲结点链表中删除，并将该结点的空间分配给程序。</li>
-</ol>
+<h2 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a class="link" href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p>分配的内存小于 128 KB ，通过 <code>brk()</code> 函数将「堆顶」指针向高地址移动，获得新的内存空间。分配的内存大于 128 KB ，通过 <code>mmap()</code> 系统调用中「私有匿名映射」的方式，在文件映射区分配一块内存</p>
+<p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现虚拟内存对应的页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
+<p><strong>1. 为什么不全部使用 mmap 来分配</strong></p>
+<p>如果都用 <code>mmap()</code> 来分配内存，等于每次都要执行系统调用。另外 <code>mmap()</code> 分配的内存释放时都会归还给操作系统，于是在第一次访问该虚拟地址的时候就会缺页中断。<strong>不仅每次都会发生运行态的切换，第一次访问虚拟地址后还会缺页中断，导致 CPU 消耗较大</strong>。</p>
+<p>而通过 <code>brk()</code> 系统调用在堆空间申请内存的时候，由于堆空间是连续的，所以直接预分配更大的内存来作为内存池，当内存释放的时候，就缓存在内存池中。等下次在申请内存的时候，就直接从内存池取出对应的内存块就行了，而且可能这个内存块的虚拟地址与物理地址的映射关系还存在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
+<p><strong>2. 为什么不全部使用 brk 来分配</strong></p>
+<p>如果连续申请了 10k，20k，30k 这三片内存，如果 10k 和 20k 这两片释放了，变为了空闲内存空间。但是如果下次申请的内存大于 30k，没有可用的空闲内存空间，必须向 OS 申请，实际使用内存继续增大。</p>
+<p>因此，随着系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
+<p><strong>3. free 释放内存会归还给操作系统吗</strong> </p>
+<ul>
+<li><code>brk()</code> 申请的内存，释放内存时不会归还给操作系统，而是缓存在 malloc 的内存池中，待下次使用</li>
+<li><code>mmap()</code> 申请的内存，释放内存时会把内存归还给操作系统，内存得到真正的释放</li>
+</ul>
+<p><strong>4. free 如何知道释放多大内存</strong></p>
+<p>malloc返回的地址比堆空间起始地址多了16字节，free向前偏移16字节后分析出内存块大小</p>
 <blockquote>
 <p>malloc分配的空间包括：cookie、debugger header、(对象数量)、对象(数组)、padding、cookie</p>
 <p>不能用delete回收new[]分配的内存，只会析构一个对象，且delete不知道前面4字节的的对象数量</p>
@@ -8425,9 +8416,9 @@
     <title>锁机制与CAS</title>
     <url>//post/CPP/CAS.html</url>
     <content><![CDATA[<h1 id="锁机制"><a href="#锁机制" class="headerlink" title="锁机制"></a>锁机制</h1><h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><ul>
-<li>假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作。</li>
-<li>悲观锁的实现，往往依靠底层提供的锁机制。</li>
-<li>悲观锁会导致其它所有需要锁的线程挂起，等待持有锁的线程释放锁。</li>
+<li>假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作</li>
+<li>悲观锁靠底层提供的锁机制实现，会导致其它所有需要锁的线程挂起</li>
+<li>可以完全保证数据的独占性和正确性，因为每次请求都会对数据先加锁再解锁，会造成消耗性能不高</li>
 </ul>
 <h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><ul>
 <li>假设不会发生并发冲突，每次不加锁而是假设没有冲突而去完成某项操作，只在提交操作时检查是否违反数据完整性。</li>

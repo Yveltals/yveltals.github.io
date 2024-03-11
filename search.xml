@@ -4836,7 +4836,7 @@
 <li><strong>孤儿进程</strong>：如果父进程退出而子进程还在运行，则子进程成为孤儿进程。孤儿进程将被 init 进程接收并完成状态收集工作<br>避免：⽗进程调⽤ <code>wait</code> 或者 <code>waitpid</code> 函数等待⼦进程完成再退出</li>
 <li><strong>僵尸进程</strong>：如果子进程退出而父进程还在运行，那么子进程必须等到父进程捕获到了其退出状态才真正结束，否则这个时候子进程就成为僵尸进程。设置僵尸进程的目的是维护子进程的信息，以便父进程在以后某个时候获取子进程ID、终止状态等<br>避免：⼦进程退出时向⽗进程发送 <code>SIGCHILD</code> 信号，⽗进程处理 <code>SIGCHILD</code> 信号。在信号处理函数中调⽤ <code>wait</code> 进⾏处理僵⼫进程</li>
 </ul>
-<details class="blue" data-header-exclude=""><summary><i class="fa-solid fa-chevron-right"></i>LRU-K实现 </summary>
+<details class="blue" data-header-exclude=""><summary><i class="fa-solid fa-chevron-right"></i>Folding </summary>
               <div class="content">
               <p>进程与程序的区别</p><ul><li>进程是程序的一次运行活动，是<strong>动态</strong>概念，程序是一组有序的静态指令，是<strong>静态</strong>概念。</li><li>程序可以作为一种软件资源<strong>长期</strong>保持着，而进程是一次执行过程，是<strong>暂时</strong>的。</li><li>进程由程序和数据两部分组成，一个进程可以执行一个或多个程序。</li><li>进程更能真实地描述并发，而程序不能。</li><li>进程能创建其他进程，而程序没有。</li></ul><p>进程与作业的区别</p><ul><li>作业是用户向计算机提交任务的任务实体，系统将它放入<strong>外存</strong>中的作业等待队列中；而进程是申请分配资源的基本单位，只要被创建就有部分存在于<strong>内存</strong>中。</li><li>一个作业可由多个进程组成，且必须至少由一个进程组成。</li><li>作业的概念主要用在<strong>批处理系统</strong>中，像UNIX这样的分时系统中就没有作业的概念；而进程的概念则用在几乎所有的<strong>多道程序系统</strong>中。</li></ul><p>进程空间从高到低</p><ol><li><strong>命令行参数和环境变量</strong></li><li><strong>栈区：</strong>存储局部变量、函数参数值，栈从高地址向低地址增长，是一块连续的空间</li><li><strong>文件映射区</strong>：位于堆和栈之间</li><li><strong>堆区：</strong>动态申请内存用，堆从低地址向高地址增长</li><li><strong>BSS 段</strong>：未初始化的全局变量和静态变量</li><li><strong>数据段</strong>：已初始化的全局变量和静态变量</li><li><strong>代码段：</strong>存放程序执行代码的一块内存区域，只读，代码段的头部还会包含一些只读的常数变量。</li></ol>
               </div>

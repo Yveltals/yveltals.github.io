@@ -4838,24 +4838,10 @@
 </ul>
 <details class="blue" data-header-exclude=""><summary><i class="fa-solid fa-chevron-right"></i>LRU-K实现 </summary>
               <div class="content">
-              <p>进程与程序的区别</p><ul><li>进程是程序的一次运行活动，是<strong>动态</strong>概念，程序是一组有序的静态指令，是<strong>静态</strong>概念。</li><li>程序可以作为一种软件资源<strong>长期</strong>保持着，而进程是一次执行过程，是<strong>暂时</strong>的。</li><li>进程由程序和数据两部分组成，一个进程可以执行一个或多个程序。</li><li>进程更能真实地描述并发，而程序不能。</li><li>进程能创建其他进程，而程序没有。</li></ul>
+              <p>进程与程序的区别</p><ul><li>进程是程序的一次运行活动，是<strong>动态</strong>概念，程序是一组有序的静态指令，是<strong>静态</strong>概念。</li><li>程序可以作为一种软件资源<strong>长期</strong>保持着，而进程是一次执行过程，是<strong>暂时</strong>的。</li><li>进程由程序和数据两部分组成，一个进程可以执行一个或多个程序。</li><li>进程更能真实地描述并发，而程序不能。</li><li>进程能创建其他进程，而程序没有。</li></ul><p>进程与作业的区别</p><ul><li>作业是用户向计算机提交任务的任务实体，系统将它放入<strong>外存</strong>中的作业等待队列中；而进程是申请分配资源的基本单位，只要被创建就有部分存在于<strong>内存</strong>中。</li><li>一个作业可由多个进程组成，且必须至少由一个进程组成。</li><li>作业的概念主要用在<strong>批处理系统</strong>中，像UNIX这样的分时系统中就没有作业的概念；而进程的概念则用在几乎所有的<strong>多道程序系统</strong>中。</li></ul><p>进程空间从高到低</p><ol><li><strong>命令行参数和环境变量</strong></li><li><strong>栈区：</strong>存储局部变量、函数参数值，栈从高地址向低地址增长，是一块连续的空间</li><li><strong>文件映射区</strong>：位于堆和栈之间</li><li><strong>堆区：</strong>动态申请内存用，堆从低地址向高地址增长</li><li><strong>BSS 段</strong>：未初始化的全局变量和静态变量</li><li><strong>数据段</strong>：已初始化的全局变量和静态变量</li><li><strong>代码段：</strong>存放程序执行代码的一块内存区域，只读，代码段的头部还会包含一些只读的常数变量。</li></ol>
               </div>
             </details>
 
-<h2 id="进程与作业的区别"><a href="#进程与作业的区别" class="headerlink" title="进程与作业的区别"></a>进程与作业的区别</h2><ul>
-<li>作业是用户向计算机提交任务的任务实体，系统将它放入<strong>外存</strong>中的作业等待队列中；而进程是申请分配资源的基本单位，只要被创建就有部分存在于<strong>内存</strong>中。</li>
-<li>一个作业可由多个进程组成，且必须至少由一个进程组成。</li>
-<li>作业的概念主要用在<strong>批处理系统</strong>中，像UNIX这样的分时系统中就没有作业的概念；而进程的概念则用在几乎所有的<strong>多道程序系统</strong>中。</li>
-</ul>
-<h2 id="进程空间从高到低"><a href="#进程空间从高到低" class="headerlink" title="进程空间从高到低"></a>进程空间从高到低</h2><ol>
-<li><strong>命令行参数和环境变量</strong></li>
-<li><strong>栈区：</strong>存储局部变量、函数参数值，栈从高地址向低地址增长，是一块连续的空间</li>
-<li><strong>文件映射区</strong>：位于堆和栈之间</li>
-<li><strong>堆区：</strong>动态申请内存用，堆从低地址向高地址增长</li>
-<li><strong>BSS 段</strong>：未初始化的全局变量和静态变量</li>
-<li><strong>数据段</strong>：已初始化的全局变量和静态变量</li>
-<li><strong>代码段：</strong>存放程序执行代码的一块内存区域，只读，代码段的头部还会包含一些只读的常数变量。</li>
-</ol>
 <hr>
 <h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><h2 id="死锁和活锁"><a href="#死锁和活锁" class="headerlink" title="死锁和活锁"></a>死锁和活锁</h2><ul>
 <li><strong>死锁</strong>：指两个及以上的进程在执行过程中，<strong>由于竞争资源或彼此通信而造成的一种阻塞的现象</strong>，若无外力作用，它们都将无法推进下去。</li>

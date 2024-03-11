@@ -4747,10 +4747,10 @@
 <li><strong>就绪状态</strong>：进程已获得除处理器外的所需资源，只要分配了处理器就可以执行。可以按优先级来划分就绪队列，当时间片用完时排入低优先级队列，当 I/O 操作完成时排入高优先级队列。</li>
 <li><strong>执行状态</strong>：进程已获得CPU，其程序正在执行。单核CPU中只有一个进程处于执行状态，多核CPU中可以有多个。</li>
 <li><strong>阻塞状态</strong>：正在执行的进程由于发生某事件而暂时无法继续执行时，便放弃处理机而处于暂停状态。致使阻塞的典型事件有：请求I/O，申请缓冲空间等。通常将阻塞状态的进程也排成队列。</li>
-<li><strong>退出状态</strong>：进程已结束运行，回收除进程控制块之外的其他资源，并让其他进程从进程控制块中收集有关信息（如记帐和将退出代码传递给父进程）。</li>
+<li><strong>退出状态</strong>：进程已结束运行，回收除 PCB 之外的其他资源，并让其他进程从 PCB 中收集有关信息（如记帐和将退出代码传递给父进程）。</li>
 </ul>
 <h2 id="进程间的通信方式"><a href="#进程间的通信方式" class="headerlink" title="进程间的通信方式"></a>进程间的通信方式</h2><ol>
-<li><strong>匿名管道</strong>：一种半双工的通信方式，数据单向流动，简单但是只能在有亲缘关系的进程间使用（父子进程）</li>
+<li><strong>匿名管道</strong>：一种半双工的通信方式，数据单向流动，简单但是只能在有亲缘关系的进程间使用（父子、兄弟）</li>
 <li><strong>命名管道</strong>：一种半双工的通信方式，它允许无亲缘关系进程间的通信<ul>
 <li>缺点：缓冲区有限；命名管道在使用完后依然存在于文件系统中，不会自动删除</li>
 </ul>
@@ -4794,7 +4794,7 @@
 <li><strong>条件变量</strong>：直到某个特定条件为真为止，以原子的方式阻塞进程。条件测试是在互斥锁的保护下进行的，若条件不满足，线程解开互斥锁并阻塞线程，等到某个线程改变了条件变量时，他将通知相应的条件变量唤醒被阻塞线程。互斥锁是线程间互斥的机制，条件变量是同步机制</li>
 <li><strong>递归锁：</strong>也叫可重⼊锁，在一个线程在不解锁的情况下多次锁定同一个递归锁，而且不会产生死锁</li>
 </ul>
-<h2 id="进程与线程的切换"><a href="#进程与线程的切换" class="headerlink" title="进程与线程的切换"></a>进程与线程的切换</h2><p><strong>进程切换</strong></p>
+<h2 id="进程与线程的切换（3-5μs）"><a href="#进程与线程的切换（3-5μs）" class="headerlink" title="进程与线程的切换（3.5μs）"></a>进程与线程的切换（3.5μs）</h2><p><strong>进程切换</strong></p>
 <ol>
 <li>切换<strong>页表</strong>以使用新的地址空间，一旦切换上下文，处理器中所有已缓存的内存地址一瞬间都作废了</li>
 <li>切换内核栈和硬件上下文</li>
@@ -4896,13 +4896,13 @@
 <li><strong>银行家算法</strong>：进程申请使用资源时，先试探分配给该进程资源，然后通过安全性算法判断分配后系统是否处于安全状态，若不安全则试探分配作废，让该进程继续等待，否则才真正分配资源给该进程。</li>
 </ul>
 <blockquote>
-<h2 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a>死锁检测</h2><p>不限制资源分配，也不采取死锁避免措施，但系统<strong>定时地运行一个 “死锁检测”</strong>的程序，判断系统内是否出现死锁，如果检测到了死锁再采取措施解除。</p>
+<h2 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a>死锁检测</h2><p>不限制资源分配，也不采取死锁避免措施，但系统定时地运行一个 “死锁检测”的程序，判断系统内是否出现死锁，如果检测到了死锁再采取措施解除。</p>
 <h2 id="死锁解除"><a href="#死锁解除" class="headerlink" title="死锁解除"></a>死锁解除</h2><ul>
 <li><strong>资源剥夺法</strong>：挂起某些死锁进程，并抢占它的资源，将这些资源分配给其他的死锁进程。但应防止被挂起的进程长时间得不到资源，而处于资源匮乏的状态。</li>
 <li><strong>撤销进程法</strong>：撤销部分死锁进程，并剥夺它的资源。撤销的原则可以按进程优先级和撤销进程代价进行。</li>
 <li><strong>进程回退法</strong>：让部分进程回退到足以回避死锁的地步，进程回退时自愿释放资源而不是被剥夺。要求系统保持进程的历史信息，设置还原点。</li>
 </ul>
-<h2 id="Mutex原理"><a href="#Mutex原理" class="headerlink" title="Mutex原理"></a>Mutex原理</h2><p>Mutex的本质就是一个内存标志，这个标志可以是一个flag（<a class="link" href="https://www.zhihu.com/question/332113890/answer/2443011003">占用标志 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>），也可以是一个指向持有者线程ID的指针，还有一个阻塞队列，以及若干其它信息等。当Mutex被标记成占用、或持有者指针非空时，它就不能被被别的线程访问。只有等到空闲时，操作系统会从阻塞队列里取出第一线程调度执行。如果当前CPU很忙，就把取出的这个线程标记为就绪状态，等后续CPU空闲了再调度。</p>
+<h2 id="Mutex原理"><a href="#Mutex原理" class="headerlink" title="Mutex原理"></a>Mutex原理</h2><p>Mutex 的本质就是一个<strong>内存标志</strong>，这个标志可以是一个flag（<a class="link" href="https://www.zhihu.com/question/332113890/answer/2443011003">占用标志 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，底层基于硬件原子操作），也可以是一个指向持有者线程ID的指针，另外还有一个阻塞队列等若干信息。当 Mutex 被标记成占用、或持有者指针非空时，它就不能被被别的线程访问。只有等到空闲时，操作系统会从阻塞队列里取出第一线程调度执行（或标为就绪态等待调度）。</p>
 </blockquote>
 <hr>
 <h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><h2 id="分页存储"><a href="#分页存储" class="headerlink" title="分页存储"></a>分页存储</h2><p>将程序的逻辑地址空间划分为固定大小的<strong>页</strong>，物理内存划分为同样大小的<strong>页框</strong>，大小取2的整数幂。程序加载时，可将任意一页放入内存中任意一个页框，因为页框不必连续，所以实现了离散分配。</p>
@@ -5131,7 +5131,7 @@
 <ol>
 <li><strong>没 fd 数量限制</strong>：是一个很大的值，和内存大小有关</li>
 <li><strong>无需遍历</strong>：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
-<li><strong>减少拷贝</strong>：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且系统调用返回时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
+<li><strong>减少拷贝</strong>：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
 <li><strong>回调</strong>：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
 <li><strong>ET触发</strong>：Epoll的边缘触发模式效率高，系统不会充斥大量不关心的就绪文件描述符</li>
 <li>虽然Epoll的性能最好，但是在连接数少并且连接都十分活跃的情况下，Select和Poll的性能可能比Epoll好，毕竟Epoll的通知机制需要很多函数回调。</li>
@@ -5162,12 +5162,12 @@
 </li>
 <li><strong>将就绪 fd 传递给用户态的方式</strong><ul>
 <li>select / poll：将之前传入的fd数组拷贝传出用户态并返回就绪的文件描述符总数，需要遍历判断</li>
-<li>Epoll：<code>epoll_wait</code>将就绪链表的数据放入传入的数组中并返回数量，无需判断直接依次处理即可。而且返回的文件描述符是通过 <code>mmap()</code> 让内核和用户空间共享同一块内存实现传递的，减少了不必要的拷贝。</li>
+<li>Epoll：<code>epoll_wait</code>将就绪链表的数据放入传入的数组中并返回数量，无需判断直接依次处理即可。并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
 </ul>
 </li>
 <li><strong>重复监听的处理方式</strong><ul>
 <li>select / poll：将新的监听文件描述符集合 / 结构体数组拷贝传入内核中</li>
-<li>Epoll：无需重新构建红黑树，直接沿用已存在的即可。</li>
+<li>Epoll：无需重新构建红黑树，直接沿用已存在的即可</li>
 </ul>
 </li>
 </ol>
@@ -5190,19 +5190,14 @@
 <h2 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a class="link" href="https://zhuanlan.zhihu.com/p/447890038">零拷贝 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p>一种 I/O 操作优化技术，是指 IO 操作时 CPU不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户/内核态的切换以及CPU拷贝的次数</p>
 <p>以<strong>读SSD+写网卡</strong>为例，两种实现方式：<br><strong>1. mmap+write</strong>：<strong>4次</strong>用户/内核态切换，2次DMA拷贝和1次CPU拷贝<br>借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，因此 mmap 将 page cache 与用户空间的缓冲区映射到一起，只需从磁盘拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作 IO 都在内核中完成<br><img lazyload="" src="/images/loading.svg" data-src="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp"></p>
 <p><strong>2. sendfile</strong>：<strong>2次</strong>用户/内核态切换，2次DMA拷贝和1次CPU拷贝<br>在两个文件描述符之间传输数据，全程由内核操作的，彻底避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作<br><img lazyload="" src="/images/loading.svg" data-src="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp"></p>
-<h2 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a class="link" href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png"><br><strong>2. 内存映射原理</strong></p>
-<ol>
-<li>进程启动映射过程，并在虚拟地址空间中为映射创建虚拟映射区域</li>
-<li>调用内核空间的系统调用函数mmap（不同于用户空间函数），实现文件物理地址和进程虚拟地址的一一映射关系</li>
-<li>进程发起对这片映射空间的访问，引发缺页异常，实现文件内容到物理内存主存的拷贝</li>
-</ol>
-<p><strong>3. 优点</strong></p>
+<h2 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a class="link" href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h2><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png"></p>
+<p><strong>2. 优点</strong></p>
 <ol>
 <li>相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代I/O读写，提高了文件读取效率。</li>
 <li>实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
 <li>一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
 </ol>
-<p><strong>4. 细节</strong></p>
+<p><strong>3. 细节</strong></p>
 <ol>
 <li>mmap映射区域大小必须是 4K 大小的整倍数，否则实际映射区域向上取整，padding 部分填充为0且无法写入</li>
 <li>映射的是磁盘地址和文件无关，只要映射范围的数据合法即可，和文件扩张/关闭没有直接联系</li>

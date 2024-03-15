@@ -3278,55 +3278,69 @@
               </div>
             </details>
 
-<h2 id="EXTENDIBLE-HASH-INDEX"><a href="#EXTENDIBLE-HASH-INDEX" class="headerlink" title="EXTENDIBLE HASH INDEX"></a>EXTENDIBLE HASH INDEX</h2><p>磁盘备份指该哈希表可写入至磁盘中，在系统重启时可以将其重新读取至内存中使用。可扩展哈希表是动态哈希表的一种类型，其思想在于多个目录项对应一个桶，其特点为桶在充满或清空时<strong>可以桶为单位进行桶分裂或合并</strong>，并且仅需在<strong>特定情况下进行哈希表全表的扩展和收缩</strong>，以减小扩展和收缩操作对全表的影响</p>
+<h2 id="EXTENDIBLE-HASH-INDEX"><a href="#EXTENDIBLE-HASH-INDEX" class="headerlink" title="EXTENDIBLE HASH INDEX"></a>EXTENDIBLE HASH INDEX</h2><p><strong>通常的哈希表</strong>如Redis在负载因子高时，把HashTable大小翻倍，HashNode全部rehash一遍</p>
+<p><strong>可扩展哈希表</strong>是一种动态哈希表，其思想在于多个目录项对应一个桶，其特点为桶在充满或清空时<strong>可以桶为单位进行桶分裂或合并</strong>，并且仅需在<strong>特定情况下进行HashTable的扩展和收缩</strong>，以减小扩展和收缩操作对全表的影响</p>
+<p><strong>映射关系</strong>：<code>key-&gt;index</code> 的逻辑是<code>hash(key) &amp; mask</code>，即64位hash的低k位，hashTable大小为 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="2.152ex" height="1.932ex" role="img" focusable="false" viewBox="0 -853.7 951.4 853.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mn"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g><g data-mml-node="mi" transform="translate(533,363) scale(0.707)"><path data-c="1D458" d="M121 647Q121 657 125 670T137 683Q138 683 209 688T282 694Q294 694 294 686Q294 679 244 477Q194 279 194 272Q213 282 223 291Q247 309 292 354T362 415Q402 442 438 442Q468 442 485 423T503 369Q503 344 496 327T477 302T456 291T438 288Q418 288 406 299T394 328Q394 353 410 369T442 390L458 393Q446 405 434 405H430Q398 402 367 380T294 316T228 255Q230 254 243 252T267 246T293 238T320 224T342 206T359 180T365 147Q365 130 360 106T354 66Q354 26 381 26Q429 26 459 145Q461 153 479 153H483Q499 153 499 144Q499 139 496 130Q455 -11 378 -11Q333 -11 305 15T277 90Q277 108 280 121T283 145Q283 167 269 183T234 206T200 217T182 220H180Q168 178 159 139T145 81T136 44T129 20T122 7T111 -2Q98 -11 83 -11Q66 -11 57 -1T48 16Q48 26 85 176T158 471L195 616Q196 629 188 632T149 637H144Q134 637 131 637T124 640T121 647Z"></path></g></g></g></g></svg></mjx-container>。</p>
+<p><strong>哈希表的扩展</strong>：</p>
+<ol>
+<li><p>对于大小为 4 的 HashTable，第一次扩展时，必须把HashTable reserve 为8。此后的key hash映射因为mask了低 k+1 位，如果是 <code>Bucket[0]</code> 链表满了，那么rehash到 <code>Bucket[0]</code> 和 <code>Bucket[4]</code> 链表，但 <code>Bucket[1~3]</code> 因为不满就无需rehash，把指针赋值给 <code>Bucket[5~7]</code> 即可，即两个 Bucket_idx 对应相同的链表。</p>
+</li>
+<li><p>等下次 <code>Bucket[1]</code> 链表满需要扩展时，因为下标1和5共用这一个链表，只需要rehash成两个链表分别对应两个Bucket_idx即可，其他都不用动</p>
+</li>
+</ol>
+<p>如何区分以上两种情况：</p>
 <ul>
-<li><strong>全局深度</strong>：哈希键有很多位，全局深度规定了仅右侧几位有效，因此通过改变哈希表目录项的哈希键位数来控制哈希表的总大小，<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="1.871ex" height="1.879ex" role="img" focusable="false" viewBox="0 -830.4 827 830.4"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mn"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g><g data-mml-node="mi" transform="translate(533,363) scale(0.707)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g></g></g></g></svg></mjx-container>个目录项</li>
-<li><strong>局部深度</strong>：每个目录项所指的桶关注的哈希键位数，这样当局部深度小于全局深度时，就实现了多个表项映射到一个桶中，防止桶的数量成倍扩张，而且不需要把所有数据全部rehash一遍，只需rehash原分裂桶</li>
-</ul>
-<p><strong>桶的分裂</strong>：桶满时，根据局部深度 <code>j</code> 和全局深度 <code>i</code>：</p>
-<ul>
-<li><code>i&gt;j</code>时：多个目录项指向的桶满，哈希表不用扩展，仅需桶局部深度++分裂成两个，将对应的几个目录项重新映射，一半指向旧桶一半指分裂桶</li>
-<li><code>i==j</code>时：全局深度++，该桶局部深度++，导致目录项翻倍，该桶分裂出一个新桶。对应的两条目录项分别指向两个分裂桶，并且把原桶的记录重新hash到两个分裂桶中；其他的目录项低<code>i-1</code>位相同的指向同一个桶。</li>
+<li><strong>全局深度</strong>：HashTable的大小，即mask位数，每次reserve时+1</li>
+<li><strong>局部深度</strong>：每次rehash链表时，对应Bucket的局部深度++。<code>局部深度 &lt; 全局深度</code> 时，仅需rehash对应链表节点。<code>局部深度 = 全局深度</code>时，需要先 reserve 再 rehash 对应链表。</li>
 </ul>
 <p><strong>桶的合并</strong>：满足两桶均空、局部深度相同时，合并桶后局部深度-1，合并后可能缩减全局深度</p>
 <p><strong>并发控制</strong></p>
 <ul>
-<li><p>getvalue：依次哈希目录、桶页面加<strong>读锁</strong></p>
+<li><p><code>Getvalue</code>：哈希目录加读锁</p>
 </li>
-<li><p>insert/remove：桶一定会插入或分裂，但目录项只有在桶满分裂时才修改，故采用乐观锁优化，默认目录项只加<strong>读锁</strong>，桶加<strong>写锁</strong>；只有桶满时，释放锁并调用另一分裂插入函数，一开始获取两个<strong>写锁</strong>，并判断<strong>桶是否仍满</strong></p>
+<li><p><code>Insert/Remove</code>：Bucket一定会插入或分裂，但 HashTable 只有在桶满分裂时才修改，故采用乐观锁优化：默认 HashTable 只加读锁，Bucket 加写锁；只有桶满时，释放锁并调用另一分裂插入函数，一开始就获取两个写锁，还要注意判断<strong>桶是否仍满</strong></p>
 </li>
 </ul>
-<div class="note-large blue"><div class="notel-title"><p>提示</p>
-</div><div class="notel-content"><p>不难注意到，在<code>Insert</code>中释放读锁和<code>SplitInsert</code>中释放写锁间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新在目录页面中获取哈希键所对应的桶页面（可能与<code>Insert</code>中判断已满的页面不是同一页面），并检查对应的桶页面是否已满。如桶页面仍然是满的，则分配新桶和提取原桶页面的元数据。</p>
-</div></div>
+
+  <div class="note-large blue">
+    <div class="notel-title rounded-t-lg p-3 font-bold text-lg flex flex-row gap-2 items-center">
+      <p>踩坑</p>
+
+    </div>
+    <div class="notel-content">
+      <p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p>
+
+    </div>
+  </div>
 
 <h2 id="B-Tree-Index"><a href="#B-Tree-Index" class="headerlink" title="B+Tree Index"></a>B+Tree Index</h2><blockquote>
 <ul>
-<li><strong>TREE_PAGE</strong>: 保存在page的data中，总大小4KB，包含size、max_size、parent_page_id、page_id</li>
-<li><strong>TREE_INTERNAL_PAGE</strong>: kv数组*&lt;keyType, page_id&gt;*</li>
-<li><strong>TREE_LEAF_PAGE</strong>: next_page_id与kv数组*&lt;keyType, record_id&gt;*</li>
+<li><strong>TREE_PAGE</strong>: 保存在Page的data中，共4KB，包含size、max_size、parent_page_id、page_id</li>
+<li><strong>TREE_INTERNAL_PAGE</strong>: kv数组 <code>&lt;keyType, page_id&gt;</code></li>
+<li><strong>TREE_LEAF_PAGE</strong>: next_page_id 与 kv数组 <code>&lt;keyType, record_id&gt;</code></li>
 </ul>
 </blockquote>
 <h3 id="理论定义"><a href="#理论定义" class="headerlink" title="理论定义"></a><a class="link" href="https://www.cnblogs.com/nullzx/p/8729425.html">理论定义 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></h3><ul>
 <li>B+树分为内部结点和叶子结点，根结点既可以是内部结点，也可以是叶子结点，关键字个数最少1个</li>
 <li>B+树内部结点不保存数据，只用于索引，所有数据都保存在叶结点中</li>
 <li>m阶B+树<strong>内部结点</strong>最多有m-1个关键字、m个子树，<strong>叶子结点</strong>最多存储m-1个记录</li>
-<li>内部结点中的key都按照从小到大的顺序排列，key左子树中的key都大，小于等于右子树中的key</li>
+<li>内部结点中的key都按照从小到大的顺序排列，key左子树中的key都小于等于右子树中的key</li>
 <li>叶子结点双向链表相连，自小而大有序</li>
 </ul>
-<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>理论上B+树内部结点是由指针、关键字交替组成的，实际的实现是一个键值对数组，键对应关键字，值对应右侧的指针（实际是page_id），所以M阶的B+树内部结点最多存放M个键值对，第一个键值对键是空的，而叶子结点键值对个数为M-1</p>
+<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>理论上B+树内部结点是由指针、关键字交替组成的，实现是一个键值对数组<code>&lt;key, page_id&gt;</code>。所以M阶的B+树内部结点最多存放M个键值对，第一个键值对键是空的，而叶子结点键值对个数为 M-1</p>
 <ol>
 <li>如果是空树，创建一个叶节点作为根。更新<code>root_page_id</code> ，因为需要通过它访问B+树</li>
-<li>从根节点向下查找到键值应该所在的叶节点，在每个内部节点找到最后一个小于等于插入值的键，取它的值即就是下层结点的ID，最终找到叶子结点并插入键值对。规定不支持重复键，所以先扫描一遍叶节点，如果发现键存在则直接返回 false</li>
+<li>从根节点向下查找到键值应该所在的叶节点，在每个内部节点找到最后一个小于等于插入值的键，得到下层结点的 Page_id，最终找到叶子结点并插入键值对。规定不支持重复键，否则直接返回 false。</li>
 <li>如果叶节点插入后超过 M-1 要进行分裂，将原节点的一半内容拷贝到新节点，分裂点的键插入父节点，让父节点该键的值指向新的叶节点</li>
-<li>如果父节点（内部节点）插入后超过了M，同样要递归进行分裂并向上插入，还要调整子节点的父指针指向新的内部节点。如果根节点满了，则要创建一个新的根节点，使得 B+ 树长高一层</li>
+<li>如果父节点（内部节点）插入后超过了M，同样要递归进行分裂并向上插入，还要调整子节点的父指针指向新的内部节点。</li>
+<li>如果上溢到了根节点，则要创建一个新的根节点，使得 B+ 树长高一层</li>
 </ol>
 <h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p><em>下溢：内部结点 (M+1)/2，叶结点 M/2</em></p>
 <ol>
-<li>如果空树就返回。否则找到键所在叶节点，从叶节点中删除键值，删除后出现下溢出就进行后续处理：</li>
+<li>从叶节点中删除键值，如果出现下溢就进行后续处理：</li>
 <li>对于叶结点，如果兄弟节点键值对个数大于 M/2，从兄弟节点借一个键值对（左侧兄弟就借尾，右侧兄弟就借头），把兄弟节点的键上移替换父节点中的键；如果兄弟节点不够借出，将该节点与兄弟节点合并，同时删除父节点中该位置的键值。</li>
-<li>如果删除后父节点（内部节点）下溢出，仍然是借&amp;修改或合并&amp;删除两种方法处理，但规则与叶节点不同：借&amp;修改时，要把兄弟节点的键上移，借来的键值对的键取自父节点的键，值取自兄弟节点的值；合并&amp;删除时，要把父节点的键和兄弟节点的键值一块和该节点合并。</li>
-<li>如果下溢出达到根节点，而且根节点只剩下一个子节点，说明树应该减少一层，将这个子节点设为新的根。</li>
+<li>如果删除后父节点（内部节点）下溢出，仍然是借&amp;修改或合并&amp;删除两种方法处理，但规则与叶节点不同：借&amp;修改时，同样把兄弟节点的键上移，但借来的是 <code>&lt;父节点的键,兄弟节点的值&gt;</code>；合并&amp;删除时，要把父节点的键和兄弟节点的键值一块和该节点合并。</li>
+<li>如果下溢出到了根节点，而且根节点只剩下一个子节点，说明树应该减少一层，将这个子节点设为新的根。</li>
 </ol>
 <h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><p><em>安全节点：插入后不上溢，删除后不下溢，读取时均安全。如果子节点安全，那么对其下面的节点做插入/删除操作引起的树结构变化最多会传递到该层，不会影响上层，所以可以放掉祖先节点的锁允许其它操作访问</em></p>
 <p><strong>基础算法</strong>：</p>
@@ -3343,10 +3357,18 @@
 </li>
 </ul>
 <p><strong>改进算法</strong></p>
-<p>对于插入删除操作，每次都要获取根节点写锁，成为性能瓶颈，而且大多时候并不会分裂合并。所以 “乐观” 地假设插入/删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，然后检查叶节点：如果叶节点安全，那么假设正确，对其更新只需要叶节点的写锁；而如果不安全则假设错误，重新调用基础版算法。</p>
-<div class="note-large blue"><div class="notel-title"><p>提示</p>
-</div><div class="notel-content"><p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p>
-</div></div>
+<p>对于插入删除操作，每次都要获取根节点写锁，成为性能瓶颈，而且大多时候并不会分裂合并。所以 “乐观” 地假设插入/删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，然后检查叶节点：如果叶节点安全，那么假设正确，只需要对叶节点加写锁更新；而如果不安全则假设错误，重新调用基础版算法。</p>
+
+  <div class="note-large blue">
+    <div class="notel-title rounded-t-lg p-3 font-bold text-lg flex flex-row gap-2 items-center">
+      <p>踩坑</p>
+
+    </div>
+    <div class="notel-content">
+      <p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p>
+
+    </div>
+  </div>
 
 <h2 id="QUERY-EXECUTION"><a href="#QUERY-EXECUTION" class="headerlink" title="QUERY EXECUTION"></a>QUERY EXECUTION</h2><p>一条 sql 语句，首先经过 parser 生成一棵抽象语法树 AST（采用libpg_query 库），Planner 遍历这棵树，生成初步的查询计划，得到一个Plan Tree，每个Plan结点都代表了一个操作，树中上层的Plan结点每次调用 <code>next()</code> 从下层结点取出一条数据，从而数据自底向上地流动，在根节点输出结果。</p>
 <h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><blockquote>
@@ -3410,18 +3432,39 @@
 <li>每个 <code>transaction</code> 保存了持有的读写锁、隔离级别、修改索引/元组的记录</li>
 <li>每个 <code>tuple</code> 对应的RID有一个加锁请求队列，用条件变量堵塞/唤醒请求，加锁时堵塞，解锁时唤醒。</li>
 </ul>
-<p><strong>死锁预防</strong>：严格2PL有死锁风险，如事务1请求A,B的锁，事务2请求B,A的锁。采用<code>Wound-Wait</code>策略：当优先级高的事务等待优先级低的事务的锁时，将优先级低的事务杀死；当优先级低的事务等待优先级高的事务的锁时，优先级低的事务将阻塞。其思想在于避免互相等待锁。</p>
-<p><strong>锁的操作</strong>：</p>
-<ul>
-<li><p>加读锁：判断合法（事务abort、2PL冲突、不符合隔离级别），加入请求队列尾部，从前开始遍历，如果前面没有加写锁的事务则获取到锁，否则若事务更晚则kill掉并唤醒队列上等待的事务，若更早的则堵塞</p>
-</li>
-<li><p>加写锁：判断合法，只要有任何一个锁请求就会造成阻塞，杀死更晚的事务并唤醒队列上等待的事务，遇到更早的堵塞</p>
-</li>
-<li><p>升级锁：找到对应读锁的请求删除，在第一个未授予锁的请求之前插入写锁请求（优先级应该最高），之后的处理跟加写锁类似，当本请求为队列的第一个时得到锁，否则这样等前边所有锁都释放后就可以获得锁</p>
-</li>
-<li><p>解锁：唤醒其他事务，仅在可重复读事务级别转为shinking，其他事务不限制，为了兼容性始终growing</p>
-</li>
+<p><strong>加锁操作</strong>：</p>
+<ol>
+<li>检查 txn 的状态：abort 或 shrinking 时是否符合隔离级别</li>
+<li>获取 table 对应的 <code>lock request queue</code> （获取到之后立刻解 map 锁）</li>
+<li>检查请求是否是升级锁，即队列里是否有和 txn 相同的 id，若有：<ul>
+<li>是否有另一个事务尝试升级</li>
+<li>升级是否兼容：<code>IS -&gt; [S, X, IX, SIX]</code>, <code>S -&gt; [X, SIX]</code>, <code>IX -&gt; [X, SIX]</code>, <code>SIX -&gt; [X]</code></li>
+<li>释放此前持有的锁，后续把升级作为一个新的请求加入队列</li>
 </ul>
+</li>
+<li>将锁加入请求队列：普通锁直接放到队尾，升级锁因为优先级高，应插入首个未授权的请求前</li>
+<li>后续该请求基于while循环和条件变量尝试获取锁，按 FIFO 遍历请求队列判断能否满足锁请求：<ul>
+<li>若要获取读锁：如果当前txn已经是最早的事务，或前面都持有读锁，则授予</li>
+<li>若要获取写锁：只有当天txn是最早的事务才授予，否则一定冲突，被 <code>cv.lock()</code> 阻塞</li>
+</ul>
+</li>
+</ol>
+<p><strong>解锁操作</strong>：</p>
+<ol>
+<li>根据隔离级别修改事务状态：<ul>
+<li><code>REPEATABLE_READ</code> 时，S/X 锁释放使事务进入 Shrinking</li>
+<li><code>READ_COMMITTED</code> 时，仅 X 锁释放使事务进入 Shrinking</li>
+<li><code>READ_UNCOMMITTED</code> 时，X 锁释放使事务 Shrinking，S 锁不会出现</li>
+</ul>
+</li>
+<li><code>cv_.notify_all()</code> 唤醒所有阻塞在此 table 上的事务</li>
+</ol>
+<p><strong>死锁检测</strong>：</p>
+<ol>
+<li>构建 wait for 图，遍历 table_lock_map 和 row_lock_map 中的每一个请求队列，把每对 <code>&lt;ungrant_tid, granted_tid&gt;</code> 事务 id 加入图的边集，即 <code>ungrant_tid</code> 等待 <code>granted_tid</code> 为一条边</li>
+<li>用 DFS 来进行环检测，需要记录环上的所有节点。挑选 tid 最大的事务终止，删除图中的边，唤醒阻塞的请求</li>
+<li>重复环检测直到无环为止</li>
+</ol>
 <p><strong>并发控制</strong>：</p>
 <p>为查询计划执行器的顺序扫描、插入、删除计划的<code>NEXT()</code>方法提供元组锁的保护，使得支持并发执行。</p>
 <ul>
@@ -3434,6 +3477,9 @@
 </ul>
 <h2 id="Bug"><a href="#Bug" class="headerlink" title="Bug"></a>Bug</h2><p>SeqScanExecutor用table_itor遍历元组时，每次访问元组前后加解读锁，而每次next结束时itor++指向下一个元组，会自动跳过已经被删除的元组，<strong>但仍然出现本线程获得读锁之后访问到一个已经删除的tuple</strong>。</p>
 <p>原因：itor++后、本线程还未获取itor指向的tuple的读锁前，其他线程这时将itor指向的tuple删除了。所以需要获取读锁后，再使用GetTuple读一次tuple的值，如果false则跳过该已被删除的tuple</p>
+<blockquote>
+<p><strong>死锁预防</strong>：严格2PL有死锁风险，如事务1请求A,B的锁，事务2请求B,A的锁。采用<code>Wound-Wait</code>策略：当优先级高的事务等待优先级低的事务的锁时，将优先级低的事务杀死；当优先级低的事务等待优先级高的事务的锁时，优先级低的事务将阻塞。其思想在于避免互相等待锁。</p>
+</blockquote>
 <hr>
 <h1 id="CS-144"><a href="#CS-144" class="headerlink" title="CS 144"></a>CS 144</h1><p><img lazyload="" src="/images/loading.svg" data-src="https://kiprey.github.io/2021/11/cs144-lab7/image-20211118211047223.png"></p>
 <h2 id="Router"><a href="#Router" class="headerlink" title="Router"></a>Router</h2><ul>
@@ -7334,7 +7380,7 @@
 <p>C++ 并不保证 <code>i = 100</code> 是原子操作，因为在某些 CPU Architecture 中，写入 int64_t 需要两个 CPU 指令，所以 Thread-2 可能会读取到i在赋值过程的中间状态。</p>
 <hr>
 <p>另一方面，为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。为阐述这一点，下面的例子中，让我们假设所有操作都是原子操作：</p>
-<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"><span class="type">int</span> y = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">/* Thread-1           Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>;              <span class="keyword">while</span> (y != <span class="number">200</span>);</span><br><span class="line">y = <span class="number">200</span>;              std::cout &lt;&lt; x;</span><br><span class="line">```                   </span><br><span class="line">如果 CPU 没有乱序执行指令，那么 Thread<span class="number">-2</span> 将输出<span class="number">100</span>。然而，对于 Thread<span class="number">-1</span> 来说，x = <span class="number">100</span> 和 y = <span class="number">200</span> 这两个语句之间没有依赖关系，因此，Thread<span class="number">-1</span> 允许调整语句的执行顺序：</span><br><span class="line">```cpp</span><br><span class="line"><span class="comment">/* Thread-1 */</span></span><br><span class="line">y = <span class="number">200</span>;</span><br><span class="line">x = <span class="number">100</span>;</span><br></pre></td></tr></table></figure></div>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"><span class="type">int</span> y = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">/* Thread-1           Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>;              <span class="keyword">while</span> (y != <span class="number">200</span>);</span><br><span class="line">y = <span class="number">200</span>;              std::cout &lt;&lt; x;</span><br><span class="line">```             </span><br><span class="line"></span><br><span class="line">如果 CPU 没有乱序执行指令，那么 Thread<span class="number">-2</span> 将输出<span class="number">100</span>。然而，对于 Thread<span class="number">-1</span> 来说，x = <span class="number">100</span> 和 y = <span class="number">200</span> 这两个语句之间没有依赖关系，因此，Thread<span class="number">-1</span> 允许调整语句的执行顺序：</span><br><span class="line"></span><br><span class="line">```cpp</span><br><span class="line"><span class="comment">/* Thread-1 */</span></span><br><span class="line">y = <span class="number">200</span>;</span><br><span class="line">x = <span class="number">100</span>;</span><br></pre></td></tr></table></figure></div>
 <p>在这种情况下，Thread-2 将输出0或100。</p>
 <hr>
 <p>CPU cache 也会影响到程序的行为。下面的例子中，假设从时间上来讲，A 操作先于 B 操作发生：</p>

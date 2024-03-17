@@ -3434,11 +3434,11 @@
 </ul>
 <p><strong>加锁操作</strong>：</p>
 <ol>
-<li>检查 txn 的状态：abort 或 shrinking 时是否符合隔离级别</li>
+<li>检查 txn 的状态：abort 或 shrinking 时是否符合隔离级别（REPEATABLE_READ shrinking 时不允许加任何锁，READ_COMMITTED 只允许加S IS锁）</li>
 <li>获取 table 对应的 <code>lock request queue</code> （获取到之后立刻解 map 锁）</li>
 <li>检查请求是否是升级锁，即队列里是否有和 txn 相同的 id，若有：<ul>
 <li>是否有另一个事务尝试升级</li>
-<li>升级是否兼容：<code>IS -&gt; [S, X, IX, SIX]</code>, <code>S -&gt; [X, SIX]</code>, <code>IX -&gt; [X, SIX]</code>, <code>SIX -&gt; [X]</code></li>
+<li>升级是否兼容，即升级后数据是否安全（限制越严越安全）：<code>IS -&gt; [S, X, IX, SIX]</code>, <code>S -&gt; [X, SIX]</code>, <code>IX -&gt; [X, SIX]</code>, <code>SIX -&gt; [X]</code></li>
 <li>释放此前持有的锁，后续把升级作为一个新的请求加入队列</li>
 </ul>
 </li>
@@ -3467,14 +3467,18 @@
 </ol>
 <p><strong>并发控制</strong>：</p>
 <p>为查询计划执行器的顺序扫描、插入、删除计划的<code>NEXT()</code>方法提供元组锁的保护，使得支持并发执行。</p>
+<ol>
+<li><p>seq_scan</p>
 <ul>
-<li><p>seq_scan：元组加读锁，<code>未提交读</code>不加锁，<code>提交读</code>读完立即解锁，<code>可重复读</code>在<code>COMMIT</code>或<code>ABORT</code>时释放锁</p>
-</li>
-<li><p>insert：元组插入表时由 tablePage 锁保证并发安全，插入后为了更新索引，需要先获得元组的<strong>写锁</strong>，保证此期间元组不被修改，之后再更新索引依靠 B+tree 的锁</p>
-</li>
-<li><p>delete：调用 <code>next()</code> 收到子计划节点要删除的元组后（如seq_scan），应当为该元组加<strong>写锁</strong>，然后标记元组删除，并删除索引，等到事务提交时缓冲池删除。注意在 RR 级别时，子计划节点此时拥有该元组的读锁，因此应该采用<strong>升级锁</strong></p>
-</li>
+<li>元组加读锁，<code>未提交读</code>不加锁，<code>提交读</code>读完 table 立即解锁，<code>可重复读</code>在<code>COMMIT</code>或<code>ABORT</code>时释放锁</li>
+<li>给表加 IS 锁，再给行加 S 锁。为什么不给表加 S 锁？对于 <code>DELETE...WHERE...</code>，同个 query 先在下层加 S 锁，又在 Delete 里加 IX，因为 S 锁不能升级 IX 锁就会卡死（整表读 -&gt; 某行写，锁升级不兼容）</li>
 </ul>
+</li>
+<li><p>insert<br>元组插入表时由 tablePage 锁保证并发安全，插入后为了更新索引，需要先获得元组的<strong>写锁</strong>，保证此期间元组不被修改，之后再更新索引依靠 B+tree 的锁</p>
+</li>
+<li><p>delete<br>调用 <code>next()</code> 收到子计划节点要删除的元组后（如seq_scan），应当为该元组加<strong>写锁</strong>，然后标记元组删除，并删除索引，等到事务提交时缓冲池删除。注意在 RR 级别时，子计划节点此时拥有该元组的读锁，因此应该采用<strong>升级锁</strong></p>
+</li>
+</ol>
 <h2 id="Bug"><a href="#Bug" class="headerlink" title="Bug"></a>Bug</h2><p>SeqScanExecutor用table_itor遍历元组时，每次访问元组前后加解读锁，而每次next结束时itor++指向下一个元组，会自动跳过已经被删除的元组，<strong>但仍然出现本线程获得读锁之后访问到一个已经删除的tuple</strong>。</p>
 <p>原因：itor++后、本线程还未获取itor指向的tuple的读锁前，其他线程这时将itor指向的tuple删除了。所以需要获取读锁后，再使用GetTuple读一次tuple的值，如果false则跳过该已被删除的tuple</p>
 <blockquote>
@@ -3513,7 +3517,7 @@
 </ul>
 </li>
 </ol>
-<h2 id="TCPConnection"><a href="#TCPConnection" class="headerlink" title="TCPConnection"></a>TCPConnection</h2><p><strong>TCP有限状态机</strong>：三次握手，正常通信，四次挥手</p>
+<h2 id="TCP-Connection"><a href="#TCP-Connection" class="headerlink" title="TCP Connection"></a>TCP Connection</h2><p><strong>TCP有限状态机</strong>：三次握手，正常通信，四次挥手</p>
 <p><img lazyload="" src="/images/loading.svg" data-src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/TCP%E7%8A%B6%E6%80%81%E6%9C%BA.jpg"></p>
 <p><strong>优雅断开连接</strong>：双方都发送完才能关闭，还要考虑是否等待2MSL，因为此时没有明确的客户/服务端</p>
 <ol>

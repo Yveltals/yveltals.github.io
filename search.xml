@@ -2223,9 +2223,9 @@
     <url>/2024/01/12/CPP/Cpp/</url>
     <content><![CDATA[<h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么，程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
 <ul>
-<li>即使是简单的语句，C++ 也不保证是原子操作。</li>
-<li>CPU 可能会调整指令的执行顺序。</li>
-<li>在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被其它 CPU 看见。</li>
+<li>即使是简单的语句，C++ 也不保证是原子操作</li>
+<li>CPU 可能会调整指令的执行顺序</li>
+<li>在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被其它 CPU 看见</li>
 </ul>
 <hr>
 <p>原子操作说的是，一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>

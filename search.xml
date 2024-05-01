@@ -103,49 +103,22 @@
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a href="mailto:&#103;&#x69;&#x74;&#x40;&#103;&#105;&#116;&#104;&#117;&#x62;&#46;&#x63;&#111;&#109;">&#103;&#x69;&#x74;&#x40;&#103;&#105;&#116;&#104;&#117;&#x62;&#46;&#x63;&#111;&#109;</a>的方式并关联</p>
+<li><p>重新添加成<a href="mailto:&#x67;&#105;&#x74;&#x40;&#x67;&#105;&#x74;&#x68;&#117;&#98;&#x2e;&#99;&#111;&#109;">&#x67;&#105;&#x74;&#x40;&#x67;&#105;&#x74;&#x68;&#117;&#98;&#x2e;&#99;&#111;&#109;</a>的方式并关联</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
 </ol>
-<h3 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h3><ol>
-<li><p>查看配置</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global -l</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改 pull 的默认配置为 rebase</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置pushautoSetupRemote，push时可以省略–set-upstream关联</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global --add push.autoSetupRemote <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置git用户名邮箱</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;YOURUSERNAME&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;YOUREMAIL&quot;</span></span><br><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 .gitconfig 中加入</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]</span><br><span class="line">  lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27;</span> --abbrev-commit</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
-<h2 id="HTTPS-协议-Authentication-failed"><a href="#HTTPS-协议-Authentication-failed" class="headerlink" title="HTTPS 协议 Authentication failed"></a>HTTPS 协议 Authentication failed</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="常见-config-配置"><a href="#常见-config-配置" class="headerlink" title="常见 config 配置"></a>常见 config 配置</h3><p>全局&#x2F;仓库配置(–global&#x2F;local)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global -l</span><br><span class="line">git config --global core.editor vim</span><br><span class="line">git config --global init.defaultBranch main</span><br><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br><span class="line">git config --global user.name <span class="string">&quot;YOURUSERNAME&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;YOUREMAIL&quot;</span></span><br><span class="line">git config --global http.proxy http://127.0.0.1:xxxx</span><br><span class="line">git config --global https.proxy http://127.0.0.1:xxxx</span><br><span class="line"><span class="comment"># 取消配置</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br></pre></td></tr></table></figure>
+
+<p>配置别名，在 .gitconfig 中加入</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]  </span><br><span class="line">   lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27;</span> --abbrev-commit</span><br></pre></td></tr></table></figure>
+
+<h3 id="HTTPS-协议-Authentication-failed"><a href="#HTTPS-协议-Authentication-failed" class="headerlink" title="HTTPS 协议 Authentication failed"></a>HTTPS 协议 Authentication failed</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>
 <p>Github 对密码认证的支持于 2021年8月13 日被删除，需要使用个人访问令牌代替。</p>
 <ul>
 <li>Username: 注册 Github 的邮箱</li>
 <li>Password: github.com&#x2F;settings&#x2F;tokens 页面的 <code>Personal access tokens</code></li>
 </ul>
-<h2 id="Merge和Rebase"><a href="#Merge和Rebase" class="headerlink" title="Merge和Rebase"></a>Merge和Rebase</h2><p>&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</p>
-<h3 id="Merge和Rebase-1"><a href="#Merge和Rebase-1" class="headerlink" title="Merge和Rebase"></a>Merge和Rebase</h3><blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>e430738 (update)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-<ul>
+<h3 id="Merge和Rebase"><a href="#Merge和Rebase" class="headerlink" title="Merge和Rebase"></a>Merge和Rebase</h3><ul>
 <li><p><code>git merge</code> 保留了分支的结构与历史提交目录，但提交历史会被大量的 <code>merge</code> 污染</p>
 </li>
 <li><p><code>git rebase</code> 把所有的提交压缩成一个 <code>patch</code> ，然后把 <code>patch</code> 添加到目标分支里</p>
@@ -375,6 +348,44 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/fs/cgroup/cpuset</span><br><span class="line"><span class="built_in">mkdir</span> mygroup &amp;&amp; <span class="built_in">cd</span> mygroup</span><br><span class="line"><span class="comment">## 避免报错 write error: No space left on device</span></span><br><span class="line"><span class="built_in">echo</span> 0 &gt; cpuset.mems</span><br><span class="line"><span class="comment">## 限制进程运行在对应的 processor</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;0-19,40-59&quot;</span> &gt; cpuset.cpus</span><br><span class="line"><span class="comment">## 进程加入 cgroup</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; cgroup.proc</span><br><span class="line"><span class="comment">## 加入上级解除限制（或等进程结束）</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; ../cgroup.procs</span><br></pre></td></tr></table></figure>
 
 <p><a href="https://segmentfault.com/a/1190000008125359">Linux Cgroup系列（04）：限制cgroup的内存使用</a></p>
+<h2 id="火焰图生成与解析"><a href="#火焰图生成与解析" class="headerlink" title="火焰图生成与解析"></a>火焰图生成与解析</h2><ol>
+<li><p>环境准备</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装 Linux 系统的 perf 工具</span></span><br><span class="line">yum -y install perf</span><br><span class="line"><span class="comment"># 下载生成火焰图的工具</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/brendangregg/FlameGraph.git</span><br></pre></td></tr></table></figure></li>
+<li><p>数据采样，解析生成火焰图</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perf record -a -g -F99 --call-graph dwarf -p &lt;pid&gt; <span class="built_in">sleep</span> 30</span><br><span class="line">perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl &gt; process.svg</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>常用命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-p &lt;pid&gt;：指定待分析进程的 pid（多个用,分隔列表）</span><br><span class="line">-t &lt;tid&gt;：指定待分析线程的 tid（多个用,分隔列表）</span><br><span class="line">-a：从所有 CPU 收集系统数据</span><br><span class="line">-g：开启 call-graph (stack chain/backtrace) 记录</span><br><span class="line">-C &lt;cpu-list&gt;：只统计指定 CPU 列表的数据，如：0,1,3或1-2</span><br><span class="line">-F &lt;n&gt;：每秒采样 n 次</span><br><span class="line">-o &lt;output.data&gt;：指定输出文件output.data，默认输出到perf.data</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>perf 火焰图大量 unknown 的问题</p>
+</li>
+</ol>
+<p>在实际使用过程中发现，简单的使用 <code>perf record -g</code> 获取到的调用栈是有问题的，存在大量 <code>Unknown</code> 函数，从 perf report 的结果来看这些部分对应地址大部分都是非法地址，且生成的火焰图中存在很多明显与代码矛盾的调用关系。</p>
+<p>perf 同时支持 3 种栈回溯方式：fp, dwarf, lbr，可以通过 <code>--call-graph</code> 参数指定，而 -g 就相当于 <code>--call-graph fp</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fp</td>
+<td>None</td>
+<td>默认 fp 被优化掉了根本不可用</td>
+</tr>
+<tr>
+<td>lbr</td>
+<td>高效准确</td>
+<td>较新的 Intel CPU 才有此功能，能记录的调用栈深度有限</td>
+</tr>
+<tr>
+<td>dwarf</td>
+<td>准确</td>
+<td>开销相对较大，需要编译时加 <code>-g</code></td>
+</tr>
+</tbody></table>
 <h2 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h2><h3 id="网络与进程"><a href="#网络与进程" class="headerlink" title="网络与进程"></a>网络与进程</h3><ul>
 <li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
 <li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>

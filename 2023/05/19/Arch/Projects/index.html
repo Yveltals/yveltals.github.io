@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-05-19T15:47:22.000Z">
-<meta property="article:modified_time" content="2024-04-22T15:54:11.866Z">
+<meta property="article:modified_time" content="2024-05-19T16:28:25.986Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1715502571909),
+    lastupdate: new Date(1716136205470),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2565,9 +2565,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li><p><code>Insert/Remove</code>：Bucket一定会插入或分裂，但 HashTable 只有在桶满分裂时才修改，故采用乐观锁优化：默认 HashTable 只加读锁，Bucket 加写锁；只有桶满时，释放锁并调用另一分裂插入函数，一开始就获取两个写锁，还要注意判断<strong>桶是否仍满</strong></p>
 </li>
 </ul>
-<p>notel blue 踩坑</p>
-<p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p>
-<p>endnotel</p>
+<div class="note "><p><strong>踩坑</strong></p><p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p></div>
+
 <h3 id="B-Tree-Index"><a href="#B-Tree-Index" class="headerlink" title="B+Tree Index"></a>B+Tree Index</h3><blockquote>
 <ul>
 <li><strong>TREE_PAGE</strong>: 保存在Page的data中，共4KB，包含size、max_size、parent_page_id、page_id</li>
@@ -2613,9 +2612,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 <p><strong>改进算法</strong></p>
 <p>对于插入删除操作，每次都要获取根节点写锁，成为性能瓶颈，而且大多时候并不会分裂合并。所以 “乐观” 地假设插入&#x2F;删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，然后检查叶节点：如果叶节点安全，那么假设正确，只需要对叶节点加写锁更新；而如果不安全则假设错误，重新调用基础版算法。</p>
-<p>notel blue 踩坑</p>
-<p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p>
-<p>endnotel</p>
+<div class="note "><p><strong>踩坑</strong></p><p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p></div>
+
 <h3 id="QUERY-EXECUTION"><a href="#QUERY-EXECUTION" class="headerlink" title="QUERY EXECUTION"></a>QUERY EXECUTION</h3><p>一条 sql 语句，首先经过 parser 生成一棵抽象语法树 AST（采用libpg_query 库），Planner 遍历这棵树，生成初步的查询计划，得到一个Plan Tree，每个Plan结点都代表了一个操作，树中上层的Plan结点每次调用 <code>next()</code> 从下层结点取出一条数据，从而数据自底向上地流动，在根节点输出结果。</p>
 <h4 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h4><blockquote>
 <p>由 Planner 得到初步的查询计划后，对 Plan Tree 进行修改优化。优化器遍历原始 Plan Tree，根据已经定义好的一系列规则，对 Plan 结点进行一系列的修改优化等操作。这种优化器不需要知道数据的具体内容，仅是根据预先定义好的规则修改 Plan 结点。</p>
@@ -2959,10 +2957,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-04-22T23:54:11+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-05-20T00:28:25+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Apr 22, 2024</p>
+    <p>更新于：May 20, 2024</p>
   </a>
 </div>
 
@@ -3481,7 +3479,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3762,7 +3760,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/CPP/","name":"CPP"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/05/19/Arch/Projects/","name":"Projects"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Projects","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/05/19/Arch/Projects/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/05/19/Arch/Projects/","wordCount":0,"datePublished":"2023-05-19T15:47:22.000Z","dateModified":"2024-04-22T15:54:11.866Z","articleSection":"CPP","keywords":"CPP","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/CPP/","name":"CPP"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/05/19/Arch/Projects/","name":"Projects"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Projects","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/05/19/Arch/Projects/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/05/19/Arch/Projects/","wordCount":0,"datePublished":"2023-05-19T15:47:22.000Z","dateModified":"2024-05-19T16:28:25.986Z","articleSection":"CPP","keywords":"CPP","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

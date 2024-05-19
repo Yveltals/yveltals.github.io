@@ -32,6 +32,16 @@
 <li><code>git log -stat</code>显示commit历史及变更文件</li>
 </ul>
 </li>
+<li>合并解决冲突<ul>
+<li><code>git rebase master</code> 然后按编辑器指示解决冲突</li>
+<li><code>git add .</code> 将解决完冲突的文件暂存</li>
+<li><code>git rebase --continue</code> 继续rebase，保存commit</li>
+<li><code>git push -f</code> 本地rebase完后，由于合并了master几个提交，无法fast-forward，如果该分支仅自己开发，强行push即可<blockquote>
+<p>fast-forward的前提是本地只比远程多了几个最新提交，需要之前的提交记录相同，而rebase后违反了这一点</p>
+</blockquote>
+</li>
+</ul>
+</li>
 </ul>
 <h2 id="HEAD、Index、Working-Directory"><a href="#HEAD、Index、Working-Directory" class="headerlink" title="HEAD、Index、Working Directory"></a>HEAD、Index、Working Directory</h2><p>Git里有三个区域很重要，下图解释了这三个区域的状态的变化过程：</p>
 <ul>
@@ -72,9 +82,9 @@
 
 <p><strong>撤销commit操作</strong>，必须是<strong>未被提交到remote</strong>的改动。除了移动当前分支的HEAD，还可以更改workspace和index：</p>
 <ul>
-<li>–soft：修改HEAD，不修改index和workspace</li>
-<li>–mixed：修改HEAD和index，不修改workspace，<strong>默认</strong></li>
-<li>–hard：修改HEAD、index、workspace</li>
+<li><code>--soft</code>：修改HEAD，不修改index和workspace</li>
+<li><code>--mixed</code>：修改HEAD和index，不修改workspace，<strong>默认</strong></li>
+<li><code>--hard</code>：修改HEAD、index、workspace</li>
 </ul>
 <div class="note warning"><p>已经push到远程仓库的commit不允许reset，只能用revert。如果commit已经被push到远程仓库上了，也就意味着其他开发人员就可能基于这个commit形成了新的commit，这时你去reset，就会造成其他开发人员的提交历史莫名其妙的丢失，或者其他灾难性的后果。</p></div>
 
@@ -119,7 +129,7 @@
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a href="mailto:&#x67;&#105;&#x74;&#64;&#x67;&#x69;&#x74;&#104;&#x75;&#98;&#46;&#99;&#x6f;&#x6d;">&#x67;&#105;&#x74;&#64;&#x67;&#x69;&#x74;&#104;&#x75;&#98;&#46;&#99;&#x6f;&#x6d;</a>的方式并关联</p>
+<li><p>重新添加成<a href="mailto:&#103;&#105;&#x74;&#64;&#103;&#x69;&#116;&#104;&#x75;&#98;&#46;&#99;&#x6f;&#x6d;">&#103;&#105;&#x74;&#64;&#103;&#x69;&#116;&#104;&#x75;&#98;&#46;&#99;&#x6f;&#x6d;</a>的方式并关联</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h2 id="HTTPS-协议-Authentication-failed"><a href="#HTTPS-协议-Authentication-failed" class="headerlink" title="HTTPS 协议 Authentication failed"></a>HTTPS 协议 Authentication failed</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>
@@ -1296,9 +1306,8 @@
 <li><p><code>Insert/Remove</code>：Bucket一定会插入或分裂，但 HashTable 只有在桶满分裂时才修改，故采用乐观锁优化：默认 HashTable 只加读锁，Bucket 加写锁；只有桶满时，释放锁并调用另一分裂插入函数，一开始就获取两个写锁，还要注意判断<strong>桶是否仍满</strong></p>
 </li>
 </ul>
-<p>notel blue 踩坑</p>
-<p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p>
-<p>endnotel</p>
+<div class="note "><p><strong>踩坑</strong></p><p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p></div>
+
 <h3 id="B-Tree-Index"><a href="#B-Tree-Index" class="headerlink" title="B+Tree Index"></a>B+Tree Index</h3><blockquote>
 <ul>
 <li><strong>TREE_PAGE</strong>: 保存在Page的data中，共4KB，包含size、max_size、parent_page_id、page_id</li>
@@ -1344,9 +1353,8 @@
 </ul>
 <p><strong>改进算法</strong></p>
 <p>对于插入删除操作，每次都要获取根节点写锁，成为性能瓶颈，而且大多时候并不会分裂合并。所以 “乐观” 地假设插入&#x2F;删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，然后检查叶节点：如果叶节点安全，那么假设正确，只需要对叶节点加写锁更新；而如果不安全则假设错误，重新调用基础版算法。</p>
-<p>notel blue 踩坑</p>
-<p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p>
-<p>endnotel</p>
+<div class="note "><p><strong>踩坑</strong></p><p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p></div>
+
 <h3 id="QUERY-EXECUTION"><a href="#QUERY-EXECUTION" class="headerlink" title="QUERY EXECUTION"></a>QUERY EXECUTION</h3><p>一条 sql 语句，首先经过 parser 生成一棵抽象语法树 AST（采用libpg_query 库），Planner 遍历这棵树，生成初步的查询计划，得到一个Plan Tree，每个Plan结点都代表了一个操作，树中上层的Plan结点每次调用 <code>next()</code> 从下层结点取出一条数据，从而数据自底向上地流动，在根节点输出结果。</p>
 <h4 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h4><blockquote>
 <p>由 Planner 得到初步的查询计划后，对 Plan Tree 进行修改优化。优化器遍历原始 Plan Tree，根据已经定义好的一系列规则，对 Plan 结点进行一系列的修改优化等操作。这种优化器不需要知道数据的具体内容，仅是根据预先定义好的规则修改 Plan 结点。</p>
@@ -2352,14 +2360,27 @@
               </div>
             </details>
 
-<h4 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h4><p>shared_ptr 内部包含两个指针，一个指向对象，另一个指向控制块，控制块中包含一个引用计数和其它一些数据。由于这个控制块需要在多个shared_ptr 之间共享，所以它也是存在于 heap 中的。shared_ptr对象本身是线程安全的，也就是说shared_ptr的引用计数增加和减少的操作都是原子的。</p>
+<h4 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h4><p>shared_ptr 内部主要包含数据块指针和控制块指针。控制块中包含一个引用计数和其它一些数据。由于这个控制块需要在多个shared_ptr 之间共享，所以它也是存在于 heap 中的。shared_ptr对象本身是线程安全的，也就是说shared_ptr的引用计数增加和减少的操作都是原子的。</p>
 <p><img src="https://senlinzhan.github.io/images/data-structure/sh2.png" class="lazyload" data-srcset="https://senlinzhan.github.io/images/data-structure/sh2.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>采用引用计数器的方法，允许多个智能指针指向同一个对象。引用计数器跟踪有多少个对象共享同一指针，引用计数保存在堆上，每当多&#x2F;少一个指针指向该对象时，智能指针内部的引用计数±1，当计数为0的时候会自动的释放动态分配的资源。</p>
+<p>make_shared 更高效</p>
+<ol>
+<li>因为 std::make_shared 参数是个 <code>万能引用</code>，防止数据拷贝</li>
+<li>减少 new 操作次数，本来两个块需要分别调用 new 分配两次内存空间，现在只需要一次。防止中途异常导致的内存泄漏。</li>
+<li>控制块和数据块分配的空间相邻，cache访存更高效，也减少内存碎片</li>
+</ol>
+<p>线程安全性</p>
+<blockquote>
+<p>如果多个执行线程在没有同步的情况下并发访问同一个 std::shared_ptr 对象，并且使用了 shared_ptr 的非常量成员函数，则将发生数据竞争。除非所有此类访问都是通过 <code>std::atomic_load</code> 和 <code>std::atomic_store</code> 这类函数执行的。 </p>
+<ol>
+<li>shared_ptr<T> ptr, new_ptr;</li>
+<li>atomic_store(&amp;ptr, new_ptr);</li>
+<li>shared_ptr<T> ret &#x3D; atomic_load(&amp;ptr);</li>
+</ol>
+</blockquote>
 <ul>
-<li>构造函数或拷贝构造函数时，引用计数加一</li>
-<li>赋值时，左操作数所指对象的引用计数减一，右侧加一</li>
-<li>调用析构函数时，引用计数减一</li>
-<li>引用计数是原子的线程安全，但改变指向时不安全（可能被提前析构）<ol>
+<li>引用计数是原子，线程安全</li>
+<li>并发改变指向时不安全，可能引用计数为0提前析构，例如：<ol>
 <li>智能指针P2被线程 <code>A1</code> 和 <code>A2</code> 共享</li>
 <li>线程 <code>A1</code> 执行P1&#x3D;P2，P1指向P2，但没来得及计数+1</li>
 <li>线程 <code>A2</code> 执行P2&#x3D;P3，P2指向P3，此时引用计数0将资源释放了，则P1变成了悬空指针</li>
@@ -2401,12 +2422,12 @@
 <li>泛型编程中不知道变量具体类型、或不想指定类型时</li>
 </ul>
 <h3 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h3><p>利用lambda表达式可以编写内嵌的匿名函数，用以替换独立函数或者函数对象；</p>
-<p>定义一个lambda表达式后，编译器会自动生成一个匿名类（重载了()运算符），称为闭包类型。在运行时，这个lambda表达式就会返回一个匿名的闭包实例。闭包的一个强大之处是可以捕捉其作用域内的变量，比如在方括号中通过传值或引用方式捕获</p>
+<p>定义一个lambda表达式后，编译器会自动生成一个匿名类（重载了()运算符），称为闭包类型，并把 capture 的变量作为该类的属性。闭包的一个强大之处是可以捕捉其作用域内的变量，比如在方括号中通过传值或引用方式捕获</p>
 <p><strong>Tip1</strong>：lambda必须使用尾置返回来指定返回类型，可以忽略参数列表和返回值，但必须永远包含捕获列表和函数体</p>
 <p><strong>Tip2</strong>：<code>[=]</code> 按值捕获的变量默认是不可修改的，类似const形参传递。想修改这些变量要添加 mutable，此时仍然不会影响外部的变量。类似的，按值捕获的对象也只能调用常方法</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">[=]() &#123; cout &lt;&lt; a &lt;&lt; endl; &#125;();  <span class="comment">// 10</span></span><br><span class="line">[=]() <span class="keyword">mutable</span>&#123; a = <span class="number">20</span>; cout &lt;&lt; a &lt;&lt; endl; &#125;();	<span class="comment">// 20</span></span><br><span class="line">cout &lt;&lt; a &lt;&lt; endl;  <span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
 <p><strong>Tip3</strong>：用显式的按引用捕获，默认捕获可能会导致悬空引用，如局部变量生命周期结束</p>
-<p><strong>Tip4</strong>：用显式的按值捕获，默认的按值捕获对于悬空指针很敏感（尤其是this指针），并且它会误导人产生lambda是独立的想法</p>
+<p><strong>Tip4</strong>：用显式的按值捕获，默认的按值捕获对于悬空指针很敏感（尤其是this指针），并且它会误导人产生lambda是独立的想法。注意，通过<code>[=] [&amp;] [this]</code> 显式捕获 this 都是 by-reference 的，只有 <code>[*this]</code> 是 by-copy 的</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function">function&lt;<span class="title">void</span><span class="params">()</span>&gt; <span class="title">CreateCB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> cb = [=] &#123; cout &lt;&lt; id_ &lt;&lt; endl; &#125;;</span><br><span class="line">    <span class="comment">// 实际捕获了 this 指针，并非值拷贝</span></span><br><span class="line">    <span class="comment">// cb = [curObjPtr] &#123; cout &lt;&lt; curObjPtr-&gt;id_ &lt;&lt; endl; &#125;</span></span><br><span class="line">    <span class="keyword">return</span> cb;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> id_&#123;<span class="number">1</span>&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Widget w;</span><br><span class="line">  function&lt;<span class="type">void</span>()&gt; cb = w.<span class="built_in">CreateCB</span>();</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 1</span></span><br><span class="line">  w.id_ = <span class="number">2</span>;</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
@@ -2678,7 +2699,7 @@
 <p>如果异步执行任务非常关键，则指定 <code>std::launch::async</code></p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::future&lt;<span class="type">void</span>&gt; f1 = std::<span class="built_in">async</span>(std::launch::async, []&#123;</span><br><span class="line">  std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">seconds</span>(<span class="number">3</span>));</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;hello world&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">&#125;);</span><br><span class="line">f1.<span class="built_in">wait</span>();</span><br><span class="line"></span><br><span class="line">std::future&lt;std::string&gt; f2 = std::<span class="built_in">async</span>(launch::async, []&#123;</span><br><span class="line">  std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">seconds</span>(<span class="number">3</span>));</span><br><span class="line">  <span class="keyword">return</span> std::<span class="built_in">string</span>(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">std::cout &lt;&lt; f2.<span class="built_in">get</span>() &lt;&lt; std::endl;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Emplace"><a href="#Emplace" class="headerlink" title="Emplace"></a>Emplace</h2><p><strong>1. push 和 emplace</strong></p>
+<h2 id="Emplace"><a href="#Emplace" class="headerlink" title="Emplace"></a>Emplace</h2><h3 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h3><p><strong>1. push 和 emplace</strong></p>
 <p>考虑向vector插入字符串的场景，vector的push_back被按左值和右值分别重载：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>, <span class="keyword">class</span> <span class="title class_">Allocator</span> = allocator&lt;T&gt;&gt;</span><br><span class="line"><span class="keyword">class</span> vector &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    …</span><br><span class="line">    <span class="type">void</span> <span class="built_in">push_back</span>(<span class="type">const</span> T&amp; x);     <span class="comment">//插入左值</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push_back</span><span class="params">(T&amp;&amp; x)</span></span>;          <span class="comment">//插入右值</span></span><br><span class="line">    …</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
@@ -2698,6 +2719,22 @@
 <p><strong>3. 为什么用 emplace_back 时报错缺失拷贝构造函数</strong></p>
 <p>直观上，<code>emplace_back()</code> 原地构造，不会发生拷贝&#x2F;移动构造。但如果 vector 没有预先 reserve 空间，在空间扩张过程中就会发生拷贝。</p>
 <p>[TODO] 默认调用拷贝构造函数，将其 delete 标记后，变成了调用移动构造函数，具体机制是啥？另外虽然 reserve 预分配空间能实现 <strong>真·原地构造</strong>，全程不需要拷贝&#x2F;移动构造函数，但如果 delete 掉这俩函数就过不了编译，那么能推出编译层面是硬性要求？</p>
+<h3 id="map"><a href="#map" class="headerlink" title="map"></a>map</h3><p><strong>1. emplace 和 []</strong></p>
+<ul>
+<li><code>emplace</code> 用于往map中插入新键值，原地构造，替代<code>insert</code>，但<strong>不能更新已存在键的值</strong></li>
+<li><code>[]运算符</code> 返回key对应value的引用然后赋值，如果<strong>不存在则先默认构造</strong></li>
+</ul>
+<h2 id="STL容器的线程安全"><a href="#STL容器的线程安全" class="headerlink" title="STL容器的线程安全"></a>STL容器的线程安全</h2><h3 id="vector-1"><a href="#vector-1" class="headerlink" title="vector"></a>vector</h3><div class="note "><p><strong>core dump的情况</strong></p><ul><li>单线程写入，但是并发读的时候，由于潜在的内存重新申请和对象复制问题，会导致读方的迭代器失效</li><li>多个写方并发的push_back()</li></ul></div>
+
+<p>解法一：加锁</p>
+<p>互斥锁性能较差 <code>lock_guard&lt;mutex&gt;</code><br>读写锁（共享独占锁）适合读多写少，<code>shared_lock&lt;shared_mutex&gt;</code> 与 <code>unique_lock&lt;shared_mutex&gt;</code></p>
+<p>解法二：lock-free</p>
+<p>固定vector的大小，避免动态扩容（无push_back），<strong>但同时对一个下标读写还是有问题</strong></p>
+<ul>
+<li>初始化 <code>resize</code> 好 <code>N</code> 个对象（预留内存+构造函数），可以改成环形队列缓解压力</li>
+<li>多线程读写都通过容器的下标访问元素，不要 <code>push_back</code>新元素</li>
+<li>把队列头的下标定义成原子变量 <code>std::atomic</code></li>
+</ul>
 ]]></content>
       <categories>
         <category>八股</category>
@@ -4018,9 +4055,8 @@
 <p>CPU优化这个问题的方式是引入Invalid queue，CPU核心先将Invalidate消息放到这个队列并立刻响应Invalidate ACK，但不马上处理，消息只是会被推invalidation队列，并在之后尽快处理。</p>
 <p>因此核心可能并不知道在它Cache里的某个Cache Line是Invalid状态的，因为Invalidation队列包含有收到但还没有处理的Invalidation消息。</p>
 <p><strong>CPU在读取数据的时候，并不像Store buffer那样读取Invalidate queue。</strong></p>
-<p>notel red 注意</p>
-<p>引入Store buffer和Invalidate queue之后，不同核心上运行的线程对cache line的并发读写可以会出现问题，即修改不会同步被其它核心处理。</p>
-<p>endnotel</p>
+<div class="note "><p><strong></strong></p><p>引入Store buffer和Invalidate queue之后，不同核心上运行的线程对cache line的并发读写可以会出现问题，即修改不会同步被其它核心处理。</p></div>
+
 <h2 id="Memory-Consistency"><a href="#Memory-Consistency" class="headerlink" title="Memory Consistency"></a>Memory Consistency</h2><p>下面两个goroutine执行时，会出现几种可能的结果：</p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> x, y <span class="type">int</span></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    x = <span class="number">1</span> <span class="comment">// A1</span></span><br><span class="line">    fmt.Print(<span class="string">&quot;y:&quot;</span>, y, <span class="string">&quot; &quot;</span>) <span class="comment">// A2</span></span><br><span class="line">&#125;()</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    y = <span class="number">1</span>                   <span class="comment">// B1</span></span><br><span class="line">    fmt.Print(<span class="string">&quot;x:&quot;</span>, x, <span class="string">&quot; &quot;</span>) <span class="comment">// B2</span></span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
 
@@ -5057,7 +5093,26 @@
 <figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[Desktop Entry]</span><br><span class="line">Encoding=UTF-8</span><br><span class="line">Name=demo</span><br><span class="line">Exec=demo</span><br><span class="line">Icon=/opt/demo/icon.png </span><br><span class="line">Terminal=false</span><br><span class="line">Type=Application</span><br><span class="line">Categories=Development;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h3 id="Windows日常问题"><a href="#Windows日常问题" class="headerlink" title="Windows日常问题"></a>Windows日常问题</h3><p><strong>1. 安全模式启动</strong></p>
+<h3 id="软件激活"><a href="#软件激活" class="headerlink" title="软件激活"></a>软件激活</h3><h4 id="Office365"><a href="#Office365" class="headerlink" title="Office365"></a><a href="https://www.bilibili.com/read/cv10410012/">Office365</a></h4><h4 id="Navicat"><a href="#Navicat" class="headerlink" title="Navicat"></a>Navicat</h4><blockquote>
+<p>指令下载过程中容易失败，手动下载或挂梯子</p>
+<p>注意教程中指令的工作目录</p>
+</blockquote>
+<ol>
+<li>下载<a href="https://www.navicat.com.cn/download/navicat-premium">官方版</a></li>
+<li>激活<a href="https://gitee.com/andisolo/navicat-keygen">Ubuntu</a>或<a href="https://www.98wg.cn/wlrj/807.html">Win10</a>平台</li>
+</ol>
+<h4 id="Sublime-text"><a href="#Sublime-text" class="headerlink" title="Sublime text"></a><a href="https://www.pythonblogs.com/sublime-text-license-key/">Sublime text</a></h4><h4 id="Vscode-MonoKai-Pro"><a href="#Vscode-MonoKai-Pro" class="headerlink" title="Vscode MonoKai Pro"></a>Vscode MonoKai Pro</h4><ol>
+<li>生成license key<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">email=yourMail@mail.com</span><br><span class="line"><span class="built_in">echo</span> -n fd330f6f-3f41-421d-9fe5-de742d0c54c0<span class="variable">$email</span> | <span class="built_in">md5sum</span> | <span class="built_in">cut</span> -c1-25 | sed <span class="string">&#x27;s/.\&#123;5\&#125;/&amp;-/g;s/-$//g&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>打开VS Code的命令面板，ctrl+shift+p</li>
+<li>输入 Monokai Pro: enter license</li>
+<li>依次输入 email 和 lincese key</li>
+</ol>
+<h4 id="gpedit-msc"><a href="#gpedit-msc" class="headerlink" title="gpedit.msc"></a>gpedit.msc</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@echo off</span><br><span class="line">pushd &quot;%~dp0&quot;</span><br><span class="line">dir /b %systemroot%\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum &gt;gp.txt</span><br><span class="line">dir /b %systemroot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum &gt;&gt;gp.txt</span><br><span class="line">for /f %%i in (&#x27;findstr /i . gp.txt 2^&gt;nul&#x27;) do dism /online /norestart /add-package:&quot;%systemroot%\servicing\Packages\%%i&quot;</span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Ventoy多合一启动盘"><a href="#Ventoy多合一启动盘" class="headerlink" title="Ventoy多合一启动盘"></a><a href="https://www.iplaysoft.com/ventoy.html">Ventoy多合一启动盘</a></h3><hr>
+<h3 id="GNOME美化"><a href="#GNOME美化" class="headerlink" title="GNOME美化"></a><a href="https://blog.csdn.net/YV_LING/article/details/122785030">GNOME美化</a></h3><hr>
+<h3 id="Windows相关"><a href="#Windows相关" class="headerlink" title="Windows相关"></a>Windows相关</h3><p><strong>1. 安全模式启动</strong></p>
 <p><code>WIN + R</code> -&gt; <code>msconfig</code> 打开系统配置</p>
 <ul>
 <li>引导 -&gt; 安全引导 -&gt; 重启即进入安全模式</li>
@@ -5068,8 +5123,14 @@
 <p><strong>3. 环境变量生效</strong></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> PATH=C</span><br><span class="line"><span class="built_in">echo</span> %PATH%  <span class="comment"># 重启cmd</span></span><br></pre></td></tr></table></figure>
 
+<p><strong>4. Edge&#x2F;Chrome切换最近标签页</strong></p>
+<ul>
+<li>需求：按<code>ctrl</code>+<code>tab</code>切换最近两个标签页</li>
+<li>问题：默认只能每次切换到下一个标签页，且不允许被扩展的切换标签页快捷键所覆盖</li>
+<li>解决：安装<a href="https://fwextensions.github.io/QuicKey/ctrl-tab/">QuicKey</a>，按页面中 <code>Option 1</code> 的步骤执行（最后用开发者工具设置扩展快捷键）</li>
+</ul>
 <hr>
-<h3 id="Ubuntu日常问题"><a href="#Ubuntu日常问题" class="headerlink" title="Ubuntu日常问题"></a>Ubuntu日常问题</h3><p><strong>1. 无法访问部分网页</strong></p>
+<h3 id="Ubuntu相关"><a href="#Ubuntu相关" class="headerlink" title="Ubuntu相关"></a>Ubuntu相关</h3><p><strong>1. 无法访问部分网页</strong></p>
 <p>问题描述：双系统win可以，但Ubuntu很多网页如CSDN无法访问</p>
 <p>解决方案：Ubuntu网卡的MTU设置不当，改为1412（尝试值）即可</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看网卡名称，如wlp0s20f3</span></span><br><span class="line">ifconfig</span><br><span class="line"><span class="comment">## 设置MTU大小</span></span><br><span class="line">sudo ifconfig wlp0s20f3 mtu 1412   </span><br><span class="line"><span class="comment">## 若此时问题解决，新建脚本让网卡每次启动时自动设置MTU</span></span><br><span class="line">sudo vim /etc/network/if-up.d/setmtu</span><br><span class="line"><span class="comment">#!/bin/sh</span></span><br><span class="line">ifconfig <span class="string">&quot;<span class="variable">$IFACE</span>&quot;</span> mtu 1412</span><br><span class="line">sudo <span class="built_in">chmod</span> a+x /etc/network/if-up.d/setmtu</span><br></pre></td></tr></table></figure>
@@ -5094,25 +5155,6 @@
 <li>文件系统类型，如win为<code>ntfs</code></li>
 </ul>
 <hr>
-<h3 id="软件激活"><a href="#软件激活" class="headerlink" title="软件激活"></a>软件激活</h3><h4 id="Office365"><a href="#Office365" class="headerlink" title="Office365"></a><a href="https://www.bilibili.com/read/cv10410012/">Office365</a></h4><h4 id="Navicat"><a href="#Navicat" class="headerlink" title="Navicat"></a>Navicat</h4><blockquote>
-<p>指令下载过程中容易失败，手动下载或挂梯子</p>
-<p>注意教程中指令的工作目录</p>
-</blockquote>
-<ol>
-<li>下载<a href="https://www.navicat.com.cn/download/navicat-premium">官方版</a></li>
-<li>激活<a href="https://gitee.com/andisolo/navicat-keygen">Ubuntu</a>或<a href="https://www.98wg.cn/wlrj/807.html">Win10</a>平台</li>
-</ol>
-<h4 id="Sublime-text"><a href="#Sublime-text" class="headerlink" title="Sublime text"></a><a href="https://www.pythonblogs.com/sublime-text-license-key/">Sublime text</a></h4><h4 id="Vscode-MonoKai-Pro"><a href="#Vscode-MonoKai-Pro" class="headerlink" title="Vscode MonoKai Pro"></a>Vscode MonoKai Pro</h4><ol>
-<li>生成license key<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">email=yourMail@mail.com</span><br><span class="line"><span class="built_in">echo</span> -n fd330f6f-3f41-421d-9fe5-de742d0c54c0<span class="variable">$email</span> | <span class="built_in">md5sum</span> | <span class="built_in">cut</span> -c1-25 | sed <span class="string">&#x27;s/.\&#123;5\&#125;/&amp;-/g;s/-$//g&#x27;</span></span><br></pre></td></tr></table></figure></li>
-<li>打开VS Code的命令面板，ctrl+shift+p</li>
-<li>输入 Monokai Pro: enter license</li>
-<li>依次输入 email 和 lincese key</li>
-</ol>
-<h4 id="gpedit-msc"><a href="#gpedit-msc" class="headerlink" title="gpedit.msc"></a>gpedit.msc</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@echo off</span><br><span class="line">pushd &quot;%~dp0&quot;</span><br><span class="line">dir /b %systemroot%\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum &gt;gp.txt</span><br><span class="line">dir /b %systemroot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum &gt;&gt;gp.txt</span><br><span class="line">for /f %%i in (&#x27;findstr /i . gp.txt 2^&gt;nul&#x27;) do dism /online /norestart /add-package:&quot;%systemroot%\servicing\Packages\%%i&quot;</span><br><span class="line">pause</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="Ventoy多合一启动盘"><a href="#Ventoy多合一启动盘" class="headerlink" title="Ventoy多合一启动盘"></a><a href="https://www.iplaysoft.com/ventoy.html">Ventoy多合一启动盘</a></h3><hr>
-<h3 id="GNOME美化"><a href="#GNOME美化" class="headerlink" title="GNOME美化"></a><a href="https://blog.csdn.net/YV_LING/article/details/122785030">GNOME美化</a></h3><hr>
 <h3 id="IOS相关"><a href="#IOS相关" class="headerlink" title="IOS相关"></a>IOS相关</h3><p><strong>1. IOS越狱</strong></p>
 <ul>
 <li><a href="https://checkra.in/releases/">下载</a>Linux x86_64版本</li>

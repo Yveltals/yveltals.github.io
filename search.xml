@@ -2276,28 +2276,30 @@
   <entry>
     <title>Cpp</title>
     <url>/2024/01/12/CPP/Cpp/</url>
-    <content><![CDATA[<h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么，程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
+    <content><![CDATA[<h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
 <ul>
 <li>即使是简单的语句，C++ 也不保证是原子操作</li>
 <li>CPU 可能会调整指令的执行顺序</li>
 <li>在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被其它 CPU 看见</li>
 </ul>
 <hr>
-<p>原子操作说的是，一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>
+<p><strong>1. 原子操作</strong></p>
+<p>一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int64_t</span> i = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-1          Thread-2 */</span></span><br><span class="line">i = <span class="number">100</span>;             std::cout &lt;&lt; i;</span><br></pre></td></tr></table></figure>
 <p>C++ 并不保证 <code>i = 100</code> 是原子操作，因为在某些 CPU Architecture 中，写入 int64_t 需要两个 CPU 指令，所以 Thread-2 可能会读取到i在赋值过程的中间状态。</p>
 <hr>
-<p>另一方面，为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。为阐述这一点，下面的例子中，让我们假设所有操作都是原子操作：</p>
+<p><strong>2. 指令重排</strong></p>
+<p>为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。假设下面代码中都是原子操作：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"><span class="type">int</span> y = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">/* Thread-1           Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>;              <span class="keyword">while</span> (y != <span class="number">200</span>);</span><br><span class="line">y = <span class="number">200</span>;              std::cout &lt;&lt; x;</span><br></pre></td></tr></table></figure>
 
-<p>如果 CPU 没有乱序执行指令，那么 Thread-2 将输出100。然而，对于 Thread-1 来说，x &#x3D; 100 和 y &#x3D; 200 这两个语句之间没有依赖关系，因此，Thread-1 允许调整语句的执行顺序：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Thread-1 */</span></span><br><span class="line">y = <span class="number">200</span>;</span><br><span class="line">x = <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
-<p>在这种情况下，Thread-2 将输出0或100。</p>
+<p>如果 CPU 没有乱序执行指令，那么 Thread-2 将输出100。然而，对于 Thread-1 来说，x &#x3D; 100 和 y &#x3D; 200 这两个语句之间没有依赖关系，因此，Thread-1 允许调整语句的执行顺序，导致 Thread-2 输出0或100。</p>
 <hr>
-<p>CPU cache 也会影响到程序的行为。下面的例子中，假设从时间上来讲，A 操作先于 B 操作发生：</p>
+<p><strong>3. CPU Cache</strong></p>
+<p>假设下例中 A 操作先于 B 操作发生：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">/* Thread-1            Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>; <span class="comment">/*A*/</span>         std::cout &lt;&lt; x; <span class="comment">/*B*/</span></span><br></pre></td></tr></table></figure>
 <p>尽管从时间上来讲，A 先于 B，但 CPU cache 的影响下，Thread-2 不能保证立即看到 A 操作的结果，所以 Thread-2 可能输出0或100。</p>
-<p>从上面的三个例子可以看到，多线程读写同一变量需要使用同步机制，最常见的同步机制就是<code>std::mutex</code>和<code>std::atomic</code>。然而，从性能角度看，通常使用<code>std::atomic</code>会获得更好的性能。</p>
+<div class="note "><p><strong></strong></p><p>从上面的三个例子可以看到，多线程读写同一变量需要使用同步机制，最常见的同步机制就是<code>std::mutex</code>和<code>std::atomic</code>。然而，从性能角度看，通常使用<code>std::atomic</code>会获得更好的性能。</p></div>
+
 <p>C++11 为 <code>std::atomic</code> 提供了 4 种 memory ordering:</p>
 <ul>
 <li>Relaxed ordering</li>
@@ -2306,27 +2308,30 @@
 <li>Sequentially-consistent ordering</li>
 </ul>
 <p>默认情况下，<code>std::atomic</code>使用的是 Sequentially-consistent ordering。但在某些场景下，合理使用其它三种 ordering，可以让编译器优化生成的代码，从而提高性能。</p>
-<h3 id="Relaxed-ordering"><a href="#Relaxed-ordering" class="headerlink" title="Relaxed ordering"></a>Relaxed ordering</h3><p>在这种模型下，<code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上memory_order_relaxed参数。Relaxed ordering 仅仅保证<code>load()</code>和<code>store()</code>是原子操作，除此之外，不提供任何跨线程的同步。</p>
+<h3 id="Relaxed-ordering"><a href="#Relaxed-ordering" class="headerlink" title="Relaxed ordering"></a>Relaxed ordering</h3><p><strong>Relaxed ordering 仅保证<code>load()</code>和<code>store()</code>是原子操作</strong>，不提供任何跨线程的同步，<code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上 <strong>memory_order_relaxed</strong> 参数。</p>
+<p>例如，以下代码可能出现 r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。因为编译器允许调整 C 和 D 的执行顺序，如果程序的执行顺序是 D -&gt; A -&gt; B -&gt; C，那么就会出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; x = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">std::atomic&lt;<span class="type">int</span>&gt; y = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">		  </span><br><span class="line"><span class="comment">/* Thread-1 */</span>                               </span><br><span class="line">r1 = y.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// A</span></span><br><span class="line">x.<span class="built_in">store</span>(r1, memory_order_relaxed); <span class="comment">// B</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-2 */</span></span><br><span class="line">r2 = x.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// C</span></span><br><span class="line">y.<span class="built_in">store</span>(<span class="number">42</span>, memory_order_relaxed); <span class="comment">// D</span></span><br></pre></td></tr></table></figure>
 
-<p>执行完上面的程序，可能出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。因为编译器允许调整 C 和 D 的执行顺序，如果程序的执行顺序是 D -&gt; A -&gt; B -&gt; C，那么就会出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。</p>
-<p>如果某个操作只要求是原子操作，除此之外，不需要其它同步的保障，就可以使用 Relaxed ordering。程序计数器是一种典型的应用场景：</p>
+<p>如果只要求是原子操作，不需要其它同步，就可以使用 Relaxed ordering，例如下面的程序计数器场景：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; cnt = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">1000</span>; ++n) &#123;</span><br><span class="line">    cnt.<span class="built_in">fetch_add</span>(<span class="number">1</span>, std::memory_order_relaxed);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::vector&lt;std::thread&gt; v;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">10</span>; ++n) &#123;</span><br><span class="line">    v.<span class="built_in">emplace_back</span>(f);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; t : v) &#123;</span><br><span class="line">    t.<span class="built_in">join</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">assert</span>(cnt == <span class="number">10000</span>);    <span class="comment">// never failed</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Release-Acquire-ordering"><a href="#Release-Acquire-ordering" class="headerlink" title="Release-Acquire ordering"></a>Release-Acquire ordering</h3><p>在这种模型下，<code>store()</code>使用 memory_order_release，而<code>load()</code>使用memory_order_acquire。这种模型有两种效果，第一种是可以限制 CPU 指令的重排：</p>
-<ul>
+<h3 id="Release-Acquire-ordering"><a href="#Release-Acquire-ordering" class="headerlink" title="Release-Acquire ordering"></a>Release-Acquire ordering</h3><p>这种模型有两种效果：</p>
+<ol>
+<li>限制 CPU 指令的重排：<ul>
 <li>在<code>store()</code>之前的所有读写操作，不允许被移动到这个<code>store()</code> 的后面。</li>
 <li>在<code>load()</code>之后的所有读写操作，不允许被移动到这个<code>load()</code> 的前面。</li>
 </ul>
-<p>除此之外，还有另一种效果：假设 Thread-1 <code>store()</code>的那个值，成功被 Thread-2 <code>load()</code>到了，那么 Thread-1 在<code>store()</code> 之前对内存的所有写入操作，此时对 Thread-2 来说，都是可见的。</p>
-<p>下面的例子阐述了这种模型的原理：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; ready&#123;<span class="literal">false</span>&#125;;</span><br><span class="line"><span class="type">int</span> data = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  data = <span class="number">100</span>;                                      <span class="comment">// A</span></span><br><span class="line">  ready.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release);    <span class="comment">// B</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!ready.<span class="built_in">load</span>(std::memory_order_acquire));  <span class="comment">// C</span></span><br><span class="line">  <span class="built_in">assert</span>(data == <span class="number">100</span>); <span class="comment">// never failed             // D</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::thread <span class="title">t1</span><span class="params">(producer)</span></span>;</span><br><span class="line">  <span class="function">std::thread <span class="title">t2</span><span class="params">(consumer)</span></span>;</span><br><span class="line">  t1.<span class="built_in">join</span>();</span><br><span class="line">  t2.<span class="built_in">join</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>分析一下这个过程：</p>
+</li>
+<li>假设 Thread-1 <code>store()</code>的值被 Thread-2 <code>load()</code>到了，那么 Thread-1 在<code>store()</code> 之前对内存的所有写入操作，此时对 Thread-2 来说都是可见的。</li>
+</ol>
+<p>在这种模型下，<code>store()</code>使用 <strong>memory_order_release</strong>，而<code>load()</code>使用<strong>memory_order_acquire</strong>，例如以下代码中：</p>
 <ul>
 <li>首先 A 不允许被移动到 B 的后面。</li>
 <li>同样 D 也不允许被移动到 C 的前面。</li>
 <li>当 C 从 while 循环中退出了，说明 C 读取到了 B store()的那个值，此时，Thread-2 保证能够看见 Thread-1 执行 B 之前的所有写入操作（也即是 A）。</li>
 </ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; ready&#123;<span class="literal">false</span>&#125;;</span><br><span class="line"><span class="type">int</span> data = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  data = <span class="number">100</span>;                                      <span class="comment">// A</span></span><br><span class="line">  ready.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release);    <span class="comment">// B</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!ready.<span class="built_in">load</span>(std::memory_order_acquire));  <span class="comment">// C</span></span><br><span class="line">  <span class="built_in">assert</span>(data == <span class="number">100</span>); <span class="comment">// never failed             // D</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::thread <span class="title">t1</span><span class="params">(producer)</span></span>;</span><br><span class="line">  <span class="function">std::thread <span class="title">t2</span><span class="params">(consumer)</span></span>;</span><br><span class="line">  t1.<span class="built_in">join</span>();</span><br><span class="line">  t2.<span class="built_in">join</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <hr>
 <h2 id="Atomic-和-Volatile"><a href="#Atomic-和-Volatile" class="headerlink" title="Atomic 和 Volatile"></a>Atomic 和 Volatile</h2><p><code>std::atomic</code> 用于在不使用互斥锁情况下，来使变量被多个线程访问的情况。是用来 <strong>编写并发程序</strong> 的一个工具。</p>
 <p>如下代码，第23行可能被编译器或硬件重排。<code>std::atomic</code> 会限制这种重排序，限制之一是：对std::atomic变量写之前不会有任何操作（仅当使用顺序一致性时）</p>
@@ -8734,7 +8739,7 @@
 </ul>
 <hr>
 <h2 id="RocksDB-architecture"><a href="#RocksDB-architecture" class="headerlink" title="RocksDB architecture"></a>RocksDB architecture</h2><p>RocksDB 基础的组件是MemTable、SSTable和 预写日志（WAL）日志。每当数据被写入RocksDB时，它会被添加到一个内存中的写缓冲区称为MemTable，同时也支持配置是否同步记录在磁盘上的预写日志（WAL）中，WAL主要用来做数据持久性和系统故障时的崩溃恢复使用，MemTable 默认是用跳表实现的，因此能保持数据有序，插入和搜索开销为 O(log n)。</p>
-<p><img src="https://img.luozhiyun.com/202406011755334.png" class="lazyload" data-srcset="https://img.luozhiyun.com/202406011755334.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_arch.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_arch.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>MemTable 会根据配置的大小和数量来决定什么时候 flush 到磁盘上。一旦 MemTable 达到配置的大小，旧的 MemTable 和 WAL 都会变成不可变的状态，称为 immutable MemTable，在任何时间点，都只有一个活跃的 MemTable 和零个或多个 immutable MemTable。然后会重新分配新的 MemTable 和 WAL 用来写入数据，旧的 MemTable 会被 flush 到SSTable文件中称为L0层的数据。</p>
 <p>被 flush 到磁盘上的 SSTable 会按照层级一层层存放，如上图从 L0 到 Ln，在每层中（级别0除外），数据被范围分区为多个 SSTable 文件。</p>
 <p>这些 SSTables 都是是不可变的和有序的，每一层SSTable被组织成固定大小的块存放，每个SSTable都包含一个数据段和一个索引，可以通过二分查找快速查找数据，并且还可以通过布隆过滤器过滤无效数据，这种不变性、有序和索引结构的组合有助于RocksDB的整体性能和可靠性。</p>
@@ -8756,8 +8761,7 @@
 </blockquote>
 <p>MemTable 中的键值对是按 key 有序排列的，基于跳表数据结构</p>
 <h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>无论是在进程意外崩溃退出还是计划内重启时，其内存中的数据都会丢失。为了防止数据丢失，保证数据的持久化，除了 MemTable 之外，RocksDB 会将所有更新写入到磁盘上的预写日志（WAL，Write-ahead log）中。这样，在重启后，数据库可以回放日志，进而恢复 MemTable 的原始状态。</p>
-<p>WAL 是一个只允许追加的文件，包含一组更改记录序列。每个记录包含键值对、记录类型（Put &#x2F; Merge &#x2F; Delete）和校验和（checksum）。与 MemTable 不同，在 WAL 中，记录不按 key 有序，而是按照请求到来的顺序被追加到 WAL 中。</p>
-<p><img src="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>WAL 是一个只允许追加的文件，包含一组更改记录序列。每个记录包含键值对、记录类型（Put &#x2F; Merge &#x2F; Delete）和校验和（checksum）。与 MemTable 不同，在 WAL 中，<strong>记录不按 key 有序，而是按照请求到来的顺序被追加到 WAL 中</strong>。</p>
 <h3 id="SST"><a href="#SST" class="headerlink" title="SST"></a>SST</h3><p>RocksDB 使用一个专门的后台线程定期地把不可变的 MemTable 从内存持久化到磁盘。一旦刷盘（flush）完成，不可变的 MemTable 和相应的 WAL 就会被丢弃。RocksDB 开始写入新的 WAL、MemTable。每次刷盘都会在 L0 层上产生一个新的 SST 文件。该文件一旦写入磁盘后，就不再会修改。</p>
 <p>RocksDB 的 MemTable 的默认基于跳表实现。该数据结构是一个具有额外采样层的链表，从而允许快速、有序地查询和插入数据。有序性使得 MemTable 刷盘时更高效，因为可以直接按顺序迭代键值对顺序写入磁盘。<strong>将随机写变为顺序写是 LSM-Tree 的核心设计之一</strong>。</p>
 <p>SST 文件包括从 MemTable 刷盘而来的简直对，并且使用一种对查询友好的数据格式来存储。 SST 是 Static Sorted Table 的缩写（其他数据库中也称为 Sorted String Table）。它是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
@@ -8766,7 +8770,6 @@
 <p><img src="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>例如，我们在查找 lynx，索引会告诉我们这个键值对可能在 block 2，因为按照字典序，lynx 在 chipmunk 之后，但在 raccoon 之前。</p>
 <p>但其实 SST 文件中并没有 lynx，但我们仍然需要从磁盘加载 block 以进行搜索。RocksDB 支持启用布隆过滤器，一种具有高效空间利用率的概率性数据结构，可以用来检测某个元素是否在集合中。布隆过滤器保存在 SST 文件中过滤器部分，以便能够快速确定某个 key 不在 SST 中（从而省去摸硬盘上的数据块的开销）。</p>
-<p>此外，SST 还有其他几个不太有趣的部分，比如元数据部分。</p>
 <h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><h3 id="为什么需要-compaction"><a href="#为什么需要-compaction" class="headerlink" title="为什么需要 compaction"></a>为什么需要 compaction</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>LSM Tree 通过将所有的数据修改操作转换为追加写方式：对于 insert 直接写入新的kv，对于 update 则写入修改后的kv，对于 delete 则写入一条 tombstone 标记删除的记录。通过这种方式将磁盘的随机写入转换为顺序写从而提高了写入性能，但不能进行 in-place 更新，由此带来了以下问题：</p>
 <ol>

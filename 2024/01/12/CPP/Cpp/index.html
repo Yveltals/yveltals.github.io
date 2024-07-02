@@ -40,11 +40,11 @@
 <meta property="og:title" content="Cpp">
 <meta property="og:url" content="http://example.com/2024/01/12/CPP/Cpp/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Memory Order为什么需要 Memory Order如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么，程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：  即使是简单的语句，C++ 也不保证是原子操作 CPU 可能会调整指令的执行顺序 在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即">
+<meta property="og:description" content="Memory Order为什么需要 Memory Order如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：  即使是简单的语句，C++ 也不保证是原子操作 CPU 可能会调整指令的执行顺序 在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-01-12T06:41:04.000Z">
-<meta property="article:modified_time" content="2024-07-01T16:57:24.290Z">
+<meta property="article:modified_time" content="2024-07-02T15:42:55.588Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1719930209838),
+    lastupdate: new Date(1719935007679),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2521,28 +2521,30 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么，程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
+    <h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
 <ul>
 <li>即使是简单的语句，C++ 也不保证是原子操作</li>
 <li>CPU 可能会调整指令的执行顺序</li>
 <li>在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被其它 CPU 看见</li>
 </ul>
 <hr>
-<p>原子操作说的是，一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>
+<p><strong>1. 原子操作</strong></p>
+<p>一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int64_t</span> i = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-1          Thread-2 */</span></span><br><span class="line">i = <span class="number">100</span>;             std::cout &lt;&lt; i;</span><br></pre></td></tr></table></figure>
 <p>C++ 并不保证 <code>i = 100</code> 是原子操作，因为在某些 CPU Architecture 中，写入 int64_t 需要两个 CPU 指令，所以 Thread-2 可能会读取到i在赋值过程的中间状态。</p>
 <hr>
-<p>另一方面，为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。为阐述这一点，下面的例子中，让我们假设所有操作都是原子操作：</p>
+<p><strong>2. 指令重排</strong></p>
+<p>为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。假设下面代码中都是原子操作：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"><span class="type">int</span> y = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">/* Thread-1           Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>;              <span class="keyword">while</span> (y != <span class="number">200</span>);</span><br><span class="line">y = <span class="number">200</span>;              std::cout &lt;&lt; x;</span><br></pre></td></tr></table></figure>
 
-<p>如果 CPU 没有乱序执行指令，那么 Thread-2 将输出100。然而，对于 Thread-1 来说，x &#x3D; 100 和 y &#x3D; 200 这两个语句之间没有依赖关系，因此，Thread-1 允许调整语句的执行顺序：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Thread-1 */</span></span><br><span class="line">y = <span class="number">200</span>;</span><br><span class="line">x = <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
-<p>在这种情况下，Thread-2 将输出0或100。</p>
+<p>如果 CPU 没有乱序执行指令，那么 Thread-2 将输出100。然而，对于 Thread-1 来说，x &#x3D; 100 和 y &#x3D; 200 这两个语句之间没有依赖关系，因此，Thread-1 允许调整语句的执行顺序，导致 Thread-2 输出0或100。</p>
 <hr>
-<p>CPU cache 也会影响到程序的行为。下面的例子中，假设从时间上来讲，A 操作先于 B 操作发生：</p>
+<p><strong>3. CPU Cache</strong></p>
+<p>假设下例中 A 操作先于 B 操作发生：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">/* Thread-1            Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>; <span class="comment">/*A*/</span>         std::cout &lt;&lt; x; <span class="comment">/*B*/</span></span><br></pre></td></tr></table></figure>
 <p>尽管从时间上来讲，A 先于 B，但 CPU cache 的影响下，Thread-2 不能保证立即看到 A 操作的结果，所以 Thread-2 可能输出0或100。</p>
-<p>从上面的三个例子可以看到，多线程读写同一变量需要使用同步机制，最常见的同步机制就是<code>std::mutex</code>和<code>std::atomic</code>。然而，从性能角度看，通常使用<code>std::atomic</code>会获得更好的性能。</p>
+<div class="note "><p><strong></strong></p><p>从上面的三个例子可以看到，多线程读写同一变量需要使用同步机制，最常见的同步机制就是<code>std::mutex</code>和<code>std::atomic</code>。然而，从性能角度看，通常使用<code>std::atomic</code>会获得更好的性能。</p></div>
+
 <p>C++11 为 <code>std::atomic</code> 提供了 4 种 memory ordering:</p>
 <ul>
 <li>Relaxed ordering</li>
@@ -2551,27 +2553,30 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>Sequentially-consistent ordering</li>
 </ul>
 <p>默认情况下，<code>std::atomic</code>使用的是 Sequentially-consistent ordering。但在某些场景下，合理使用其它三种 ordering，可以让编译器优化生成的代码，从而提高性能。</p>
-<h3 id="Relaxed-ordering"><a href="#Relaxed-ordering" class="headerlink" title="Relaxed ordering"></a>Relaxed ordering</h3><p>在这种模型下，<code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上memory_order_relaxed参数。Relaxed ordering 仅仅保证<code>load()</code>和<code>store()</code>是原子操作，除此之外，不提供任何跨线程的同步。</p>
+<h3 id="Relaxed-ordering"><a href="#Relaxed-ordering" class="headerlink" title="Relaxed ordering"></a>Relaxed ordering</h3><p><strong>Relaxed ordering 仅保证<code>load()</code>和<code>store()</code>是原子操作</strong>，不提供任何跨线程的同步，<code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上 <strong>memory_order_relaxed</strong> 参数。</p>
+<p>例如，以下代码可能出现 r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。因为编译器允许调整 C 和 D 的执行顺序，如果程序的执行顺序是 D -&gt; A -&gt; B -&gt; C，那么就会出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; x = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">std::atomic&lt;<span class="type">int</span>&gt; y = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">		  </span><br><span class="line"><span class="comment">/* Thread-1 */</span>                               </span><br><span class="line">r1 = y.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// A</span></span><br><span class="line">x.<span class="built_in">store</span>(r1, memory_order_relaxed); <span class="comment">// B</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-2 */</span></span><br><span class="line">r2 = x.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// C</span></span><br><span class="line">y.<span class="built_in">store</span>(<span class="number">42</span>, memory_order_relaxed); <span class="comment">// D</span></span><br></pre></td></tr></table></figure>
 
-<p>执行完上面的程序，可能出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。因为编译器允许调整 C 和 D 的执行顺序，如果程序的执行顺序是 D -&gt; A -&gt; B -&gt; C，那么就会出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。</p>
-<p>如果某个操作只要求是原子操作，除此之外，不需要其它同步的保障，就可以使用 Relaxed ordering。程序计数器是一种典型的应用场景：</p>
+<p>如果只要求是原子操作，不需要其它同步，就可以使用 Relaxed ordering，例如下面的程序计数器场景：</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; cnt = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">1000</span>; ++n) &#123;</span><br><span class="line">    cnt.<span class="built_in">fetch_add</span>(<span class="number">1</span>, std::memory_order_relaxed);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::vector&lt;std::thread&gt; v;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">10</span>; ++n) &#123;</span><br><span class="line">    v.<span class="built_in">emplace_back</span>(f);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; t : v) &#123;</span><br><span class="line">    t.<span class="built_in">join</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">assert</span>(cnt == <span class="number">10000</span>);    <span class="comment">// never failed</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Release-Acquire-ordering"><a href="#Release-Acquire-ordering" class="headerlink" title="Release-Acquire ordering"></a>Release-Acquire ordering</h3><p>在这种模型下，<code>store()</code>使用 memory_order_release，而<code>load()</code>使用memory_order_acquire。这种模型有两种效果，第一种是可以限制 CPU 指令的重排：</p>
-<ul>
+<h3 id="Release-Acquire-ordering"><a href="#Release-Acquire-ordering" class="headerlink" title="Release-Acquire ordering"></a>Release-Acquire ordering</h3><p>这种模型有两种效果：</p>
+<ol>
+<li>限制 CPU 指令的重排：<ul>
 <li>在<code>store()</code>之前的所有读写操作，不允许被移动到这个<code>store()</code> 的后面。</li>
 <li>在<code>load()</code>之后的所有读写操作，不允许被移动到这个<code>load()</code> 的前面。</li>
 </ul>
-<p>除此之外，还有另一种效果：假设 Thread-1 <code>store()</code>的那个值，成功被 Thread-2 <code>load()</code>到了，那么 Thread-1 在<code>store()</code> 之前对内存的所有写入操作，此时对 Thread-2 来说，都是可见的。</p>
-<p>下面的例子阐述了这种模型的原理：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; ready&#123;<span class="literal">false</span>&#125;;</span><br><span class="line"><span class="type">int</span> data = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  data = <span class="number">100</span>;                                      <span class="comment">// A</span></span><br><span class="line">  ready.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release);    <span class="comment">// B</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!ready.<span class="built_in">load</span>(std::memory_order_acquire));  <span class="comment">// C</span></span><br><span class="line">  <span class="built_in">assert</span>(data == <span class="number">100</span>); <span class="comment">// never failed             // D</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::thread <span class="title">t1</span><span class="params">(producer)</span></span>;</span><br><span class="line">  <span class="function">std::thread <span class="title">t2</span><span class="params">(consumer)</span></span>;</span><br><span class="line">  t1.<span class="built_in">join</span>();</span><br><span class="line">  t2.<span class="built_in">join</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>分析一下这个过程：</p>
+</li>
+<li>假设 Thread-1 <code>store()</code>的值被 Thread-2 <code>load()</code>到了，那么 Thread-1 在<code>store()</code> 之前对内存的所有写入操作，此时对 Thread-2 来说都是可见的。</li>
+</ol>
+<p>在这种模型下，<code>store()</code>使用 <strong>memory_order_release</strong>，而<code>load()</code>使用<strong>memory_order_acquire</strong>，例如以下代码中：</p>
 <ul>
 <li>首先 A 不允许被移动到 B 的后面。</li>
 <li>同样 D 也不允许被移动到 C 的前面。</li>
 <li>当 C 从 while 循环中退出了，说明 C 读取到了 B store()的那个值，此时，Thread-2 保证能够看见 Thread-1 执行 B 之前的所有写入操作（也即是 A）。</li>
 </ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; ready&#123;<span class="literal">false</span>&#125;;</span><br><span class="line"><span class="type">int</span> data = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  data = <span class="number">100</span>;                                      <span class="comment">// A</span></span><br><span class="line">  ready.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release);    <span class="comment">// B</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!ready.<span class="built_in">load</span>(std::memory_order_acquire));  <span class="comment">// C</span></span><br><span class="line">  <span class="built_in">assert</span>(data == <span class="number">100</span>); <span class="comment">// never failed             // D</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::thread <span class="title">t1</span><span class="params">(producer)</span></span>;</span><br><span class="line">  <span class="function">std::thread <span class="title">t2</span><span class="params">(consumer)</span></span>;</span><br><span class="line">  t1.<span class="built_in">join</span>();</span><br><span class="line">  t2.<span class="built_in">join</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <hr>
 <h2 id="Atomic-和-Volatile"><a href="#Atomic-和-Volatile" class="headerlink" title="Atomic 和 Volatile"></a>Atomic 和 Volatile</h2><p><code>std::atomic</code> 用于在不使用互斥锁情况下，来使变量被多个线程访问的情况。是用来 <strong>编写并发程序</strong> 的一个工具。</p>
 <p>如下代码，第23行可能被编译器或硬件重排。<code>std::atomic</code> 会限制这种重排序，限制之一是：对std::atomic变量写之前不会有任何操作（仅当使用顺序一致性时）</p>
@@ -3031,7 +3036,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-02T00:57:24+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-02T23:42:55+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
     <p>更新于：Jul 2, 2024</p>
@@ -3549,7 +3554,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3776,7 +3781,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/01/12/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/01/12/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/01/12/CPP/Cpp/","wordCount":0,"datePublished":"2024-01-12T06:41:04.000Z","dateModified":"2024-07-01T16:57:24.290Z","articleSection":"八股","keywords":"八股","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/01/12/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/01/12/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/01/12/CPP/Cpp/","wordCount":0,"datePublished":"2024-01-12T06:41:04.000Z","dateModified":"2024-07-02T15:42:55.588Z","articleSection":"八股","keywords":"八股","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
 
 
 

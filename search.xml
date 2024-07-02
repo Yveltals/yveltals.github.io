@@ -8710,4 +8710,121 @@
         <tag>音视频</tag>
       </tags>
   </entry>
+  <entry>
+    <title>RocksDB</title>
+    <url>/2024/07/01/Database/RocksDB/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://tidb.net/blog/eedf77ff#1%20%E6%A6%82%E8%BF%B0">带你全面了解compaction 的13个问题</a><br><a href="https://www.luozhiyun.com/archives/842">深入 RocksDB 高性能的技术关键</a><br><a href="https://mp.weixin.qq.com/s/ylp1LxvtP31gNELHWUwfwA">RocksDB内部数据组织方式介绍及性能压测</a></p>
+</blockquote>
+<h2 id="RocksDB-是什么"><a href="#RocksDB-是什么" class="headerlink" title="RocksDB 是什么"></a>RocksDB 是什么</h2><p>RocksDB 是一种可持久化的、内嵌型 kv 存储。它是为了存储大量的 key 及其对应 value 设计出来的数据库。可以基于这种简单 kv 数据模型来构建倒排索引、文档数据库、SQL 数据库、缓存系统和消息代理等复杂系统。</p>
+<p>RocksDB 使用 C++ 编写而成，因此除了支持 C 和 C++ 之外，还能通过 С binding 的形式嵌入到使用其他语言编写的应用中，例如 Rust、Go 或 Java。由于它是内嵌的数据库，所以它是没有独立进程的，它需要被集成进应用，和应用共享内存等资源，也没有跨进程通信的开销，也无法网络通信，也不是分布式的。</p>
+<p>RocksDB 以 kv 对集合的形式存储数据， key 和 value 是任意长度的字节数组（byte array），因此都是没有类型的。RocksDB 提供了很少的几个用于修改 kv 集合的函数底层接口：</p>
+<ul>
+<li><code>put(key, value)</code>：插入新的键值对或更新已有键值对</li>
+<li><code>merge(key, value)</code>：将新值与给定键的原值进行合并</li>
+<li><code>delete(key)</code>：从集合中删除键值对</li>
+</ul>
+<p>通过点查来获取 key 所关联的 value：</p>
+<ul>
+<li><code>get(key)</code></li>
+</ul>
+<p>通过迭代器可以进行范围扫描 —— 找到特定的 key，并按顺序访问该 key 后续的键值对：</p>
+<ul>
+<li><code>iterator.seek(key_prefix)</code>; <code>iterator.value()</code>; <code>iterator.next()</code></li>
+</ul>
+<hr>
+<h2 id="RocksDB-architecture"><a href="#RocksDB-architecture" class="headerlink" title="RocksDB architecture"></a>RocksDB architecture</h2><p>RocksDB 基础的组件是MemTable、SSTable和 预写日志（WAL）日志。每当数据被写入RocksDB时，它会被添加到一个内存中的写缓冲区称为MemTable，同时也支持配置是否同步记录在磁盘上的预写日志（WAL）中，WAL主要用来做数据持久性和系统故障时的崩溃恢复使用，MemTable 默认是用跳表实现的，因此能保持数据有序，插入和搜索开销为 O(log n)。</p>
+<p><img src="https://img.luozhiyun.com/202406011755334.png" class="lazyload" data-srcset="https://img.luozhiyun.com/202406011755334.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>MemTable 会根据配置的大小和数量来决定什么时候 flush 到磁盘上。一旦 MemTable 达到配置的大小，旧的 MemTable 和 WAL 都会变成不可变的状态，称为 immutable MemTable，在任何时间点，都只有一个活跃的 MemTable 和零个或多个 immutable MemTable。然后会重新分配新的 MemTable 和 WAL 用来写入数据，旧的 MemTable 会被 flush 到SSTable文件中称为L0层的数据。</p>
+<p>被 flush 到磁盘上的 SSTable 会按照层级一层层存放，如上图从 L0 到 Ln，在每层中（级别0除外），数据被范围分区为多个 SSTable 文件。</p>
+<p>这些 SSTables 都是是不可变的和有序的，每一层SSTable被组织成固定大小的块存放，每个SSTable都包含一个数据段和一个索引，可以通过二分查找快速查找数据，并且还可以通过布隆过滤器过滤无效数据，这种不变性、有序和索引结构的组合有助于RocksDB的整体性能和可靠性。</p>
+<p>RocksDB是通过 LSM Tress 的方式通过将所有的数据添加修改操作转换为追加写方式，对于 insert 直接写入新的kv，对于 update 则写入修改后的kv，对于 delete 则写入一条 tombstone 标记删除的记录。</p>
+<p>所以数据的查找会从 MemTable 内存数据开始，如果不存在，然后再从L0层级的 SSTable 开始找起，直到找到或者遍历完所有的 SSTable。SSTable 查找的时候会根据二分法加上布隆过滤器进行查找，过滤掉 key 不存在的 SSTable 文件，提升查询效率。</p>
+<p>所以通过上面的简介可以知道对于 RocksDB 来说内部主要有以下几个结构：</p>
+<ul>
+<li>MemTable：一个内存结构，所有的写入操作会先写入到这里，MemTable有好几种实现方式，默认使用跳表实现；</li>
+<li>WAL日志：为了保证数据的持久性和一致性，用户写入的键值对首先被插入到WAL中。这确保了即使在发生故障时，也能从WAL中恢复数据；</li>
+<li>SSTable（Sorted String Table）：它是RocksDB中存储数据的基本单位，每个文件内部都是有序的。当MemTable写满之后会从磁盘flush到磁盘变成SSTable成为LSM树的 L0层级，当L0中的SSTable数量到达一定之后会出发 compaction 写入到下一层；</li>
+</ul>
+<h3 id="Log-structured-merge-tree"><a href="#Log-structured-merge-tree" class="headerlink" title="Log-structured merge-tree"></a>Log-structured merge-tree</h3><p>RocksDB 的核心数据结构被称为日志结构合并树 （LSM-Tree）。它是一种树形的数据结构，由多个层级组成，每层的数据按 key 有序。LSM-Tree 主要设计用来应对写入密集型工作负载。</p>
+<p>LSM-Tree 的最高层保存在内存中，包含最近写入的数据。其他较低层级的数据存储在磁盘上，层数编号从 0 到 N 。第 0 层 L0 存储从内存移动到磁盘上的数据，第 1 层及以下层级则存储更老的数据。通常某层的下个层级在数据量上会比该层大一个数量级，当某层数据量变得过大时，会合并到下一层。</p>
+<p><img src="https://s2.loli.net/2023/08/21/fgHoJOTvwmM1sjl.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/fgHoJOTvwmM1sjl.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="MemTable"><a href="#MemTable" class="headerlink" title="MemTable"></a>MemTable</h3><p>LSM-Tree 的顶层被称为 MemTable。MemTable 是一个内存缓冲区，在键值对写入磁盘之前，Memtable 会缓存住这些键值对。所有插入和更新操作都会过 MemTable。当然也包括删除操作：不过，在 RocksDB 中，并不会直接原地修改键值对，而是通过插入墓碑记录（tombstone ）来进行标记删除。</p>
+<p>MemTable 具有可配置的字节数限制。当一个 MemTable 变满时，就会切到一个新的 MemTable，同时原 MemTable 变为不可修改状态。</p>
+<blockquote>
+<p>注：MemTable 的默认大小为 64 MB。</p>
+</blockquote>
+<p>MemTable 中的键值对是按 key 有序排列的，基于跳表数据结构</p>
+<h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>无论是在进程意外崩溃退出还是计划内重启时，其内存中的数据都会丢失。为了防止数据丢失，保证数据的持久化，除了 MemTable 之外，RocksDB 会将所有更新写入到磁盘上的预写日志（WAL，Write-ahead log）中。这样，在重启后，数据库可以回放日志，进而恢复 MemTable 的原始状态。</p>
+<p>WAL 是一个只允许追加的文件，包含一组更改记录序列。每个记录包含键值对、记录类型（Put &#x2F; Merge &#x2F; Delete）和校验和（checksum）。与 MemTable 不同，在 WAL 中，记录不按 key 有序，而是按照请求到来的顺序被追加到 WAL 中。</p>
+<p><img src="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="SST"><a href="#SST" class="headerlink" title="SST"></a>SST</h3><p>RocksDB 使用一个专门的后台线程定期地把不可变的 MemTable 从内存持久化到磁盘。一旦刷盘（flush）完成，不可变的 MemTable 和相应的 WAL 就会被丢弃。RocksDB 开始写入新的 WAL、MemTable。每次刷盘都会在 L0 层上产生一个新的 SST 文件。该文件一旦写入磁盘后，就不再会修改。</p>
+<p>RocksDB 的 MemTable 的默认基于跳表实现。该数据结构是一个具有额外采样层的链表，从而允许快速、有序地查询和插入数据。有序性使得 MemTable 刷盘时更高效，因为可以直接按顺序迭代键值对顺序写入磁盘。<strong>将随机写变为顺序写是 LSM-Tree 的核心设计之一</strong>。</p>
+<p>SST 文件包括从 MemTable 刷盘而来的简直对，并且使用一种对查询友好的数据格式来存储。 SST 是 Static Sorted Table 的缩写（其他数据库中也称为 Sorted String Table）。它是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
+<p>SST 文件由几个部分组成：首先是数据部分，包含一系列有序的键值对。key 的有序性可以让我们对 其进行增量编码，也即，对于相邻的 key ，我们可以只存其差值而非整个 key。</p>
+<p>尽管 SST 中的 kv 对是有序的，我们也并非总能进行二分查找，尤其是数据块在压缩过后，会使得查找很低效。RocksDB 使用索引来优化查询，存储在紧邻数据块之后的索引块。Index 会把每个 block 数据中最后一个 key 映射到它在磁盘上的对应偏移量。同样地，index 中的 key 也是有序的，因此我们可以通过二分搜索快速找到某个 key。</p>
+<p><img src="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>例如，我们在查找 lynx，索引会告诉我们这个键值对可能在 block 2，因为按照字典序，lynx 在 chipmunk 之后，但在 raccoon 之前。</p>
+<p>但其实 SST 文件中并没有 lynx，但我们仍然需要从磁盘加载 block 以进行搜索。RocksDB 支持启用布隆过滤器，一种具有高效空间利用率的概率性数据结构，可以用来检测某个元素是否在集合中。布隆过滤器保存在 SST 文件中过滤器部分，以便能够快速确定某个 key 不在 SST 中（从而省去摸硬盘上的数据块的开销）。</p>
+<p>此外，SST 还有其他几个不太有趣的部分，比如元数据部分。</p>
+<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><h3 id="为什么需要-compaction"><a href="#为什么需要-compaction" class="headerlink" title="为什么需要 compaction"></a>为什么需要 compaction</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>LSM Tree 通过将所有的数据修改操作转换为追加写方式：对于 insert 直接写入新的kv，对于 update 则写入修改后的kv，对于 delete 则写入一条 tombstone 标记删除的记录。通过这种方式将磁盘的随机写入转换为顺序写从而提高了写入性能，但不能进行 in-place 更新，由此带来了以下问题：</p>
+<ol>
+<li>大量的冗余和无效数据占用磁盘空间，造成空间放大。</li>
+<li>读取数据时如果内存中没有的话，需要从L0层开始进行查找sst file，造成读放大。</li>
+</ol>
+<p>因此通过 compaction 操作将数据下层进行合并、清理已标记删除的数据降低空间放大、读放大的影响。但是compaction 又带来了写放大的问题，因此不同的数据库根据需要使用不同的compact 策略，以达到读、写、空间最优的平衡。Compaction属于资源密集型操作，需要读写大量的数据并进行排序，消耗较多的IO、CPU资源。</p>
+<h3 id="Compaction做什么"><a href="#Compaction做什么" class="headerlink" title="Compaction做什么"></a>Compaction做什么</h3><p>RocksDB的compaction 包含2方面：一是memtable写满后flush到磁盘，这是一种特殊的compacttion，也称为minor compaction。二是从L0 层开始往下层合并数据，也被称为major compaction，也是常说的compaction。</p>
+<p>Compaction 实际上就是一个归并排序的过程，将Ln层写入Ln+1层，过滤掉已经delete的数据，实现数据物理删除。其主要过程:</p>
+<ol>
+<li>准备：根据一定条件和优先级等从Ln&#x2F;Ln+1层选择需要合并的sst文件，确定需要处理的key范围。</li>
+<li>处理：将读到key value数据，进行合并、排序，处理不同类型的key的操作。</li>
+<li>写入：将排序好的数据写入到Ln+1层sst文件，更新元数据信息。</li>
+</ol>
+<h3 id="ColumnFamily-和-SST-file"><a href="#ColumnFamily-和-SST-file" class="headerlink" title="ColumnFamily 和 SST file"></a>ColumnFamily 和 SST file</h3><p>RocksDB内使用Column Family(CF) 来进行数据的逻辑隔离，CF内可以使用不同的key，每个CF使用不同的memtable和sst文件，所有的 CF 共享WAL、Manifest。每个 CF 的memtable flush时都会切换WAL，其他的CF也开始使用新的WAL，旧的WAL要保证里面所有CF的数据都被flush后才能删除。   </p>
+<p>在RocskDB内每个Column Family都分配了一个ID，在SST文件有Column Family ID，默认L1层sst file的大小由参数target-file-size-base决定，L2~Lmax的sst文件大小为target-file-size-base*target_file_size_multiplier (默认为1)</p>
+<p>经过CF的逻辑划分后类似结构如下:</p>
+<p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image.png"></p>
+<h3 id="L0-层文件堆积后如何处理"><a href="#L0-层文件堆积后如何处理" class="headerlink" title="L0 层文件堆积后如何处理"></a>L0 层文件堆积后如何处理</h3><p>当有大量数据写入时，如果L0 到 L1 的compaction速度来不及处理会导致L0层文件逐渐累积增多，通过subcompact并行方式可提升L0层compact速度。当L0层文件数量达到一定数量后则会引起write stall，文件数量达到level0-slowdown-writes-trigger 后 会降低写入速度，当达到level0-stop-writes-trigger后则完全停止写入。</p>
+<p>当L0 向L1 层合并时，如果L1层的sst file正在往 L2层合并被锁住，将导致本次L0 -&gt; L1层的compact不能执行，因此造成L0层文件不能及时清理。基于此RocksDB引入了intra-L0 compaction，即在发生上述情况时在L0层内部进行compact,将多个sst file合并为1个大的sst file，以此减少L0层文件数量，在一定程度上能够提升L0层的读性能和减少write stall的发生</p>
+<h3 id="SST文件什么时候删除"><a href="#SST文件什么时候删除" class="headerlink" title="SST文件什么时候删除"></a>SST文件什么时候删除</h3><p>RocksDB使用version来表示数据库的当前状态（即某一时刻sst文件的集合），每当增加或删除一个sst file时都会对Manifest增加一条version edit记录。当执行查询或修改时会引用当前version，同时会对该version下的sst file设置reference count。</p>
+<p>Compact完成后会在output level生成新的文件，同时需要删除旧的Input 文件，如果仍有其他操作在compact后仍未执行完成，则在compact后不能立即将需要的文件删除，等到sst file的reference count降为0后才能将文件真正的删除。</p>
+<h3 id="WriteStall有哪些触发场景"><a href="#WriteStall有哪些触发场景" class="headerlink" title="WriteStall有哪些触发场景"></a>WriteStall有哪些触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
+<p><strong>memtable数量过多</strong></p>
+<ul>
+<li>当memtable数量达到min-write-buffer-number-to-merge (默认值为1) 参数个时会触发flush，Flush慢主要由于磁盘性能问题引起</li>
+<li>当等待flush的memetable数量达到参数max-write-buffer-number时会完全停止写入。当max-write-buffer-number&gt;3且等待flush的memetable数量&gt;&#x3D;参数max-write-buffer-number-1时会降低写入速度。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max-write-buffer-number、max_background_jobs 、write_buffer_size 进行缓解。</li>
+</ul>
+<p>L0<strong>数量过多</strong></p>
+<ul>
+<li>当L0 sst文件数达到level0_slowdown_writes_trigger后会触发write stall 降低写入速度，当达到level0_stop_writes_trigger则完全停止写入。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max_background_jobs 、write_buffer_size、min-write-buffer-number-to-merge进行缓解。</li>
+</ul>
+<p><strong>待compact的数据量过多</strong></p>
+<ul>
+<li>当需要compact的文件数量达到soft_pending_compaction_byte参数值时会触发write stall，降低写入速度，当达到hard_pending_compaction_byte时会完全停止写入.</li>
+</ul>
+<h2 id="读路径"><a href="#读路径" class="headerlink" title="读路径"></a>读路径</h2><p>使用持久化在磁盘上不可变的 SST 文件，读路径要比写路径简单很多。要找寻某个 key，只需自顶而下遍历 LSM—Tree。从 MemTable 开始，下探到 L0，然后继续向更低层级查找，直到找到该 key 或者检查完所有 SST 文件为止。</p>
+<p>以下是查找步骤：</p>
+<ol>
+<li>检索 MemTable。</li>
+<li>检索不可变 MemTables。</li>
+<li>搜索最近 flush 过的 L0 层中的所有 SST 文件。</li>
+<li>对于 L1 层及以下层级，首先找到可能包含该 key 的单个 SST 文件，然后在文件内进行搜索。</li>
+</ol>
+<p>搜索 SST 文件涉及：</p>
+<ol>
+<li>（可选）探测布隆过滤器。</li>
+<li>查找 index 来找到可能包含这个 key 的 block 所在位置。</li>
+<li>读取 block 文件并尝试在其中找到 key。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Datebase</category>
+      </categories>
+      <tags>
+        <tag>Datebase</tag>
+      </tags>
+  </entry>
 </search>

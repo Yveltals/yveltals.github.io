@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <!-- SEO相关 -->
   
-  <link rel="canonical" href="http://example.com/"/>
+  <link rel="canonical" href="http://example.com/2024/07/01/database/rocksdb/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -32,16 +32,21 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>Hexo</title>
-  <meta name="keywords" content="">
+  <title>RocksDB - Hexo</title>
+  <meta name="keywords" content="null">
   <meta desc name="description" content="Hexo - John Doe - Hexo">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocksDB">
+<meta property="og:url" content="http://example.com/2024/07/01/Database/RocksDB/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="带你全面了解compaction 的13个问题深入 RocksDB 高性能的技术关键RocksDB内部数据组织方式介绍及性能压测  RocksDB 是什么RocksDB 是一种可持久化的、内嵌型 kv 存储。它是为了存储大量的 key 及其对应 value 设计出来的数据库。可以基于这种简单 kv 数据模型来构建倒排索引、文档数据库、SQL 数据库、缓存系统和消息代理等复杂系统。 RocksDB">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2024-07-01T03:15:04.000Z">
+<meta property="article:modified_time" content="2024-07-02T14:22:33.908Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Datebase">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
   <style>
@@ -2403,7 +2408,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="half" class='cover-wrapper  search' style="display: ;">
+      <div id="half" class='cover-wrapper post search' style="display: ;">
         
   <div id="parallax-window"></div>
 
@@ -2442,101 +2447,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <div class="body-wrapper">
           
 <div id="l_main" class=''>
-  
-  <section class="post-list">
-    
-      
-        
-          
-        
-          
-        
-          
-        
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-    
-    
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
   <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/01/Database/RocksDB/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
@@ -2546,692 +2457,251 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <meta itemprop="description" content="">
   </span>
   
-  
+
+
   
     <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/07/01/Database/RocksDB/">
-        <img itemprop="image" class='headimg' alt="RocksDB" src='/img/rocksdb.jpg'/>
+      <a class='headimg-a'>
+        <img itemprop="image" class='headimg' src='/img/rocksdb.jpg'/>
       </a>
     </div>
   
-  
+  <div class="article-meta" id="top">
     
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/07/01/Database/RocksDB/"  itemprop="url">
+    
+    
+      <h1 class="title" itemprop="name headline">
         RocksDB
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
+      </h1>
+      <div class='new-meta-box'>
         
-带你全面了解compaction 的13个问题深入 RocksDB 高性能的技术关键RocksDB内部数据组织方式介绍及性能压测
-
-RocksDB 是什么RocksDB 是一种可持久化的、内嵌型 kv 存储。它是为了存储大量的 key 及其对应 value 设计出来的数据库。可以基于这种简单 kv 数据模型来构建倒排索引、文档数据库、SQL 数据库、缓存系统和消息代理等复杂系统。
-Rock...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-07-01T11:15:04+08:00">2024-07-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
           
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/07/01/Database/RocksDB/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
 </div>
 
-          </div>
+          
         
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/15/MapReduce/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/Datebase/">Datebase</a>
     
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/04/15/MapReduce/"  itemprop="url">
-        MapReduce
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        摘要MapReduce既是一种编程模型，也是一种与之关联的、用于处理和产生大数据集的实现。用户要特化一个map程序去处理key&#x2F;value对，并产生中间key&#x2F;value对的集合，以及一个reduce程序去合并有着相同key的所有中间key&#x2F;value对。许多实际的任务都可以用这种模型来表示
-用这种函数式风格写出的程序自动就拥有了在一个大的PC机集群上并行执行的...
-      
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
+      </span>
     
   </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-04-15T23:54:04+08:00">2024-04-15</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url"><span itemprop="name">分布式</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/04/15/MapReduce/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
 
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2024-07-01T11:15:04+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Jul 1, 2024</p>
+  </a>
 </div>
 
-          </div>
+          
         
-      
+        <!-- Custom Files topMeta begin-->
         
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/07/Database/索引/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/04/07/Database/%E7%B4%A2%E5%BC%95/"  itemprop="url">
-        索引
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        稀疏索引在数据主键有序的基础上，只为少部分数据建立索引，从而在查询时能够圈定出大致的范围，再在范围内利用适当的查找算法找到目标数据。
-空间占用小，查询相对慢
-Sparse Index in Kafka单个Kafka的TopicPartition中，消息数据会被切分成段（segment）来存储，扩展名为.log。log文件的切分时机由大小参数log.segment.bytes（默认值1G）和时...
-      
+        <!-- Custom Files topMeta end-->
+      </div>
     
   </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-04-07T16:13:04+08:00">2024-04-07</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/04/07/Database/%E7%B4%A2%E5%BC%95/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
 
-</div>
 
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/05/OS/IO缓存/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/">
-        <img itemprop="image" class='headimg' alt="I/O Cache" src='/img/os.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/"  itemprop="url">
-        I/O Cache
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        
-库缓冲为啥要有库缓冲（如clib buffer）因为从应用层到内核层需要系统调用、内核态切换，开销比较大，为了减少这件事发生的次数，没有必要因为1个字节的改动发生系统调用。
-绕过库缓冲的方案用mmap(内存映射文件)，把内核空间的page cache映射到用户空间。
-内核缓冲为啥要有内核缓冲内核用pdflush线程循环检测脏页，判断是否写回磁盘。由于磁盘是单向旋转，重新排布写操作顺序可以减...
-      
-    
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <blockquote>
+<p><a target="_blank" rel="noopener" href="https://tidb.net/blog/eedf77ff#1%20%E6%A6%82%E8%BF%B0">带你全面了解compaction 的13个问题</a><br><a target="_blank" rel="noopener" href="https://www.luozhiyun.com/archives/842">深入 RocksDB 高性能的技术关键</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ylp1LxvtP31gNELHWUwfwA">RocksDB内部数据组织方式介绍及性能压测</a></p>
+</blockquote>
+<h2 id="RocksDB-是什么"><a href="#RocksDB-是什么" class="headerlink" title="RocksDB 是什么"></a>RocksDB 是什么</h2><p>RocksDB 是一种可持久化的、内嵌型 kv 存储。它是为了存储大量的 key 及其对应 value 设计出来的数据库。可以基于这种简单 kv 数据模型来构建倒排索引、文档数据库、SQL 数据库、缓存系统和消息代理等复杂系统。</p>
+<p>RocksDB 使用 C++ 编写而成，因此除了支持 C 和 C++ 之外，还能通过 С binding 的形式嵌入到使用其他语言编写的应用中，例如 Rust、Go 或 Java。由于它是内嵌的数据库，所以它是没有独立进程的，它需要被集成进应用，和应用共享内存等资源，也没有跨进程通信的开销，也无法网络通信，也不是分布式的。</p>
+<p>RocksDB 以 kv 对集合的形式存储数据， key 和 value 是任意长度的字节数组（byte array），因此都是没有类型的。RocksDB 提供了很少的几个用于修改 kv 集合的函数底层接口：</p>
+<ul>
+<li><code>put(key, value)</code>：插入新的键值对或更新已有键值对</li>
+<li><code>merge(key, value)</code>：将新值与给定键的原值进行合并</li>
+<li><code>delete(key)</code>：从集合中删除键值对</li>
+</ul>
+<p>通过点查来获取 key 所关联的 value：</p>
+<ul>
+<li><code>get(key)</code></li>
+</ul>
+<p>通过迭代器可以进行范围扫描 —— 找到特定的 key，并按顺序访问该 key 后续的键值对：</p>
+<ul>
+<li><code>iterator.seek(key_prefix)</code>; <code>iterator.value()</code>; <code>iterator.next()</code></li>
+</ul>
+<hr>
+<h2 id="RocksDB-architecture"><a href="#RocksDB-architecture" class="headerlink" title="RocksDB architecture"></a>RocksDB architecture</h2><p>RocksDB 基础的组件是MemTable、SSTable和 预写日志（WAL）日志。每当数据被写入RocksDB时，它会被添加到一个内存中的写缓冲区称为MemTable，同时也支持配置是否同步记录在磁盘上的预写日志（WAL）中，WAL主要用来做数据持久性和系统故障时的崩溃恢复使用，MemTable 默认是用跳表实现的，因此能保持数据有序，插入和搜索开销为 O(log n)。</p>
+<p><img src="https://img.luozhiyun.com/202406011755334.png" class="lazyload" data-srcset="https://img.luozhiyun.com/202406011755334.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>MemTable 会根据配置的大小和数量来决定什么时候 flush 到磁盘上。一旦 MemTable 达到配置的大小，旧的 MemTable 和 WAL 都会变成不可变的状态，称为 immutable MemTable，在任何时间点，都只有一个活跃的 MemTable 和零个或多个 immutable MemTable。然后会重新分配新的 MemTable 和 WAL 用来写入数据，旧的 MemTable 会被 flush 到SSTable文件中称为L0层的数据。</p>
+<p>被 flush 到磁盘上的 SSTable 会按照层级一层层存放，如上图从 L0 到 Ln，在每层中（级别0除外），数据被范围分区为多个 SSTable 文件。</p>
+<p>这些 SSTables 都是是不可变的和有序的，每一层SSTable被组织成固定大小的块存放，每个SSTable都包含一个数据段和一个索引，可以通过二分查找快速查找数据，并且还可以通过布隆过滤器过滤无效数据，这种不变性、有序和索引结构的组合有助于RocksDB的整体性能和可靠性。</p>
+<p>RocksDB是通过 LSM Tress 的方式通过将所有的数据添加修改操作转换为追加写方式，对于 insert 直接写入新的kv，对于 update 则写入修改后的kv，对于 delete 则写入一条 tombstone 标记删除的记录。</p>
+<p>所以数据的查找会从 MemTable 内存数据开始，如果不存在，然后再从L0层级的 SSTable 开始找起，直到找到或者遍历完所有的 SSTable。SSTable 查找的时候会根据二分法加上布隆过滤器进行查找，过滤掉 key 不存在的 SSTable 文件，提升查询效率。</p>
+<p>所以通过上面的简介可以知道对于 RocksDB 来说内部主要有以下几个结构：</p>
+<ul>
+<li>MemTable：一个内存结构，所有的写入操作会先写入到这里，MemTable有好几种实现方式，默认使用跳表实现；</li>
+<li>WAL日志：为了保证数据的持久性和一致性，用户写入的键值对首先被插入到WAL中。这确保了即使在发生故障时，也能从WAL中恢复数据；</li>
+<li>SSTable（Sorted String Table）：它是RocksDB中存储数据的基本单位，每个文件内部都是有序的。当MemTable写满之后会从磁盘flush到磁盘变成SSTable成为LSM树的 L0层级，当L0中的SSTable数量到达一定之后会出发 compaction 写入到下一层；</li>
+</ul>
+<h3 id="Log-structured-merge-tree"><a href="#Log-structured-merge-tree" class="headerlink" title="Log-structured merge-tree"></a>Log-structured merge-tree</h3><p>RocksDB 的核心数据结构被称为日志结构合并树 （LSM-Tree）。它是一种树形的数据结构，由多个层级组成，每层的数据按 key 有序。LSM-Tree 主要设计用来应对写入密集型工作负载。</p>
+<p>LSM-Tree 的最高层保存在内存中，包含最近写入的数据。其他较低层级的数据存储在磁盘上，层数编号从 0 到 N 。第 0 层 L0 存储从内存移动到磁盘上的数据，第 1 层及以下层级则存储更老的数据。通常某层的下个层级在数据量上会比该层大一个数量级，当某层数据量变得过大时，会合并到下一层。</p>
+<p><img src="https://s2.loli.net/2023/08/21/fgHoJOTvwmM1sjl.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/fgHoJOTvwmM1sjl.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="MemTable"><a href="#MemTable" class="headerlink" title="MemTable"></a>MemTable</h3><p>LSM-Tree 的顶层被称为 MemTable。MemTable 是一个内存缓冲区，在键值对写入磁盘之前，Memtable 会缓存住这些键值对。所有插入和更新操作都会过 MemTable。当然也包括删除操作：不过，在 RocksDB 中，并不会直接原地修改键值对，而是通过插入墓碑记录（tombstone ）来进行标记删除。</p>
+<p>MemTable 具有可配置的字节数限制。当一个 MemTable 变满时，就会切到一个新的 MemTable，同时原 MemTable 变为不可修改状态。</p>
+<blockquote>
+<p>注：MemTable 的默认大小为 64 MB。</p>
+</blockquote>
+<p>MemTable 中的键值对是按 key 有序排列的，基于跳表数据结构</p>
+<h3 id="WAL"><a href="#WAL" class="headerlink" title="WAL"></a>WAL</h3><p>无论是在进程意外崩溃退出还是计划内重启时，其内存中的数据都会丢失。为了防止数据丢失，保证数据的持久化，除了 MemTable 之外，RocksDB 会将所有更新写入到磁盘上的预写日志（WAL，Write-ahead log）中。这样，在重启后，数据库可以回放日志，进而恢复 MemTable 的原始状态。</p>
+<p>WAL 是一个只允许追加的文件，包含一组更改记录序列。每个记录包含键值对、记录类型（Put &#x2F; Merge &#x2F; Delete）和校验和（checksum）。与 MemTable 不同，在 WAL 中，记录不按 key 有序，而是按照请求到来的顺序被追加到 WAL 中。</p>
+<p><img src="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/oPHnCwyhDtX1jdF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="SST"><a href="#SST" class="headerlink" title="SST"></a>SST</h3><p>RocksDB 使用一个专门的后台线程定期地把不可变的 MemTable 从内存持久化到磁盘。一旦刷盘（flush）完成，不可变的 MemTable 和相应的 WAL 就会被丢弃。RocksDB 开始写入新的 WAL、MemTable。每次刷盘都会在 L0 层上产生一个新的 SST 文件。该文件一旦写入磁盘后，就不再会修改。</p>
+<p>RocksDB 的 MemTable 的默认基于跳表实现。该数据结构是一个具有额外采样层的链表，从而允许快速、有序地查询和插入数据。有序性使得 MemTable 刷盘时更高效，因为可以直接按顺序迭代键值对顺序写入磁盘。<strong>将随机写变为顺序写是 LSM-Tree 的核心设计之一</strong>。</p>
+<p>SST 文件包括从 MemTable 刷盘而来的简直对，并且使用一种对查询友好的数据格式来存储。 SST 是 Static Sorted Table 的缩写（其他数据库中也称为 Sorted String Table）。它是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
+<p>SST 文件由几个部分组成：首先是数据部分，包含一系列有序的键值对。key 的有序性可以让我们对 其进行增量编码，也即，对于相邻的 key ，我们可以只存其差值而非整个 key。</p>
+<p>尽管 SST 中的 kv 对是有序的，我们也并非总能进行二分查找，尤其是数据块在压缩过后，会使得查找很低效。RocksDB 使用索引来优化查询，存储在紧邻数据块之后的索引块。Index 会把每个 block 数据中最后一个 key 映射到它在磁盘上的对应偏移量。同样地，index 中的 key 也是有序的，因此我们可以通过二分搜索快速找到某个 key。</p>
+<p><img src="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>例如，我们在查找 lynx，索引会告诉我们这个键值对可能在 block 2，因为按照字典序，lynx 在 chipmunk 之后，但在 raccoon 之前。</p>
+<p>但其实 SST 文件中并没有 lynx，但我们仍然需要从磁盘加载 block 以进行搜索。RocksDB 支持启用布隆过滤器，一种具有高效空间利用率的概率性数据结构，可以用来检测某个元素是否在集合中。布隆过滤器保存在 SST 文件中过滤器部分，以便能够快速确定某个 key 不在 SST 中（从而省去摸硬盘上的数据块的开销）。</p>
+<p>此外，SST 还有其他几个不太有趣的部分，比如元数据部分。</p>
+<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><h3 id="为什么需要-compaction"><a href="#为什么需要-compaction" class="headerlink" title="为什么需要 compaction"></a>为什么需要 compaction</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>LSM Tree 通过将所有的数据修改操作转换为追加写方式：对于 insert 直接写入新的kv，对于 update 则写入修改后的kv，对于 delete 则写入一条 tombstone 标记删除的记录。通过这种方式将磁盘的随机写入转换为顺序写从而提高了写入性能，但不能进行 in-place 更新，由此带来了以下问题：</p>
+<ol>
+<li>大量的冗余和无效数据占用磁盘空间，造成空间放大。</li>
+<li>读取数据时如果内存中没有的话，需要从L0层开始进行查找sst file，造成读放大。</li>
+</ol>
+<p>因此通过 compaction 操作将数据下层进行合并、清理已标记删除的数据降低空间放大、读放大的影响。但是compaction 又带来了写放大的问题，因此不同的数据库根据需要使用不同的compact 策略，以达到读、写、空间最优的平衡。Compaction属于资源密集型操作，需要读写大量的数据并进行排序，消耗较多的IO、CPU资源。</p>
+<h3 id="Compaction做什么"><a href="#Compaction做什么" class="headerlink" title="Compaction做什么"></a>Compaction做什么</h3><p>RocksDB的compaction 包含2方面：一是memtable写满后flush到磁盘，这是一种特殊的compacttion，也称为minor compaction。二是从L0 层开始往下层合并数据，也被称为major compaction，也是常说的compaction。</p>
+<p>Compaction 实际上就是一个归并排序的过程，将Ln层写入Ln+1层，过滤掉已经delete的数据，实现数据物理删除。其主要过程:</p>
+<ol>
+<li>准备：根据一定条件和优先级等从Ln&#x2F;Ln+1层选择需要合并的sst文件，确定需要处理的key范围。</li>
+<li>处理：将读到key value数据，进行合并、排序，处理不同类型的key的操作。</li>
+<li>写入：将排序好的数据写入到Ln+1层sst文件，更新元数据信息。</li>
+</ol>
+<h3 id="ColumnFamily-和-SST-file"><a href="#ColumnFamily-和-SST-file" class="headerlink" title="ColumnFamily 和 SST file"></a>ColumnFamily 和 SST file</h3><p>RocksDB内使用Column Family(CF) 来进行数据的逻辑隔离，CF内可以使用不同的key，每个CF使用不同的memtable和sst文件，所有的 CF 共享WAL、Manifest。每个 CF 的memtable flush时都会切换WAL，其他的CF也开始使用新的WAL，旧的WAL要保证里面所有CF的数据都被flush后才能删除。   </p>
+<p>在RocskDB内每个Column Family都分配了一个ID，在SST文件有Column Family ID，默认L1层sst file的大小由参数target-file-size-base决定，L2~Lmax的sst文件大小为target-file-size-base*target_file_size_multiplier (默认为1)</p>
+<p>经过CF的逻辑划分后类似结构如下:</p>
+<p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image.png"></p>
+<h3 id="L0-层文件堆积后如何处理"><a href="#L0-层文件堆积后如何处理" class="headerlink" title="L0 层文件堆积后如何处理"></a>L0 层文件堆积后如何处理</h3><p>当有大量数据写入时，如果L0 到 L1 的compaction速度来不及处理会导致L0层文件逐渐累积增多，通过subcompact并行方式可提升L0层compact速度。当L0层文件数量达到一定数量后则会引起write stall，文件数量达到level0-slowdown-writes-trigger 后 会降低写入速度，当达到level0-stop-writes-trigger后则完全停止写入。</p>
+<p>当L0 向L1 层合并时，如果L1层的sst file正在往 L2层合并被锁住，将导致本次L0 -&gt; L1层的compact不能执行，因此造成L0层文件不能及时清理。基于此RocksDB引入了intra-L0 compaction，即在发生上述情况时在L0层内部进行compact,将多个sst file合并为1个大的sst file，以此减少L0层文件数量，在一定程度上能够提升L0层的读性能和减少write stall的发生</p>
+<h3 id="SST文件什么时候删除"><a href="#SST文件什么时候删除" class="headerlink" title="SST文件什么时候删除"></a>SST文件什么时候删除</h3><p>RocksDB使用version来表示数据库的当前状态（即某一时刻sst文件的集合），每当增加或删除一个sst file时都会对Manifest增加一条version edit记录。当执行查询或修改时会引用当前version，同时会对该version下的sst file设置reference count。</p>
+<p>Compact完成后会在output level生成新的文件，同时需要删除旧的Input 文件，如果仍有其他操作在compact后仍未执行完成，则在compact后不能立即将需要的文件删除，等到sst file的reference count降为0后才能将文件真正的删除。</p>
+<h3 id="WriteStall有哪些触发场景"><a href="#WriteStall有哪些触发场景" class="headerlink" title="WriteStall有哪些触发场景"></a>WriteStall有哪些触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
+<p><strong>memtable数量过多</strong></p>
+<ul>
+<li>当memtable数量达到min-write-buffer-number-to-merge (默认值为1) 参数个时会触发flush，Flush慢主要由于磁盘性能问题引起</li>
+<li>当等待flush的memetable数量达到参数max-write-buffer-number时会完全停止写入。当max-write-buffer-number&gt;3且等待flush的memetable数量&gt;&#x3D;参数max-write-buffer-number-1时会降低写入速度。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max-write-buffer-number、max_background_jobs 、write_buffer_size 进行缓解。</li>
+</ul>
+<p>L0<strong>数量过多</strong></p>
+<ul>
+<li>当L0 sst文件数达到level0_slowdown_writes_trigger后会触发write stall 降低写入速度，当达到level0_stop_writes_trigger则完全停止写入。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max_background_jobs 、write_buffer_size、min-write-buffer-number-to-merge进行缓解。</li>
+</ul>
+<p><strong>待compact的数据量过多</strong></p>
+<ul>
+<li>当需要compact的文件数量达到soft_pending_compaction_byte参数值时会触发write stall，降低写入速度，当达到hard_pending_compaction_byte时会完全停止写入.</li>
+</ul>
+<h2 id="读路径"><a href="#读路径" class="headerlink" title="读路径"></a>读路径</h2><p>使用持久化在磁盘上不可变的 SST 文件，读路径要比写路径简单很多。要找寻某个 key，只需自顶而下遍历 LSM—Tree。从 MemTable 开始，下探到 L0，然后继续向更低层级查找，直到找到该 key 或者检查完所有 SST 文件为止。</p>
+<p>以下是查找步骤：</p>
+<ol>
+<li>检索 MemTable。</li>
+<li>检索不可变 MemTables。</li>
+<li>搜索最近 flush 过的 L0 层中的所有 SST 文件。</li>
+<li>对于 L1 层及以下层级，首先找到可能包含该 key 的单个 SST 文件，然后在文件内进行搜索。</li>
+</ol>
+<p>搜索 SST 文件涉及：</p>
+<ol>
+<li>（可选）探测布隆过滤器。</li>
+<li>查找 index 来找到可能包含这个 key 的 block 所在位置。</li>
+<li>读取 block 文件并尝试在其中找到 key。</li>
+</ol>
+
   </div>
   
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-03-05T11:09:36+08:00">2024-03-05</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
       
-        <div>
-          <a class='readmore' href='/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/' itemprop="url">
-            Read More
-          </a>
-        </div>
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
       
     </div>
   
+  
+    
 
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-02T22:22:33+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Jul 2, 2024</p>
+  </a>
 </div>
 
-          </div>
         
       
         
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/01/CPP/CAS/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
+          
   
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/02/01/CPP/CAS/"  itemprop="url">
-        锁机制与CAS
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        锁机制悲观锁
-假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作
-悲观锁靠底层提供的锁机制实现，会导致其它所有需要锁的线程挂起
-可以完全保证数据的独占性和正确性，因为每次请求都会对数据先加锁再解锁，会造成消耗性能不高
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Datebase/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Datebase</p></a></div>
+  <span hidden itemprop="keywords">Datebase</span>
 
-乐观锁
-假设不会发生并发冲突，每次不加锁而是假设没有冲突而去完成某项操作，只在提交操作时检查是否违反数据完整性。
-如果因为冲突失败就重试，直到成功为止。
-乐观锁的缺点是不能...
+
+        
       
+    </div>
+    <!-- Custom Files bottomMeta begin -->
     
+    <!-- Custom Files bottomMeta end -->
   </div>
+
+
   
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-02-01T23:44:17+08:00">2024-02-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/CPP/">CPP</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/CPP/" itemprop="url"><span itemprop="name">CPP</span></a>
-            </span>
-          
-        
-      </div>
+  
+
+  
+    <div class="prev-next">
       
-        <div>
-          <a class='readmore' href='/2024/02/01/CPP/CAS/' itemprop="url">
-            Read More
-          </a>
-        </div>
+      
+        <a class='next' href='/2024/04/15/MapReduce/'>
+          <p class='title'>MapReduce<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>摘要MapReduce既是一种编程模型，也是一种与之关联的、用于处理和产生大数据集的实现。用户要特化一个map程序去处理key&#x2F;value对，并产生中间key&#x2F;value对的...</p>
+        </a>
       
     </div>
   
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/12/CPP/Cpp/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
+  <!-- Custom Files postEnd begin-->
   
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/01/12/CPP/Cpp/">
-        <img itemprop="image" class='headimg' alt="Cpp" src='/img/C.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/01/12/CPP/Cpp/"  itemprop="url">
-        Cpp
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Memory Order为什么需要 Memory Order如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么，程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：
-
-即使是简单的语句，C++ 也不保证是原子操作
-CPU 可能会调整指令的执行顺序
-在 CPU cache 的影响下，一个 CPU 执行了某个指令，不...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-01-12T14:41:04+08:00">2024-01-12</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/%E5%85%AB%E8%82%A1/" itemprop="url"><span itemprop="name">八股</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/01/12/CPP/Cpp/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/10/Linux/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/12/10/Linux/">
-        <img itemprop="image" class='headimg' alt="Linux" src='/img/linux.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/12/10/Linux/"  itemprop="url">
-        Linux
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Cgroup进程绑核
-cd /sys/fs/cgroup/cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write error: No space left on deviceecho 0 &gt; cpuset.mems## 限制进程运行在对应的 processorecho &quot;0-19,40-59&quot; &gt; cpus...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-12-10T12:59:04+08:00">2023-12-10</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Linux/">Linux</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Linux/" itemprop="url"><span itemprop="name">Linux</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/12/10/Linux/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/18/Linux内存与存储/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/10/18/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"  itemprop="url">
-        Linux内存与存储
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        从内核文件系统看文件读写过程 
-内存资源管理Buffers／Cached在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cache。
-如果有内存是以page进行分配管理的，都可以使用page cache来缓存。以 block 进行管理的内存可以通过buffer cache来缓存。 Page Cache 用于缓存文件的页数据，b...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-10-18T01:43:08+08:00">2023-10-18</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/10/18/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/01/SVN/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/10/01/SVN/"  itemprop="url">
-        SVN
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        配合Phabricator工作流## 保存修改svn add,delete## code reviewarc diffarc commit 
-
-代码检出 checkout把 SVN 服务器上的代码下载到电脑上，checkout 也可以简写为 co
-svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://svnbu...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-10-01T17:39:04+08:00">2023-10-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Software/">Software</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Software/" itemprop="url"><span itemprop="name">Software</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/10/01/SVN/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/15/OS/进程线程与中断/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"  itemprop="url">
-        进程线程与中断
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        进程与线程的区别老八股版本
-
-一个线程属于一个进程，一个进程包含多个线程
-进程是资源分配的基本单位
-有独立的地址空间，拥有CPU资源、内存资源、文件资源等
+  <!-- Custom Files postEnd end-->
+</article>
 
 
-线程是CPU调度的基本单位
-私有（线程上下文）：线程栈（但能通过指针被另一个线程修改），寄存器，程序计数器
-共享：进程地址空间中除线程上下文之外的所有内容：堆、全局变量、静态变量、代码段、文件等公共资源
-
-
-数据共享：进程有独立的地址...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-08-15T02:09:04+08:00">2023-08-15</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
   
 
-</div>
+  
 
-          </div>
-        
-      
-    
-  </section>
-  
-    
-      <br>
-      <div class="prev-next">
-        
-        <p class="current">
-          1 / 4
-        </p>
-        
-          <a class="next" rel="next" href="/page/2/">
-            <section class="post next white-box shadow floatable blur">
-              &nbsp;Next&nbsp;<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-            </section>
-          </a>
-        
-      </div>
-    
-  
+
+
 
 
 </div>
@@ -3242,184 +2712,48 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
     
     
       
-<section class="widget blogger desktop mobile pjax">
-  <div class='content'>
     
-      
-        <a class='avatar flat-box rectangle' href='/about/'>
-          <img no-lazy src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">Hexo</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fa-solid fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fa-solid fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://github.com/volantis-x/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fa-solid fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget category desktop pjax">
-    
-  <header>
-    
-      <a href='/blog/categories/'><i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/Arch/" href="/categories/Arch/"
-            active-action="action-categoriesArch"
-            ><div class='name'>Arch</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/CPP/" href="/categories/CPP/"
-            active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Datebase/" href="/categories/Datebase/"
-            active-action="action-categoriesDatebase"
-            ><div class='name'>Datebase</div><div class='badge'>(7)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Linux/" href="/categories/Linux/"
-            active-action="action-categoriesLinux"
-            ><div class='name'>Linux</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/OS/" href="/categories/OS/"
-            active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Other/" href="/categories/Other/"
-            active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Software/" href="/categories/Software/"
-            active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%85%AB%E8%82%A1/" href="/categories/%E5%85%AB%E8%82%A1/"
-            active-action="action-categoriesE585ABE882A1"
-            ><div class='name'>八股</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"
-            active-action="action-categoriesE58886E5B883E5BC8F"
-            ><div class='name'>分布式</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
-            active-action="action-categoriesE88083E7A094"
-            ><div class='name'>考研</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/"
-            active-action="action-categoriesE99FB3E8A786E9A291"
-            ><div class='name'>音视频</div><div class='badge'>(2)</div></a></li>
-        
-      </ul>
-    </div>
-  </section>
-
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget tagcloud desktop mobile pjax">
-    
-  <header>
-    
-      <a href='/blog/tags/'><i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/Arch/" style="font-size: 17.33px; color: #828282">Arch</a> <a href="/tags/CPP/" style="font-size: 24px; color: #555">CPP</a> <a href="/tags/Datebase/" style="font-size: 20.67px; color: #6c6c6c">Datebase</a> <a href="/tags/Git/" style="font-size: 17.33px; color: #828282">Git</a> <a href="/tags/Linux/" style="font-size: 14px; color: #999">Linux</a> <a href="/tags/OS/" style="font-size: 20.67px; color: #6c6c6c">OS</a> <a href="/tags/Other/" style="font-size: 17.33px; color: #828282">Other</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 20.67px; color: #6c6c6c">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 14px; color: #999">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 17.33px; color: #828282">音视频</a>
-    </div>
-  </section>
-
-
-    
-  
-
   
 
 
 <div class="widget-sticky pjax">
 
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RocksDB-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">RocksDB 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RocksDB-architecture"><span class="toc-number">2.</span> <span class="toc-text">RocksDB architecture</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Log-structured-merge-tree"><span class="toc-number">2.1.</span> <span class="toc-text">Log-structured merge-tree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MemTable"><span class="toc-number">2.2.</span> <span class="toc-text">MemTable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WAL"><span class="toc-number">2.3.</span> <span class="toc-text">WAL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SST"><span class="toc-number">2.4.</span> <span class="toc-text">SST</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction"><span class="toc-number">3.</span> <span class="toc-text">Compaction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-compaction"><span class="toc-number">3.1.</span> <span class="toc-text">为什么需要 compaction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compaction%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">3.2.</span> <span class="toc-text">Compaction做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ColumnFamily-%E5%92%8C-SST-file"><span class="toc-number">3.3.</span> <span class="toc-text">ColumnFamily 和 SST file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#L0-%E5%B1%82%E6%96%87%E4%BB%B6%E5%A0%86%E7%A7%AF%E5%90%8E%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86"><span class="toc-number">3.4.</span> <span class="toc-text">L0 层文件堆积后如何处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SST%E6%96%87%E4%BB%B6%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%88%A0%E9%99%A4"><span class="toc-number">3.5.</span> <span class="toc-text">SST文件什么时候删除</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WriteStall%E6%9C%89%E5%93%AA%E4%BA%9B%E8%A7%A6%E5%8F%91%E5%9C%BA%E6%99%AF"><span class="toc-number">3.6.</span> <span class="toc-text">WriteStall有哪些触发场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E8%B7%AF%E5%BE%84"><span class="toc-number">4.</span> <span class="toc-text">读路径</span></a></li></ol>
+    </div>
+  </section>
+
+  
+
 </div>
 
 
 <!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
 
   <div class="pjax">
     <!-- pjax占位 -->
@@ -3454,7 +2788,7 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=false;
+  pdata.ispage=true;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};
@@ -4053,7 +3387,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"wordCount":0,"image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Datebase/","name":"Datebase"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/01/Database/RocksDB/","name":"RocksDB"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"RocksDB","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/01/Database/RocksDB/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/01/Database/RocksDB/","wordCount":0,"datePublished":"2024-07-01T03:15:04.000Z","dateModified":"2024-07-02T14:22:33.908Z","articleSection":"Datebase","keywords":"Datebase","image":{"@type":"ImageObject","url":"/img/rocksdb.jpg","width":1024,"height":768}}]</script>
 
 
 

@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-04-01T07:45:13.000Z">
-<meta property="article:modified_time" content="2024-04-22T15:54:11.866Z">
+<meta property="article:modified_time" content="2024-07-03T20:18:49.180Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Datebase">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1719988644478),
+    lastupdate: new Date(1720037952055),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2644,30 +2644,57 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <h2 id="Redis数据同步"><a href="#Redis数据同步" class="headerlink" title="Redis数据同步"></a>Redis数据同步</h2><p>Redis其实采用了主从库的模式，以保证数据副本的一致性，主从库采用读写分离的方式：从库和主库都可以接受读操作，主库接收写操作，然后同步到从库</p>
 <h3 id="主从同步"><a href="#主从同步" class="headerlink" title="主从同步"></a>主从同步</h3><p>第一次同步：</p>
 <ol>
-<li>从库向主库发送psync命令代表进行数据同步，主库执行bgsave生成RDB文件，并发送给从库</li>
-<li>从库接收数据，清空当前数据，并加载RDB文件。过程中主库不会阻塞，仍然可以接收数据，将写操作记录到<code>replication buffer</code> 中</li>
+<li>从库向主库发送 sync 命令代表进行数据同步，主库执行 bgsave 生成 RDB 文件，并发送给从库</li>
+<li>从库接收数据，清空当前数据，并加载RDB文件。过程中主库不会阻塞，仍然可以接收数据，将写操作记录到 <code>replication buffer</code> 中</li>
 <li>最后，主库把 <code>replication buffer</code> 中的修改操作发给从库，从库执行这些操作，实现主从同步</li>
 <li>如果从库太多，为了减少主库过多的fork阻塞主线程，可以采用<strong>主-从-从</strong>模式，选择一个从库用来同步其他从库的数据，以减少主库生成RDB文件和传输RDB文件的压力</li>
 </ol>
 <p>完成第一次同步后，双方之间就会维护一个 TCP 长连接。后续通过这个连接继续将写命令传播给从服务器，然后从服务器执行该命令，使得与主服务器的数据库状态相同。</p>
 <p>若网络断开又恢复，会采用<strong>增量复制</strong>的方式继续同步，只会把网络断开期间主服务器的写命令同步给从服务器。</p>
-<h3 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h3><p>当主库挂了之后，用哨兵机制实现主从库自动切换</p>
+<p>缺点：</p>
+<ul>
+<li>没有自动容错功能，需要人工干预</li>
+<li>难以在线扩容</li>
+<li>主机宕机且有部分数据未同步到从库时，切换IP后会有数据不一致问题</li>
+</ul>
+<h3 id="Sentinel机制"><a href="#Sentinel机制" class="headerlink" title="Sentinel机制"></a>Sentinel机制</h3><p>为了解决主从模式下主库挂的问题，用哨兵机制实现主从库自动切换。哨兵是一个独立的进程，通过发送命令，等待Redis服务器响应，从而监控多个 Redis 实例。</p>
 <ol>
-<li>监控：哨兵周期性地给所有的主从库发送PING命令，检测是否仍在运行。如果主从库没有响应PING命令，哨兵也会判断主从库下限，如果主库下线会进入选主操作（为了避免误判，采用哨兵集群取多数判断）</li>
+<li>监控：哨兵周期性地给所有的主从库发送 PING 命令，检测是否仍在运行。如果 Master 一段时间没有响应，这个实例会被哨兵标记为主观下线，当足够数量的哨兵确认下线时，该 Master 会被标记为客观下线</li>
 <li>选主：主库挂了之后，哨兵需要按照一定的规则选择一个从库，并将他作为新的主库</li>
 <li>通知：哨兵会把新主库的连接信息发给其他从库，让它们和新主库建立连接，并进行数据复制；同时哨兵也会将新主库的消息发给客户端</li>
 </ol>
 <hr>
-<h2 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h2><p>当数据量过多的情况下，单实例Redis使用RDB进行持久化的时候响应会变慢，因为fork会阻塞主线程，数据量越大，fork的阻塞时间就越长</p>
-<p><strong>Redis的切片集群</strong></p>
-<p>启动多个Redis实例来组成一个集群，再按照一定的规则把数据划分为多份，每一份用一个实例来保存，这样客户端只需要访问对应的实例就可以获取数据。在这种情况下fork子进程一般不会给主线程带来较长时间的阻塞</p>
-<p><strong>分布式寻址算法</strong></p>
-<p>Redis采用哈希槽来处理数据和实例之间的映射关系，每个key计算CRC16值再取模，就会影射到一个哈希槽中，这些哈希槽类似于数据的分区</p>
-<p><strong>基本通信原理</strong></p>
-<ul>
-<li>集中式：将集群元数据（节点信息、故障等）集中存储在某个节点上。优点在于时效性好，将元数据的变更更新到集中式的存储中，其它节点读取的时候就可以感知到，但所有的元数据的更新集中在一处，压力大</li>
-<li>Gossip协议：所有节点都持有一份元数据，元数据有变更就不断发送给其它的节点，让其它节点也进行元数据的变更。好处在于更新比较分散，降低了压力，但存在更新延迟</li>
+<h2 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wzh2010/p/15886799.html">深入分析Cluster 集群模式 </a></p>
+</blockquote>
+<h3 id="为什么要用Cluster"><a href="#为什么要用Cluster" class="headerlink" title="为什么要用Cluster"></a>为什么要用Cluster</h3><ul>
+<li>单机的CPU、内存、连接数、计算力都是有极限的，不能无限制的承载流量的扩增</li>
+<li>当数据量过多的情况下，RDB持久化时响应会变慢，因为fork会阻塞主线程，数据量越大阻塞时间越长</li>
 </ul>
+<h3 id="数据分片原理"><a href="#数据分片原理" class="headerlink" title="数据分片原理"></a>数据分片原理</h3><h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><p><img src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" class="lazyload" data-srcset="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>哈希算法是对节点的数量取模，而一致哈希算法是对固定的 <code>2^32</code> 取模，将「存储节点」和「数据」都映射到一个首尾相连的哈希环上。查找数据时，将key的映射位置往顺时针的方向的找到第一个节点，就是存储该数据的节点。</p>
+<ul>
+<li>优点：增加或者移除一个节点，仅影响该节点在哈希环上顺时针相邻的后继节点，其它数据也不会受到影响。</li>
+<li>缺点：不保证节点能够在哈希环上分布均匀，会有大量的请求集中在一个节点上。</li>
+<li>解决：将真实节点映射成多个虚拟节点，再将虚拟节点映射到哈希环上。节点数量多了后，分布就相对均匀了。</li>
+</ul>
+<h4 id="哈希槽"><a href="#哈希槽" class="headerlink" title="哈希槽"></a>哈希槽</h4><p>Redis集群将数据划分为 16384（<code>2^14</code>）个 slots，每个实例节点将管理其中一部分的槽位，并记录各自的槽位信息。节点的数据量可以不均匀，性能好的可以多分担一些压力。</p>
+<p>集群之间的信息通过 <strong>Gossip协议</strong> 广播，因此每个实例都知道整个集群的 slots 分配情况以及映射信息。</p>
+<p>每个 key 映射到一个固定的 slot，<code>slot = crc16(key) % 16384</code>，这样不论节点数量如何变化，key所对应的 slot 是不变的。</p>
+<p>客户端访问过程：</p>
+<ol>
+<li>连接任一实例，获取到 slots 与节点的映射关系并缓存在本地</li>
+<li>对 key 经过 CRC16 计算后取模，得到 slot id</li>
+<li>通过 slot id 定位到实例，发送请求</li>
+</ol>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/redis_cluster.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/redis_cluster.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="数据复制"><a href="#数据复制" class="headerlink" title="数据复制"></a>数据复制</h3><p>Cluster 具备 Master 和 Slave 模式，Slave 节点是通过主从方式同步主节点数据。节点之间保持TCP通信，当Master发生了宕机， Redis Cluster 自动会将对应的 Slave 节点选为 Master，来继续提供服务。<strong>与纯主从模式不同的是，主从节点之间并没有读写分离，Slave 只用作 Master 宕机的高可用备份，所以更合理来说应该是主备模式。</strong></p>
+<h3 id="故障检测与转移"><a href="#故障检测与转移" class="headerlink" title="故障检测与转移"></a>故障检测与转移</h3><p>Redis 集群的节点采用 Gossip 协议来广播信息，每个节点都会定期向其他节点发送 ping 命令，如果超时未回复就认为节点失联了，标记为主观下线。对于主节点A，如果超过半数主节点都将其标记为了主观下线，则标记成客观下线，并向整个集群广播节点A已经下线，开始进行主从切换：</p>
+<ol>
+<li>如果有多个 slave 节点，先通过选举投票竞选出新的 Master</li>
+<li>新的主节点将下线主节点的 slots 指派给自己</li>
+<li>新的主节点向集群广播一条 PONG 消息，让其他节点知道自己变成了主节点，并且接管了下线节点负责的slots</li>
+<li>新的主节点开始接收和自己负责处理的槽有关的命令请求，故障转移完成</li>
+</ol>
 <hr>
 <h2 id="缓存各种问题"><a href="#缓存各种问题" class="headerlink" title="缓存各种问题"></a>缓存各种问题</h2><h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>缓存同一时间大面积的失效，所以后面的请求都会落到数据库上，造成数据库短时间内承受大量请求而崩掉。</p>
 <ul>
@@ -2699,31 +2726,37 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>allkeys-lru、allkeys-lfu、allkeys-random</li>
 <li>no-eviction</li>
 </ol>
-<h2 id="缓存与数据库一致性"><a href="#缓存与数据库一致性" class="headerlink" title="缓存与数据库一致性"></a>缓存与数据库一致性</h2><p>先删缓存再写数据库：删完缓存、写入数据库前，另一个线程访问数据库后把旧值又写入了缓存，脏数据</p>
-<p>先写数据库再删缓存：如果删缓存前线程崩溃，则脏数据</p>
-<p>延时双删策略</p>
-<p>在写库前后都进行redis.del(key)操作，并且设定合理的超时时间。具体步骤是：</p>
+<h2 id="缓存双写一致性"><a href="#缓存双写一致性" class="headerlink" title="缓存双写一致性"></a>缓存双写一致性</h2><p><strong>先删缓存再写数据库</strong>：删完缓存、写入数据库前，另一个线程访问数据库后把旧值又写入了缓存，脏数据</p>
+<p><strong>先写数据库再删缓存</strong>：如果删缓存前线程崩溃，则脏数据</p>
+<p><strong>延时双删策略</strong>：在写库前后都进行redis.del(key)操作，并且设定合理的超时时间。具体步骤是：</p>
 <ol>
 <li>先删除缓存</li>
 <li>再写数据库</li>
 <li>休眠500毫秒（根据具体的业务时间来定）</li>
 <li>再次删除缓存。</li>
 </ol>
-<h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><p>在分布式的环境下，当多个server并发修改同一个资源时，为了避免竞争就需要使用分布式锁</p>
-<p>加锁：<code>set key value nx ex seconds </code> 将加锁、过期命令编排到一起，原子操作，可以避免死锁</p>
-<p>解锁：<code>del key</code></p>
-<p>问题：进程A执行太久，锁超时释放后由B获取，而A执行完之后还会重复释放掉B的锁</p>
+<h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><h3 id="基于SET命令"><a href="#基于SET命令" class="headerlink" title="基于SET命令"></a>基于SET命令</h3><p>Redis 的 SET 命令有个 NX 参数可以实现「key不存在才插入」，所以可以用它来实现分布式锁：key 不存在 -&gt; 插入成功 -&gt; 表示加锁成功；</p>
+<p><strong>加锁</strong>: <code>SET lock_key unique_value NX PX 10000 </code></p>
 <ol>
-<li>在加锁时就要给锁设置一个标识，进程要记住这个标识。当进程解锁的时候，判断是自己持有的锁才能释放</li>
-<li>解锁时要先判断、再释放，这两步需要保证原子性，否则第二步失败的话，就会出现死锁。而获取和删除命令不是原子的，这就需要采用Lua脚本将两个命令编排在一起，保证原子性。</li>
+<li>加锁包括了读取锁变量、检查锁变量值和设置锁变量值三个操作，但需要以原子操作的方式完成，所以带上 NX 选项来实现加锁；</li>
+<li>锁变量需要设置过期时间，以免客户端发生异常，导致锁无法释放，所以用 EX&#x2F;PX 选项设置过期时间；</li>
+<li>锁变量的值需要能区分来自不同客户端的加锁操作，以免在释放锁时误释放，所以用 unique_value 区分来自不同客户端的锁操作；</li>
 </ol>
-<p>上述分布式锁的实现方案，是建立在单个主节点之上的。如果进程A在主节点上加锁，然后这个主节点宕机了，则从节点将会晋升为主节点。此时进程B在新的主节点上加锁，之后原主节点重启后系统中将同时出现两把锁，违背锁的唯一性原则</p>
-<p>RedLock算法基于多个Redis节点，它的基本逻辑如下：</p>
-<ul>
-<li>这些节点相互独立，不存在主从复制或者集群协调机制</li>
-<li>加锁：以相同的KEY向N个实例加锁，只要超过一半节点成功，则认定加锁成功</li>
-<li>解锁：向所有的实例发送DEL命令，进行解锁</li>
-</ul>
+<p><strong>解锁</strong>: <code>DEL lock_key</code></p>
+<ol>
+<li>要先判断锁的 unique_value 是否为加锁客户端，是的话才删除</li>
+<li>解锁有两个操作，因此需要 Lua 脚本来保证解锁的原子性</li>
+</ol>
+<p><strong>缺点</strong></p>
+<ol>
+<li><strong>超时时间不好设置</strong>：太长影响性能，太短无法保护共享资源。可以基于续约的方式设置超时时间：先给锁设置一个超时时间，然后启动一个守护线程去判断锁的情况，在锁快失效时续约加锁，当主线程执行完成后</li>
+<li><strong>主从复制模式是异步复制的，导致分布式锁不可靠</strong>。如果在 Redis 主节点获取到锁后，还没同步到其他节点就宕机了，此时新的主节点依然可以获取锁，违背锁的唯一性原则。</li>
+</ol>
+<h3 id="RedLock算法"><a href="#RedLock算法" class="headerlink" title="RedLock算法"></a>RedLock算法</h3><p>它是基于多个 Redis 节点的分布式锁，推荐至少部署 5 个 Redis 节点，它们都是主节点，之间没有任何关系。</p>
+<p>Redlock 算法的基本思路，是让客户端和多个独立的 Redis 节点依次请求申请加锁，如果客户端能够和半数以上的节点成功地完成加锁操作，就认为客户端成功地获得分布式锁，否则加锁失败。</p>
+<p>这样一来，即使有某个 Redis 节点发生故障，因为锁的数据在其他节点上也有保存，所以客户端仍然可以正常地进行锁操作，锁的数据也不会丢失。</p>
+<p><strong>加锁</strong>: 以相同的 KEY 向 N 个节点加锁，如果超过一半节点获取到了锁，且总耗时没超过锁有效时间，则认定加锁成功。之后要重新计算锁的有效时间，减去获取锁的耗时。</p>
+<p><strong>解锁</strong>: 向所有的节点发送 DEL 命令，和单节点一样，执行释放锁的 Lua 脚本即可。</p>
 
   </div>
   
@@ -2748,10 +2781,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-04-22T23:54:11+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-04T04:18:49+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Apr 22, 2024</p>
+    <p>更新于：Jul 4, 2024</p>
   </a>
 </div>
 
@@ -2838,7 +2871,7 @@ HTTP&#x2F;HTTPS、DNS、Telnet(远程登录服务协议)...</p>
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">Redis线程模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">Redis对象类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">Redis底层数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SDS"><span class="toc-number">3.1.</span> <span class="toc-text">SDS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E5%85%B8"><span class="toc-number">3.3.</span> <span class="toc-text">字典</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8"><span class="toc-number">3.4.</span> <span class="toc-text">跳跃表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E6%95%B0%E9%9B%86%E5%90%88"><span class="toc-number">3.5.</span> <span class="toc-text">整数集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8"><span class="toc-number">3.6.</span> <span class="toc-text">压缩列表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">4.</span> <span class="toc-text">Redis持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RDB%E5%BF%AB%E7%85%A7"><span class="toc-number">4.1.</span> <span class="toc-text">RDB快照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AOF%E5%8F%AA%E8%BF%BD%E5%8A%A0%E6%96%87%E4%BB%B6"><span class="toc-number">4.2.</span> <span class="toc-text">AOF只追加文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">4.3.</span> <span class="toc-text">混合持久化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-number">5.</span> <span class="toc-text">Redis数据同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5"><span class="toc-number">5.1.</span> <span class="toc-text">主从同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">5.2.</span> <span class="toc-text">哨兵机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E9%9B%86%E7%BE%A4"><span class="toc-number">6.</span> <span class="toc-text">Redis集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%90%84%E7%A7%8D%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">缓存各种问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="toc-number">7.1.</span> <span class="toc-text">缓存雪崩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="toc-number">7.2.</span> <span class="toc-text">缓存击穿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-number">7.3.</span> <span class="toc-text">缓存穿透</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5"><span class="toc-number">8.</span> <span class="toc-text">数据过期策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">9.</span> <span class="toc-text">缓存与数据库一致性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">10.</span> <span class="toc-text">分布式锁</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">Redis线程模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%AF%B9%E8%B1%A1%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">Redis对象类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">Redis底层数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SDS"><span class="toc-number">3.1.</span> <span class="toc-text">SDS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E5%85%B8"><span class="toc-number">3.3.</span> <span class="toc-text">字典</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8"><span class="toc-number">3.4.</span> <span class="toc-text">跳跃表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E6%95%B0%E9%9B%86%E5%90%88"><span class="toc-number">3.5.</span> <span class="toc-text">整数集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8"><span class="toc-number">3.6.</span> <span class="toc-text">压缩列表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">4.</span> <span class="toc-text">Redis持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RDB%E5%BF%AB%E7%85%A7"><span class="toc-number">4.1.</span> <span class="toc-text">RDB快照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AOF%E5%8F%AA%E8%BF%BD%E5%8A%A0%E6%96%87%E4%BB%B6"><span class="toc-number">4.2.</span> <span class="toc-text">AOF只追加文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">4.3.</span> <span class="toc-text">混合持久化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5"><span class="toc-number">5.</span> <span class="toc-text">Redis数据同步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5"><span class="toc-number">5.1.</span> <span class="toc-text">主从同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sentinel%E6%9C%BA%E5%88%B6"><span class="toc-number">5.2.</span> <span class="toc-text">Sentinel机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E9%9B%86%E7%BE%A4"><span class="toc-number">6.</span> <span class="toc-text">Redis集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8Cluster"><span class="toc-number">6.1.</span> <span class="toc-text">为什么要用Cluster</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%89%87%E5%8E%9F%E7%90%86"><span class="toc-number">6.2.</span> <span class="toc-text">数据分片原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C"><span class="toc-number">6.2.1.</span> <span class="toc-text">一致性哈希</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%93%88%E5%B8%8C%E6%A7%BD"><span class="toc-number">6.2.2.</span> <span class="toc-text">哈希槽</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6"><span class="toc-number">6.3.</span> <span class="toc-text">数据复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%85%E9%9A%9C%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%BD%AC%E7%A7%BB"><span class="toc-number">6.4.</span> <span class="toc-text">故障检测与转移</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%90%84%E7%A7%8D%E9%97%AE%E9%A2%98"><span class="toc-number">7.</span> <span class="toc-text">缓存各种问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="toc-number">7.1.</span> <span class="toc-text">缓存雪崩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="toc-number">7.2.</span> <span class="toc-text">缓存击穿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-number">7.3.</span> <span class="toc-text">缓存穿透</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5"><span class="toc-number">8.</span> <span class="toc-text">数据过期策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%8F%8C%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">9.</span> <span class="toc-text">缓存双写一致性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">10.</span> <span class="toc-text">分布式锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8ESET%E5%91%BD%E4%BB%A4"><span class="toc-number">10.1.</span> <span class="toc-text">基于SET命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RedLock%E7%AE%97%E6%B3%95"><span class="toc-number">10.2.</span> <span class="toc-text">RedLock算法</span></a></li></ol></li></ol>
     </div>
   </section>
 
@@ -3266,7 +3299,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3547,7 +3580,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Datebase/","name":"Datebase"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/04/01/八股/Redis/","name":"Redis"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Redis","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/04/01/%E5%85%AB%E8%82%A1/Redis/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/04/01/%E5%85%AB%E8%82%A1/Redis/","wordCount":0,"datePublished":"2023-04-01T07:45:13.000Z","dateModified":"2024-04-22T15:54:11.866Z","articleSection":"Datebase","keywords":"Datebase","image":{"@type":"ImageObject","url":"/img/redis.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Datebase/","name":"Datebase"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/04/01/八股/Redis/","name":"Redis"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Redis","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/04/01/%E5%85%AB%E8%82%A1/Redis/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/04/01/%E5%85%AB%E8%82%A1/Redis/","wordCount":0,"datePublished":"2023-04-01T07:45:13.000Z","dateModified":"2024-07-03T20:18:49.180Z","articleSection":"Datebase","keywords":"Datebase","image":{"@type":"ImageObject","url":"/img/redis.jpeg","width":1024,"height":768}}]</script>
 
 
 

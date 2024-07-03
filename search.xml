@@ -8832,6 +8832,8 @@
   <img src=https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png width=70%>
 </div>
 
+<div class="img-wrap"><div class="img-bg" style="background:#000000"><img class="img lazyload" src="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:400px;"/></div></div>
+
 <p>例如，我们在查找 lynx，索引会告诉我们这个键值对可能在 block 2，因为按照字典序，lynx 在 chipmunk 之后，但在 raccoon 之前。</p>
 <p>但其实 SST 文件中并没有 lynx，但我们仍然需要从磁盘加载 block 以进行搜索。RocksDB 支持启用布隆过滤器，一种具有高效空间利用率的概率性数据结构，可以用来检测某个元素是否在集合中。布隆过滤器保存在 SST 文件中过滤器部分，以便能够快速确定某个 key 不在 SST 中（从而省去摸硬盘上的数据块的开销）。</p>
 <h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><h3 id="为什么需要-compaction"><a href="#为什么需要-compaction" class="headerlink" title="为什么需要 compaction"></a>为什么需要 compaction</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491850788.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>

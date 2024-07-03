@@ -4088,9 +4088,11 @@
 </blockquote>
 <h4 id="性能问题"><a href="#性能问题" class="headerlink" title="性能问题"></a>性能问题</h4><p>CPU修改Cache Line中的变量时，要<strong>通过总线发送Invalidate信息给远程CPU，等到远程CPU返回ACK，才能进行继续修改</strong>。如果远程的CPU比较繁忙，会带来更大的延迟。</p>
 <p>为了解决这个问题，引入了Store buffer。</p>
-<div align="left">
+<!-- <div align="left">
   <img src=https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg width=70%>
-</div>
+</div> -->
+
+<div class="img-wrap"><div class="img-bg" style="background:#FFFFFF"><img class="img lazyload" src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:600px;"/></div></div>
 
 <h2 id="Store-buffer和Invalidate-queue"><a href="#Store-buffer和Invalidate-queue" class="headerlink" title="Store buffer和Invalidate queue"></a>Store buffer和Invalidate queue</h2><h3 id="Store-buffer"><a href="#Store-buffer" class="headerlink" title="Store buffer"></a>Store buffer</h3><p>在CPU和L1Cache之间引入Store buffer来对cache line的写操作进行优化。</p>
 <ul>
@@ -8811,9 +8813,7 @@
 </ul>
 <h3 id="Log-structured-merge-tree"><a href="#Log-structured-merge-tree" class="headerlink" title="Log-structured merge-tree"></a>Log-structured merge-tree</h3><p>RocksDB 的核心数据结构被称为日志结构合并树 （LSM-Tree）。它是一种树形的数据结构，由多个层级组成，每层的数据按 key 有序。LSM-Tree 主要设计用来应对写入密集型工作负载。</p>
 <p>LSM-Tree 的最高层保存在内存中，包含最近写入的数据。其他较低层级的数据存储在磁盘上，层数编号从 0 到 N 。第 0 层 L0 存储从内存移动到磁盘上的数据，第 1 层及以下层级则存储更老的数据。通常某层的下个层级在数据量上会比该层大一个数量级，当某层数据量变得过大时，会合并到下一层。</p>
-<div align="left">
-  <img src=https://s2.loli.net/2023/08/21/fgHoJOTvwmM1sjl.png width=60%>
-</div>
+<div class="img-wrap"><div class="img-bg" style="background:#FFFFFF"><img class="img lazyload" src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst_layer.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst_layer.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:600px;"/></div></div>
 
 <h3 id="MemTable"><a href="#MemTable" class="headerlink" title="MemTable"></a>MemTable</h3><p>LSM-Tree 的顶层被称为 MemTable。MemTable 是一个内存缓冲区，在键值对写入磁盘之前，Memtable 会缓存住这些键值对。所有插入和更新操作都会过 MemTable。当然也包括删除操作：不过，在 RocksDB 中，并不会直接原地修改键值对，而是通过插入墓碑记录（tombstone ）来进行标记删除。</p>
 <p>MemTable 具有可配置的字节数限制。当一个 MemTable 变满时，就会切到一个新的 MemTable，同时原 MemTable 变为不可修改状态。</p>
@@ -8828,8 +8828,7 @@
 <p>SST 文件包括从 MemTable 刷盘而来的简直对，并且使用一种对查询友好的数据格式来存储。 SST 是 Static Sorted Table 的缩写（其他数据库中也称为 Sorted String Table）。它是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
 <p>SST 文件由几个部分组成：首先是数据部分，包含一系列有序的键值对。key 的有序性可以让我们对 其进行增量编码，也即，对于相邻的 key ，我们可以只存其差值而非整个 key。</p>
 <p>尽管 SST 中的 kv 对是有序的，我们也并非总能进行二分查找，尤其是数据块在压缩过后，会使得查找很低效。RocksDB 使用索引来优化查询，存储在紧邻数据块之后的索引块。Index 会把每个 block 数据中最后一个 key 映射到它在磁盘上的对应偏移量。同样地，index 中的 key 也是有序的，因此我们可以通过二分搜索快速找到某个 key。</p>
-<!-- ![](https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png) -->
-<div class="img-wrap"><div class="img-bg" style="background:#FFFFFF"><img class="img lazyload" src="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" class="lazyload" data-srcset="https://s2.loli.net/2023/08/21/R76i5ThCW9epxGk.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:500px;"/></div></div>
+<div class="img-wrap"><div class="img-bg" style="background:#FFFFFF"><img class="img lazyload" src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:500px;"/></div></div>
 
 <p>例如，我们在查找 lynx，索引会告诉我们这个键值对可能在 block 2，因为按照字典序，lynx 在 chipmunk 之后，但在 raccoon 之前。</p>
 <p>但其实 SST 文件中并没有 lynx，但我们仍然需要从磁盘加载 block 以进行搜索。RocksDB 支持启用布隆过滤器，一种具有高效空间利用率的概率性数据结构，可以用来检测某个元素是否在集合中。布隆过滤器保存在 SST 文件中过滤器部分，以便能够快速确定某个 key 不在 SST 中（从而省去摸硬盘上的数据块的开销）。</p>

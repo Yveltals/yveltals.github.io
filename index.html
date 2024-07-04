@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720052850401),
+    lastupdate: new Date(1720082549351),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2537,6 +2537,77 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/04/CPP/Cpp/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="">
+  </span>
+  
+  
+  
+    <div class='headimg-div'>
+      <a class='headimg-a' href="/2024/07/04/CPP/Cpp/">
+        <img itemprop="image" class='headimg' alt="Cpp" src='/img/C.jpeg'/>
+      </a>
+    </div>
+  
+  
+    
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2024/07/04/CPP/Cpp/"  itemprop="url">
+        Cpp
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
+    
+      
+        Volatile,Atomic与Memory barrier
+参考链接
+
+三者的关联C++ 中的 volatile 关键字，std::atomic 变量及手动插入内存屏障指令（Memory Barrier）均是为了避免内存访问过程中出现一些不符合预期的行为。这三者的适用场景与区别如下：
+
+如果需要原子性的访问支持，只能选择 atomic；
+如果仅需保证内存访问不会被编译器优化掉，优先考虑 v...
+      
+    
+  </div>
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2024-07-04T23:46:04+08:00">2024-07-04</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/%E5%85%AB%E8%82%A1/" itemprop="url"><span itemprop="name">八股</span></a>
+            </span>
+          
+        
+      </div>
+      
+        <div>
+          <a class='readmore' href='/2024/07/04/CPP/Cpp/' itemprop="url">
+            Read More
+          </a>
+        </div>
+      
+    </div>
+  
+
+</div>
+
+          </div>
+        
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
   <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/01/Database/RocksDB/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
@@ -2859,75 +2930,6 @@ Sparse Index in Kafka单个Kafka的TopicPartition中，消息数据会被切分�
       
         <div>
           <a class='readmore' href='/2024/02/01/CPP/CAS/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/12/CPP/Cpp/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/01/12/CPP/Cpp/">
-        <img itemprop="image" class='headimg' alt="Cpp" src='/img/C.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/01/12/CPP/Cpp/"  itemprop="url">
-        Cpp
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Memory Order为什么需要 Memory Order如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：
-
-即使是简单的语句，C++ 也不保证是原子操作
-CPU 可能会调整指令的执行顺序
-在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-01-12T14:41:04+08:00">2024-01-12</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/%E5%85%AB%E8%82%A1/" itemprop="url"><span itemprop="name">八股</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/01/12/CPP/Cpp/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3826,7 +3828,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp"];
   let index = 0;
   let IntervalParallax = null;
 

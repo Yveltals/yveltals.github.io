@@ -2297,70 +2297,97 @@
   </entry>
   <entry>
     <title>Cpp</title>
-    <url>/2024/01/12/CPP/Cpp/</url>
-    <content><![CDATA[<h2 id="Memory-Order"><a href="#Memory-Order" class="headerlink" title="Memory Order"></a>Memory Order</h2><h3 id="为什么需要-Memory-Order"><a href="#为什么需要-Memory-Order" class="headerlink" title="为什么需要 Memory Order"></a>为什么需要 Memory Order</h3><p>如果不使用任何同步机制（例如 mutex 或 atomic），在多线程中读写同一个变量，那么程序的结果是难以预料的。简单来说，编译器以及 CPU 的一些行为，会影响到程序的执行结果：</p>
+    <url>/2024/07/04/CPP/Cpp/</url>
+    <content><![CDATA[<h2 id="Volatile-Atomic与Memory-barrier"><a href="#Volatile-Atomic与Memory-barrier" class="headerlink" title="Volatile,Atomic与Memory barrier"></a>Volatile,Atomic与Memory barrier</h2><blockquote>
+<p><a href="https://gaomf.cn/2020/09/11/Cpp_Volatile_Atomic_Memory_barrier/">参考链接</a></p>
+</blockquote>
+<h3 id="三者的关联"><a href="#三者的关联" class="headerlink" title="三者的关联"></a>三者的关联</h3><p>C++ 中的 volatile 关键字，std::atomic 变量及手动插入内存屏障指令（Memory Barrier）均是为了避免内存访问过程中出现一些不符合预期的行为。这三者的适用场景与区别如下：</p>
 <ul>
-<li>即使是简单的语句，C++ 也不保证是原子操作</li>
-<li>CPU 可能会调整指令的执行顺序</li>
-<li>在 CPU cache 的影响下，一个 CPU 执行了某个指令，不会立即被其它 CPU 看见</li>
+<li>如果需要原子性的访问支持，只能选择 atomic；</li>
+<li>如果仅需保证内存访问不会被编译器优化掉，优先考虑 volatile；</li>
+<li>如果需要保证 Memory Order，也优先考虑 atomic，只有当不需要保证原子性，而且很明确要在哪插入内存屏障时才考虑手动插入 Memory Barrier</li>
 </ul>
-<hr>
-<p><strong>1. 原子操作</strong></p>
-<p>一个操作的状态要么就是未执行，要么就是已完成，不会看见中间状态。例如，在 C++11 中，下面程序的结果是未定义的：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int64_t</span> i = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-1          Thread-2 */</span></span><br><span class="line">i = <span class="number">100</span>;             std::cout &lt;&lt; i;</span><br></pre></td></tr></table></figure>
-<p>C++ 并不保证 <code>i = 100</code> 是原子操作，因为在某些 CPU Architecture 中，写入 int64_t 需要两个 CPU 指令，所以 Thread-2 可能会读取到i在赋值过程的中间状态。</p>
-<hr>
-<p><strong>2. 指令重排</strong></p>
-<p>为了优化程序的执行性能，CPU 可能会调整指令的执行顺序。假设下面代码中都是原子操作：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line"><span class="type">int</span> y = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">/* Thread-1           Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>;              <span class="keyword">while</span> (y != <span class="number">200</span>);</span><br><span class="line">y = <span class="number">200</span>;              std::cout &lt;&lt; x;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>volatile</th>
+<th>Memory Barrier</th>
+<th>atomic</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>抑制编译器重排</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>抑制编译器优化</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>抑制 CPU 乱序</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>保证访问原子性</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody></table>
+<h3 id="编译器重排"><a href="#编译器重排" class="headerlink" title="编译器重排"></a>编译器重排</h3><p>编译器重排是指编译器在生成目标代码的过程中交换没有依赖关系的内存访问顺序的行为。</p>
+<p>比如以下代码，编译器不保证在最终生成的汇编代码中对 p_a 内存的写入在对 p_b 内存的读取之前。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">*p_a = a;</span><br><span class="line">b = *p_b;</span><br></pre></td></tr></table></figure>
 
-<p>如果 CPU 没有乱序执行指令，那么 Thread-2 将输出100。然而，对于 Thread-1 来说，x &#x3D; 100 和 y &#x3D; 200 这两个语句之间没有依赖关系，因此，Thread-1 允许调整语句的执行顺序，导致 Thread-2 输出0或100。</p>
-<hr>
-<p><strong>3. CPU Cache</strong></p>
-<p>假设下例中 A 操作先于 B 操作发生：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">0</span>;  <span class="comment">// global variable</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">/* Thread-1            Thread-2 */</span></span><br><span class="line">x = <span class="number">100</span>; <span class="comment">/*A*/</span>         std::cout &lt;&lt; x; <span class="comment">/*B*/</span></span><br></pre></td></tr></table></figure>
-<p>尽管从时间上来讲，A 先于 B，但 CPU cache 的影响下，Thread-2 不能保证立即看到 A 操作的结果，所以 Thread-2 可能输出0或100。</p>
-<div class="note "><p><strong></strong></p><p>从上面的三个例子可以看到，多线程读写同一变量需要使用同步机制，最常见的同步机制就是<code>std::mutex</code>和<code>std::atomic</code>。然而，从性能角度看，通常使用<code>std::atomic</code>会获得更好的性能。</p></div>
-
-<p>C++11 为 <code>std::atomic</code> 提供了 4 种 memory ordering:</p>
+<p>为了保证编译器不会进行错误的优化，可以通过以下三种方式来实现：</p>
 <ul>
-<li>Relaxed ordering</li>
-<li>Release-Acquire ordering</li>
-<li>Release-Consume ordering</li>
-<li>Sequentially-consistent ordering</li>
+<li>把对应的变量声明为 volatile 的，<strong>C++ 标准保证对 volatile 变量间的访问编译器不会进行重排</strong>，不过仅仅是 volatile 变量之间， volatile 变量和其他变量间还是有可能会重排的；</li>
+<li>在需要的地方手动添加合适的 Memory Barrier 指令，Memory Barrier 指令的语义保证了编译器不会进行错误的重排操作；</li>
+<li>把对应变量声明为 atomic 的， 与 volatile 类似，C++ 标准也保证 atomic 变量间的访问编译器不会进行重排。不过 C++ 中不存在所谓的 “atomic pointer” 这种东西，如果需要对某个确定的地址进行 atomic 操作，需要靠一些技巧性的手段来实现，比如在那个地址上进行 placement new 操作强制生成一个 atomic 等；</li>
 </ul>
-<p>默认情况下，<code>std::atomic</code>使用的是 Sequentially-consistent ordering。但在某些场景下，合理使用其它三种 ordering，可以让编译器优化生成的代码，从而提高性能。</p>
-<h3 id="Relaxed-ordering"><a href="#Relaxed-ordering" class="headerlink" title="Relaxed ordering"></a>Relaxed ordering</h3><p><strong>Relaxed ordering 仅保证<code>load()</code>和<code>store()</code>是原子操作</strong>，不提供任何跨线程的同步，<code>std::atomic</code>的<code>load()</code>和<code>store()</code>都要带上 <strong>memory_order_relaxed</strong> 参数。</p>
-<p>例如，以下代码可能出现 r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。因为编译器允许调整 C 和 D 的执行顺序，如果程序的执行顺序是 D -&gt; A -&gt; B -&gt; C，那么就会出现r1 &#x3D;&#x3D; r2 &#x3D;&#x3D; 42。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; x = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">std::atomic&lt;<span class="type">int</span>&gt; y = <span class="number">0</span>;     <span class="comment">// global variable</span></span><br><span class="line">		  </span><br><span class="line"><span class="comment">/* Thread-1 */</span>                               </span><br><span class="line">r1 = y.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// A</span></span><br><span class="line">x.<span class="built_in">store</span>(r1, memory_order_relaxed); <span class="comment">// B</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Thread-2 */</span></span><br><span class="line">r2 = x.<span class="built_in">load</span>(memory_order_relaxed); <span class="comment">// C</span></span><br><span class="line">y.<span class="built_in">store</span>(<span class="number">42</span>, memory_order_relaxed); <span class="comment">// D</span></span><br></pre></td></tr></table></figure>
+<h3 id="编译器优化"><a href="#编译器优化" class="headerlink" title="编译器优化"></a>编译器优化</h3><p>此处的编译器优化特指编译器不生成其认为无意义的内存访问代码，如下代码对变量 a 的内存访问基本都会被优化掉。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; ++i) &#123;</span><br><span class="line">    a += i;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>如果只要求是原子操作，不需要其它同步，就可以使用 Relaxed ordering，例如下面的程序计数器场景：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">int</span>&gt; cnt = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">1000</span>; ++n) &#123;</span><br><span class="line">    cnt.<span class="built_in">fetch_add</span>(<span class="number">1</span>, std::memory_order_relaxed);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  std::vector&lt;std::thread&gt; v;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> n = <span class="number">0</span>; n &lt; <span class="number">10</span>; ++n) &#123;</span><br><span class="line">    v.<span class="built_in">emplace_back</span>(f);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; t : v) &#123;</span><br><span class="line">    t.<span class="built_in">join</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">assert</span>(cnt == <span class="number">10000</span>);    <span class="comment">// never failed</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了抑制编译器优化，可以把变量声明为 volatile 或 atomic，C++ 标准保证对 volatile 或 atomic 内存的访问肯定会发生。</p>
+<p>不过需要注意的是，这时候手动添加内存屏障指令是没有意义的，在上述代码的 for 循环中加入 <code>mfence</code> 指令后，仅仅是让循环没有被优化掉，然而每次循环中对变量 a 的赋值依然会被优化掉，结果就是连续执行了 1000 次 mfence。</p>
+<h3 id="CPU-乱序"><a href="#CPU-乱序" class="headerlink" title="CPU 乱序"></a>CPU 乱序</h3><p>由于CPU Store Buffer&#x2F;Invalidate queue 的存在，CPU 对一个变量的赋值操作可能无法被另一个核心及时观察到。另外，CPU还有流水线、分支预测、乱序等特性，他们能提高CPU利用率，但也带来了CPU重排的现象，造成内存一致性（memory consistency）问题，这些是MESI协议解决不了的。</p>
+<p>为了解决这些问题，从根本上来说只有通过插入 <strong>Memory Barrier</strong> 内存屏障指令来解决，这些指令会使得 CPU 保证特定的内存访问序及内存写入操作在多核间的可见性。然而由于不同处理器架构间的内存模型和具体 Memory Barrier 指令均不相同，需要在什么位置添加哪条指令并不具有通用性，因此 C++ 11 在此基础上做了一层抽象，引入了 <strong>atomic</strong> 类型及 <strong>Memory Order</strong> 的概念，有助于写出更通用的代码。从本质上看就是靠编译器来根据代码中指定的高层次 <strong>Memory Order</strong> 来自动选择是否需要插入特定处理器架构上低层次的内存屏障指令。</p>
+<blockquote>
+<p>写屏障会等待 Store Buffer 中的数据同步刷到cache后再执行屏障后面的写入操作。<br>读屏障会将 Invalid Queue 中的数据处理完成后再执行屏障后面的读取操作。</p>
+</blockquote>
+<h3 id="访问原子性"><a href="#访问原子性" class="headerlink" title="访问原子性"></a>访问原子性</h3><p>访问原子性就是 Read，Write 操作是否存在中间状态，具体如何实现原子性的访问与处理器指令集有很大关系，如果处理器本身就支持某些原子操作指令，如 <code>Atomic Store</code>， <code>Atomic Load</code>，<code>Atomic Fetch Add</code>，<code>Atomic Compare And Swap</code>（CAS）等，那只需要在代码生成时选择合适的指令即可，否则需要依赖锁来实现。C++ 中提供的可移植通用方法就是 <code>std::atomic</code>，volatile 及 Memory Barrier 均与此完全无关。</p>
+<h2 id="Memory-order"><a href="#Memory-order" class="headerlink" title="Memory order"></a>Memory order</h2><p>在atomic变量的store和load中提供以下选项，现在解释它们的含义：</p>
+<h3 id="含义解释"><a href="#含义解释" class="headerlink" title="含义解释"></a>含义解释</h3><h4 id="memory-order-seq-cst"><a href="#memory-order-seq-cst" class="headerlink" title="memory_order_seq_cst"></a>memory_order_seq_cst</h4><p>要求底层提供顺序一致性模型，这个是默认提供的最强的一致性模型，在这种模型下不存在任何重排，可以解决一切问题</p>
+<blockquote>
+<p>在底层实现上：程序的运行底层架构如果是非内存强一致模型，会使用cpu提供的内存屏障等操作保证强一致，在软件上，要求代码进行编译的时候不能够做任何指令重排。</p>
+</blockquote>
+<h4 id="memory-order-release-acquire-consume"><a href="#memory-order-release-acquire-consume" class="headerlink" title="memory_order_release&#x2F;acquire&#x2F;consume"></a>memory_order_release&#x2F;acquire&#x2F;consume</h4><p>允许 cpu 或者编译器做一定的指令乱序重排，但是由于 tso, pso 的存在，可能产生 store-load 乱序、store-store 乱序导致问题。涉及到多核交互的时候，需要手动使用release 和 acquire去避免这样的这个问题了，与memory_order_seq_cst最大的不同的是，其是对具体代码可能出现的乱序做具体解决而不是要求全部都不能重排。</p>
+<h4 id="memory-order-relaxed"><a href="#memory-order-relaxed" class="headerlink" title="memory_order_relaxed"></a>memory_order_relaxed</h4><p>提供松散一致性模型保障，不提供 operation order 保证。</p>
+<h3 id="使用例"><a href="#使用例" class="headerlink" title="使用例"></a>使用例</h3><h4 id="写顺序保证"><a href="#写顺序保证" class="headerlink" title="写顺序保证"></a>写顺序保证</h4><p><code>std::memory_order_release</code>的含义是：<strong>在本行代码之前任何写内存的操作，都不能放到本行语句之后</strong>。尽管要求{1,2,3}代码的执行不能放到4的后面，但是{1,2,3}本身是可以被乱序的。release可以认为是发布一个版本，也就是说应该在发布之前做的，不能放到release之后。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; has_release;</span><br><span class="line"><span class="comment">// thread_2 </span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">release_software</span><span class="params">(<span class="type">int</span> *data)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> a = <span class="number">100</span>;                <span class="comment">// line 1</span></span><br><span class="line">  <span class="type">int</span> c = <span class="number">200</span>;                <span class="comment">// line 2</span></span><br><span class="line">  <span class="keyword">if</span> (!data) &#123;</span><br><span class="line">    data = <span class="keyword">new</span> <span class="type">int</span>[<span class="number">100</span>];      <span class="comment">// line 3</span></span><br><span class="line">  &#125;</span><br><span class="line">  has_release.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release); <span class="comment">// line 4</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Release-Acquire-ordering"><a href="#Release-Acquire-ordering" class="headerlink" title="Release-Acquire ordering"></a>Release-Acquire ordering</h3><p>这种模型有两种效果：</p>
-<ol>
-<li>限制 CPU 指令的重排：<ul>
-<li>在<code>store()</code>之前的所有读写操作，不允许被移动到这个<code>store()</code> 的后面。</li>
-<li>在<code>load()</code>之后的所有读写操作，不允许被移动到这个<code>load()</code> 的前面。</li>
-</ul>
-</li>
-<li>假设 Thread-1 <code>store()</code>的值被 Thread-2 <code>load()</code>到了，那么 Thread-1 在<code>store()</code> 之前对内存的所有写入操作，此时对 Thread-2 来说都是可见的。</li>
-</ol>
-<p>在这种模型下，<code>store()</code>使用 <strong>memory_order_release</strong>，而<code>load()</code>使用<strong>memory_order_acquire</strong>，例如以下代码中：</p>
+<h4 id="读顺序的保证"><a href="#读顺序的保证" class="headerlink" title="读顺序的保证"></a>读顺序的保证</h4><p><code>std::memory_order_acquire</code> 的含义是：<strong>后续的读操作都不能放到这条指令之前</strong>。</p>
+<p>例如 thread_1 按照 {line 1, line2} 的顺序呈现给 thread_2，thread_2 检查是否已经发布再读取，符合预期。 但如果采用 memory_order_relaxed，<code>int x = *data</code> 就可能会被重排到循环之前。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; has_release;</span><br><span class="line"><span class="type">int</span> *data = <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// thread_1</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">releae_software</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!data) &#123;</span><br><span class="line">    data = <span class="keyword">new</span> <span class="type">int</span>[<span class="number">100</span>];                              <span class="comment">// line 1</span></span><br><span class="line">  &#125;</span><br><span class="line">  has_release.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release); <span class="comment">// line 2</span></span><br><span class="line">  <span class="comment">//.... do something other.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// thread_2</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">use_software</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// while (!has_release.load(std::memory_order_relaxed));</span></span><br><span class="line">  <span class="keyword">while</span> (!has_release.<span class="built_in">load</span>(std::memory_order_acquire));</span><br><span class="line">  <span class="type">int</span> x = *data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="读顺序的消弱"><a href="#读顺序的消弱" class="headerlink" title="读顺序的消弱"></a>读顺序的消弱</h4><p><code>std::memory_order_consume</code> 的含义是：所有后续<strong>对本原子类型的操作</strong>，都不能放到这条指令之前。</p>
+<p><code>std::memory_order_acquire</code> 与 <code>std::memory_order_consume</code> 的区别在于：</p>
 <ul>
-<li>首先 A 不允许被移动到 B 的后面。</li>
-<li>同样 D 也不允许被移动到 C 的前面。</li>
-<li>当 C 从 while 循环中退出了，说明 C 读取到了 B store()的那个值，此时，Thread-2 保证能够看见 Thread-1 执行 B 之前的所有写入操作（也即是 A）。</li>
+<li>memory_order_acquire 要求后面所有的读都不得提前：</li>
+<li>memory_order_consume 要求后面依赖于本次形成读则不能乱序。</li>
 </ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">std::atomic&lt;<span class="type">bool</span>&gt; ready&#123;<span class="literal">false</span>&#125;;</span><br><span class="line"><span class="type">int</span> data = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  data = <span class="number">100</span>;                                      <span class="comment">// A</span></span><br><span class="line">  ready.<span class="built_in">store</span>(<span class="literal">true</span>, std::memory_order_release);    <span class="comment">// B</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (!ready.<span class="built_in">load</span>(std::memory_order_acquire));  <span class="comment">// C</span></span><br><span class="line">  <span class="built_in">assert</span>(data == <span class="number">100</span>); <span class="comment">// never failed             // D</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::thread <span class="title">t1</span><span class="params">(producer)</span></span>;</span><br><span class="line">  <span class="function">std::thread <span class="title">t2</span><span class="params">(consumer)</span></span>;</span><br><span class="line">  t1.<span class="built_in">join</span>();</span><br><span class="line">  t2.<span class="built_in">join</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例如，由于 <code>global_addr</code>, <code>addr</code>, <code>x</code> 形成了读依赖，所以这几个变量不能乱序。但是 <code>d</code>, <code>f</code> 可以放到 <code>global_addr.load(std::memory_order_consume)</code> 前面。而 <code>std::memory_order_acquire</code> 则要求都不能放到前面。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> *data)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> *addr = global_addr.<span class="built_in">load</span>(std::memory_order_consume);</span><br><span class="line">    <span class="type">int</span> d = *data;</span><br><span class="line">    <span class="type">int</span> f = *(data+<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (addr) &#123;</span><br><span class="line">        <span class="type">int</span> x = *addr;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h4 id="最强约束"><a href="#最强约束" class="headerlink" title="最强约束"></a>最强约束</h4><p><code>std::memory_order_seq_cst</code> 表示最强约束。所有关于 <code>std::atomic</code> 的使用，如果不带函数（<code>x.store</code> or <code>x.load</code>），而是直接 <code>std::atomic a; a = 1</code> ，那么就是强一制性的。所有这条指令前面的语句不能放到后面，所有这条语句后面的语句不能放到前面来执行。</p>
 <hr>
-<h2 id="Atomic-和-Volatile"><a href="#Atomic-和-Volatile" class="headerlink" title="Atomic 和 Volatile"></a>Atomic 和 Volatile</h2><p><code>std::atomic</code> 用于在不使用互斥锁情况下，来使变量被多个线程访问的情况。是用来 <strong>编写并发程序</strong> 的一个工具。</p>
-<p>如下代码，第23行可能被编译器或硬件重排。<code>std::atomic</code> 会限制这种重排序，限制之一是：对std::atomic变量写之前不会有任何操作（仅当使用顺序一致性时）</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">std::atomic&lt;<span class="type">bool</span>&gt; <span class="title">valVailable</span><span class="params">(<span class="literal">false</span>)</span></span>; </span><br><span class="line"><span class="keyword">auto</span> imptValue = <span class="built_in">computeImportantValue</span>();   <span class="comment">//计算值</span></span><br><span class="line">valAvailable = <span class="literal">true</span>;                        <span class="comment">//告诉另一个任务，值可用了</span></span><br></pre></td></tr></table></figure>
-
-
-<p><a href="https://github.com/Light-City/CPlusPlusThings/tree/master/basic_content/volatile">volatile</a> 用在读取和写入不应被优化掉的内存上。是用来 <strong>处理特殊内存</strong> 的一个工具。跟多线程无关，不是一种同步手段。</p>
+<h2 id="Volatile"><a href="#Volatile" class="headerlink" title="Volatile"></a>Volatile</h2><p><a href="https://github.com/Light-City/CPlusPlusThings/tree/master/basic_content/volatile">volatile</a> 用在读取和写入不应被优化掉的内存上。是用来 <strong>处理特殊内存</strong> 的一个工具。跟多线程无关，不是一种同步手段。</p>
 <blockquote>
 <p>最常见的“特殊”内存是用来做内存映射I&#x2F;O的内存。这种内存实际上是与外围设备（比如外部传感器或者显示器，打印机，网络端口）通信，而不是读写通常的RAM</p>
 </blockquote>
@@ -4219,7 +4246,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><h4 id="顺序存储模型SC"><a href="#顺序存储模型SC" class="headerlink" title="顺序存储模型SC"></a>顺序存储模型SC</h4><p>多核心会完全按照指令流的顺序执行代码。上面例子的执行顺序是 <code>S1 S2 L1 L2</code></p>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><h4 id="顺序存储模型SC"><a href="#顺序存储模型SC" class="headerlink" title="顺序存储模型SC"></a>顺序存储模型SC</h4><p>多核心会完全按照指令流的顺序执行代码。</p>
 <ul>
 <li>C1与C2的指令虽然在不同的CORE上运行，但是C1发出来的访问指令是顺序的，同时C2的指令也是顺序</li>
 <li>虽然这两个线程跑在不同的CPU上，但是在顺序存储模型上，其访问行为与UP（单核）上是一致的 所以在顺序存储模型上是不会出现内存访问乱序的情况。</li>
@@ -4277,7 +4304,7 @@
 </ol>
 <h2 id="误区"><a href="#误区" class="headerlink" title="误区"></a>误区</h2><p>回到作为并发算法中的一部分的“刷新缓存”误区上，我想，可以说我们永远不会在用户空间的程序上“刷新”CPU缓存。我相信这个误区的来源是由于在某些并发算法需要刷新、标记或者清空store缓冲以使下一个读操作可以看到最新值。为了达到这点，我们需要内存屏障而非刷新缓存。</p>
 <p>这个误解的另一个可能来源是，L1缓存，或者 TLB，在上下文切换的时候可能需要根据地址索引策略进行刷新。ARM，在ARMv6之前，没有在TLB条目上使用地址空间标签，因此在上下文切换的时候需要刷新整个L1缓存。许多处理器因为类似的理由需要L1指令缓存刷新，在许多场景下，仅仅是因为指令缓存没有必要保持一致。上下文切换消耗很大，除了污染L2缓存之外，上下文切换还会导致TLB和&#x2F;或者L1缓存刷新。Intel x86处理器在上下文切换时仅仅需要TLB刷新。</p>
-<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p><a href="https://zhuanlan.zhihu.com/p/43526907">https://zhuanlan.zhihu.com/p/43526907</a></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://zhuanlan.zhihu.com/p/43526907">https://zhuanlan.zhihu.com/p/43526907</a></p>
 ]]></content>
       <categories>
         <category>OS</category>

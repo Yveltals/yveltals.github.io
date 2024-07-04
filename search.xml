@@ -5885,7 +5885,9 @@
 <li>单机的CPU、内存、连接数、计算力都是有极限的，不能无限制的承载流量的扩增</li>
 <li>当数据量过多的情况下，RDB持久化时响应会变慢，因为fork会阻塞主线程，数据量越大阻塞时间越长</li>
 </ul>
-<h3 id="数据分片原理"><a href="#数据分片原理" class="headerlink" title="数据分片原理"></a>数据分片原理</h3><h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><p><img src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" class="lazyload" data-srcset="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>哈希算法是对节点的数量取模，而一致哈希算法是对固定的 <code>2^32</code> 取模，将「存储节点」和「数据」都映射到一个首尾相连的哈希环上。查找数据时，将key的映射位置往顺时针的方向的找到第一个节点，就是存储该数据的节点。</p>
+<h3 id="数据分片原理"><a href="#数据分片原理" class="headerlink" title="数据分片原理"></a>数据分片原理</h3><h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><div class="img-wrap"><div class="img-bg" style="background:#FFFFFF"><img class="img lazyload" src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" class="lazyload" data-srcset="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:350px;"/></div></div>
+
+<p>哈希算法是对节点的数量取模，而一致哈希算法是对固定的 <code>2^32</code> 取模，将「存储节点」和「数据」都映射到一个首尾相连的哈希环上。查找数据时，将key的映射位置往顺时针的方向的找到第一个节点，就是存储该数据的节点。</p>
 <ul>
 <li>优点：增加或者移除一个节点，仅影响该节点在哈希环上顺时针相邻的后继节点，其它数据也不会受到影响。</li>
 <li>缺点：不保证节点能够在哈希环上分布均匀，会有大量的请求集中在一个节点上。</li>

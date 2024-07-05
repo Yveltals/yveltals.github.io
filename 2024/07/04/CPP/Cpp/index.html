@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-07-04T15:46:04.000Z">
-<meta property="article:modified_time" content="2024-07-04T08:51:13.970Z">
+<meta property="article:modified_time" content="2024-07-05T02:30:19.731Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary">
@@ -696,7 +696,7 @@ button {
     --color-site-footer: rgba(170,170,170,0.871);
     --color-card: #262626;
     --color-text: rgba(238,238,238,0.871);
-    --color-block: #121212;
+    --color-block: #1e1e1e;
     --color-codeblock: #121212;
     --color-inlinecode: #d56d28;
     --color-h1: rgba(255,255,255,0.871);
@@ -768,7 +768,7 @@ button {
   --color-site-footer: rgba(170,170,170,0.871);
   --color-card: #262626;
   --color-text: rgba(238,238,238,0.871);
-  --color-block: #121212;
+  --color-block: #1e1e1e;
   --color-codeblock: #121212;
   --color-inlinecode: #d56d28;
   --color-h1: rgba(255,255,255,0.871);
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720146141313),
+    lastupdate: new Date(1720146622616),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2580,7 +2580,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>为了抑制编译器优化，可以把变量声明为 volatile 或 atomic，C++ 标准保证对 volatile 或 atomic 内存的访问肯定会发生。</p>
 <p>不过需要注意的是，这时候手动添加内存屏障指令是没有意义的，在上述代码的 for 循环中加入 <code>mfence</code> 指令后，仅仅是让循环没有被优化掉，然而每次循环中对变量 a 的赋值依然会被优化掉，结果就是连续执行了 1000 次 mfence。</p>
 <h3 id="CPU-乱序"><a href="#CPU-乱序" class="headerlink" title="CPU 乱序"></a>CPU 乱序</h3><p>由于CPU Store Buffer&#x2F;Invalidate queue 的存在，CPU 对一个变量的赋值操作可能无法被另一个核心及时观察到，即cache一致性问题。另外，CPU还有流水线、分支预测、乱序等特性，他们能提高CPU利用率，但也带来了CPU重排的现象，造成内存一致性（memory consistency）问题，这些是MESI协议解决不了的。</p>
-<p>为了解决这些问题，从根本上来说只有通过插入 <strong>Memory Barrier</strong> 内存屏障指令来解决，这些指令会使得 CPU 保证特定的内存访问序及内存写入操作在多核间的可见性。然而由于不同处理器架构间的内存模型和具体 Memory Barrier 指令均不相同，需要在什么位置添加哪条指令并不具有通用性，因此 C++ 11 在此基础上做了一层抽象，引入了 <strong>atomic</strong> 类型及 <strong>Memory Order</strong> 的概念，有助于写出更通用的代码。从本质上看就是靠编译器来根据代码中指定的高层次 <strong>Memory Order</strong> 来自动选择是否需要插入特定处理器架构上低层次的内存屏障指令。</p>
+<p>这些问题从根本上只能通过插入 <strong>Memory Barrier</strong> 内存屏障来解决，这些指令会使得 CPU 保证特定的内存访问序及内存写入操作在多核间的可见性。然而由于<strong>不同处理器架构间的内存模型</strong>和具体 <strong>Memory Barrier 指令</strong>均不相同，需要在什么位置添加哪条指令并不具有通用性，因此 C++ 11 在此基础上做了一层抽象，引入了 <strong>atomic</strong> 类型及 <strong>Memory Order</strong> 的概念，有助于写出更通用的代码。从本质上看就是靠编译器来根据代码中指定的高层次 <strong>Memory Order</strong> 来自动选择是否需要插入特定处理器架构上低层次的内存屏障指令。</p>
 <blockquote>
 <p>写屏障会等待 Store Buffer 中的数据同步刷到cache后再执行屏障后面的写入操作。<br>读屏障会将 Invalid Queue 中的数据处理完成后再执行屏障后面的读取操作。</p>
 </blockquote>
@@ -3063,10 +3063,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-04T16:51:13+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T10:30:19+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 4, 2024</p>
+    <p>更新于：Jul 5, 2024</p>
   </a>
 </div>
 
@@ -3575,7 +3575,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3802,7 +3802,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/04/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/04/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/04/CPP/Cpp/","wordCount":0,"datePublished":"2024-07-04T15:46:04.000Z","dateModified":"2024-07-04T08:51:13.970Z","articleSection":"八股","keywords":"八股","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/04/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/04/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/04/CPP/Cpp/","wordCount":0,"datePublished":"2024-07-04T15:46:04.000Z","dateModified":"2024-07-05T02:30:19.731Z","articleSection":"八股","keywords":"八股","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
 
 
 

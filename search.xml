@@ -2357,7 +2357,7 @@
 <p>为了抑制编译器优化，可以把变量声明为 volatile 或 atomic，C++ 标准保证对 volatile 或 atomic 内存的访问肯定会发生。</p>
 <p>不过需要注意的是，这时候手动添加内存屏障指令是没有意义的，在上述代码的 for 循环中加入 <code>mfence</code> 指令后，仅仅是让循环没有被优化掉，然而每次循环中对变量 a 的赋值依然会被优化掉，结果就是连续执行了 1000 次 mfence。</p>
 <h3 id="CPU-乱序"><a href="#CPU-乱序" class="headerlink" title="CPU 乱序"></a>CPU 乱序</h3><p>由于CPU Store Buffer&#x2F;Invalidate queue 的存在，CPU 对一个变量的赋值操作可能无法被另一个核心及时观察到，即cache一致性问题。另外，CPU还有流水线、分支预测、乱序等特性，他们能提高CPU利用率，但也带来了CPU重排的现象，造成内存一致性（memory consistency）问题，这些是MESI协议解决不了的。</p>
-<p>为了解决这些问题，从根本上来说只有通过插入 <strong>Memory Barrier</strong> 内存屏障指令来解决，这些指令会使得 CPU 保证特定的内存访问序及内存写入操作在多核间的可见性。然而由于不同处理器架构间的内存模型和具体 Memory Barrier 指令均不相同，需要在什么位置添加哪条指令并不具有通用性，因此 C++ 11 在此基础上做了一层抽象，引入了 <strong>atomic</strong> 类型及 <strong>Memory Order</strong> 的概念，有助于写出更通用的代码。从本质上看就是靠编译器来根据代码中指定的高层次 <strong>Memory Order</strong> 来自动选择是否需要插入特定处理器架构上低层次的内存屏障指令。</p>
+<p>这些问题从根本上只能通过插入 <strong>Memory Barrier</strong> 内存屏障来解决，这些指令会使得 CPU 保证特定的内存访问序及内存写入操作在多核间的可见性。然而由于<strong>不同处理器架构间的内存模型</strong>和具体 <strong>Memory Barrier 指令</strong>均不相同，需要在什么位置添加哪条指令并不具有通用性，因此 C++ 11 在此基础上做了一层抽象，引入了 <strong>atomic</strong> 类型及 <strong>Memory Order</strong> 的概念，有助于写出更通用的代码。从本质上看就是靠编译器来根据代码中指定的高层次 <strong>Memory Order</strong> 来自动选择是否需要插入特定处理器架构上低层次的内存屏障指令。</p>
 <blockquote>
 <p>写屏障会等待 Store Buffer 中的数据同步刷到cache后再执行屏障后面的写入操作。<br>读屏障会将 Invalid Queue 中的数据处理完成后再执行屏障后面的读取操作。</p>
 </blockquote>

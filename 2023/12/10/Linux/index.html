@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720146622616),
+    lastupdate: new Date(1720167678117),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -3056,16 +3056,15 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     <div class="prev-next">
       
-        <a class='prev' href='/2024/02/01/CPP/CAS/'>
-          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>锁机制与CAS</p>
-          <p class='content'>锁机制悲观锁
-假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作
-悲观锁靠底层提供的锁机制实现，会导致其它所有需要锁的线程挂起
-可以完全保证数据的独占性和正确性，因为每次请求都会对数据先加锁再...</p>
+        <a class='prev' href='/2024/04/07/Storage/Sparse%20Index/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Sparse Index</p>
+          <p class='content'>在数据主键有序的基础上，只为少部分数据建立索引，从而在查询时能够圈定出大致的范围，再在范围内利用适当的查找算法找到目标数据。
+空间占用小，查询相对慢
+Sparse Index in Kafka单...</p>
         </a>
       
       
-        <a class='next' href='/2023/10/18/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/'>
+        <a class='next' href='/2023/10/18/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/'>
           <p class='title'>Linux内存与存储<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
           <p class='content'>从内核文件系统看文件读写过程 
 内存资源管理Buffers／Cached在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cach...</p>
@@ -3543,7 +3542,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720146622616),
+    lastupdate: new Date(1720167678117),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2458,8 +2458,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           
         
-          
-        
       
     
     
@@ -2467,7 +2465,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/15/OS/CPU缓存/">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/15/OS/CPU Cache/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2479,7 +2477,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
   
     <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/">
+      <a class='headimg-a' href="/2024/05/15/OS/CPU%20Cache/">
         <img itemprop="image" class='headimg' alt="CPU Cache" src='/img/os.jpeg'/>
       </a>
     </div>
@@ -2487,7 +2485,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
     <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/"  itemprop="url">
+      <a href="/2024/05/15/OS/CPU%20Cache/"  itemprop="url">
         CPU Cache
       </a>
     </h2>
@@ -2520,7 +2518,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       </div>
       
         <div>
-          <a class='readmore' href='/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/' itemprop="url">
+          <a class='readmore' href='/2024/05/15/OS/CPU%20Cache/' itemprop="url">
             Read More
           </a>
         </div>
@@ -2536,75 +2534,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/05/OS/IO缓存/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/">
-        <img itemprop="image" class='headimg' alt="I/O Cache" src='/img/os.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/"  itemprop="url">
-        I/O Cache
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        
-库缓冲为啥要有库缓冲（如clib buffer）因为从应用层到内核层需要系统调用、内核态切换，开销比较大，为了减少这件事发生的次数，没有必要因为1个字节的改动发生系统调用。
-绕过库缓冲的方案用mmap(内存映射文件)，把内核空间的page cache映射到用户空间。
-内核缓冲为啥要有内核缓冲内核用pdflush线程循环检测脏页，判断是否写回磁盘。由于磁盘是单向旋转，重新排布写操作顺序可以减...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-03-05T11:09:36+08:00">2024-03-05</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/03/05/OS/IO%E7%BC%93%E5%AD%98/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/18/Linux内存与存储/">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/15/OS/进程与中断/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2622,72 +2552,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
     <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/10/18/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"  itemprop="url">
-        Linux内存与存储
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        从内核文件系统看文件读写过程 
-内存资源管理Buffers／Cached在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cache。
-如果有内存是以page进行分配管理的，都可以使用page cache来缓存。以 block 进行管理的内存可以通过buffer cache来缓存。 Page Cache 用于缓存文件的页数据，b...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-10-18T01:43:08+08:00">2023-10-18</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/10/18/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/15/OS/进程线程与中断/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"  itemprop="url">
+      <a href="/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"  itemprop="url">
         进程线程与中断
       </a>
     </h2>
@@ -2728,7 +2593,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       </div>
       
         <div>
-          <a class='readmore' href='/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/' itemprop="url">
+          <a class='readmore' href='/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/' itemprop="url">
             Read More
           </a>
         </div>
@@ -2744,7 +2609,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/25/OS/系统编程/">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/20/OS/操作系统/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2756,52 +2621,26 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
   
     <div class='headimg-div'>
-      <a class='headimg-a' href="/2020/06/25/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/">
-        <img itemprop="image" class='headimg' alt="系统编程" src='/img/linux.jpeg'/>
+      <a class='headimg-a' href="/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+        <img itemprop="image" class='headimg' alt="操作系统" src='/img/os.jpeg'/>
       </a>
     </div>
   
   
     
     <h2 class="article-title"  itemprop="name headline">
-      <a href="/2020/06/25/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/"  itemprop="url">
-        系统编程
+      <a href="/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"  itemprop="url">
+        操作系统
       </a>
     </h2>
   
   <div class='md article-desc' itemprop="articleBody">
     
       
-        字字节byte，内存单元，8位，如68 
-字word，高低字节，16位，如68 A7
-
-寄存器寄存器16位，两个内存单元(字节)
-CS-IP：代码；SS-SP：栈顶；DS-SI/ES-DI：数据
-
-
-
-寄存器
-主　要　用　途
-
-
-
-AX
-乘除运算，字的输入输出，中间结果的缓存
-
-
-AL
-字节的乘、除运算，字节的输入输出
-
-
-AH
-字节的乘、除运算，存放中断的功能号
-
-
-BX
-存储器指针
-
-
-...
+        进程和线程线程与进程区别线程与协程区别
+协程是一种用户态的轻量级线程，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的
+创建开销：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程
+切换开销：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上...
       
     
   </div>
@@ -2809,7 +2648,7 @@ BX
     <div class='meta-v3' line_style='dashed'>
       <div>
         
-        <time itemprop="dateCreated datePublished" datetime="2020-06-25T12:44:04+08:00">2020-06-25</time>
+        <time itemprop="dateCreated datePublished" datetime="2023-04-20T12:59:04+08:00">2023-04-20</time>
         
           <span class="dot"></span>
           <a class="category-link" href="/categories/OS/">OS</a>
@@ -2822,7 +2661,81 @@ BX
       </div>
       
         <div>
-          <a class='readmore' href='/2020/06/25/OS/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/' itemprop="url">
+          <a class='readmore' href='/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/' itemprop="url">
+            Read More
+          </a>
+        </div>
+      
+    </div>
+  
+
+</div>
+
+          </div>
+        
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/05/OS/计网/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="">
+  </span>
+  
+  
+  
+    <div class='headimg-div'>
+      <a class='headimg-a' href="/2023/04/05/OS/%E8%AE%A1%E7%BD%91/">
+        <img itemprop="image" class='headimg' alt="计网" src='/img/计网.jpeg'/>
+      </a>
+    </div>
+  
+  
+    
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2023/04/05/OS/%E8%AE%A1%E7%BD%91/"  itemprop="url">
+        计网
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
+    
+      
+        网络分层模型OSI分层
+应用层：为应用程序提供交互服务，通过调用应用层的不同协议实体，从而调用传输层服务来进行网络传输
+
+HTTP&#x2F;HTTPS、DNS、Telnet(远程登录服务协议)
+SMTP、POP3、FTP、TFTP(简单文件传输协议)
+
+
+表示层：主要负责数据格式的转换，如加密解密、转换翻译、压缩解压缩等
+
+会话层：负责建立、维持和终止会话，如服务器验证用户登录便是由会话层...
+      
+    
+  </div>
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2023-04-05T12:59:04+08:00">2023-04-05</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/OS/">OS</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
+            </span>
+          
+        
+      </div>
+      
+        <div>
+          <a class='readmore' href='/2023/04/05/OS/%E8%AE%A1%E7%BD%91/' itemprop="url">
             Read More
           </a>
         </div>
@@ -2936,19 +2849,34 @@ BX
       <ul class="entry navigation">
         
           <li><a class="flat-box"
+            title="/categories/ASM/" href="/categories/ASM/"
+            active-action="action-categoriesASM"
+            ><div class='name'>ASM</div><div class='badge'>(1)</div></a></li>
+        
+          <li><a class="flat-box"
             title="/categories/Arch/" href="/categories/Arch/"
             active-action="action-categoriesArch"
-            ><div class='name'>Arch</div><div class='badge'>(2)</div></a></li>
+            ><div class='name'>Arch</div><div class='badge'>(0)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/CPP/" href="/categories/CPP/"
             active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(5)</div></a></li>
+            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/DEV/" href="/categories/DEV/"
+            active-action="action-categoriesDEV"
+            ><div class='name'>DEV</div><div class='badge'>(2)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Database/" href="/categories/Database/"
+            active-action="action-categoriesDatabase"
+            ><div class='name'>Database</div><div class='badge'>(1)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Datebase/" href="/categories/Datebase/"
             active-action="action-categoriesDatebase"
-            ><div class='name'>Datebase</div><div class='badge'>(7)</div></a></li>
+            ><div class='name'>Datebase</div><div class='badge'>(1)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Linux/" href="/categories/Linux/"
@@ -2958,27 +2886,32 @@ BX
           <li><a class="flat-box"
             title="/categories/OS/" href="/categories/OS/"
             active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(5)</div></a></li>
+            ><div class='name'>OS</div><div class='badge'>(4)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Other/" href="/categories/Other/"
             active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(2)</div></a></li>
+            ><div class='name'>Other</div><div class='badge'>(4)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Software/" href="/categories/Software/"
             active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(4)</div></a></li>
+            ><div class='name'>Software</div><div class='badge'>(2)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Storage/" href="/categories/Storage/"
+            active-action="action-categoriesStorage"
+            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E5%85%AB%E8%82%A1/" href="/categories/%E5%85%AB%E8%82%A1/"
             active-action="action-categoriesE585ABE882A1"
-            ><div class='name'>八股</div><div class='badge'>(4)</div></a></li>
+            ><div class='name'>八股</div><div class='badge'>(0)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"
             active-action="action-categoriesE58886E5B883E5BC8F"
-            ><div class='name'>分布式</div><div class='badge'>(1)</div></a></li>
+            ><div class='name'>分布式</div><div class='badge'>(2)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
@@ -3013,7 +2946,7 @@ BX
 
 
     <div class='content'>
-      <a href="/tags/Arch/" style="font-size: 17.33px; color: #828282">Arch</a> <a href="/tags/CPP/" style="font-size: 24px; color: #555">CPP</a> <a href="/tags/Datebase/" style="font-size: 20.67px; color: #6c6c6c">Datebase</a> <a href="/tags/Git/" style="font-size: 17.33px; color: #828282">Git</a> <a href="/tags/Linux/" style="font-size: 14px; color: #999">Linux</a> <a href="/tags/OS/" style="font-size: 20.67px; color: #6c6c6c">OS</a> <a href="/tags/Other/" style="font-size: 17.33px; color: #828282">Other</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 20.67px; color: #6c6c6c">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 14px; color: #999">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 17.33px; color: #828282">音视频</a>
+      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/Arch/" style="font-size: 14px; color: #999">Arch</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Datebase/" style="font-size: 16.5px; color: #888">Datebase</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 19px; color: #777">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 16.5px; color: #888">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 14px; color: #999">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 19px; color: #777">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
     </div>
   </section>
 
@@ -3435,7 +3368,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

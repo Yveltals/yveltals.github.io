@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720146622616),
+    lastupdate: new Date(1720167678117),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2452,18 +2452,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
       
     
     
@@ -2471,7 +2459,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/01/Database/RocksDB/">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/30/Database/Mysql/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2483,208 +2471,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
   
     <div class='headimg-div'>
-      <a class='headimg-a' href="/2024/07/01/Database/RocksDB/">
-        <img itemprop="image" class='headimg' alt="RocksDB" src='/img/rocksdb.jpg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/07/01/Database/RocksDB/"  itemprop="url">
-        RocksDB
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        
-带你全面了解compaction 的13个问题深入 RocksDB 高性能的技术关键RocksDB内部数据组织方式介绍及性能压测
-
-RocksDB 是什么RocksDB 是一种可持久化的、内嵌型 kv 存储。它是为了存储大量的 key 及其对应 value 设计出来的数据库。可以基于这种简单 kv 数据模型来构建倒排索引、文档数据库、SQL 数据库、缓存系统和消息代理等复杂系统。
-Rock...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-07-01T11:15:04+08:00">2024-07-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/07/01/Database/RocksDB/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/04/07/Database/索引/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2024/04/07/Database/%E7%B4%A2%E5%BC%95/"  itemprop="url">
-        索引
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        稀疏索引在数据主键有序的基础上，只为少部分数据建立索引，从而在查询时能够圈定出大致的范围，再在范围内利用适当的查找算法找到目标数据。
-空间占用小，查询相对慢
-Sparse Index in Kafka单个Kafka的TopicPartition中，消息数据会被切分成段（segment）来存储，扩展名为.log。log文件的切分时机由大小参数log.segment.bytes（默认值1G）和时...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2024-04-07T16:13:04+08:00">2024-04-07</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2024/04/07/Database/%E7%B4%A2%E5%BC%95/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/01/八股/Redis/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/04/01/%E5%85%AB%E8%82%A1/Redis/">
-        <img itemprop="image" class='headimg' alt="Redis" src='/img/redis.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/04/01/%E5%85%AB%E8%82%A1/Redis/"  itemprop="url">
-        Redis
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Redis线程模型Redis基于Reactor模式开发了自己的网络事件处理器，也就是文件事件处理器。它使用IO多路复用技术，同时监听多个套接字，当套接字的可读或者可写事件触发时，就会调用相应的事件处理函数。
-Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不同的操作系统按不同的优先级选择。
-文件事件处理器有四个组成部分：套接字、I&#x2F;O多路复用程序、文件事...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-04-01T15:45:13+08:00">2023-04-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/04/01/%E5%85%AB%E8%82%A1/Redis/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/30/八股/Mysql/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/03/30/%E5%85%AB%E8%82%A1/Mysql/">
+      <a class='headimg-a' href="/2023/03/30/Database/Mysql/">
         <img itemprop="image" class='headimg' alt="MySQL" src='/img/mysql.jpeg'/>
       </a>
     </div>
@@ -2692,7 +2479,7 @@ Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不�
   
     
     <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/03/30/%E5%85%AB%E8%82%A1/Mysql/"  itemprop="url">
+      <a href="/2023/03/30/Database/Mysql/"  itemprop="url">
         MySQL
       </a>
     </h2>
@@ -2724,212 +2511,7 @@ Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不�
       </div>
       
         <div>
-          <a class='readmore' href='/2023/03/30/%E5%85%AB%E8%82%A1/Mysql/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/01/Database/MongoDB/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2020/09/01/Database/MongoDB/">
-        <img itemprop="image" class='headimg' alt="MongoDB" src='/img/mongodb.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2020/09/01/Database/MongoDB/"  itemprop="url">
-        MongoDB
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        MongoDB简介   MongoDB是一个高性能，开源，无模式的文档型数据库，是当前NoSQL数据库产品中最热门的一种。数据被分组存储在数据集中，被称为一个集合（Collenction）和对于存储在MongoDB数据库中的文件，我们不需要知道它的任何结构定义的自由模式，在存储数据时是以键-值对的集合键是字符串,值可以是数据类型集合里的任意类型,包括数组和文档。
-   MongoDB存储在集...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2020-09-01T10:45:04+08:00">2020-09-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2020/09/01/Database/MongoDB/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/19/Database/规范化理论/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2020/05/19/Database/%E8%A7%84%E8%8C%83%E5%8C%96%E7%90%86%E8%AE%BA/"  itemprop="url">
-        规范化理论
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        问题的提出1.一个关系模式是一个五元组，形如R(U,D,DOM,F)。其中D、DOM与模式设计关系不大，可以看作三元组R&lt;U,F&gt;。
-
-关系名R是符号化的元组定义；
-U为一组属性；
-D为属性组U中的属性所来自的域；
-DOM为属性到域的映射；
-F为属性组U上的一组数据依赖。
-
-
-数据依赖：一个关系内部属性与属性之间的一种约束关系。最重要的是函数依赖（FD）和多值依赖（MVD），还有...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2020-05-19T13:28:04+08:00">2020-05-19</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2020/05/19/Database/%E8%A7%84%E8%8C%83%E5%8C%96%E7%90%86%E8%AE%BA/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/01/Database/并发与恢复/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2020/05/01/Database/%E5%B9%B6%E5%8F%91%E4%B8%8E%E6%81%A2%E5%A4%8D/"  itemprop="url">
-        并发与恢复
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        并发控制1.事务用户定义的一个数据库操作序列， 事务是并发控制的基本单位 
-ACID特性（原子性Atomicity、一致性Consistency、隔离性Isolation、持续性Durability）
-
-2.并发控制封锁排他锁 (X锁、写锁) ：其他事务在T释放此锁之前不能读取和修改A
-共享锁 (S锁、读锁) ：T可以读A但不能修改A，其他事务只能再对A加S锁，不能加X锁，直到T释放A上的S...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2020-05-01T15:36:04+08:00">2020-05-01</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2020/05/01/Database/%E5%B9%B6%E5%8F%91%E4%B8%8E%E6%81%A2%E5%A4%8D/' itemprop="url">
+          <a class='readmore' href='/2023/03/30/Database/Mysql/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3043,19 +2625,34 @@ ACID特性（原子性Atomicity、一致性Consistency、隔离性Isolation、�
       <ul class="entry navigation">
         
           <li><a class="flat-box"
+            title="/categories/ASM/" href="/categories/ASM/"
+            active-action="action-categoriesASM"
+            ><div class='name'>ASM</div><div class='badge'>(1)</div></a></li>
+        
+          <li><a class="flat-box"
             title="/categories/Arch/" href="/categories/Arch/"
             active-action="action-categoriesArch"
-            ><div class='name'>Arch</div><div class='badge'>(2)</div></a></li>
+            ><div class='name'>Arch</div><div class='badge'>(0)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/CPP/" href="/categories/CPP/"
             active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(5)</div></a></li>
+            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/DEV/" href="/categories/DEV/"
+            active-action="action-categoriesDEV"
+            ><div class='name'>DEV</div><div class='badge'>(2)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Database/" href="/categories/Database/"
+            active-action="action-categoriesDatabase"
+            ><div class='name'>Database</div><div class='badge'>(1)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Datebase/" href="/categories/Datebase/"
             active-action="action-categoriesDatebase"
-            ><div class='name'>Datebase</div><div class='badge'>(7)</div></a></li>
+            ><div class='name'>Datebase</div><div class='badge'>(1)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Linux/" href="/categories/Linux/"
@@ -3065,27 +2662,32 @@ ACID特性（原子性Atomicity、一致性Consistency、隔离性Isolation、�
           <li><a class="flat-box"
             title="/categories/OS/" href="/categories/OS/"
             active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(5)</div></a></li>
+            ><div class='name'>OS</div><div class='badge'>(4)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Other/" href="/categories/Other/"
             active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(2)</div></a></li>
+            ><div class='name'>Other</div><div class='badge'>(4)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Software/" href="/categories/Software/"
             active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(4)</div></a></li>
+            ><div class='name'>Software</div><div class='badge'>(2)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Storage/" href="/categories/Storage/"
+            active-action="action-categoriesStorage"
+            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E5%85%AB%E8%82%A1/" href="/categories/%E5%85%AB%E8%82%A1/"
             active-action="action-categoriesE585ABE882A1"
-            ><div class='name'>八股</div><div class='badge'>(4)</div></a></li>
+            ><div class='name'>八股</div><div class='badge'>(0)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"
             active-action="action-categoriesE58886E5B883E5BC8F"
-            ><div class='name'>分布式</div><div class='badge'>(1)</div></a></li>
+            ><div class='name'>分布式</div><div class='badge'>(2)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
@@ -3120,7 +2722,7 @@ ACID特性（原子性Atomicity、一致性Consistency、隔离性Isolation、�
 
 
     <div class='content'>
-      <a href="/tags/Arch/" style="font-size: 17.33px; color: #828282">Arch</a> <a href="/tags/CPP/" style="font-size: 24px; color: #555">CPP</a> <a href="/tags/Datebase/" style="font-size: 20.67px; color: #6c6c6c">Datebase</a> <a href="/tags/Git/" style="font-size: 17.33px; color: #828282">Git</a> <a href="/tags/Linux/" style="font-size: 14px; color: #999">Linux</a> <a href="/tags/OS/" style="font-size: 20.67px; color: #6c6c6c">OS</a> <a href="/tags/Other/" style="font-size: 17.33px; color: #828282">Other</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 20.67px; color: #6c6c6c">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 14px; color: #999">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 17.33px; color: #828282">音视频</a>
+      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/Arch/" style="font-size: 14px; color: #999">Arch</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Datebase/" style="font-size: 16.5px; color: #888">Datebase</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 19px; color: #777">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 16.5px; color: #888">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 14px; color: #999">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 19px; color: #777">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
     </div>
   </section>
 
@@ -3542,7 +3144,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

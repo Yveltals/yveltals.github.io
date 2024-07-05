@@ -5,8 +5,8 @@
   <meta name="Volantis" content="5.8.0">
   <meta charset="utf-8">
   <!-- SEO相关 -->
-  <meta name="robots" content="noindex,follow">
-  <link rel="canonical" href="http://example.com/categories/datebase/"/>
+  
+  <link rel="canonical" href="http://example.com/2023/06/07/software/svn/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -32,15 +32,19 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>Category: Datebase - Hexo</title>
+  <title>SVN - Hexo</title>
   <meta name="keywords" content="null">
   <meta desc name="description" content="Hexo - John Doe - Hexo">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/categories/Datebase/index.html">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVN">
+<meta property="og:url" content="http://example.com/2023/06/07/Software/SVN/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="配合Phabricator工作流## 保存修改svn add,delete## code reviewarc diffarc commit   代码检出 checkout把 SVN 服务器上的代码下载到电脑上，checkout 也可以简写为 co svn checkout svn:&#x2F;&#x2F;svnbucket.com&#x2F;xxx&#x2F;xxx## 指定存储目录svn checkout svn:&#x2F;&#x2F;svnbucke">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2023-06-07T09:39:04.000Z">
+<meta property="article:modified_time" content="2024-07-05T08:26:09.221Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
@@ -1754,7 +1758,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720167801938),
+    lastupdate: new Date(1720168067999),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2403,7 +2407,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="half" class='cover-wrapper  search' style="display: ;">
+      <div id="half" class='cover-wrapper post search' style="display: ;">
         
   <div id="parallax-window"></div>
 
@@ -2441,25 +2445,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       <div id="safearea">
         <div class="body-wrapper">
           
-
 <div id="l_main" class=''>
-  
-    
-      
-  <section class="post-list">
-    
-      
-        
-          
-        
-      
-    
-    
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/30/Database/Mysql/">
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/06/07/Software/SVN/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2468,71 +2456,201 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <meta itemprop="description" content="">
   </span>
   
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/03/30/Database/Mysql/">
-        <img itemprop="image" class='headimg' alt="MySQL" src='/img/mysql.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/03/30/Database/Mysql/"  itemprop="url">
-        MySQL
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        SQL与NoSQL关系型数据库采用了关系模型来组织数据， 关系模型可以简单理解为二维表格模型，而一个关系型数据库就是由二维表及其之间的关系组成的一个数据组织
-优点：①容易理解，二维表比网状模型贴近逻辑世界 ②使用方便，支持SQL复杂查询 ③易于维护，通过完整性降低了数据不一致和数据冗余 ④支持事务 ⑤数据存在磁盘中可靠
 
-实体完整性 每个元组唯一、可识别，不允许主键空/重复引用完整性 元组间...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-03-30T12:59:04+08:00">2023-03-30</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Datebase/">Datebase</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Datebase/" itemprop="url"><span itemprop="name">Datebase</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/03/30/Database/Mysql/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
 
+  
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title" itemprop="name headline">
+        SVN
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
 </div>
 
-          </div>
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/Software/">Software</a>
+    
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/Software/" itemprop="url"><span itemprop="name">Software</span></a>
+      </span>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2023-06-07T17:39:04+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Jun 7, 2023</p>
+  </a>
+</div>
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <h4 id="配合Phabricator工作流"><a href="#配合Phabricator工作流" class="headerlink" title="配合Phabricator工作流"></a>配合Phabricator工作流</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 保存修改</span></span><br><span class="line">svn add,delete</span><br><span class="line"><span class="comment">## code review</span></span><br><span class="line">arc diff</span><br><span class="line">arc commit </span><br></pre></td></tr></table></figure>
+
+<h4 id="代码检出-checkout"><a href="#代码检出-checkout" class="headerlink" title="代码检出 checkout"></a>代码检出 checkout</h4><p>把 SVN 服务器上的代码下载到电脑上，checkout 也可以简写为 co</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">svn checkout svn://svnbucket.com/xxx/xxx</span><br><span class="line"><span class="comment">## 指定存储目录</span></span><br><span class="line">svn checkout svn://svnbucket.com/xxx/xxx save-dir</span><br><span class="line"><span class="comment">## 指定用户名密码</span></span><br><span class="line">svn checkout svn://svnbucket.com/xxx/xxx --username xxxx --password xxx</span><br></pre></td></tr></table></figure>
+
+<h4 id="提交代码-commit"><a href="#提交代码-commit" class="headerlink" title="提交代码 commit"></a>提交代码 commit</h4><p>commit 可以简写为 ci，-m 参数后面跟的是本次提交的描述内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 描述是必须的，但是可以填写空字符串，不指定</span></span><br><span class="line">svn commit -m <span class="string">&quot;提交描述&quot;</span></span><br><span class="line"><span class="comment">## 只提交指定文件或目录</span></span><br><span class="line">svn commit /path/to/file-or-dir -m <span class="string">&quot;提交指定文件&quot;</span></span><br><span class="line"><span class="comment">## 指定后缀的所有文件</span></span><br><span class="line">svn commit *.js -m <span class="string">&quot;提交所有 js 文件&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="更新代码-update"><a href="#更新代码-update" class="headerlink" title="更新代码 update"></a>更新代码 update</h4><p>update 也可以简写为 up</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 更新到最新</span></span><br><span class="line">svn update</span><br><span class="line"><span class="comment">## 更新到指定版本的代码。特别是最新版本代码有问题时，我们可以用这个命令回到之前的版本</span></span><br><span class="line">svn update -r xxx </span><br><span class="line"><span class="comment">## 仅更新指定文件或者目录</span></span><br><span class="line">svn up /path/to/file-or-dir</span><br></pre></td></tr></table></figure>
+
+<h4 id="添加文件-add"><a href="#添加文件-add" class="headerlink" title="添加文件 add"></a>添加文件 add</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 添加指定文件或目录</span></span><br><span class="line">svn add /path/to/file-or-dir</span><br><span class="line"><span class="comment">## 添加当前目录下所有 php 文件</span></span><br><span class="line">svn add *.php</span><br></pre></td></tr></table></figure>
+
+<h4 id="删除文件-delete"><a href="#删除文件-delete" class="headerlink" title="删除文件 delete"></a>删除文件 delete</h4><p>此命令会从 SVN 移除版本控制，移除后需要提交一下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">svn delete /path/to/file-or-dir</span><br><span class="line"><span class="comment">## 删除版本控制，但是本地依旧保留文件</span></span><br><span class="line">svn delete /path/to/file-or-dir --keep-local</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看日志-log"><a href="#查看日志-log" class="headerlink" title="查看日志 log"></a>查看日志 log</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前目录的日志</span></span><br><span class="line">svn <span class="built_in">log</span></span><br><span class="line"><span class="comment">## 查看指定文件或目录的提交日志</span></span><br><span class="line">svn <span class="built_in">log</span> /path/to/file-or-dir</span><br><span class="line"><span class="comment">## 查看日志，并且输出变动的文件列表</span></span><br><span class="line">svn <span class="built_in">log</span> -v</span><br><span class="line"><span class="comment">## 限定只输出最新的 5 条日志</span></span><br><span class="line">svn <span class="built_in">log</span> -l 5</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看变动-diff"><a href="#查看变动-diff" class="headerlink" title="查看变动 diff"></a>查看变动 diff</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前工作区的改动</span></span><br><span class="line">svn diff</span><br><span class="line"><span class="comment">## 查看指定文件或目录的改动</span></span><br><span class="line">svn diff /path/to/file-or-dir</span><br><span class="line"><span class="comment">## 本地文件跟指定版本号比较差异</span></span><br><span class="line">svn diff /path/to/file-or-dir -r xxx</span><br><span class="line"><span class="comment">## 指定版本号比较差异</span></span><br><span class="line">svn diff /path/to/file-or-dir -r 1:2 </span><br></pre></td></tr></table></figure>
+
+<h4 id="撤销修改-revert"><a href="#撤销修改-revert" class="headerlink" title="撤销修改 revert"></a>撤销修改 revert</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 撤销文件的本地修改</span></span><br><span class="line">svn revert test.php</span><br><span class="line"><span class="comment">## 递归撤销目录中的本地修改</span></span><br><span class="line">svn revert -R /path/to/dir</span><br></pre></td></tr></table></figure>
+
+<h4 id="添加忽略-ignore"><a href="#添加忽略-ignore" class="headerlink" title="添加忽略 ignore"></a>添加忽略 ignore</h4><p>SVN 的忽略是通过设置目录的属性 prop 来实现的，添加后会有一个目录属性变动的修改需要提交</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 忽略所有 log 文件。点号表示在当前目录设置忽略属性</span></span><br><span class="line">svn propset svn:ignore <span class="string">&quot;*.log&quot;</span> .</span><br><span class="line"><span class="comment">## 递归忽略 global-ignores</span></span><br><span class="line">svn propset svn:global-ignores <span class="string">&quot;*.log&quot;</span> .</span><br><span class="line"><span class="comment">## 从文件读取忽略规则，一行一个规则</span></span><br><span class="line">svn propset svn:ignore -F filename.txt .</span><br><span class="line"><span class="comment">## 打开编辑器修改忽略属性</span></span><br><span class="line">svn propedit svn:ignore .</span><br><span class="line"><span class="comment">## 查看当前目录的属性配置</span></span><br><span class="line">svn proplist . -v</span><br><span class="line"><span class="comment">## 删除当前目录的忽略设置</span></span><br><span class="line">svn propdel svn:ignore .</span><br></pre></td></tr></table></figure>
+
+<p>忽略仅对还未添加到版本库的文件生效，已经在版本库里的文件，添加忽略后是不会自动删除的也不会忽略，需要手动 delete 命令删除下才行。</p>
+<h4 id="查看状态-status"><a href="#查看状态-status" class="headerlink" title="查看状态 status"></a>查看状态 status</h4><p>任何时候，你可以用下面的命令查看当前工作目录的 SVN 状态喔，会列出来哪些文件有变动。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">svn status</span><br><span class="line">svn status /path/to/file-or-dir</span><br></pre></td></tr></table></figure>
+
+<h4 id="清理-cleanup"><a href="#清理-cleanup" class="headerlink" title="清理 cleanup"></a>清理 cleanup</h4><p>SVN 出现报错时可以执行一下，会清理掉本地的一些缓存</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">svn cleanup</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看信息-info"><a href="#查看信息-info" class="headerlink" title="查看信息 info"></a>查看信息 info</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn info</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看文件列表-ls"><a href="#查看文件列表-ls" class="headerlink" title="查看文件列表 ls"></a>查看文件列表 ls</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">svn <span class="built_in">ls</span> </span><br><span class="line"><span class="comment">## 指定版本号</span></span><br><span class="line">svn <span class="built_in">ls</span> -r 100</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看文件内容"><a href="#查看文件内容" class="headerlink" title="查看文件内容"></a>查看文件内容</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看指定版本的文件内容，不加版本号就是查看最新版本的</span></span><br><span class="line">svn <span class="built_in">cat</span> test.py -r 2</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看-blame"><a href="#查看-blame" class="headerlink" title="查看 blame"></a>查看 blame</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn blame filename.php</span><br></pre></td></tr></table></figure>
+
+<h4 id="地址重定向"><a href="#地址重定向" class="headerlink" title="地址重定向"></a>地址重定向</h4><p>如果你的 SVN 地址变了，不需要重新 checkout 代码，只需要这样重定向一下就可以了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">svn switch --relocate 原 SVN 地址 新 SVN 地址</span><br></pre></td></tr></table></figure>
+
+<h4 id="分支操作"><a href="#分支操作" class="headerlink" title="分支操作"></a>分支操作</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 创建分支，从主干 trunk 创建一个分支保存到 branches/online1.0</span><br><span class="line">svn cp -m &quot;描述内容&quot; http://svnbucket.com/repos/trunk http://svnbucket.com/repos/branches/online1.0</span><br><span class="line">## 合并主干上的最新代码到分支上</span><br><span class="line">cd branches/online1.0</span><br><span class="line">svn merge http://svnbucket.com/repos/trunk </span><br><span class="line">## 分支合并到主干</span><br><span class="line">svn merge --reintegrate http://svnbucket.com/repos/branches/online1.0</span><br><span class="line">## 切换分支</span><br><span class="line">svn switch svn://svnbucket.com/test/branches/online1.0</span><br><span class="line">## 删除分支</span><br><span class="line">svn rm http://svnbucket.com/repos/branches/online1.0</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T16:26:09+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Jul 5, 2024</p>
+  </a>
+</div>
+
         
       
+        
+          
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
     
-  </section>
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
   
-    
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2023/07/03/Software/Git/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Git</p>
+          <p class='content'>基本操作
+
+创建分支
+git checkout -b name 创建并转到分支
+git checkout -b dev_1 origin/dev_1 拉取远程分支创建本地
+
+
+删除分支
+git ...</p>
+        </a>
+      
+      
+        <a class='next' href='/2023/05/19/Software/Projects/'>
+          <p class='title'>Memo<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>UNKNOWN写数据Threadwork in processor
+GetReadPath -&gt; file -&gt; Bufferfile
+StreamLoaderFileStart：解...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
   
 
 
-    
-  
+
+
+
 </div>
 <aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
   
@@ -2541,204 +2659,48 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     
     
       
-<section class="widget blogger desktop mobile pjax">
-  <div class='content'>
     
-      
-        <a class='avatar flat-box rectangle' href='/about/'>
-          <img no-lazy src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">Hexo</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fa-solid fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fa-solid fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://github.com/volantis-x/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fa-solid fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget category desktop pjax">
-    
-  <header>
-    
-      <a href='/blog/categories/'><i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/ASM/" href="/categories/ASM/"
-            active-action="action-categoriesASM"
-            ><div class='name'>ASM</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Arch/" href="/categories/Arch/"
-            active-action="action-categoriesArch"
-            ><div class='name'>Arch</div><div class='badge'>(0)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/CPP/" href="/categories/CPP/"
-            active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/DEV/" href="/categories/DEV/"
-            active-action="action-categoriesDEV"
-            ><div class='name'>DEV</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Database/" href="/categories/Database/"
-            active-action="action-categoriesDatabase"
-            ><div class='name'>Database</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Datebase/" href="/categories/Datebase/"
-            active-action="action-categoriesDatebase"
-            ><div class='name'>Datebase</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Linux/" href="/categories/Linux/"
-            active-action="action-categoriesLinux"
-            ><div class='name'>Linux</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/OS/" href="/categories/OS/"
-            active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Other/" href="/categories/Other/"
-            active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Software/" href="/categories/Software/"
-            active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Storage/" href="/categories/Storage/"
-            active-action="action-categoriesStorage"
-            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%85%AB%E8%82%A1/" href="/categories/%E5%85%AB%E8%82%A1/"
-            active-action="action-categoriesE585ABE882A1"
-            ><div class='name'>八股</div><div class='badge'>(0)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"
-            active-action="action-categoriesE58886E5B883E5BC8F"
-            ><div class='name'>分布式</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
-            active-action="action-categoriesE88083E7A094"
-            ><div class='name'>考研</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/"
-            active-action="action-categoriesE99FB3E8A786E9A291"
-            ><div class='name'>音视频</div><div class='badge'>(2)</div></a></li>
-        
-      </ul>
-    </div>
-  </section>
-
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget tagcloud desktop mobile pjax">
-    
-  <header>
-    
-      <a href='/blog/tags/'><i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/Arch/" style="font-size: 14px; color: #999">Arch</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Datebase/" style="font-size: 16.5px; color: #888">Datebase</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 16.5px; color: #888">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 16.5px; color: #888">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 14px; color: #999">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 19px; color: #777">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
-    </div>
-  </section>
-
-
-    
-  
-
   
 
 
 <div class="widget-sticky pjax">
 
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%90%88Phabricator%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">1.</span> <span class="toc-text">配合Phabricator工作流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%A3%80%E5%87%BA-checkout"><span class="toc-number">2.</span> <span class="toc-text">代码检出 checkout</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81-commit"><span class="toc-number">3.</span> <span class="toc-text">提交代码 commit</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E4%BB%A3%E7%A0%81-update"><span class="toc-number">4.</span> <span class="toc-text">更新代码 update</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E6%96%87%E4%BB%B6-add"><span class="toc-number">5.</span> <span class="toc-text">添加文件 add</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6-delete"><span class="toc-number">6.</span> <span class="toc-text">删除文件 delete</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97-log"><span class="toc-number">7.</span> <span class="toc-text">查看日志 log</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%8F%98%E5%8A%A8-diff"><span class="toc-number">8.</span> <span class="toc-text">查看变动 diff</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%92%A4%E9%94%80%E4%BF%AE%E6%94%B9-revert"><span class="toc-number">9.</span> <span class="toc-text">撤销修改 revert</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%BF%BD%E7%95%A5-ignore"><span class="toc-number">10.</span> <span class="toc-text">添加忽略 ignore</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81-status"><span class="toc-number">11.</span> <span class="toc-text">查看状态 status</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B8%85%E7%90%86-cleanup"><span class="toc-number">12.</span> <span class="toc-text">清理 cleanup</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E4%BF%A1%E6%81%AF-info"><span class="toc-number">13.</span> <span class="toc-text">查看信息 info</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%88%97%E8%A1%A8-ls"><span class="toc-number">14.</span> <span class="toc-text">查看文件列表 ls</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9"><span class="toc-number">15.</span> <span class="toc-text">查看文件内容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B-blame"><span class="toc-number">16.</span> <span class="toc-text">查看 blame</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%B0%E5%9D%80%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">17.</span> <span class="toc-text">地址重定向</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%94%AF%E6%93%8D%E4%BD%9C"><span class="toc-number">18.</span> <span class="toc-text">分支操作</span></a></li></ol>
+    </div>
+  </section>
+
+  
+
 </div>
 
 
 <!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
 
   <div class="pjax">
     <!-- pjax占位 -->
@@ -2766,13 +2728,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </aside>
 
 
+
           <!--此文件用来存放一些不方便取值的变量-->
 <!--思路大概是将值藏到重加载的区域内-->
 
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=false;
+  pdata.ispage=true;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};
@@ -3144,7 +3107,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3371,7 +3334,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Datebase/","name":"Datebase"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"wordCount":0,"image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Software/","name":"Software"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/06/07/Software/SVN/","name":"SVN"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"SVN","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/06/07/Software/SVN/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/06/07/Software/SVN/","wordCount":0,"datePublished":"2023-06-07T09:39:04.000Z","dateModified":"2024-07-05T08:26:09.221Z","articleSection":"Software","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

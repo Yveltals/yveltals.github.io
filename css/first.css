@@ -643,7 +643,7 @@ button {
     --color-site-footer: rgba(170,170,170,0.871);
     --color-card: #262626;
     --color-text: rgba(238,238,238,0.871);
-    --color-block: 121212;
+    --color-block: #1e1e1e;
     --color-codeblock: #121212;
     --color-inlinecode: #d56d28;
     --color-h1: rgba(255,255,255,0.871);
@@ -715,7 +715,7 @@ button {
   --color-site-footer: rgba(170,170,170,0.871);
   --color-card: #262626;
   --color-text: rgba(238,238,238,0.871);
-  --color-block: 121212;
+  --color-block: #1e1e1e;
   --color-codeblock: #121212;
   --color-inlinecode: #d56d28;
   --color-h1: rgba(255,255,255,0.871);
@@ -913,7 +913,7 @@ button {
   flex-shrink: 0;
   line-height: 56px;
   padding: 0 24px;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
 }
 .l_header #wrapper .nav-main .title img {

@@ -17,13 +17,13 @@ h1 {
   font-size: 2rem;
 }
 h2 {
-  font-size: 1.7rem;
+  font-size: 2rem;
 }
 h3 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 h4 {
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 h5 {
   font-size: 1rem;
@@ -472,7 +472,7 @@ article#tag .all-tags ul li span:before {
 .article h3 {
   text-align: left;
   color: var(--color-h3);
-  margin-top: 12px;
+  margin-top: 14px;
 }
 .article h4 {
   text-align: left;
@@ -592,7 +592,7 @@ article#tag .all-tags ul li span:before {
   margin-bottom: 0.6em;
   overflow: auto;
   background: var(--color-codeblock);
-  font-size: 0.9125rem;
+  font-size: 1rem;
   font-family: Menlo, UbuntuMono, Monaco, monospace, courier, sans-serif;
   border: 1px solid #ffebcb;
   padding: 16px;
@@ -986,7 +986,7 @@ footer.footer {
 }
 footer.footer,
 footer.footer p {
-  font-size: 0.9125rem;
+  font-size: 1rem;
 }
 footer.footer .licenses {
   color: fade(, 50%);
@@ -1218,7 +1218,7 @@ footer.footer .copyright p {
   margin: 0;
 }
 .article.l_friends .friends-group .friend-content .friend-card .friend-right p.friend-name {
-  font-size: 0.9125rem;
+  font-size: 1rem;
   padding-top: 4px;
   font-weight: bold;
 }
@@ -1283,7 +1283,7 @@ footer.footer .copyright p {
   display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
   display: block;
   margin: 0.75rem auto;
-  font-size: 0.9125rem;
+  font-size: 1rem;
   color: var(--color-meta);
 }
 .md .img-wrap .image-caption:empty {
@@ -1678,7 +1678,7 @@ svg.loading {
 #l_main .post .article-meta .new-meta-box,
 #l_main .post .article-meta .new-meta-box p,
 #l_main .post .article-meta .new-meta-box i {
-  font-size: 0.9125rem;
+  font-size: 1rem;
 }
 #l_main .post .article-meta .new-meta-box .new-meta-item {
   color: var(--color-meta);
@@ -1916,7 +1916,7 @@ svg.loading {
 article#comments p[ct] {
   margin-top: 0;
   margin-bottom: 0.6em;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--color-text);
   font-weight: 600;
 }
@@ -2052,7 +2052,7 @@ img.lazyload:not(.placeholder).loaded {
   margin-bottom: 0.6em;
 }
 .md h3:before {
-  margin-top: -60px;
+  margin-top: -58px;
 }
 .md h4:before {
   margin-top: -60px;
@@ -2613,7 +2613,7 @@ img.lazyload:not(.placeholder).loaded {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 #u-search .modal .modal-body .modal-results .result .digest {
   display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
@@ -2623,7 +2623,7 @@ img.lazyload:not(.placeholder).loaded {
   overflow: hidden;
   word-break: break-all;
   text-overflow: ellipsis;
-  font-size: 0.9125rem;
+  font-size: 1rem;
   color: var(--color-meta);
 }
 #u-search .modal .modal-body .modal-results .result .icon {
@@ -3309,7 +3309,7 @@ img.lazyload:not(.placeholder).loaded {
   color: #fff;
 }
 .snackbar-content .title {
-  font-size: 1.7rem;
+  font-size: 2rem;
   font-weight: 600;
 }
 .snackbar-content .action {
@@ -3622,7 +3622,7 @@ img.lazyload:not(.placeholder).loaded {
 .md div.btns p,
 .article div.btns a,
 .md div.btns a {
-  font-size: 0.9125rem;
+  font-size: 1rem;
   color: var(--color-p);
 }
 .article div.btns b,
@@ -4453,7 +4453,7 @@ div.fancybox .gallery {
   overflow: hidden;
 }
 div.fancybox .image-caption {
-  font-size: 0.9125rem;
+  font-size: 1rem;
   padding-top: 0.3em;
   padding-bottom: 0.6em;
   color: var(--color-meta);
@@ -4963,7 +4963,7 @@ img.inline {
 .md .link-card p.url {
   flex-shrink: 0;
   color: var(--color-meta);
-  font-size: 0.9125rem;
+  font-size: 1rem;
 }
 .md .link-group {
   display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
@@ -5509,20 +5509,20 @@ p.p.h1 {
 }
 span.p.h2,
 p.p.h2 {
-  font-size: 1.7rem;
+  font-size: 2rem;
   color: var(--color-h2);
   padding-top: 1.2em;
   border-bottom: 1px solid rgba(68,68,68,0.1);
 }
 span.p.h3,
 p.p.h3 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   color: var(--color-h3);
   padding-top: 1.2em;
 }
 span.p.h4,
 p.p.h4 {
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--color-h4);
   padding-top: 1.2em;
 }
@@ -6726,7 +6726,7 @@ pre {
   display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
   display: block;
   background: var(--color-block);
-  font-size: 0.9125rem;
+  font-size: 1rem;
   font-family: Menlo, UbuntuMono, Monaco, monospace, courier, sans-serif;
   border-radius: 4px;
   -webkit-border-radius: 4px;

@@ -5,8 +5,8 @@
   <meta name="Volantis" content="5.8.0">
   <meta charset="utf-8">
   <!-- SEO相关 -->
-  <meta name="robots" content="noindex,follow">
-  <link rel="canonical" href="http://example.com/categories/asm/"/>
+  
+  <link rel="canonical" href="http://example.com/2023/12/10/os/linux/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -32,16 +32,21 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>Category: ASM - Hexo</title>
+  <title>Linux - Hexo</title>
   <meta name="keywords" content="null">
   <meta desc name="description" content="Hexo - John Doe - Hexo">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/categories/ASM/index.html">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux">
+<meta property="og:url" content="http://example.com/2023/12/10/OS/Linux/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Cgroup进程绑核 cd &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write error: No space left on deviceecho 0 &gt; cpuset.mems## 限制进程运行在对应的 processorecho &quot;0-19,40-59&quot; &gt; cpuset.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2023-12-10T04:59:04.000Z">
+<meta property="article:modified_time" content="2024-07-05T08:27:34.221Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
   <style>
@@ -1754,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720167801938),
+    lastupdate: new Date(1720168067999),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2403,7 +2408,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="half" class='cover-wrapper  search' style="display: ;">
+      <div id="half" class='cover-wrapper post search' style="display: ;">
         
   <div id="parallax-window"></div>
 
@@ -2441,25 +2446,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       <div id="safearea">
         <div class="body-wrapper">
           
-
 <div id="l_main" class=''>
-  
-    
-      
-  <section class="post-list">
-    
-      
-        
-          
-        
-      
-    
-    
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/25/Other/Assembly/">
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/10/OS/Linux/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2468,97 +2457,635 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <meta itemprop="description" content="">
   </span>
   
-  
+
+
   
     <div class='headimg-div'>
-      <a class='headimg-a' href="/2020/06/25/Other/Assembly/">
-        <img itemprop="image" class='headimg' alt="Assembly" src='/img/Assembly.jpg'/>
+      <a class='headimg-a'>
+        <img itemprop="image" class='headimg' src='/img/linux.jpeg'/>
       </a>
     </div>
   
-  
+  <div class="article-meta" id="top">
     
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2020/06/25/Other/Assembly/"  itemprop="url">
-        Assembly
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
     
-      
-        字字节byte，内存单元，8位，如68 
-字word，高低字节，16位，如68 A7
-
-寄存器寄存器16位，两个内存单元(字节)
-CS-IP：代码；SS-SP：栈顶；DS-SI/ES-DI：数据
-
-
-
-寄存器
-主　要　用　途
-
-
-
-AX
-乘除运算，字的输入输出，中间结果的缓存
-
-
-AL
-字节的乘、除运算，字节的输入输出
-
-
-AH
-字节的乘、除运算，存放中断的功能号
-
-
-BX
-存储器指针
-
-
-...
-      
     
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
+      <h1 class="title" itemprop="name headline">
+        Linux
+      </h1>
+      <div class='new-meta-box'>
         
-        <time itemprop="dateCreated datePublished" datetime="2020-06-25T12:44:04+08:00">2020-06-25</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/ASM/">ASM</a>
           
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/ASM/" itemprop="url"><span itemprop="name">ASM</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2020/06/25/Other/Assembly/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
 </div>
 
-          </div>
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/OS/">OS</a>
+    
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
+      </span>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2023-12-10T12:59:04+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Dec 10, 2023</p>
+  </a>
+</div>
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <h2 id="Cgroup"><a href="#Cgroup" class="headerlink" title="Cgroup"></a>Cgroup</h2><p>进程绑核</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /sys/fs/cgroup/cpuset</span><br><span class="line"><span class="built_in">mkdir</span> mygroup &amp;&amp; <span class="built_in">cd</span> mygroup</span><br><span class="line"><span class="comment">## 避免报错 write error: No space left on device</span></span><br><span class="line"><span class="built_in">echo</span> 0 &gt; cpuset.mems</span><br><span class="line"><span class="comment">## 限制进程运行在对应的 processor</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;0-19,40-59&quot;</span> &gt; cpuset.cpus</span><br><span class="line"><span class="comment">## 进程加入 cgroup</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; cgroup.proc</span><br><span class="line"><span class="comment">## 加入上级解除限制（或等进程结束）</span></span><br><span class="line"><span class="built_in">echo</span> 4462 &gt; ../cgroup.procs</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000008125359">Linux Cgroup系列（04）：限制cgroup的内存使用</a></p>
+<h2 id="火焰图生成与解析"><a href="#火焰图生成与解析" class="headerlink" title="火焰图生成与解析"></a>火焰图生成与解析</h2><ol>
+<li><p>环境准备</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装 Linux 系统的 perf 工具</span></span><br><span class="line">yum -y install perf</span><br><span class="line"><span class="comment"># 下载生成火焰图的工具</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/brendangregg/FlameGraph.git</span><br></pre></td></tr></table></figure></li>
+<li><p>数据采样，解析生成火焰图</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perf record -a -g -F99 --call-graph dwarf -p &lt;pid&gt; <span class="built_in">sleep</span> 30</span><br><span class="line">perf script | ./FlameGraph/stackcollapse-perf.pl | ./FlameGraph/flamegraph.pl &gt; process.svg</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>常用命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-p &lt;pid&gt;：指定待分析进程的 pid（多个用,分隔列表）</span><br><span class="line">-t &lt;tid&gt;：指定待分析线程的 tid（多个用,分隔列表）</span><br><span class="line">-a：从所有 CPU 收集系统数据</span><br><span class="line">-g：开启 call-graph (stack chain/backtrace) 记录</span><br><span class="line">-C &lt;cpu-list&gt;：只统计指定 CPU 列表的数据，如：0,1,3或1-2</span><br><span class="line">-F &lt;n&gt;：每秒采样 n 次</span><br><span class="line">-o &lt;output.data&gt;：指定输出文件output.data，默认输出到perf.data</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>perf 火焰图大量 unknown 的问题</p>
+</li>
+</ol>
+<p>在实际使用过程中发现，简单的使用 <code>perf record -g</code> 获取到的调用栈是有问题的，存在大量 <code>Unknown</code> 函数，从 perf report 的结果来看这些部分对应地址大部分都是非法地址，且生成的火焰图中存在很多明显与代码矛盾的调用关系。</p>
+<p>perf 同时支持 3 种栈回溯方式：fp, dwarf, lbr，可以通过 <code>--call-graph</code> 参数指定，而 -g 就相当于 <code>--call-graph fp</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fp</td>
+<td>None</td>
+<td>默认 fp 被优化掉了根本不可用</td>
+</tr>
+<tr>
+<td>lbr</td>
+<td>高效准确</td>
+<td>较新的 Intel CPU 才有此功能，能记录的调用栈深度有限</td>
+</tr>
+<tr>
+<td>dwarf</td>
+<td>准确</td>
+<td>开销相对较大，需要编译时加 <code>-g</code></td>
+</tr>
+</tbody></table>
+<h2 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h2><h3 id="网络与进程"><a href="#网络与进程" class="headerlink" title="网络与进程"></a>网络与进程</h3><ul>
+<li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
+<li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
+<li><code>iftop</code> 显示进程级别的网络IO</li>
+<li><code>fdisk</code> 创建和维护分区表</li>
+<li><code>tcpdump</code> 抓包</li>
+<li><code>route</code> 查看路由</li>
+<li><code>pgrep dummy</code> 查看进程号，<code>-l</code>显示进程名</li>
+<li><code>pkill dummy</code> Kill进程名，<code>-f</code>全匹配command line</li>
+<li><code>ps aux | grep -w &#39;hello&#39; | grep -v grep | awk &#39;&#123;print $2&#125;&#39; | xargs kill -9</code> Kill进程名的另一种方式</li>
+<li><code>pstree</code>  以树状图的形式现实系统中的进程</li>
+</ul>
+<h3 id="文件查找与操作"><a href="#文件查找与操作" class="headerlink" title="文件查找与操作"></a>文件查找与操作</h3><ul>
+<li><code>sed -i &quot;s/查找字段/替换字段/g&quot; src.txt</code></li>
+<li><code>grep &#123;xxx&#125; src.txt</code></li>
+<li><code>less</code> 浏览文件</li>
+<li><code>head -n log.txt</code> 查看前 n 行</li>
+<li><code>tail -f log.txt</code> 查看尾行（实时刷新）</li>
+<li><code>which</code> 查找某一命令所在的路径,格式为 <code>which 命令</code> </li>
+<li><code>whereis</code> 命令与其类似,但是 <code>whereis</code> 还能展示命令帮助文档所在的路径</li>
+<li><code>find</code> 格式为 <code>find &#123;path&#125; -name &#123;xxx&#125;</code></li>
+<li><code>locate</code> 功能与 <code>find -name</code> 相同,find 是遍历了搜索路径下的每个文件,而 locate 是搜索<code>/var/lib/locatedb</code> 里的一个数据库,相当于散列查找。在使用 locate 命令之前,可先使用 <code>updatedb</code> 命令手动更新数据库。</li>
+<li><code>headlink -f .</code> 查看当前路径</li>
+<li><code>mkdir -p</code> 依次创建目录</li>
+<li><code>wget</code>下载,<code>-c</code>断点续传,<code>-b</code>后台下载（wget-log）</li>
+<li><code>zcvf src_dir/ dst.tar.gz</code> 压缩</li>
+<li><code>zxvf xxx.tar.gz -C dst_dir/ &gt; /dev/null 2&gt;&amp;1</code> 解压缩</li>
+<li><code>mount</code>挂载<ul>
+<li>硬盘:<code>mount 设备 挂载点</code></li>
+<li>镜像:<code>mount -o  rw  -t  iso9660 设备  挂载点</code>,<code>rw</code>读写,<code>ro</code>只读</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="Shell编程"><a href="#Shell编程" class="headerlink" title="Shell编程"></a>Shell编程</h2><h3 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h3><p>中控机命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">scp /home/web_server/mazhuang/load.sh web_server@<span class="variable">$&#123;host&#125;</span>:/home/web_server/mazhuang/</span><br><span class="line">ssh -n <span class="variable">$&#123;host&#125;</span> <span class="string">&quot;sh /home/web_server/mazhuang/load.sh&quot;</span></span><br></pre></td></tr></table></figure>
+<p>Kill进程</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pkill -f <span class="variable">$directory</span>/dummy</span><br><span class="line"><span class="keyword">until</span> [[ -z `ps aux | awk <span class="string">&#x27;&#123;print $11&#125;&#x27;</span> | grep -v grep | grep <span class="string">&quot;<span class="variable">$directory</span>/dummy&quot;</span>` ]]; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">sleep</span> 1s</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="keyword">if</span> [[ -z `ps aux | awk <span class="string">&#x27;&#123;print $11&#125;&#x27;</span> | grep -v grep | grep <span class="string">&quot;dummy&quot;</span>` ]]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> -e <span class="string">&quot;\e[31mWARNING: Failed to kill a process. \e[0m&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基础变量"><a href="#基础变量" class="headerlink" title="基础变量"></a>基础变量</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="variable">$#</span> <span class="comment">#参数数量</span></span><br><span class="line">$* <span class="comment">#所有参数内容</span></span><br><span class="line"><span class="variable">$2</span> <span class="comment">#第2个参数</span></span><br><span class="line">$? <span class="comment">#命令(函数)返回状态</span></span><br><span class="line"><span class="variable">$0</span> <span class="comment">#当前进程名</span></span><br><span class="line">$$ <span class="comment">#当前进程号</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;</span> <span class="comment">#包含的变量被解释</span></span><br><span class="line"><span class="string">&#x27;&#x27;</span> <span class="comment">#视作字符串不解释</span></span><br><span class="line">`` <span class="comment">#视作系统命令执行 echo &quot;today is `date`&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">str=<span class="string">&quot;12345&quot;</span></span><br><span class="line">str2=<span class="string">&quot;67&quot;</span></span><br><span class="line"><span class="comment">#连接与切片</span></span><br><span class="line"><span class="built_in">echo</span> $str<span class="variable">$str2</span> <span class="comment">#123456</span></span><br><span class="line"><span class="variable">$&#123;#str&#125;</span>    <span class="comment">#5</span></span><br><span class="line"><span class="variable">$&#123;str:2&#125;</span>   <span class="comment">#345</span></span><br><span class="line"><span class="variable">$&#123;str:2:2&#125;</span> <span class="comment">#34</span></span><br><span class="line"><span class="comment">#运算符</span></span><br><span class="line">-z    <span class="comment">#长度是否0</span></span><br><span class="line">=     <span class="comment">#字符串是否相等</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="运算"><a href="#运算" class="headerlink" title="运算"></a>运算</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">a=`<span class="built_in">expr</span> <span class="variable">$a</span> + 10` <span class="comment"># expr</span></span><br><span class="line">((a+=<span class="number">10</span>))        <span class="comment"># (())</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">array=(a b c d)</span><br><span class="line"><span class="variable">$&#123;array[@]&#125;</span>  <span class="comment">#a b c d</span></span><br><span class="line"><span class="variable">$&#123;array[1]&#125;</span>  <span class="comment">#b</span></span><br><span class="line"><span class="variable">$&#123;#array[@]&#125;</span> <span class="comment">#4</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h3><h4 id="IF"><a href="#IF" class="headerlink" title="IF"></a>IF</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="variable">$a</span> -eq 1 ]; <span class="keyword">then</span></span><br><span class="line"><span class="keyword">if</span> (( <span class="variable">$a</span> == <span class="number">1</span>)); <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;execute 1&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;execute 2&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="FOR"><a href="#FOR" class="headerlink" title="FOR"></a>FOR</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> ((i=<span class="number">0</span>; i&lt;<span class="number">10</span>; ++i)); <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;i = <span class="variable">$i</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> `<span class="built_in">ls</span>`; <span class="keyword">do</span></span><br><span class="line">	<span class="keyword">if</span> [ -d <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">&quot;目录 <span class="variable">$file</span>&quot;</span></span><br><span class="line">	<span class="keyword">elif</span> [ -f <span class="variable">$file</span> ]; <span class="keyword">then</span></span><br><span class="line">		<span class="built_in">echo</span> <span class="string">&quot;文件 <span class="variable">$file</span>&quot;</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="WHILE"><a href="#WHILE" class="headerlink" title="WHILE"></a>WHILE</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">count=1</span><br><span class="line"><span class="built_in">sum</span>=0</span><br><span class="line"><span class="keyword">while</span>((count&lt;<span class="number">101</span>)); <span class="keyword">do</span></span><br><span class="line">    ((sum+=count))</span><br><span class="line">	((count+=<span class="number">1</span>))</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="CASE"><a href="#CASE" class="headerlink" title="CASE"></a>CASE</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="variable">$num</span> <span class="keyword">in</span></span><br><span class="line">	0) <span class="built_in">echo</span> <span class="string">&quot;true&quot;</span>;;</span><br><span class="line">	1|2|4) <span class="built_in">echo</span> <span class="string">&quot;false&quot;</span>;;</span><br><span class="line">	*) <span class="built_in">echo</span> <span class="string">&quot;out of range&quot;</span>;;</span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="FUNCTION"><a href="#FUNCTION" class="headerlink" title="FUNCTION"></a>FUNCTION</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">fun</span></span>() &#123;</span><br><span class="line">	var1=<span class="variable">$1</span></span><br><span class="line">	var2=<span class="variable">$2</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$var1</span> <span class="variable">$var2</span></span><br><span class="line">	<span class="built_in">return</span> 0</span><br><span class="line">&#125;</span><br><span class="line">fun 1 2</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;return $?&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>含义</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>*</td>
+<td>匹配任意字符串</td>
+<td><code>file_*.txt</code>，匹配file_qseawd.txt等</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配一个字符</td>
+<td><code>file_?.txt</code>，匹配file_1.txt等</td>
+</tr>
+<tr>
+<td>[abc]</td>
+<td>匹配abc其中一个字符</td>
+<td><code>file_[ab].txt</code>，匹配 file_a.txt 和 file_b.txt</td>
+</tr>
+<tr>
+<td>[a-z]</td>
+<td>匹配范围中一个字符</td>
+<td><code>file_[a-z].txt</code>，匹配 file_a.txt 至 file_z.txt</td>
+</tr>
+<tr>
+<td>[^abc]</td>
+<td>匹配之外的字符</td>
+<td><code>file_[^ab].txt</code>，排除 file_a.txt, file_b.txt</td>
+</tr>
+</tbody></table>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><ul>
+<li><p>重定向标准输入 <code>&lt;</code></p>
+</li>
+<li><p>重定向标准输出 <code>&gt;</code>和<code>&gt;&gt;</code>(追加)</p>
+</li>
+<li><p>重定向标准错误 <code>2&gt;</code></p>
+</li>
+<li><p>重定向同一文件 <code>./bin &gt; r.log 2&gt;&amp;1</code></p>
+</li>
+<li><p>不处理输出 <code>./bin 2&gt; /dev/null</code></p>
+</li>
+</ul>
+<hr>
+<h2 id="Vim"><a href="#Vim" class="headerlink" title="Vim"></a>Vim</h2><h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><table>
+<thead>
+<tr>
+<th>级别</th>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>行级</td>
+<td>0</td>
+<td>光标移动到当前行首字符</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>$</td>
+<td>光标移动到当前行尾字符</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>{</td>
+<td>光标移动到段落首字符</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>}</td>
+<td>光标移动到段落尾字符</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>H</td>
+<td>光标移动到屏幕首行首字符</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>L</td>
+<td>光标移动到屏幕尾行首字符</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>nG</td>
+<td>光标移动到文档第n行首字符</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>G</td>
+<td>光标移动到文档尾行首字符</td>
+</tr>
+<tr>
+<td>字符级</td>
+<td>y←或yh</td>
+<td>复制前一个字符</td>
+</tr>
+<tr>
+<td>字符级</td>
+<td>y→或yl</td>
+<td>复制当前字符</td>
+</tr>
+<tr>
+<td>单词级</td>
+<td>yb</td>
+<td>从单词首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>单词级</td>
+<td>ye或yw</td>
+<td>从当前字符开始复制直到单词尾字符(包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>y0</td>
+<td>从行首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>y$</td>
+<td>从当前字符开始复制直到行尾字符(包括)</td>
+</tr>
+<tr>
+<td>行级</td>
+<td>yy</td>
+<td>复制当前行</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>y{</td>
+<td>从段落首字符开始复制直到当前字符(不包括)</td>
+</tr>
+<tr>
+<td>段落级</td>
+<td>y}</td>
+<td>从当前字符开始复制直到段落尾字符(包括)</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>yH</td>
+<td>从屏幕首行开始复制直到当前行(包括)</td>
+</tr>
+<tr>
+<td>屏幕级</td>
+<td>yL</td>
+<td>从当前行开始复制直到屏幕尾行(包括)</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>yG</td>
+<td>从当前行开始复制直到文档尾行(包括)</td>
+</tr>
+<tr>
+<td>文档级</td>
+<td>ynG</td>
+<td>从第n行开始复制直到当前行(包括)</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p</td>
+<td>粘贴</td>
+</tr>
+<tr>
+<td>x</td>
+<td>删除当前字符</td>
+</tr>
+<tr>
+<td>dd</td>
+<td>删除当前行</td>
+</tr>
+<tr>
+<td>u</td>
+<td>撤销命令</td>
+</tr>
+<tr>
+<td>.</td>
+<td>重复上一命令</td>
+</tr>
+<tr>
+<td>J</td>
+<td>合并两行内容</td>
+</tr>
+<tr>
+<td>r</td>
+<td>快速替换当前字符</td>
+</tr>
+</tbody></table>
+<h3 id="插入模式"><a href="#插入模式" class="headerlink" title="插入模式"></a>插入模式</h3><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>后移进入编辑</td>
+</tr>
+<tr>
+<td>s</td>
+<td>删除当前字符</td>
+</tr>
+<tr>
+<td>o</td>
+<td>向下新起一行</td>
+</tr>
+<tr>
+<td>A</td>
+<td>光标移到行尾</td>
+</tr>
+<tr>
+<td>O</td>
+<td>向上新起一行</td>
+</tr>
+</tbody></table>
+<h3 id="底行模式"><a href="#底行模式" class="headerlink" title="底行模式"></a>底行模式</h3><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>:n</td>
+<td>光标移动到第n行</td>
+</tr>
+<tr>
+<td>&#x2F;查找内容</td>
+<td>n下一个,N上一个</td>
+</tr>
+<tr>
+<td>:s&#x2F;被替换&#x2F;替换&#x2F;</td>
+<td>替换当前行的第一目标</td>
+</tr>
+<tr>
+<td>:s&#x2F;被替换&#x2F;替换&#x2F;g</td>
+<td>替换当前行的全部目标</td>
+</tr>
+<tr>
+<td>:%s&#x2F;被替换&#x2F;替换&#x2F;g</td>
+<td>替换整个文档的全部目标</td>
+</tr>
+<tr>
+<td>:%s&#x2F;被替换&#x2F;替换&#x2F;gc</td>
+<td>替换文档全部目标并询问</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>set number</td>
+<td>设置行号</td>
+</tr>
+<tr>
+<td>set smartindent</td>
+<td>智能对⻬</td>
+</tr>
+<tr>
+<td>set cindent</td>
+<td>C语言格式对⻬</td>
+</tr>
+<tr>
+<td>set showmatch</td>
+<td>括号匹配</td>
+</tr>
+<tr>
+<td>set tabstop&#x3D;4</td>
+<td>Tab为4个空格</td>
+</tr>
+<tr>
+<td>set mouse&#x3D;a</td>
+<td>鼠标支持</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>c</td>
+<td>到下个断点</td>
+</tr>
+<tr>
+<td>n</td>
+<td>下一条指令</td>
+</tr>
+<tr>
+<td>s</td>
+<td>下一条指令（进入函数）</td>
+</tr>
+<tr>
+<td>p</td>
+<td>打印信息</td>
+</tr>
+<tr>
+<td>bt</td>
+<td>打印栈信息（调用关系）</td>
+</tr>
+<tr>
+<td>info thread</td>
+<td>打印线程列表</td>
+</tr>
+<tr>
+<td>thread N</td>
+<td>切换线程</td>
+</tr>
+<tr>
+<td>thread apply all bt</td>
+<td>查看线程堆栈信息</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C&#x2F;C++编译"></a>C&#x2F;C++编译</h2><h3 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h3><ul>
+<li><p><code>-g</code> 编译带调试信息的可执行文件</p>
+</li>
+<li><p><code>-o</code> 指定输出文件名</p>
+</li>
+<li><p><code>-O2</code> 优化源代码</p>
+</li>
+<li><p><code>-Wall</code> 打印警告信息，<code>-w</code> 关闭警告信息</p>
+</li>
+<li><p><code>-std=c++11</code> 设置编译标准</p>
+</li>
+<li><p><code>-D</code> 定义宏</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">g++ -D USERM test.cpp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>-l</code> 指定库文件  <code>-L</code>指定库文件路径</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 库文件在/lib和/usr/lib和/usr/local/lib里直接用-l链接</span></span><br><span class="line">g++ -lpthread test.cpp</span><br><span class="line"><span class="comment"># 库文件不在上面三个目录里用-L指定库文件目录</span></span><br><span class="line">g++ -L/home/yveltal/mylibfolder -lmytest test.cpp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>-I</code> 指定头文件搜索目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 头文件不在/usr/include里用I参数指定，相对路径可以用-I.来指定</span></span><br><span class="line">g++ -I/myinclude test.cpp</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Cmake"><a href="#Cmake" class="headerlink" title="Cmake"></a>Cmake</h3><h4 id="指定特定版本gcc"><a href="#指定特定版本gcc" class="headerlink" title="指定特定版本gcc"></a>指定特定版本gcc</h4><p>服务器上有多个版本gcc时，cmake可能会使用老版本的gcc&#x2F;g++<br>通过 <code>which gcc</code> 和 <code>gcc/g++ --version</code> 确定正确版本路径后，在cmake命令时加入对应gcc和g++的位置：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cmake .. -D CMAKE_C_COMPILER=/path/to/gcc/bin/gcc -D CMAKE_CXX_COMPILER=/path/to/gcc/bin/g++</span><br></pre></td></tr></table></figure>
+
+<h4 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h4><ul>
+<li><p><strong>add_library</strong> - 生成库文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">add_library(libname [SHARED|STATIC] <span class="variable">$&#123;SRC&#125;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>add_compile_options</strong> - 添加编译参数</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">add_compile_options(-Wall -std=c++11 -O2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>add_executable</strong> - 生成可执行文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">add_executable(main main.cpp test.cpp)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>add_subdirectory</strong> - 向工程添加存放源文件的子目录，其中需有一个CMakeLists.txt</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">add_subdirectory(src)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>include_directories</strong> - 引入头文件目录</p>
+</li>
+<li><p><strong>link_directories</strong> - 引入库目录，如工程编译时可能用到第三方库的 lib 文件</p>
+</li>
+<li><p><strong>link_libraries</strong> - 引入库文件到当前工程（全路径）</p>
+</li>
+<li><p><strong>target_link_libraries</strong> - 引入库文件到子工程，即<strong>分配</strong>，故需指定子工程</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">target_link_libraries(子工程名 库文件1 库文件2 ...)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>target_include_directories</strong> - 引入头文件目录到子工程，同5</p>
+</li>
+</ul>
+<h4 id="编译工程"><a href="#编译工程" class="headerlink" title="编译工程"></a>编译工程</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim CMakeLists.txt</span><br><span class="line"><span class="built_in">mkdir</span> build &amp;&amp; <span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T16:27:34+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Jul 5, 2024</p>
+  </a>
+</div>
+
         
       
-    
-  </section>
+        
+          
   
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Linux/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Linux</p></a></div>
+  <span hidden itemprop="keywords">Linux</span>
+
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
     
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2024/04/07/Storage/Sparse%20Index/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Sparse Index</p>
+          <p class='content'>在数据主键有序的基础上，只为少部分数据建立索引，从而在查询时能够圈定出大致的范围，再在范围内利用适当的查找算法找到目标数据。
+空间占用小，查询相对慢
+Sparse Index in Kafka单...</p>
+        </a>
+      
+      
+        <a class='next' href='/2023/10/18/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/'>
+          <p class='title'>Linux内存与存储<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>从内核文件系统看文件读写过程 
+内存资源管理Buffers／Cached在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cach...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
   
 
 
-    
-  
+
+
+
 </div>
 <aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
   
@@ -2567,204 +3094,48 @@ BX
     
     
       
-<section class="widget blogger desktop mobile pjax">
-  <div class='content'>
     
-      
-        <a class='avatar flat-box rectangle' href='/about/'>
-          <img no-lazy src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">Hexo</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fa-solid fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fa-solid fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://github.com/volantis-x/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fa-solid fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget category desktop pjax">
-    
-  <header>
-    
-      <a href='/blog/categories/'><i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/ASM/" href="/categories/ASM/"
-            active-action="action-categoriesASM"
-            ><div class='name'>ASM</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Arch/" href="/categories/Arch/"
-            active-action="action-categoriesArch"
-            ><div class='name'>Arch</div><div class='badge'>(0)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/CPP/" href="/categories/CPP/"
-            active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/DEV/" href="/categories/DEV/"
-            active-action="action-categoriesDEV"
-            ><div class='name'>DEV</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Database/" href="/categories/Database/"
-            active-action="action-categoriesDatabase"
-            ><div class='name'>Database</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Datebase/" href="/categories/Datebase/"
-            active-action="action-categoriesDatebase"
-            ><div class='name'>Datebase</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Linux/" href="/categories/Linux/"
-            active-action="action-categoriesLinux"
-            ><div class='name'>Linux</div><div class='badge'>(1)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/OS/" href="/categories/OS/"
-            active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Other/" href="/categories/Other/"
-            active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Software/" href="/categories/Software/"
-            active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Storage/" href="/categories/Storage/"
-            active-action="action-categoriesStorage"
-            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%85%AB%E8%82%A1/" href="/categories/%E5%85%AB%E8%82%A1/"
-            active-action="action-categoriesE585ABE882A1"
-            ><div class='name'>八股</div><div class='badge'>(0)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"
-            active-action="action-categoriesE58886E5B883E5BC8F"
-            ><div class='name'>分布式</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
-            active-action="action-categoriesE88083E7A094"
-            ><div class='name'>考研</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/"
-            active-action="action-categoriesE99FB3E8A786E9A291"
-            ><div class='name'>音视频</div><div class='badge'>(2)</div></a></li>
-        
-      </ul>
-    </div>
-  </section>
-
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget tagcloud desktop mobile pjax">
-    
-  <header>
-    
-      <a href='/blog/tags/'><i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/Arch/" style="font-size: 14px; color: #999">Arch</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Datebase/" style="font-size: 16.5px; color: #888">Datebase</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 16.5px; color: #888">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 16.5px; color: #888">UML</a> <a href="/tags/%E5%85%AB%E8%82%A1/" style="font-size: 14px; color: #999">八股</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 19px; color: #777">分布式</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/" style="font-size: 14px; color: #999">系统编程</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
-    </div>
-  </section>
-
-
-    
-  
-
   
 
 
 <div class="widget-sticky pjax">
 
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Cgroup"><span class="toc-number">1.</span> <span class="toc-text">Cgroup</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%81%AB%E7%84%B0%E5%9B%BE%E7%94%9F%E6%88%90%E4%B8%8E%E8%A7%A3%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">火焰图生成与解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E5%91%BD%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">Linux命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%B8%8E%E8%BF%9B%E7%A8%8B"><span class="toc-number">3.1.</span> <span class="toc-text">网络与进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E6%9F%A5%E6%89%BE%E4%B8%8E%E6%93%8D%E4%BD%9C"><span class="toc-number">3.2.</span> <span class="toc-text">文件查找与操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Shell%E7%BC%96%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">Shell编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8"><span class="toc-number">4.1.</span> <span class="toc-text">常用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%8F%98%E9%87%8F"><span class="toc-number">4.2.</span> <span class="toc-text">基础变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">4.2.1.</span> <span class="toc-text">字符串</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E7%AE%97"><span class="toc-number">4.2.2.</span> <span class="toc-text">运算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">4.2.3.</span> <span class="toc-text">数组</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E8%AF%AD%E5%8F%A5"><span class="toc-number">4.3.</span> <span class="toc-text">控制语句</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IF"><span class="toc-number">4.3.1.</span> <span class="toc-text">IF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FOR"><span class="toc-number">4.3.2.</span> <span class="toc-text">FOR</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#WHILE"><span class="toc-number">4.3.3.</span> <span class="toc-text">WHILE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CASE"><span class="toc-number">4.3.4.</span> <span class="toc-text">CASE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FUNCTION"><span class="toc-number">4.3.5.</span> <span class="toc-text">FUNCTION</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="toc-number">4.4.</span> <span class="toc-text">通配符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">4.5.</span> <span class="toc-text">重定向</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vim"><span class="toc-number">5.</span> <span class="toc-text">Vim</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">命令模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E6%A8%A1%E5%BC%8F"><span class="toc-number">5.2.</span> <span class="toc-text">插入模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%95%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">5.3.</span> <span class="toc-text">底行模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDB"><span class="toc-number">6.</span> <span class="toc-text">GDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-C-%E7%BC%96%E8%AF%91"><span class="toc-number">7.</span> <span class="toc-text">C&#x2F;C++编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#g-%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0"><span class="toc-number">7.1.</span> <span class="toc-text">g++编译参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cmake"><span class="toc-number">7.2.</span> <span class="toc-text">Cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E7%89%B9%E5%AE%9A%E7%89%88%E6%9C%ACgcc"><span class="toc-number">7.2.1.</span> <span class="toc-text">指定特定版本gcc</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E8%A6%81%E6%8C%87%E4%BB%A4"><span class="toc-number">7.2.2.</span> <span class="toc-text">重要指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%B7%A5%E7%A8%8B"><span class="toc-number">7.2.3.</span> <span class="toc-text">编译工程</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </section>
+
+  
+
 </div>
 
 
 <!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
 
   <div class="pjax">
     <!-- pjax占位 -->
@@ -2792,13 +3163,14 @@ BX
 </aside>
 
 
+
           <!--此文件用来存放一些不方便取值的变量-->
 <!--思路大概是将值藏到重加载的区域内-->
 
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=false;
+  pdata.ispage=true;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};
@@ -3170,7 +3542,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3397,7 +3769,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/ASM/","name":"ASM"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"wordCount":0,"image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/OS/","name":"OS"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/12/10/OS/Linux/","name":"Linux"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Linux","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/12/10/OS/Linux/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/12/10/OS/Linux/","wordCount":0,"datePublished":"2023-12-10T04:59:04.000Z","dateModified":"2024-07-05T08:27:34.221Z","articleSection":"OS","keywords":"Linux","image":{"@type":"ImageObject","url":"/img/linux.jpeg","width":1024,"height":768}}]</script>
 
 
 

@@ -691,7 +691,7 @@ button {
     --color-site-footer: rgba(170,170,170,0.871);
     --color-card: #262626;
     --color-text: rgba(238,238,238,0.871);
-    --color-block: 121212;
+    --color-block: #121212;
     --color-codeblock: #121212;
     --color-inlinecode: #d56d28;
     --color-h1: rgba(255,255,255,0.871);
@@ -763,7 +763,7 @@ button {
   --color-site-footer: rgba(170,170,170,0.871);
   --color-card: #262626;
   --color-text: rgba(238,238,238,0.871);
-  --color-block: 121212;
+  --color-block: #121212;
   --color-codeblock: #121212;
   --color-inlinecode: #d56d28;
   --color-h1: rgba(255,255,255,0.871);
@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720083077736),
+    lastupdate: new Date(1720146002345),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2465,6 +2465,75 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/05/15/OS/CPU缓存/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="">
+  </span>
+  
+  
+  
+    <div class='headimg-div'>
+      <a class='headimg-a' href="/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/">
+        <img itemprop="image" class='headimg' alt="CPU Cache" src='/img/os.jpeg'/>
+      </a>
+    </div>
+  
+  
+    
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/"  itemprop="url">
+        CPU Cache
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
+    
+      
+        CPU缓存架构
+
+寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。
+
+内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记...
+      
+    
+  </div>
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2024-05-15T01:14:36+08:00">2024-05-15</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/OS/">OS</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
+            </span>
+          
+        
+      </div>
+      
+        <div>
+          <a class='readmore' href='/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/' itemprop="url">
+            Read More
+          </a>
+        </div>
+      
+    </div>
+  
+
+</div>
+
+          </div>
+        
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
   <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/05/OS/IO缓存/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
@@ -2658,75 +2727,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         <div>
           <a class='readmore' href='/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/15/OS/CPU缓存/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/08/15/OS/CPU%E7%BC%93%E5%AD%98/">
-        <img itemprop="image" class='headimg' alt="CPU Cache" src='/img/os.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/08/15/OS/CPU%E7%BC%93%E5%AD%98/"  itemprop="url">
-        CPU Cache
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        CPU缓存架构
-
-寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。
-
-内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-08-15T01:14:36+08:00">2023-08-15</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/08/15/OS/CPU%E7%BC%93%E5%AD%98/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3339,7 +3339,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

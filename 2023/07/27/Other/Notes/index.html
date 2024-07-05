@@ -696,7 +696,7 @@ button {
     --color-site-footer: rgba(170,170,170,0.871);
     --color-card: #262626;
     --color-text: rgba(238,238,238,0.871);
-    --color-block: 121212;
+    --color-block: #121212;
     --color-codeblock: #121212;
     --color-inlinecode: #d56d28;
     --color-h1: rgba(255,255,255,0.871);
@@ -768,7 +768,7 @@ button {
   --color-site-footer: rgba(170,170,170,0.871);
   --color-card: #262626;
   --color-text: rgba(238,238,238,0.871);
-  --color-block: 121212;
+  --color-block: #121212;
   --color-codeblock: #121212;
   --color-inlinecode: #d56d28;
   --color-h1: rgba(255,255,255,0.871);
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720083077736),
+    lastupdate: new Date(1720146002345),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2862,11 +2862,17 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     <div class="prev-next">
       
-        <a class='prev' href='/2023/08/15/OS/CPU%E7%BC%93%E5%AD%98/'>
-          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>CPU Cache</p>
-          <p class='content'>CPU缓存架构
+        <a class='prev' href='/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>进程线程与中断</p>
+          <p class='content'>进程与线程的区别老八股版本
 
-寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这...</p>
+一个线程属于一个进程，一个进程包含多个线程
+进程是资源分配的基本单位
+有独立的地址空间，拥有CPU资源、内存资源、文件资源等
+
+
+线程是CPU调度的基本单位
+私有（...</p>
         </a>
       
       
@@ -3347,7 +3353,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

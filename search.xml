@@ -4044,7 +4044,7 @@
   </entry>
   <entry>
     <title>CPU Cache</title>
-    <url>/2023/08/15/OS/CPU%E7%BC%93%E5%AD%98/</url>
+    <url>/2024/05/15/OS/CPU%E7%BC%93%E5%AD%98/</url>
     <content><![CDATA[<h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" class="lazyload" data-srcset="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
 <li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
@@ -4115,10 +4115,6 @@
 </blockquote>
 <h4 id="性能问题"><a href="#性能问题" class="headerlink" title="性能问题"></a>性能问题</h4><p>CPU修改Cache Line中的变量时，要<strong>通过总线发送Invalidate信息给远程CPU，等到远程CPU返回ACK，才能进行继续修改</strong>。如果远程的CPU比较繁忙，会带来更大的延迟。</p>
 <p>为了解决这个问题，引入了Store buffer。</p>
-<!-- <div align="left">
-  <img src=https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg width=70%>
-</div> -->
-
 <div class="img-wrap"><div class="img-bg" style="background:#c8c8c8"><img class="img lazyload" src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/store_buffer_.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:600px;"/></div></div>
 
 <h2 id="Store-buffer和Invalidate-queue"><a href="#Store-buffer和Invalidate-queue" class="headerlink" title="Store buffer和Invalidate queue"></a>Store buffer和Invalidate queue</h2><h3 id="Store-buffer"><a href="#Store-buffer" class="headerlink" title="Store buffer"></a>Store buffer</h3><p>在CPU和L1Cache之间引入Store buffer来对cache line的写操作进行优化。</p>

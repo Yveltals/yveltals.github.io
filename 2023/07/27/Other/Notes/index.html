@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="en"><head hexo-theme="https://github.com/volantis-x/hexo-theme-volantis/#5.8.0"><meta name="generator" content="Hexo 6.3.0"><meta name="Volantis" content="5.8.0"><meta charset="utf-8"><link rel="canonical" href="http://example.com/2023/07/27/other/notes/"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://unpkg.com"><link rel="preconnect" href="https://unpkg.com" crossorigin><meta name="renderer" content="webkit"><meta name="force-rendering" content="webkit"><meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><meta name="HandheldFriendly" content="True"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><link rel="preload" href="/css/style.css" as="style"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><title>Notes - Hexo</title><meta name="keywords" content="null"><meta desc name="description" content="Hexo - John Doe - Hexo">export http_proxy=http://xxx
+export https_proxy=http://xxx
+export HTTP_PROXY=http://xxx
+export HTTPS_PROXY=http://xxx
+export no_proxy=&quot;localhost,127.0.0.1,localaddress,localdomain.com,xxx”
+export NO_PROXY=&quot;localhost,127.0.0.1,localaddress,localdomain.com,xxx&quot;
+</code></pre><p>注意：在sudo或切换用户时代理会失效，可以通过 <code>visudo</code> 保留代理环境变量</p><pre><code class="bash">## find Defaults env_reset
+Defaults env_reset
+## add following exceptions
+Defaults env_keep = &quot;http_proxy ftp_proxy&quot;
+</code></pre><ol start="3"><li>centos换源</li></ol><pre><code class="bash">cd /etc/yum.repos.d
+## 备份 &amp; 去掉有问题的源
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+yum clean all
+yum makecache
+</code></pre><ol start="4"><li>环境变量添加第三方库</li></ol><pre><code class="bash">#在PATH中找到可执行文件程序的路径。
+export PATH =$PATH:/MyBin
+#gcc找到头文件的路径
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/include/xxx
+#g++找到头文件的路径
+export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/include/xxx
+#找到动态链接库的路径
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/MyLib
+#找到静态库的路径
+export LIBRARY_PATH=$LIBRARY_PATH:/MyLib
+</code></pre><h4 id="GCC"><a href="#GCC" class="headerlink" title="GCC"></a>GCC</h4><p>CentOS 7 默认 gcc 版本为 4.8，可通过 devtoolset 工具安装多个不同的高版本 gcc 备用切换</p><p>可以通过<code>yum search devtooset</code> 查看其他版本安装，devtoolset 安装目录为 <code>/opt/rh/devtoolset-x</code></p><pre><code class="bash">## 安装 centos-release-scl
+yum install centos-release-scl
+## 安装 devtoolset
+yum install devtoolset-9-gcc
+## 切换 gcc 版本 
+vim /etc/profile
+source /opt/rh/devtoolset-9/enable
+source /etc/profile
+## 软连接（备份gcc同理）
+mv /usr/bin/g++ /usr/bin/g++.bak
+ln -s /opt/rh/devtoolset-11/root/usr/bin/g++ /usr/bin/g++
+## 检验
+gcc --version
+</code></pre><h4 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h4><p>官网 <a target="_blank" rel="noopener" href="https://www.sourceware.org/gdb/download/">Download GDB</a> 获取最新版 gdb-x.x.tar.gz 下载地址</p><pre><code class="bash">wget https://ftp.gnu.org/gnu/gdb/gdb-11.2.tar.gz
+tar -zxvf gdb-11.2.tar.gz
+cd gdb-11.2/
+./configure
+make &amp;&amp; make install
+gdb --version
+</code></pre><h4 id="Make"><a href="#Make" class="headerlink" title="Make"></a>Make</h4><p>官网 <a target="_blank" rel="noopener" href="https://ftp.gnu.org/gnu/make/">Index of &#x2F;gnu&#x2F;make</a> 获取最新版 make-x.x.tar.gz 下载地址</p><pre><code class="bash">wget https://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+tar -zxvf make-4.3.tar.gz
+cd make-4.3/
+## 指定 make 的安装路径
+./configure --prefix=/usr/local/make
+make &amp;&amp; make install
+## 备份原版 make
+mv /usr/bin/make /usr/bin/make.bak
+## 创建软连接
+ln -s /usr/local/make/bin/make /usr/bin/make
+## 验证
+make -v
+</code></pre><h4 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h4><p><strong>1. 二进制方式安装</strong></p><pre><code class="bash">## 在系统源代码目录下载二进制分发压缩包
+cd /usr/local/src
+curl -LO https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-linux-x86_64.tar.gz
+## 解压 直接安装
+tar -xvf cmake-3.22.2.tar.gz
+mv cmake-3.22.2 /usr/local/cmake
+vim /etc/profile
+export PATH=&quot;/usr/local/cmake/bin:$PATH&quot;
+source /etc/profile
+cmake --version
+</code></pre><p><strong>2. 源码安装</strong></p><p>官网 <a target="_blank" rel="noopener" href="https://cmake.org/download/">Download | CMake</a> 获取最新版 cmake-x.xx.x.tar.gz 下载地址</p><pre><code class="bash">wget https://github.com/Kitware/CMake/releases/download/v3.23.0/cmake-3.23.0.tar.gz
+tar -zxvf cmake-3.23.0.tar.gz
+cd cmake-3.23.0/
+./configure --prefix=/usr/local/cmake
+make &amp;&amp; make install
+## 卸载原有 CMake
+yum -y remove cmake
+## 创建软连接
+ln -s /usr/local/cmake/bin/cmake /usr/bin/cmake
+## 配置环境变量
+vim /etc/profile
+export CMAKE_HOME=/usr/local/cmake
+export PATH=$PATH:$CMAKE_HOME/bin
+source /etc/profile
+## 检验
+cmake --version
+</code></pre><blockquote><p>CMake Error：Could not find OpenSSL 报错，可通过以下命令解决：yum install openssl-devel</p></blockquote><h4 id="Gflags"><a href="#Gflags" class="headerlink" title="Gflags"></a>Gflags</h4><pre><code class="bash">git clone https://github.com/gflags/gflags.git &amp;&amp; cd gflags
+mkdir build &amp;&amp; cd build
+cmake .. -DBUILD_SHARED_LIBS=ON
+make &amp;&amp; make install
+</code></pre><h4 id="Glog"><a href="#Glog" class="headerlink" title="Glog"></a>Glog</h4><pre><code class="bash">git clone https://github.com/google/glog.git &amp;&amp; cd glog
+cmake -S . -B build -G &quot;Unix Makefiles&quot;
+cmake --build build
+cmake --build build --target install  # optional
+</code></pre><h4 id="Gtest"><a href="#Gtest" class="headerlink" title="Gtest"></a>Gtest</h4><pre><code class="bash">git clone https://github.com/google/googletest.git &amp;&amp; cd googletest
+mkdir build &amp;&amp; cd build
+cmake ..
+make &amp;&amp; make install
+</code></pre><hr><h3 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h3><p><strong>1. 命令安装</strong></p><pre><code class="bash">sudo apt install mysql-server
+</code></pre><blockquote><p>通过<code>apt</code>安装的<code>mysql</code>已经默认开启服务，服务名叫做<code>mysql</code>，而非<code>mysqld</code></p></blockquote><p><strong>2. 登陆Mysql</strong></p><p>方法一：<code>sudo mysql</code></p><p>方法二：查看默认用户密码登陆</p><pre><code class="bash">sudo cat /etc/mysql/debian.cnf
+mysql -u debian-sys-maint -p
+</code></pre><p><strong>3. 本地Root用户</strong></p><ul><li>修改一个<code>host</code>字段为 <code>localhost</code> 的 root 用户密码（<code>localhost</code> 表示本机登录）</li><li>不需授予访问权限，因为默认已有</li></ul><pre><code class="bash">ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;新密码&#39;;
+FLUSH PRIVILEGES;
+</code></pre><p><strong>4. 远程Root用户</strong></p><ul><li>创建一个 <code>host</code> 字段为 <code>%</code> 的 root 用户（<code>%</code> 表示远程登陆）</li><li>授权所有数据库的访问权限</li></ul><pre><code class="bash">create user &#39;root&#39;@&#39;%&#39; identified by &#39;yourpassword&#39;;
+GRANT ALL PRIVILEGES ON *.* TO &#39;root&#39;@&#39;%&#39; WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+</code></pre><ul><li>开启远程连接，注释<code>bind-address</code></li></ul><pre><code class="bash">sudo systemctl stop mysql
+sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+# bind-address = 127.0.0.1
+sudo service mysql start
+</code></pre><p><strong>5. 查看用户信息</strong></p><pre><code class="bash">use mysql
+select host,user,authentication_string from user;
+</code></pre><p><strong>6. 常用命令</strong></p><p>服务状态管理</p><pre><code class="bash">service mysql status
+service mysql start
+service mysql restart
+service mysql stop
+</code></pre><p>卸载 MySQL</p><pre><code class="bash">### MySQL 5.7
+sudo apt-get remove mysql-common
+sudo apt-get autoremove --purge mysql-server-5.7
+### MySQL 8.0
+sudo apt-get autoremove mysql-server
+
+dpkg -l |grep ^rc|awk &#39;&#123;print $2&#125;&#39; |sudo xargs dpkg -P
+sudo apt-get autoremove --purge mysql-apt-config
+</code></pre><h3 id="Anaconda"><a href="#Anaconda" class="headerlink" title="Anaconda"></a>Anaconda</h3><p><strong>1. 环境管理</strong></p><ul><li>查看环境</li></ul><pre><code class="bash">conda info -e
+python -V
+</code></pre><ul><li>创建环境</li></ul><pre><code class="bash">## 创建一个环境名为py34，指定Python版本是3.4
+conda create --name py34 python=3.4
+</code></pre><ul><li>激活环境</li></ul><pre><code class="bash">## 在windows环境
+activate py34
+
+## 在Linux &amp; Mac中
+source activate py34
+</code></pre><ul><li>退出环境</li></ul><pre><code class="bash">## 在windows环境
+deactivate
+
+## 在Linux &amp; Mac中
+source deactivate
+</code></pre><ul><li>删除环境</li></ul><pre><code class="text">conda remove -n py34 --all
+</code></pre><p><strong>2. 包管理</strong></p><ul><li>换镜像</li></ul><pre><code class="bash">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --set show_channel_urls yes
+</code></pre><blockquote><p>进入指定的环境中进行包的安装，以pandas包为例</p></blockquote><ul><li>相关操作命令</li></ul><pre><code class="bash">#查看已安装
+conda list
+#检查包是否可以安装
+conda search pandas
+#安装更新卸载
+conda install pandas
+conda update pandas
+conda remove pandas
+</code></pre><ul><li>使用conda来管理conda和python的版本( 都视为包 )</li></ul><pre><code class="bash">conda update conda
+conda update anaconda
+#更新python为本系列最新版本
+conda update python
+</code></pre><h3 id="Rabbitmq"><a href="#Rabbitmq" class="headerlink" title="Rabbitmq"></a>Rabbitmq</h3><p><strong>1. 安装erlang</strong></p><pre><code class="bash">apt-get install erlang-nox     # 安装erlang
+erl    # 查看relang语言版本，成功执行则说明relang安装成功
+</code></pre><p><strong>2. 安装RabbitMQ</strong></p><pre><code class="bash">## 添加公钥
+wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
+apt-get update
+#安装成功自动启动
+apt-get install rabbitmq-server 
+</code></pre><p><strong>3. 管理RabbitMQ服务</strong></p><pre><code class="bash">systemctl status rabbitmq-server   #Active: active (running) 说明处于运行状态
+service rabbitmq-server start           # 启动
+service rabbitmq-server stop           # 停止
+service rabbitmq-server restart      # 重启 
+</code></pre><p><strong>4. 操作RabbitMQ命令</strong></p><pre><code class="bash">rabbitmqctl list_users										 # 查看用户
+rabbitmqctl list_queues              			# 查看队列
+rabbitmqctl add_user &#123;zero&#125; &#123;mypwd&#125;  				# 增加普通用户
+rabbitmqctl set_user_tags &#123;zero&#125; administrator  # 分配管理员角色 
+
+python rabbitmqadmin declare queue name=test  auto_delete=false durable=true  --username=xxx  --password=xxx
+</code></pre><blockquote><p><strong>创建队列方法</strong></p><ul><li>find &#x2F; -name rabbitmqadmin<br>cp &#x2F;rabbitmqadmin &#x2F;usr&#x2F;bin&#x2F;<br>或<br>登录<a target="_blank" rel="noopener" href="http://ip:15672/cli%E4%B8%8B%E8%BD%BDrabbitmqadmin%E5%88%B0/usr/sbin%E4%B8%8B">http://ip:15672/cli下载rabbitmqadmin到/usr/sbin下</a></li><li>chmod +x &#x2F;usr&#x2F;bin&#x2F;rabbitmqadmin</li></ul></blockquote><p><strong>5. 启用web可视化操作页面</strong></p><blockquote><p>通过<a href="http://ip:15672查看">http://ip:15672查看</a></p><p>本机使用默认账户guest&#x2F;guest 登录，服务器需创建账号登录</p></blockquote><pre><code class="bash">rabbitmq-plugins enable rabbitmq_management   # 启用插件
+service rabbitmq-server restart    # 重启
+</code></pre><hr><h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><blockquote><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/52fhy/p/9196527.html">使用 C++ SDK Hiredis 访问 redis</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/goldsunshine/p/17410148.html">Redis Stream</a></p></blockquote><p><strong>1. 下载源码解压</strong><br>wget <a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-5.0.5.tar.gz">http://download.redis.io/releases/redis-5.0.5.tar.gz</a><br>tar -xzf redis-5.0.5.tar.gz &amp;&amp; cd redis-5.0.5<br><strong>2. 编译</strong><br>yum -y install gcc gcc-c++ kernel-devel<br>make<br><strong>3. 安装</strong><br>make PREFIX&#x3D;&#x2F;usr&#x2F;local&#x2F;redis install<br>cp redis.conf &#x2F;usr&#x2F;local&#x2F;redis&#x2F;bin&#x2F;<br><strong>4. 更改配置</strong><br>vim &#x2F;usr&#x2F;local&#x2F;redis&#x2F;bin&#x2F;redis.conf</p><pre><code class="bash">## redis以守护进程的方式运行
+daemonize yes
+## 监听ip
+#bind 127.0.0.1 
+## 关闭保护模式
+protected-mode no
+## 设置密码授权
+requirepass &lt;password&gt;
+## 关闭RDB
+save &quot;&quot;
+#save 900 1
+#save 300 10
+#save 60 10000
+</code></pre><p><strong>5. 配置环境变量</strong><br>vim &#x2F;etc&#x2F;profile<br>export PATH&#x3D;”$PATH:&#x2F;usr&#x2F;local&#x2F;redis&#x2F;bin”<br>source &#x2F;etc&#x2F;profile<br><strong>6. 启动脚本</strong><br>.&#x2F;redis start|stop|restart</p><pre><code class="bash">#!/bin/bash
+REDISPORT=6379
+PATH=/usr/local/bin:/sbin:/usr/bin:/bin
+EXEC=/usr/local/redis/bin/redis-server
+REDIS_CLI=/usr/local/redis/bin/redis-cli
+PIDFILE=/var/run/redis_$REDISPORT.pid
+CONF=&quot;/usr/local/redis/bin/redis.conf&quot;
+
+case &quot;$1&quot; in
+   start)
+      if [ -f $PIDFILE ]; then
+         echo &quot;$PIDFILE exists, process is already running or crashed&quot;
+      else
+         echo &quot;Starting Redis server...&quot;
+         $EXEC $CONF
+      fi
+      if [ &quot;$?&quot;=&quot;0&quot; ]; then
+         echo &quot;Redis is running...&quot;
+      fi
+      ;;
+   stop)
+      if [ ! -f $PIDFILE ]; then
+         echo &quot;$PIDFILE does not exist, process is not running&quot;
+      else
+         PID=$(cat $PIDFILE)
+         echo &quot;Stopping ...&quot;
+         $REDIS_CLI -p $REDISPORT SHUTDOWN
+         while [ -x $&#123;PIDFILE&#125; ]; do
+            echo &quot;Waiting for Redis to shutdown ...&quot;
+            sleep 1
+         done
+         echo &quot;Redis stopped&quot;
+      fi
+      ;;
+   restart)
+         $&#123;0&#125; stop
+         $&#123;0&#125; start
+      ;;
+   *)
+      echo &quot;Usage: $0 &#123;start|stop|restart&#125;&quot; &gt;&amp;2
+      exit 1
+esac
+</code></pre><hr><h3 id="Linux通过tar包安装软件"><a href="#Linux通过tar包安装软件" class="headerlink" title="Linux通过tar包安装软件"></a>Linux通过tar包安装软件</h3><ol><li><p>解压下载文件并移动到安装文件夹内<code>/opt/demo</code></p></li><li><p>为启动文件建立软Link(注意修改.sh中路径)</p></li></ol><pre><code class="bash">#注意相对路径问题！
+sudo ln -s /opt/demo/run.sh  /usr/bin/demo
+</code></pre><ol start="3"><li>添加第三方软件图标</li></ol><pre><code class="bash">sudo vim /usr/share/applications/demo.desktop
+#在demo.desktop中编辑如下代码
+</code></pre><pre><code class="text">[Desktop Entry]
+Encoding=UTF-8
+Name=demo
+Exec=demo
+Icon=/opt/demo/icon.png 
+Terminal=false
+Type=Application
+Categories=Development;
+</code></pre><hr><h3 id="软件激活"><a href="#软件激活" class="headerlink" title="软件激活"></a>软件激活</h3><h4 id="Office365"><a href="#Office365" class="headerlink" title="Office365"></a><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv10410012/">Office365</a></h4><h4 id="Navicat"><a href="#Navicat" class="headerlink" title="Navicat"></a>Navicat</h4><blockquote><p>指令下载过程中容易失败，手动下载或挂梯子</p><p>注意教程中指令的工作目录</p></blockquote><ol><li>下载<a target="_blank" rel="noopener" href="https://www.navicat.com.cn/download/navicat-premium">官方版</a></li><li>激活<a target="_blank" rel="noopener" href="https://gitee.com/andisolo/navicat-keygen">Ubuntu</a>或<a target="_blank" rel="noopener" href="https://www.98wg.cn/wlrj/807.html">Win10</a>平台</li></ol><h4 id="Sublime-text"><a href="#Sublime-text" class="headerlink" title="Sublime text"></a><a target="_blank" rel="noopener" href="https://www.pythonblogs.com/sublime-text-license-key/">Sublime text</a></h4><h4 id="Vscode-MonoKai-Pro"><a href="#Vscode-MonoKai-Pro" class="headerlink" title="Vscode MonoKai Pro"></a>Vscode MonoKai Pro</h4><ol><li>生成license key</li></ol><pre><code class="bash">email=yourMail@mail.com
+echo -n fd330f6f-3f41-421d-9fe5-de742d0c54c0$email | md5sum | cut -c1-25 | sed &#39;s/.\&#123;5\&#125;/&amp;-/g;s/-$//g&#39;
+</code></pre><ol start="2"><li>打开VS Code的命令面板，ctrl+shift+p</li><li>输入 Monokai Pro: enter license</li><li>依次输入 email 和 lincese key</li></ol><h4 id="gpedit-msc"><a href="#gpedit-msc" class="headerlink" title="gpedit.msc"></a>gpedit.msc</h4><pre><code>@echo off
+pushd &quot;%~dp0&quot;
+dir /b %systemroot%\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~3*.mum &gt;gp.txt
+dir /b %systemroot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~3*.mum &gt;&gt;gp.txt
+for /f %%i in (&#39;findstr /i . gp.txt 2^&gt;nul&#39;) do dism /online /norestart /add-package:&quot;%systemroot%\servicing\Packages\%%i&quot;
+pause
+</code></pre><hr><h3 id="Ventoy多合一启动盘"><a href="#Ventoy多合一启动盘" class="headerlink" title="Ventoy多合一启动盘"></a><a target="_blank" rel="noopener" href="https://www.iplaysoft.com/ventoy.html">Ventoy多合一启动盘</a></h3><hr><h3 id="GNOME美化"><a href="#GNOME美化" class="headerlink" title="GNOME美化"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/YV_LING/article/details/122785030">GNOME美化</a></h3><hr><h3 id="Windows相关"><a href="#Windows相关" class="headerlink" title="Windows相关"></a>Windows相关</h3><p><strong>1. 安全模式启动</strong></p><p><code>WIN + R</code> -&gt; <code>msconfig</code> 打开系统配置</p><ul><li>引导 -&gt; 安全引导 -&gt; 重启即进入安全模式</li><li>常规 -&gt; 正常启动 -&gt; 重启即进入正常系统</li></ul><p><strong>2. 卸载 ESET</strong></p><p>在安全模式下，打开终端运行 esetuninstaller.exe，按提示操作</p><p><strong>3. 环境变量生效</strong></p><pre><code class="bash">set PATH=C
+echo %PATH%  # 重启cmd
+</code></pre><p><strong>4. Edge&#x2F;Chrome切换最近标签页</strong></p><ul><li>需求：按<code>ctrl</code>+<code>tab</code>切换最近两个标签页</li><li>问题：默认只能每次切换到下一个标签页，且不允许被扩展的切换标签页快捷键所覆盖</li><li>解决：安装<a target="_blank" rel="noopener" href="https://fwextensions.github.io/QuicKey/ctrl-tab/">QuicKey</a>，按页面中 <code>Option 1</code> 的步骤执行（最后用开发者工具设置扩展快捷键）</li></ul><hr><h3 id="Ubuntu相关"><a href="#Ubuntu相关" class="headerlink" title="Ubuntu相关"></a>Ubuntu相关</h3><p><strong>1. 无法访问部分网页</strong></p><p>问题描述：双系统win可以，但Ubuntu很多网页如CSDN无法访问</p><p>解决方案：Ubuntu网卡的MTU设置不当，改为1412（尝试值）即可</p><pre><code class="bash">## 查看网卡名称，如wlp0s20f3
+ifconfig
+## 设置MTU大小
+sudo ifconfig wlp0s20f3 mtu 1412   
+## 若此时问题解决，新建脚本让网卡每次启动时自动设置MTU
+sudo vim /etc/network/if-up.d/setmtu
+#!/bin/sh
+ifconfig &quot;$IFACE&quot; mtu 1412
+sudo chmod a+x /etc/network/if-up.d/setmtu
+</code></pre><p><strong>2. 开关机异常缓慢</strong></p><ul><li>开机动画</li></ul><pre><code class="bash">sudo systemctl mask plymouth-quit-wait.service
+##关闭mask 开启unmask
+</code></pre><ul><li>关机重启等待 90 秒</li></ul><pre><code class="bash">sudo vim /etc/systemd/system.conf
+### 修改为1s
+DefaultTimeoutStartSec=1s
+DefaultTimeoutStopSec=1s
+### 使其生效
+sudo systemctl daemon-reload
+sudo reboot
+</code></pre><p><strong>3. 双系统扩容</strong><br>预留给 Ubuntu 系统的预留空间不足时需要扩容，可 <a target="_blank" rel="noopener" href="https://blog.csdn.net/Carina_Cao/article/details/90270389">参考流程</a> 与 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av25957885/">gparted使用方法</a></p><ul><li>启动盘进入系统，使用自带的<code>gparted</code>分区工具</li><li>将多余空间分区并格式化</li><li>通过一系列对未分配分区的调换，移到待扩容分区后方相邻合并</li></ul><p><strong>4. Linux开机挂载硬盘</strong></p><pre><code class="bash">##修改开机配置
+sudo vim /etc/fstab
+##添加如下一行
+UUID=[1] [2] [3] defaults 0 1
+##测试是否正确
+mount -a
+</code></pre><ul><li>通过<code>sudo blkid</code>查看C盘UUID，如C8086A73086A6104</li><li>挂载目录如<code>/media/yveltal/LENOVO</code></li><li>文件系统类型，如win为<code>ntfs</code></li></ul><hr><h3 id="IOS相关"><a href="#IOS相关" class="headerlink" title="IOS相关"></a>IOS相关</h3><p><strong>1. IOS越狱</strong></p><ul><li><a target="_blank" rel="noopener" href="https://checkra.in/releases/">下载</a>Linux x86_64版本</li><li>chmod 777 ，sudo .&#x2F;checkra1n</li><li>设置允许越狱未测试的iOS新版本</li><li>开机后用4G安装Cydia</li></ul><p>​	<img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ios_uncover.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ios_uncover.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><p><strong>2. IOS跳ID锁</strong></p><ul><li><p>通过爱思助手打开SSH通道</p></li><li><p>打开激活工具，按提示选择数字进行激活</p></li><li><p>激活完毕后，会发现IOS跳过了验证环节，可以直接进入桌面</p></li></ul><p>​	<img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ios_skipID.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ios_skipID.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><hr><h3 id="Android相关"><a href="#Android相关" class="headerlink" title="Android相关"></a>Android相关</h3><p><strong>1. 去APK弹窗</strong></p><ul><li>MT管理器查看apk，用dex编辑器++打开dex文件(全选)</li><li>搜索内容<code>show</code>，搜索类型<code>代码</code> （或搜弹窗内容等）</li><li>找到类似<code>invoke-virtual&#123;v0&#125;,LandroidlapplAlertDialog$Builder;-&gt;show()Landroidl...</code></li><li>点击跳转到相应代码，用<code>#</code>注释该句</li></ul><p><strong>2. 去APK浮窗</strong></p><ul><li>同理搜索相应浮窗内容，搜索类型<code>字符串</code></li><li>跳转将对应方法注释</li></ul><hr><h3 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h3><p><strong>代码字体</strong> ‘Droid Sans Mono’,’monospace’, monospace,’Droid Sans Fallback’</p><p><strong>图片压缩</strong></p><pre><code class="bash">jpegoptim --size=700k xxxx.jpg
+</code></pre></div><div class="footer"></div><div class="article-meta" id="bottom"><div class="new-meta-box"><div class="new-meta-item date" itemprop="dateModified" datetime="2024-06-04T11:04:26+08:00"><a class="notlink"><i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i><p>更新于：Jun 4, 2024</p></a></div><div class="new-meta-item meta-tags"><a class="tag" href="/tags/Other/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Other</p></a></div><span hidden itemprop="keywords">Other</span></div></div><div class="prev-next"><a class="prev" href="/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"><p class="title"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>进程线程与中断</p><p class="content">进程与线程的区别老八股版本 一个线程属于一个进程，一个进程包含多个线程 进程是资源分配的基本单位 有独立的地址空间，拥有CPU资源、内存资源、文件资源等 线程是CPU调度的基本单位 私有（...</p></a><a class="next" href="/2023/07/26/Distribution/Zookeeper/"><p class="title">Zookeeper<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p><p class="content">ZooKeeper 由 Yahoo 开发，后来捐赠给了 Apache ，现已成为 Apache 顶级项目。ZooKeeper 是一个开源的分布式应用程序协调服务器，其为分布式系统提供一致性服务。...</p></a></div></article></div><aside id="l_side" itemscope itemtype="http://schema.org/WPSideBar"><div class="widget-sticky pjax"><section class="widget toc-wrapper desktop mobile" id="toc-div"><header><i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class="name">本文目录</span></header><div class="content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Centos%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">Centos开发环境</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Env-Proxy"><span class="toc-number">1.1.</span> <span class="toc-text">Env &amp; Proxy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GCC"><span class="toc-number">1.2.</span> <span class="toc-text">GCC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDB"><span class="toc-number">1.3.</span> <span class="toc-text">GDB</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Make"><span class="toc-number">1.4.</span> <span class="toc-text">Make</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CMake"><span class="toc-number">1.5.</span> <span class="toc-text">CMake</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gflags"><span class="toc-number">1.6.</span> <span class="toc-text">Gflags</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Glog"><span class="toc-number">1.7.</span> <span class="toc-text">Glog</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gtest"><span class="toc-number">1.8.</span> <span class="toc-text">Gtest</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mysql"><span class="toc-number">2.</span> <span class="toc-text">Mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Anaconda"><span class="toc-number">3.</span> <span class="toc-text">Anaconda</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rabbitmq"><span class="toc-number">4.</span> <span class="toc-text">Rabbitmq</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis"><span class="toc-number">5.</span> <span class="toc-text">Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E9%80%9A%E8%BF%87tar%E5%8C%85%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6"><span class="toc-number">6.</span> <span class="toc-text">Linux通过tar包安装软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E6%BF%80%E6%B4%BB"><span class="toc-number">7.</span> <span class="toc-text">软件激活</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Office365"><span class="toc-number">7.1.</span> <span class="toc-text">Office365</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Navicat"><span class="toc-number">7.2.</span> <span class="toc-text">Navicat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sublime-text"><span class="toc-number">7.3.</span> <span class="toc-text">Sublime text</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vscode-MonoKai-Pro"><span class="toc-number">7.4.</span> <span class="toc-text">Vscode MonoKai Pro</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gpedit-msc"><span class="toc-number">7.5.</span> <span class="toc-text">gpedit.msc</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ventoy%E5%A4%9A%E5%90%88%E4%B8%80%E5%90%AF%E5%8A%A8%E7%9B%98"><span class="toc-number">8.</span> <span class="toc-text">Ventoy多合一启动盘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GNOME%E7%BE%8E%E5%8C%96"><span class="toc-number">9.</span> <span class="toc-text">GNOME美化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows%E7%9B%B8%E5%85%B3"><span class="toc-number">10.</span> <span class="toc-text">Windows相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ubuntu%E7%9B%B8%E5%85%B3"><span class="toc-number">11.</span> <span class="toc-text">Ubuntu相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IOS%E7%9B%B8%E5%85%B3"><span class="toc-number">12.</span> <span class="toc-text">IOS相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android%E7%9B%B8%E5%85%B3"><span class="toc-number">13.</span> <span class="toc-text">Android相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Other"><span class="toc-number">14.</span> <span class="toc-text">Other</span></a></li></ol></div></section></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div></aside><pjax><script>window.pdata={},pdata.ispage=!0,pdata.commentPath="",pdata.commentPlaceholder="",pdata.commentConfig={};var l_header=document.getElementById("l_header");l_header.classList.remove("show");var cover_wrapper=document.querySelector("#l_cover .cover-wrapper"),scroll_down=document.getElementById("scroll-down");cover_wrapper.id="half",cover_wrapper.style.display="",scroll_down.style.display="none"</script></pjax></div><footer class="footer clearfix" itemscope itemtype="http://schema.org/WPFooter"><br><br></footer><a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return!1" title="top"></a></div></div><div><script>volantis.dom.bodyAnchor=volantis.dom.$(document.getElementById("safearea")),volantis.dom.topBtn=volantis.dom.$(document.getElementById("s-top")),volantis.dom.wrapper=volantis.dom.$(document.getElementById("wrapper")),volantis.dom.coverAnchor=volantis.dom.$(document.querySelector("#l_cover .cover-wrapper")),volantis.dom.switcher=volantis.dom.$(document.querySelector("#l_header .switcher .s-search")),volantis.dom.header=volantis.dom.$(document.getElementById("l_header")),volantis.dom.search=volantis.dom.$(document.querySelector("#l_header .m_search")),volantis.dom.mPhoneList=volantis.dom.$(document.querySelectorAll("#l_header .m-phone .list-v"))</script><script>volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css")</script><script src="/js/app.js"></script><script>const rootElement=document.documentElement,darkModeStorageKey="color-scheme",rootElementDarkModeAttributeName="color-scheme",setLS=(e,t)=>{localStorage.setItem(e,t)},removeLS=e=>{localStorage.removeItem(e)},getLS=e=>localStorage.getItem(e),getModeFromCSSMediaQuery=()=>window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",resetRootDarkModeAttributeAndLS=()=>{var e;rootElement.removeAttribute("color-scheme"),e="color-scheme",localStorage.removeItem(e)},validColorModeKeys={dark:!0,light:!0},applyCustomDarkModeSettings=e=>{const t=e||getLS("color-scheme");getCustomDarkMode(),t===getModeFromCSSMediaQuery()?resetRootDarkModeAttributeAndLS():validColorModeKeys[t]?rootElement.setAttribute("color-scheme",t):resetRootDarkModeAttributeAndLS()},invertDarkModeObj={dark:"light",light:"dark"},getCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}volantis.dark.mode="dark"==e?"light":"dark"},toggleCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}var t,o;return t="color-scheme",o=e,localStorage.setItem(t,o),e};function bindToggleButton(){document.querySelectorAll("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn").forEach((function(e){volantis.dom.$(e).on("click",volantis.dark.toggle)}))}volantis.dark.toggle=()=>{const e=toggleCustomDarkMode();applyCustomDarkModeSettings(e),volantis.dark.method.toggle.start()},applyCustomDarkModeSettings(),document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(bindToggleButton)}),volantis.pjax.push(bindToggleButton);const darkModelListeners={dark:e=>{e.matches&&(volantis.dark.mode="dark"),volantis.dark.method.toggle.start()},light:e=>{e.matches&&(volantis.dark.mode="light"),volantis.dark.method.toggle.start()}};window.matchMedia("(prefers-color-scheme: dark)").addListener(darkModelListeners.dark),window.matchMedia("(prefers-color-scheme: light)").addListener(darkModelListeners.light)</script><script>function loadIssuesJS(){null!=document.getElementById("sites-api")&&"undefined"==typeof SitesJS&&volantis.js("/js/plugins/tags/sites.js");null!=document.getElementById("friends-api")&&"undefined"==typeof FriendsJS&&volantis.js("/js/plugins/tags/friends.js");null!=document.getElementById("contributors-api")&&"undefined"==typeof ContributorsJS&&volantis.js("/js/plugins/tags/contributors.js")}loadIssuesJS(),volantis.pjax.push(()=>{loadIssuesJS()})</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script><script>window.lazyLoadOptions={elements_selector:".lazyload",threshold:0},window.addEventListener("LazyLoad::Initialized",(function(n){window.lazyLoadInstance=n.detail.instance}),!1),document.addEventListener("DOMContentLoaded",(function(){lazyLoadInstance.update()})),document.addEventListener("pjax:complete",(function(){lazyLoadInstance.update()}))</script><script>window.FPConfig={delay:0,ignoreKeywords:["#"],maxRPS:6,hoverDelay:0}</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script><script>const SearchServiceDataPathRoot="/".endsWith("/")?"/":"//",SearchServiceDataPath=SearchServiceDataPathRoot+"content.json";function loadSearchScript(){return volantis.js("/js/search/hexo.js")}function loadSearchService(){loadSearchScript(),document.querySelectorAll(".input.u-search-input").forEach(e=>{e.removeEventListener("focus",loadSearchService,!1)}),document.querySelectorAll(".u-search-form").forEach(e=>{e.addEventListener("submit",e=>{e.preventDefault()},!1)})}function OpenSearch(e){"undefined"==typeof SearchService?loadSearchScript().then(()=>{SearchService.setQueryText(e),SearchService.search()}):(SearchService.setQueryText(e),SearchService.search())}if(window.location.search&&/^\?s=/g.test(window.location.search)){OpenSearch(decodeURI(window.location.search).replace(/\ /g,"-").replace(/^\?s=/g,""))}document.querySelectorAll(".input.u-search-input").forEach(e=>{e.addEventListener("focus",loadSearchService,!1)})</script><script>function pjax_highlightjs_copyCode(){(document.querySelector(".highlight .code pre")||document.querySelector(".article pre code"))&&VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")}volantis.css("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/default.min.css"),volantis.js("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js").then(()=>{volantis.requestAnimationFrame(hljs.highlightAll)}),volantis.pjax.push(()=>{document.querySelectorAll("pre code").forEach(e=>{hljs.highlightElement(e)})},"highlightjs"),volantis.requestAnimationFrame(pjax_highlightjs_copyCode),volantis.pjax.push(pjax_highlightjs_copyCode)</script><script>let imgs=["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"],index=0,IntervalParallax=null;function parallax(){let a=document.querySelector("#parallax-window");a=document.querySelector("html"),Parallax.window=a,Parallax.options.fade=1e3,Parallax.cache=1,next_parallax(),Parallax.init(),imgs.length>1&&(IntervalParallax=setInterval((function(){next_parallax()}),"20000"))}function next_parallax(){"undefined"!=typeof Parallax&&imgs.length>=1&&(Parallax.options.src=imgs[index%imgs.length],Parallax.start(),index++,Parallax.cache&&(fetch(imgs[index%imgs.length]+"?t="+(new Date).getTime()),index==imgs.length&&(Parallax.cache=0)))}var runningOnBrowser="undefined"!=typeof window,isBot=runningOnBrowser&&!("onscroll"in window)||"undefined"!=typeof navigator&&/(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);isBot||(volantis.js("/js/plugins/parallax.js").then(()=>{parallax()}),volantis.pjax.send(()=>{clearInterval(IntervalParallax)},"clearIntervalParallax"),volantis.pjax.push(parallax))</script><script>function load_swiper(){document.querySelectorAll(".swiper-container")[0]&&(volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css"),volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(()=>{pjax_swiper()}))}function pjax_swiper(){volantis.swiper=new Swiper(".swiper-container",{slidesPerView:"auto",spaceBetween:8,centeredSlides:!0,loop:!0,pagination:{el:".swiper-pagination",clickable:!0},navigation:{nextEl:".swiper-button-next",prevEl:".swiper-button-prev"}})}load_swiper(),volantis.pjax.push(()=>{document.querySelectorAll(".swiper-container")[0]&&(void 0===volantis.swiper?load_swiper():pjax_swiper())})</script><pjax></pjax><script>function listennSidebarTOC(){const t=document.querySelectorAll(".toc li");if(!t.length)return;let e=[];[...t].map(t=>{const n=t.querySelector(".toc-link"),i=document.getElementById(decodeURI(n.getAttribute("href")).replace("#",""));return e.push(i),n.setAttribute("onclick","return false;"),n.setAttribute("toc-action","toc-"+decodeURI(n.getAttribute("href")).replace("#","")),n.setAttribute("href","/"),n.addEventListener("click",t=>{t.preventDefault(),volantis.scroll.to(i,{addTop:5,observer:!0}),history.pushState(null,document.title,"#"+i.id)}),i});function n(t){if(t.classList.contains("active-current"))return;document.querySelectorAll(".toc .active").forEach(t=>{t.classList.remove("active","active-current")}),t.classList.add("active","active-current");let e=t.parentNode;for(;!e.matches(".toc");)e.matches("li")&&e.classList.add("active"),e=e.parentNode}volantis.activateNavIndex=0,n(t[volantis.activateNavIndex]),volantis.scroll.push(()=>{if(e[0].getBoundingClientRect().top>=0)volantis.activateNavIndex=0;else if(e[e.length-1].getBoundingClientRect().top<0)volantis.activateNavIndex=e.length-1;else for(let t=0;t<e.length;t++){const n=e[t],i=e[(t+1)%e.length];if(n.getBoundingClientRect().top<0&&i.getBoundingClientRect().top>=0){volantis.activateNavIndex=t;break}}n(t[volantis.activateNavIndex])})}document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(listennSidebarTOC)}),document.addEventListener("pjax:success",()=>{volantis.requestAnimationFrame(listennSidebarTOC)})</script><script>document.onreadystatechange=function(){if("complete"==document.readyState){const{saveData:e,effectiveType:t}=navigator.connection||navigator.mozConnection||navigator.webkitConnection||{};("none"==getComputedStyle(document.querySelector("#safearea"),null).display||e||/2g/.test(t))&&(document.querySelectorAll(".reveal").forEach((function(e){e.style.opacity="1"})),document.querySelector("#safearea").style.display="block")}}</script><script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Other/","name":"Other"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/07/27/Other/Notes/","name":"Notes"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Notes","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/07/27/Other/Notes/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/07/27/Other/Notes/","wordCount":0,"datePublished":"2023-07-27T09:39:04.000Z","dateModified":"2024-06-04T03:04:26.162Z","articleSection":"Other","keywords":"Other","image":{"@type":"ImageObject","url":"/img/zekrom.jpg","width":1024,"height":768}}]</script><script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script><script>var pjax;document.addEventListener("DOMContentLoaded",(function(){pjax=new Pjax({elements:'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',selectors:["head title","head meta[name=keywords]","head meta[name=description]","#l_main","#pjax-header-nav-list",".pjax","pjax","script[data-pjax], .pjax-reload script"],cacheBust:!1,timeout:5e3})})),document.addEventListener("pjax:send",(function(e){try{var t=window.location.pathname,n=e.triggerElement.href,a=[""];""!=a[0]&&a.forEach(e=>{-1==t.indexOf(e)&&-1==n.indexOf(e)||(window.location.href=n)})}catch(e){}volantis.pjax.method.send.start()})),document.addEventListener("pjax:complete",(function(){volantis.pjax.method.complete.start()})),document.addEventListener("pjax:error",(function(e){volantis.debug?(console.error(e),console.log("pjax error: \n"+JSON.stringify(e))):(volantis.pjax.method.error.start(),window.location.href=e.triggerElement.href)}))</script></div></body></html>

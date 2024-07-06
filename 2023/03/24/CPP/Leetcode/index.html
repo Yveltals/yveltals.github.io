@@ -1,0 +1,1137 @@
+<!DOCTYPE html><html lang="en"><head hexo-theme="https://github.com/volantis-x/hexo-theme-volantis/#5.8.0"><meta name="generator" content="Hexo 6.3.0"><meta name="Volantis" content="5.8.0"><meta charset="utf-8"><link rel="canonical" href="http://example.com/2023/03/24/cpp/leetcode/"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://unpkg.com"><link rel="preconnect" href="https://unpkg.com" crossorigin><meta name="renderer" content="webkit"><meta name="force-rendering" content="webkit"><meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><meta name="HandheldFriendly" content="True"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><link rel="preload" href="/css/style.css" as="style"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><title>Leetcode - Hexo</title><meta name="keywords" content="null"><meta desc name="description" content="Hexo - John Doe - Hexo">int l=i; //相同元素左边界
+while(i+1&lt;n &amp;&amp; a[i+1]==a[i]) 
+    i++; //到相同元素右边界
+i++;     //到不同元素
+</code></pre><h2 id="FindK"><a href="#FindK" class="headerlink" title="FindK"></a>FindK</h2><p>找两个有序数组中第K大</p><pre><code class="cpp">int findK(vector&lt;int&gt;&amp; a,vector&lt;int&gt;&amp; b,int k)&#123;
+    int m=a.size(), n=b.size();
+    int i=0,j=0;
+    while(true)&#123;
+        if(i==m) return b[j+k-1];
+        if(j==n) return a[i+k-1];
+        if(k==1) return min(a[i],b[j]);
+
+        int ir=min(m-1,i+k/2-1);
+        int jr=min(n-1,j+k/2-1);
+        if(a[ir]&lt;=b[jr])&#123;
+            k -= ir+1-i;
+            i = ir+1;
+        &#125;else&#123;
+            k -= jr+1-j;
+            j = jr+1;
+        &#125;
+    &#125;
+&#125;
+</code></pre><p>找[1,n]中字典序第K大</p><pre><code class="cpp">ll get_count(ll prefix,ll n)&#123;
+    ll cnt=0;
+    for(ll a=prefix,b=prefix+1;a&lt;=n;a*=10,b*=10)&#123;
+        cnt += min(n+1,b)-a;
+    &#125;
+    return cnt;
+&#125;
+int findKthNumber(int n, int k) &#123;
+    int prefix=1, p=1; //当前字典序第p个
+    while(p&lt;k)&#123;
+        ll cnt=get_count(prefix,n);
+        if(p+cnt&gt;k)&#123;
+            prefix*=10; //字典序相邻下一个
+            p++;
+        &#125;else&#123;
+            prefix++;  //跳过prefix开头的cnt个
+            p+=cnt;
+        &#125;
+    &#125;
+    return prefix;
+&#125;
+</code></pre><p>找第K小的元素</p><pre><code class="cpp">int key;
+void Qsort(int a[], int l ,int r)&#123;
+  while(l&lt;=r)&#123;
+    int pivot = Part(a,l,r);
+    if(pivot==key) do();
+    else if(pivot&gt;key) r=pivot-1;
+    else l=pivot+1;
+  &#125;
+&#125;
+int Part(int a[], int l, int r)&#123;
+  int pivot = a[l];
+  while(l&lt;r)&#123;
+    while(l&lt;r &amp;&amp; a[r]&gt;=pivot) r--;
+    a[l]=a[r];
+    while(l&lt;r &amp;&amp; a[l]&lt;=pivot) l++;
+    a[r]=a[l];
+  &#125;
+  a[l] = pivot;
+  return l;
+&#125;
+</code></pre><h2 id="Dijkstra"><a href="#Dijkstra" class="headerlink" title="Dijkstra"></a>Dijkstra</h2><pre><code class="cpp">int n;
+vector&lt;int&gt; vis,dis;
+vector&lt;vector&lt;int&gt;&gt; g;  // 邻接矩阵
+void dijkstra(int start)&#123;
+    vis.assign(n, 0);
+    dis.assign(n, INT_MAX);
+    dis[start]=0;
+    while (true) &#123;
+        int nearest_id = -1, min_dis = INT_MAX;
+        for (int i = 0; i &lt; n; ++i)&#123;
+            if (!vis[i] &amp;&amp; dis[i] &lt; min_dis)&#123;
+                min_dis = dis[i];
+                nearest_id=i;
+            &#125;
+        &#125;
+        if (nearest_id &lt; 0) break;
+        vis[nearest_id] = 1;
+        for (int i = 0; i &lt; n; ++i) &#123;
+            if(!vis[i] &amp;&amp; g[nearest_id][i] &lt; INT_MAX)&#123;
+                dis[i] = min(dis[i], dis[nearest_id] + g[nearest_id][i]);
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><h3 id="归并"><a href="#归并" class="headerlink" title="归并"></a>归并</h3><blockquote><p>在merge过程中，易知两子数组元素大小的个数关系，如以下两题</p><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/">数组中的逆序对</a> <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/count-of-smaller-numbers-after-self/">计算右侧小于当前元素的个数</a></p></blockquote><pre><code class="cpp">vector&lt;int&gt; tmp;
+vector&lt;int&gt; sortArray(vector&lt;int&gt;&amp; nums) &#123;
+    tmp = vector&lt;int&gt;(nums.size());
+    mergesort(nums,0,nums.size()-1);
+    return nums;
+&#125;
+void mergesort(vector&lt;int&gt;&amp; nums, int l ,int r)&#123;
+    if(l&lt;r)&#123;
+        int m=l+r&gt;&gt;1;
+        mergesort(nums,l,m);
+        mergesort(nums,m+1,r);
+        merge(nums,l,m,r);
+    &#125;
+&#125;
+void merge(vector&lt;int&gt;&amp; nums,int l,int m,int r)&#123;
+    int i=l,j=m+1,k=l;
+    while(i&lt;=m &amp;&amp; j&lt;=r)&#123;
+        if(nums[i]&lt;=nums[j]) tmp[k++]=nums[i++]; //求解逆序对 ans += j-m-1;
+        else tmp[k++]=nums[j++];
+    &#125;
+    while(i&lt;=m) tmp[k++]=nums[i++];
+    while(j&lt;=r) tmp[k++]=nums[j++];
+    for(int i=l;i&lt;=r;++i) nums[i]=tmp[i];
+&#125;
+</code></pre><h3 id="堆排"><a href="#堆排" class="headerlink" title="堆排"></a>堆排</h3><pre><code class="cpp">void adjust(vector&lt;int&gt;&amp; a,int len,int i)&#123;
+    int l=i*2+1, r=l+1, maxId=i;
+    if(l&lt;len &amp;&amp; a[maxId]&lt;a[l]) maxId=l;
+    if(r&lt;len &amp;&amp; a[maxId]&lt;a[r]) maxId=r;
+    if(maxId!=i)&#123;
+        swap(a[i],a[maxId]);
+        adjust(a,len,maxId);
+    &#125;
+&#125;
+void hsort(vector&lt;int&gt;&amp; a)&#123;
+    for(int i=a.size()/2-1;i&gt;=0;--i)&#123;
+        adjust(a,a.size(),i);
+    &#125;
+    for(int i=a.size()-1;i&gt;0;--i)&#123;
+        swap(a[0],a[i]);
+        adjust(a,i,0);
+    &#125;
+&#125;
+</code></pre><h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><pre><code class="cpp">bool articleMatch(string s, string p) &#123;
+  int m = s.size(), n = p.size();
+  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
+  auto check = [&amp;] (int i, int j) &#123;
+    if (!i || !j) return false;
+    if (p[j - 1] == &#39;.&#39;) return true;
+    return p[j - 1] == s[i - 1];
+  &#125;;
+  dp[0][0] = 1;
+  for (int i = 0; i &lt;= m; ++i) &#123;  // &quot;&quot; match &quot;A**&quot;
+    for (int j = 1; j &lt;= n; ++j) &#123;
+      if (p[j - 1] != &#39;*&#39;) &#123;
+        dp[i][j] |= check(i, j) &amp;&amp; dp[i - 1][j - 1];
+      &#125; else &#123;
+        // *匹配0个
+        dp[i][j] |= dp[i][j - 2];
+        // s[i-1] = p[j-2], 各抵消一个字符a后，S对应前i-1，而P的a*是无限个，j不减
+        dp[i][j] |= check(i, j - 1) &amp;&amp; dp[i - 1][j];
+      &#125;
+    &#125;
+  &#125;
+  return dp[m][n];
+&#125;
+</code></pre><h3 id="子序列问题"><a href="#子序列问题" class="headerlink" title="子序列问题"></a>子序列问题</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-increasing-subsequence/">最长递增子序列</a>（贪心+二分）：返回最长递增子序列（字典序）</p><pre><code class="cpp">//  返回长度 &amp; 输出任意序列
+int lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
+  int n = nums.size(), len = 1;
+  vector&lt;int&gt; d(n + 1, -1);  // d[i] 维护当前长度为 len 的 LIS
+  d[1] = nums[0];
+  for (int i = 1; i &lt; n; ++i) &#123;
+    if (nums[i] &gt; d[len]) &#123;
+      d[++len] = nums[i];
+    &#125; else &#123;
+      auto it = lower_bound(d.begin() + 1, d.begin() + len + 1, nums[i]);
+      *it = nums[i];
+    &#125;
+  &#125;
+  return len;
+&#125;
+// 返回字典序最小的序列
+vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
+  int n = nums.size(), len = 1;
+  vector&lt;int&gt; d(n + 1, -1);  // d[i] 维护当前长度为 len 的 LIS
+  vector&lt;int&gt; p(n);  // p[i]: nums[i] 在 d 中的下标
+  d[1] = nums[0];
+  for (int i = 1; i &lt; n; ++i) &#123;
+    if (nums[i] &gt; d[len]) &#123;
+      d[++len] = nums[i];
+      p[i] = len;
+    &#125; else &#123;
+      auto it = lower_bound(d.begin() + 1, d.begin() + len + 1, nums[i]);
+      *it = nums[i];
+      p[i] = it - d.begin();
+    &#125;
+  &#125;
+  vector&lt;int&gt; lis(len);
+  for (int i = n - 1; i &gt;= 0; --i) &#123;
+    if (p[i] == len) &#123;
+      lis[--len] = nums[i];
+    &#125;
+  &#125;
+  return lis;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-common-subsequence/">1143. 最长公共子序列</a>：返回两个字符串的最长公共序列</p><blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/delete-operation-for-two-strings/">583. 两个字符串的删除操作</a>：求出最长公共序列后，相减则得出删几个字符使两者相同</p></blockquote><p>方案一：二维DP空间 + 输出全部LCS路径</p><pre><code class="c++">int longestCommonSubsequence(string text1, string text2) &#123;
+  int m = text1.size(), n = text2.size();
+  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1));
+  for (int i = 1; i &lt;= m; ++i) &#123;
+    for (int j = 1; j &lt;= n; ++j) &#123;
+      if (text1[i - 1] == text2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+      else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+    &#125;
+  &#125;
+  int len = dp[m][n];
+  vector&lt;string&gt; paths;  // 保存LCS序列
+  
+  function&lt;void(int, int, string)&gt; fun = [&amp;](int i, int j, string lcs) &#123;
+    while (i &gt; 0 &amp;&amp; j &gt; 0) &#123;
+      if (text1[i - 1] == text2[j - 1]) &#123;
+        lcs += text1[i - 1];
+        i--; j--;
+      &#125; else &#123;
+        if (dp[i - 1][j] &gt; dp[i][j - 1]) i--;
+        else if (dp[i - 1][j] &lt; dp[i][j - 1]) j--;
+        else &#123;
+          fun(i - 1, j, lcs);
+          fun(i, j - 1, lcs);
+          break;
+        &#125;
+      &#125;
+    &#125;
+    if (lcs.size() == len) &#123;
+      reverse(lcs.begin(), lcs.end());
+      paths.push_back(lcs);
+    &#125;
+  &#125;;
+
+  fun(m, n, &quot;&quot;);
+  return len;
+&#125;
+</code></pre><p>方案二：一维DP空间，用 leftup 变量保存 <code>dp[i - 1][j - 1]</code></p><pre><code class="cpp">int longestCommonSubsequence1(string text1, string text2) &#123;
+  int m = text1.size(), n = text2.size();
+  vector&lt;int&gt; dp(n + 1);
+  for (int i = 1; i &lt;= m; ++i) &#123;
+    int leftup = dp[0];
+    for (int j = 1; j &lt;= n; ++j) &#123;
+      int tmp = dp[j];
+      if (text1[i - 1] == text2[j - 1]) dp[j] = leftup + 1;
+      else dp[j] = max(dp[j], dp[j - 1]);
+      leftup = tmp;
+    &#125;
+  &#125;
+  return dp[n];
+&#125;
+</code></pre><h3 id="背包问题"><a href="#背包问题" class="headerlink" title="背包问题"></a>背包问题</h3><h4 id="0-1背包"><a href="#0-1背包" class="headerlink" title="0-1背包"></a>0-1背包</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/partition-equal-subset-sum/description/">分割等和子集</a></p><p>状态转移式：<code>dp[i][j] = max(dp[i-1][j], dp[i-1][j-w] + v);</code></p><pre><code class="c++">int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
+    vector&lt;vector&lt;int&gt;&gt; dp(N + 1, vector&lt;int&gt;(W + 1, 0));
+    for (int i = 1; i &lt;= N; ++i) &#123;
+        int w = weights[i-1], v = values[i-1];
+        for (int j = 1; j &lt;= W; ++j)
+            if (j &gt;= w)
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-w] + v);
+            else
+                dp[i][j] = dp[i-1][j];
+    &#125;
+    return dp[N][W];
+&#125;
+// 空间压缩后
+int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
+    vector&lt;int&gt; dp(W + 1, 0);
+    for (int i = 1; i &lt;= N; ++i) &#123;
+        int w = weights[i-1], v = values[i-1];
+        for (int j = W; j &gt;= w; --j)
+            dp[j] = max(dp[j], dp[j-w] + v);
+    &#125;
+    return dp[W];
+&#125;
+</code></pre><h4 id="完全背包"><a href="#完全背包" class="headerlink" title="完全背包"></a>完全背包</h4><p>状态转移式：<code>dp[i][j] = max(dp[i-1][j], dp[i][j-w] + v);</code></p><pre><code class="c++">int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
+    vector&lt;vector&lt;int&gt;&gt; dp(N + 1, vector&lt;int&gt;(W + 1, 0));
+    for (int i = 1; i &lt;= N; ++i) &#123;
+        int w = weights[i-1], v = values[i-1];
+        for (int j = 1; j &lt;= W; ++j)
+            if (j &gt;= w)
+                dp[i][j] = max(dp[i-1][j], dp[i][j-w] + v);
+            else
+                dp[i][j] = dp[i-1][j];
+    &#125;
+    return dp[N][W];
+&#125;
+</code></pre><h3 id="字符串相关问题"><a href="#字符串相关问题" class="headerlink" title="字符串相关问题"></a>字符串相关问题</h3><h4 id="递推公式：从前到后"><a href="#递推公式：从前到后" class="headerlink" title="递推公式：从前到后"></a>递推公式：从前到后</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/edit-distance/">编辑距离</a>：求将 <code>word1</code> 转换成 <code>word2</code> 所使用的最少操作数，可以任意位置删除、替换、插入</p><p>题解：</p><ul><li>定义<code>dp[i][j]</code>为使两单词前<code>i j</code>部分相同的最少操作数</li><li>状态转移方程<ul><li>若<code>word1[i]=word2[j]</code>：<code>dp[i][j]=dp[i-1][j-1]</code></li><li>若<code>word1[i]≠word2[j]</code>：<ul><li>在<code>i</code>后插入&#x2F;<code>j</code>处删除：<code>dp[i][j]=dp[i][j-1]+1</code></li><li>在<code>j</code>后插入&#x2F;<code>i</code>处删除：<code>dp[i][j]=dp[i-1][j]+1</code></li><li>在<code>i</code>&#x2F;<code>j</code>处修改：<code>dp[i][j]=dp[i-1][j-1]+1</code></li></ul></li></ul></li><li>考虑初值<code>i=0</code>或<code>j=0</code>的情况：<code>i=0</code>时，word1为空，只能删除&#x2F;插入<code>j</code>次；<code>j=0</code>时同理<ul><li><code>dp[0][j]=j, dp[i][0]=i</code></li></ul></li><li>优化空间<ul><li>正序遍历 <code>j</code> 会丢失 <code>dp[i-1][j-1]</code>，倒序遍历又不知道 <code>dp[i][j-1]</code> 的结果</li><li>因此选择正序遍历，并用 <code>leftup</code> 保存 <code>dp[i-1][j-1]</code></li><li>初值 <code>dp[0][j] = j</code>，仅在第一轮遍历中用到 -&gt; <code>dp[j] = j</code></li><li>初值 <code>dp[i][0] = i</code>，每轮遍历中用到 -&gt; 每轮循环中 <code>dp[0] = i</code></li></ul></li></ul><pre><code class="cpp">int minDistance(string word1, string word2) &#123;
+    int m = word1.size(), n = word2.size();
+    vector&lt;int&gt; dp(n + 1, 0);
+    for (int j = 1; j &lt;= n; ++j) dp[j] = j;
+    for (int i = 1; i &lt;= m; ++i) &#123;
+        int leftup = dp[0];
+        dp[0] = i;
+        for (int j = 1; j &lt;= n; ++j) &#123;
+            int tmp = dp[j];
+            if (word1[i - 1] == word2[j - 1]) dp[j] = leftup;
+            else dp[j] = min(&#123;dp[j], dp[j - 1], leftup&#125;) + 1;
+            leftup = tmp;
+        &#125;
+    &#125;
+    return dp[n];
+&#125;
+</code></pre><h4 id="递推公式：中间向两端扩散"><a href="#递推公式：中间向两端扩散" class="headerlink" title="递推公式：中间向两端扩散"></a>递推公式：中间向两端扩散</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/palindrome-partitioning/">分割回文串</a>：求<code>s</code>的任意子串是否回文</p><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-valid-parentheses/">最长有效括号</a>：从含 <code>&#39;(&#39;</code> 和 <code>&#39;)&#39;</code> 的字符串中找出最长有效括号子串的长度</p><h4 id="记忆化回溯：从后向前"><a href="#记忆化回溯：从后向前" class="headerlink" title="记忆化回溯：从后向前"></a>记忆化回溯：从后向前</h4><blockquote><p>从两字符串中顺序”挑选”，使得满足某种条件 –&gt; 因此可以从后往前分析，缩小问题范围</p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：求 <code>s</code> 的多少子序列可以匹配 <code>t</code> 串</p><p>题解：</p><ol><li>抓住“<strong>选</strong>“，<code>s</code> 要照着 <code>t</code> 来挑选，从末尾逐字符考察选或不选，分别来到什么状态</li><li>防止超时，需记忆化保存 <code>fun(i-1,j-1)</code>，即dp数组</li></ol><pre><code class="cpp">  vector&lt;vector&lt;int&gt;&gt; dp;
+  int fun(string&amp; s, int i, string&amp; t, int j) &#123;
+    if (j &lt; 0) return 1;
+    if (i &lt; 0) return 0;
+    if (dp[i][j] &gt;= 0) return dp[i][j];
+    int ret = 0;
+    if (s[i] == t[j]) &#123;
+      ret += fun(s, i - 1, t, j - 1);
+    &#125;
+    ret += fun(s, i - 1, t, j);
+    dp[i][j] = ret;
+    return ret;
+  &#125;
+  int numDistinct(string s, string t) &#123;
+    dp.assign(s.size(), vector&lt;int&gt;(t.size(), -1));
+    return fun(s, s.size() - 1, t, t.size() - 1);
+  &#125;
+</code></pre><h3 id="股票问题"><a href="#股票问题" class="headerlink" title="股票问题"></a>股票问题</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/">买卖股票的最佳时机 IV</a>：给定price[i]共可交易k次，求最大利润</p><ol><li><p>状态定义：</p><ul><li><p><code>dp[i][j][0]</code>表示第<code>i</code>天共交易<code>j</code>次且当前不持有股票，跟在<code>dp[i-1][j][1]</code>之后（买卖为一次交易）</p></li><li><p><code>dp[i][j][1]</code>表示第<code>i</code>天共交易<code>j</code>次且当前不持有股票，跟在<code>dp[i-1][j-1][0]</code>之后</p></li></ul></li><li><p>状态转移</p><ul><li><code>dp[i][j][0] = max&#123; dp[i-1][j][0],dp[i-1][j][1]+price[i] &#125;</code></li><li><code>dp[i][j][1] = max&#123; dp[i-1][j][1],dp[i-1][j-1][0]-price[i] &#125;</code></li></ul></li><li><p>初始化</p><ul><li><code>dp[0][0][0]=0</code>：第一天没交易过没股票</li><li><code>dp[0][1][1]=-price[0]</code>：第一天第一次交易买了股票</li><li>其他均不合法情况，设置为<code>INI_MIN</code></li></ul></li><li><p>执行结果</p><ul><li>最后一天、不持有股票、交易0～k次中的最大值，即<code>max&#123;dp[n-1][i][0]&#125;, 0&lt;=i&lt;=k</code></li></ul></li><li><p>代码</p><pre><code class="c++">int maxProfit(int k, vector&lt;int&gt;&amp; prices) &#123;
+    int n = prices.size(),ans = 0;;
+    k = min(k,n/2);
+    if(!k || !n) return 0;
+    vector&lt;vector&lt;int&gt;&gt; tmp(k+1,vector&lt;int&gt;(2));
+    vector&lt;vector&lt;vector&lt;int&gt;&gt;&gt; dp(n,tmp);
+
+    for(int i=0;i&lt;=k;++i) 
+        dp[0][i][0]=dp[0][i][1]=INT_MIN/2;
+    dp[0][0][0]=0;
+    dp[0][1][1]=-prices[0];
+
+    for(int i=1;i&lt;n;++i)&#123;
+        for(int j=1;j&lt;=k;++j)&#123;
+            dp[i][j][0]=max(dp[i-1][j][0],dp[i-1][j][1]+prices[i]);
+            dp[i][j][1]=max(dp[i-1][j][1],dp[i-1][j-1][0]-prices[i]);
+        &#125;
+    &#125;
+    for(int i=1;i&lt;=k;++i)
+        if(ans&lt;dp[n-1][i][0]) 
+            ans=dp[n-1][i][0];
+    return ans;
+&#125;
+</code></pre></li></ol><blockquote><p>以下几种情况均不强调制定交易次数，可省略<code>k</code>维度</p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/">买卖股票的最佳时机</a>：限定交易次数 k&#x3D;1</p><pre><code class="c++">dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+//k=0时没有交易次数，dp[i-1][0][0]必为0
+dp[i][1] = max(dp[i-1][1], -prices[i])
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/">买卖股票的最佳时机 II</a>：交易次数无限制 k &#x3D; +infinity</p><pre><code class="c++">dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+//前一天持有不操作 和 前一天不持有然后买入
+dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/">最佳买卖股票时机含冷冻期</a>：卖出后至少隔1天才能买</p><pre><code class="c++">dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+//冷却时间1天，所以要从 i-2 天转移状态
+dp[i][1] = max(dp[i-1][1], dp[i-2][0]-prices[i])
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/">买卖股票的最佳时机含手续费</a>：每次交易含手续费</p><pre><code class="c++">//定义在卖出的时候扣手续费
+dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]-fee)
+dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
+</code></pre><h3 id="数位DP"><a href="#数位DP" class="headerlink" title="数位DP"></a>数位DP</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/description/">1～n 整数中 1 出现的次数</a>：无须考虑前导零</p><p>将<code>n</code>转换成字符串 <code>s</code>，定义 <code>f(i,cnt,isLimit)</code> 表示构造从左往右第<code>i</code>位及其之后数位中 1 的个数</p><ul><li>cnt：表示前面填了多少个 1。</li><li>isLimit：表示当前是否受到了 n 的约束。若为真，则第 i 位填入的数字至多为 <code>s[i]</code>，否则可以是 <code>9</code>。如果在受到约束的情况下填了 <code>s[i]</code>，那么后续填入的数字仍会受到 n 的约束。</li></ul><pre><code class="cpp">int numberOf1sInRange(int n) &#123;
+    string s=to_string(n);
+    int m=s.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(m,vector&lt;int&gt;(m,-1));
+    function&lt;int(int,int,bool)&gt; f = [&amp;](int i,int cnt,bool limit)-&gt;int&#123;
+        if(i==m) return cnt;
+        if(!limit &amp;&amp; dp[i][cnt]&gt;=0) return dp[i][cnt];
+        int res=0;
+        for(int d=0,up=limit?s[i]-&#39;0&#39;:9;d&lt;=up;++d)&#123;
+            res += f(i+1,cnt+(d==1),limit&amp;&amp;d==up);
+        &#125;
+        if(!limit) dp[i][cnt]=res;
+        return res;
+    &#125;;
+    return f(0,0,true);
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/count-special-integers/description/">1～n 中特殊整数的次数(每个数位互不相同)</a>：须考虑前导零</p><p><code>f(i,mask,isLimit,isNum)</code> 表示构造从左往右第 <code>i</code> 位及其之后数位的合法方案数：</p><ul><li>mask：表示前面选过的数字集合，即第 <code>i</code> 位要选的数字不能在 mask 中。</li><li>isNum：表示 i 前面的数位是否填了数字。若为假，则当前位可以跳过（不填数字），或者要填入的数字至少为 1；若为真，则必须填数字，且要填入的数字可以从 0 开始。</li></ul><pre><code class="cpp">int countSpecialNumbers(int n) &#123;
+    auto s = to_string(n);
+    int m = s.length(), dp[m][1 &lt;&lt; 10];
+    memset(dp, -1, sizeof(dp));
+    function&lt;int(int,int,bool,bool)&gt;f=[&amp;](int i,int mask,bool is_limit,bool is_num)-&gt;int&#123;
+        if (i==m) return is_num;
+        if (!is_limit &amp;&amp; is_num &amp;&amp; dp[i][mask]&gt;=0) return dp[i][mask];
+        int res = 0;
+        if (!is_num) res = f(i+1, mask, false, false); // 可以跳过当前数位
+        for (int d=1-is_num, up=is_limit?s[i]-&#39;0&#39;:9; d&lt;=up; ++d) // 枚举要填入的数字d
+            if ((mask&gt;&gt;d &amp; 1) == 0) // d不在mask中
+                res += f(i+1, mask|(1&lt;&lt;d), is_limit &amp;&amp; d==up, true);
+        if (!is_limit &amp;&amp; is_num) dp[i][mask] = res;
+        return res;
+    &#125;;
+    return f(0, 0, true, false);
+&#125;
+</code></pre><h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sort-list/description/">排序链表</a>：找链表中位数 + 合并链表</p><pre><code class="cpp">ListNode *midLeft(ListNode* p)&#123;
+    ListNode *f = p, *s = p;
+    while(f-&gt;next &amp;&amp; f-&gt;next-&gt;next)&#123;
+        s = s-&gt;next;
+        f = f-&gt;next-&gt;next;
+    &#125;
+    return s;
+&#125;
+ListNode *reverse(ListNode* p)&#123;
+    ListNode *dummy=new ListNode(),*q;
+    while(p)&#123;
+        q=p-&gt;next;
+        p-&gt;next=dummy-&gt;next;
+        dummy-&gt;next=p;
+        p=q;
+    &#125;
+    return dummy-&gt;next;
+&#125;
+</code></pre><h2 id="树"><a href="#树" class="headerlink" title="树"></a>树</h2><p><strong>ACM模式树插入</strong></p><pre><code class="cpp">TreeNode *buildTree(vector&lt;int&gt;&amp; vec) &#123;
+  vector&lt;TreeNode*&gt; tree(vec.size(), nullptr);
+  for (int i = 0; i &lt; vec.size(); ++i) &#123;
+    if (vec[i] != -1) tree[i] = new TreeNode(vec[i]);
+  &#125;
+  for (int i = 0; i &lt; vec.size() / 2; ++i) &#123;
+    if (vec[i] != -1) &#123;
+      tree[i]-&gt;left = tree[i * 2 + 1];
+      tree[i]-&gt;right = tree[i * 2 + 2];
+    &#125;
+  &#125;
+  return tree[0];
+&#125;
+int main()&#123;
+    vector&lt;int&gt; v = &#123;4,1,6,0,2,5,7,-1,-1,-1,3,-1,-1&#125;;
+    TreeNode* root = Build(v);
+&#125;
+</code></pre><p><strong>非递归前&#x2F;中序遍历树</strong></p><pre><code class="c++">stack&lt;TreeNode*&gt; st;
+TreeNode* p = root;
+while (p || !st.empty()) &#123;
+    while (p) &#123;
+        st.push(p);
+        p = p-&gt;left;
+    &#125;
+    p = st.top(); st.pop();
+    p = p-&gt;right;
+&#125;
+</code></pre><h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><pre><code class="c++">// DFS
+void dfs(type i)&#123;
+    if(NULL) return;
+    dfs(i-&gt;next);
+&#125;
+// BFS
+queue&lt;int&gt; q;
+q.push(x);
+while(!q.empty())&#123;
+    int k=q.size();
+    while(k--)&#123;
+        int cur = q.front(); q.pop();
+        for(auto x:CHILD(cur))&#123;
+            q.push(x);
+        &#125;
+    &#125;
+&#125;
+</code></pre><h3 id="记忆化搜索"><a href="#记忆化搜索" class="headerlink" title="记忆化搜索"></a>记忆化搜索</h3><blockquote><p><strong>递归：自上而下调用，子问题自下而上被解决，需记忆化防止子问题重复求解</strong></p><p><strong>DP：从base case出发，通过在DP数组记录中间结果，自下而上地顺序地解决子问题</strong></p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/fpTFWP/">最长递增路径</a>：求矩阵中最长递增路径长度（上下左右移动）</p><pre><code class="cpp">int m, n, ans;
+vector&lt;int&gt; d&#123;-1, 0, 1, 0, -1&#125;;
+vector&lt;vector&lt;int&gt;&gt; dp;
+int longestIncreasingPath(vector&lt;vector&lt;int&gt;&gt;&amp; matrix) &#123;
+  m = matrix.size(), n = matrix[0].size();
+  dp.assign(m, vector&lt;int&gt;(n, -1));  // cache, 仅增加了注释的三行代码
+  for (int i = 0; i &lt; m; ++i) &#123;
+    for (int j = 0; j &lt; n; ++j) &#123;
+      ans = max(ans, fun(matrix, i, j, INT_MAX + 1l));
+    &#125;
+  &#125;
+  return ans;
+&#125;
+int fun(vector&lt;vector&lt;int&gt;&gt;&amp; matrix, int i, int j, long value) &#123;
+  if (i &lt; 0 || j &lt; 0 || i == m || j == n || (long)matrix[i][j] &gt;= value) &#123;
+    return 0;
+  &#125;
+  if (dp[i][j] != -1) return dp[i][j];  // load
+  int len = 0;
+  for (int k = 0; k &lt; 4; ++k) &#123;
+    len = max(len, fun(matrix, i + d[k], j + d[k + 1], matrix[i][j]));
+  &#125;
+  dp[i][j] = len + 1;  // save
+  return len + 1;
+&#125;
+</code></pre><h3 id="状态转换"><a href="#状态转换" class="headerlink" title="状态转换"></a>状态转换</h3><blockquote><p>关键在于“建图”，过程灵活，只需能完成遍历即可</p><p>相关题目：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/zlDJc7/">剑指 Offer II 109. 开密码锁</a>，<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/vlzXQL/">剑指 Offer II 111. 计算除法</a></p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/word-ladder/">单词接龙</a>：求字符串 <code>start</code> 转换至 <code>end</code> 最小步数，每次转换仅改变一个字符，且改变后字符串在所给 <code>dic</code> 中</p><p>题解：</p><ol><li><p>字符串之间的转换关系可抽象为无向图</p><p>遍历找相邻结点时，依次查找改变字符后的新字符串是否在 <code>dic</code> 内</p></li><li><p>无向图中顶点间的最短路径的长度通过BFS得到</p><p>为防止回路，将访问过的结点记录下来</p></li></ol><pre class="mermaid">flowchart LR
+  classDef red stroke:#f00
+  classDef green stroke:#0f0
+
+  hit:::red
+  hit((hit))---hot
+  hot((hot))---dot((dot))
+  hot---lot((lot))
+  dot---dog((dog))
+  lot---log((log))
+  dog---cog:::green
+  log---cog((cog))
+  dot---lot
+  dog---log</pre><pre><code class="cpp">queue&lt;string&gt; q;
+int ladderLength(string beginWord, string endWord, vector&lt;string&gt;&amp; wordList) &#123;
+  unordered_set&lt;string&gt; dic(wordList.begin(), wordList.end());
+  if(!dic.count(endWord)) return 0;
+  int step = 1;
+  q.push(beginWord);
+  dic.erase(beginWord);//访问后直接删除，防止回路
+  while(!q.empty())&#123;
+    int k = q.size();
+    while(k--)&#123;
+      string s=q.front(); q.pop();
+      //判断更改一个字符后是否满足结果
+      if(check(s,endWord,dic))&#123;
+          return step + 1;
+      &#125;
+    &#125;
+    step++;
+  &#125;
+  return 0;
+&#125;
+bool check(string cur,string target,unordered_set&lt;string&gt;&amp; dic)&#123;
+  for(int i = 0; i &lt; cur.size(); ++i)&#123;
+    char tmp = cur[i];
+    for(char c = &#39;a&#39;; c&lt;= &#39;z&#39;; c++)&#123;
+      if(tmp == c) continue;
+      cur[i] = c;
+      if(dic.count(cur))&#123;
+        if(cur == target) return true;
+        else&#123;
+          q.push(cur);
+          dic.erase(cur);//访问后直接删除，防止回路
+        &#125;
+      &#125;
+    &#125;
+    cur[i]=tmp;
+  &#125;
+  return false;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/water-and-jug-problem/">水壶问题</a>：两水壶容量<code>x</code>,<code>y</code>，能否经操作使得盛水之和为<code>z</code>：①装满一水壶 ②清空一水壶 ③相互倒水至满或空</p><p>题解：记当前盛水量为<strong>状态(a,b)</strong></p><ul><li><p>每次操作有6种状态转换：</p><p>①a倒满至<code>(x,b)</code> ②b倒满至<code>(a,y)</code> ③a清空至<code>(0,b)</code> ④b清空至<code>(a,0)</code></p><p>⑤a往b倒水至<code>(a-move,b+move)</code> ⑥反之<code>(a+move,b-move)</code></p></li><li><p>BFS进行搜索，set记录已访问过状态（将pair转换成int64_t存储）</p></li></ul><pre><code class="cpp">  inline int64_t hash(int a, int b) &#123;
+    return (int64_t)a &lt;&lt; 32 | b;
+  &#125;
+  pair&lt;int, int&gt; op(int i, int a, int b, int x, int y) &#123;
+    switch (i) &#123;
+      case 0: return make_pair(0, b);
+      case 1: return make_pair(a, 0);
+      case 2: return make_pair(x, b);
+      case 3: return make_pair(a, y);
+      case 4: &#123;
+        int move = min(a, y - b);
+        return make_pair(a - move, b + move);
+      &#125;
+      case 5: &#123;
+        int move = min(b, y - a);
+        return make_pair(a + move, b - move);
+      &#125;
+    &#125;
+    return make_pair(0, 0);
+  &#125;
+  bool canMeasureWater(int x, int y, int target) &#123;
+    queue&lt;pair&lt;int, int&gt;&gt; q;
+    unordered_set&lt;int64_t&gt; vis;
+    q.emplace(0, 0);
+    while (!q.empty()) &#123;
+      int size = q.size();
+      while (size--) &#123;
+        auto [a, b] = q.front(); q.pop();
+        for (int i = 0; i &lt; 6; ++i) &#123;
+          auto [new_a, new_b] = op(i, a, b, x, y);
+          if (new_a + new_b == target) return true;
+          if (!vis.count(hash(new_a, new_b))) &#123;
+            vis.insert(hash(new_a, new_b));
+            q.emplace(new_a, new_b);
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+    return false;
+  &#125;
+</code></pre><h3 id="DFS-BFS"><a href="#DFS-BFS" class="headerlink" title="DFS+BFS"></a>DFS+BFS</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/shortest-bridge/">最短的桥</a>：二维数组A中0代表海，1代表岛（四个方向相连），求至少将几个 0 变为 1能把两岛连起来</p><p>题解：</p><ol><li>找到任意一个岛</li><li>通过dfs将整个岛1标记为2，并把边缘点0入队列</li><li>从边缘点0作bfs扩散，访问过的记录为2，碰到另一个岛1时的层数为所得</li></ol><pre><code class="c++">class Solution &#123;
+public:
+  int n;
+  vector&lt;int&gt; d&#123;-1, 0, 1, 0, -1&#125;;
+  queue&lt;pair&lt;int, int&gt;&gt; q;
+  void dfs(vector&lt;vector&lt;int&gt;&gt;&amp; grid, int i, int j) &#123;
+    if (i &lt; 0 || j &lt; 0 || i == n || j == n || grid[i][j] == 2) return;
+    if (grid[i][j] == 0) &#123;
+      q.emplace(i, j);
+      return;
+    &#125;
+    grid[i][j] = 2;
+    for (int k = 0; k &lt; 4; ++k) &#123;
+      dfs(grid, i + d[k], j + d[k + 1]);
+    &#125;
+  &#125;
+  int shortestBridge(vector&lt;vector&lt;int&gt;&gt;&amp; grid) &#123;
+    n = grid.size();
+    for (int i = 0, stop = 0; i &lt; n &amp;&amp; !stop; ++i) &#123;
+      for (int j = 0; j &lt; n &amp;&amp; !stop; ++j) &#123;
+        if (grid[i][j] == 1) &#123;
+          dfs(grid, i, j);
+          stop = 1;
+        &#125;
+      &#125;
+    &#125;
+    int ans = 0;
+    while (!q.empty()) &#123;
+      ans++;
+      int size = q.size();
+      while (size--) &#123;
+        auto [i, j] = q.front(); q.pop();
+        for (int k = 0; k &lt; 4; ++k) &#123;
+          int r = i + d[k], c = j + d[k + 1];
+          if (r &lt; 0 || c &lt; 0 || r == n || c == n) continue;
+          if (grid[r][c] == 1) return ans;
+          if (grid[r][c] == 0) &#123;
+            q.emplace(r, c);
+            grid[r][c] = 2;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+    return -1;
+  &#125;
+&#125;;
+</code></pre><h3 id="由外到内"><a href="#由外到内" class="headerlink" title="由外到内"></a>由外到内</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/surrounded-regions/">被围绕的区域</a>：矩阵包含 <code>X</code> 和 <code>O</code> ，找到所有被 <code>X</code> 围绕(四个方向)的区域，并将这些区域里所有的 <code>O</code> 用 <code>X</code> 填充。</p><p>题解： 找到未被包围区域不填充即可，且注意到未包围区域一定挨着边界，故从四个边界开始dfs找到<code>O</code>区域即可</p><h2 id="回溯"><a href="#回溯" class="headerlink" title="回溯"></a>回溯</h2><blockquote><p>两个诀窍，一是按值传状态，二是所有的状态修改在递归完成后回改。<br>两种情况，一种是修改最后一位输出，如排列组合；一种是修改访问标记，如矩阵里搜字符串</p></blockquote><h3 id="一维"><a href="#一维" class="headerlink" title="一维"></a>一维</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/permutations-ii/">全排列 II</a>：序列包含重复数字，按任意顺序返回所有不重复的全排列。</p><pre><code class="c++">vector&lt;int&gt; vis, tmp;
+vector&lt;vector&lt;int&gt;&gt; ans;
+vector&lt;vector&lt;int&gt;&gt; permuteUnique(vector&lt;int&gt;&amp; nums) &#123;
+  vis.assign(nums.size(), 0);
+  sort(nums.begin(), nums.end());
+  fun(nums);
+  return ans;
+&#125;
+void fun(vector&lt;int&gt;&amp; nums) &#123;
+  if (tmp.size() == nums.size()) &#123;
+    ans.push_back(tmp);
+    return;
+  &#125;
+  for (int i = 0; i &lt; nums.size(); ++i) &#123;
+    if (vis[i] || i &amp;&amp; nums[i] == nums[i - 1] &amp;&amp; vis[i - 1]) &#123;
+      continue;
+    &#125;
+    tmp.push_back(nums[i]);
+    vis[i] = 1;
+    fun(nums);
+    vis[i] = 0;
+    tmp.pop_back();
+  &#125;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/n-queens/">N 皇后</a>：如何将 <code>n</code> 个皇后放置在 <code>n×n</code> 的棋盘上，使得横竖斜直线上均仅一个皇后</p><p>题解：实质从0到n-1行依次选择一个位置（<strong>一维搜索</strong>），选择前修改矩阵，退出dfs后恢复修改。另需设置set集合记录哪些行列已存在皇后。</p><pre><code class="c++">vector&lt;string&gt; cur;
+vector&lt;vector&lt;string&gt;&gt; ans;
+set&lt;int&gt; row, bias1, bias2;
+
+void dfs(int i, int n)&#123;
+  if(i &gt;= n)&#123;
+    ans.push_back(cur);
+    return;
+  &#125;
+  for(int j = 0; j &lt; n; ++j)&#123;
+    if(!row.count(j) &amp;&amp; !bias1.count(j - i) &amp;&amp; !bias2.count(j + i))&#123;
+      cur[i][j] = &#39;Q&#39;; row.insert(j); bias1.insert(j - i); bias2.insert(j + i);
+      dfs(i + 1, n);
+      cur[i][j] = &#39;.&#39;; row.erase(j); bias1.erase(j - i); bias2.erase(j + i);
+    &#125;
+  &#125;
+&#125;
+vector&lt;vector&lt;string&gt;&gt; solveNQueens(int n) &#123;
+    cur = vector&lt;string&gt;(n, string(n, &#39;.&#39;));
+    dfs(0, n);
+    return ans;
+&#125;
+</code></pre><h3 id="二维"><a href="#二维" class="headerlink" title="二维"></a>二维</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sudoku-solver/">解数独</a>：数字 <code>1-9</code> 在每行、每列、每个粗实线分隔的 <code>3x3</code> 宫内只能出现一次，矩阵由数字和空白 <code>&#39;.&#39;</code> 表示</p><pre><code class="c++">bool check(vector&lt;vector&lt;char&gt;&gt;&amp; a, int i, int j, char x)&#123;
+  for(int k = 0; k &lt; 9; ++k)&#123;
+    if(a[i][k] == x) return false;
+    if(a[k][j] == x) return false;
+    if(a[i / 3 * 3 + k / 3][j / 3 * 3 + k % 3] == x) &#123;
+      return false;
+    &#125;
+  &#125;
+  return true;
+&#125;
+int dfs(vector&lt;vector&lt;char&gt;&gt;&amp; a,int i,int j)&#123;
+  if(j == 9) j = 0, i++;
+  if(i == 9) return true;
+  if(a[i][j] != &#39;.&#39;) return dfs(a, i, j + 1);
+  
+  for(char x = &#39;1&#39;; x &lt;= &#39;9&#39;; ++x)&#123;
+    if(check(a, i, j, x))&#123;
+      a[i][j] = x;
+      if(dfs(a, i, j + 1)) return true;
+      a[i][j] = &#39;.&#39;;
+    &#125;
+  &#125;
+  return false;
+&#125;
+void solveSudoku(vector&lt;vector&lt;char&gt;&gt;&amp; a) &#123;
+  dfs(a, 0, 0);
+&#125;
+</code></pre><h2 id="双指针"><a href="#双指针" class="headerlink" title="双指针"></a>双指针</h2><h3 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/linked-list-cycle-ii/">环形链表 II</a>：输入一个链表，输出环的入节点，否则返回空指针</p><p>题解：实质为链表找环路问题——<strong>Floyed判圈法</strong>。从head开始，指针fast和slow每次前进2、1步，若无环则能走到尽头，否则两者会相遇。第一次相遇时，令fast&#x3D;head，此后fast和slow每次均前进一步，第二次相遇时节点即为入环节点。</p><pre><code class="c++">ListNode *detectCycle(ListNode* head)&#123;
+    ListNode *slow=head,*head=head;
+    do&#123;
+        if(!fast || !fast-&gt;next) return nullptr;
+        fast = fast-&gt;next-&gt;next;
+        slow = slow-&gt;next;
+    &#125;while(fast != slow);
+    fast = head;
+    while(fast != slow)&#123;
+        slow = slow-&gt;next;
+        fast = fast-&gt;next;
+    &#125;
+    return fast;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/happy-number/">快乐数</a>：判断正整数 n 是不是快乐数，其定义为：</p><ul><li>每次将该数替换为其各位数字的平方和</li><li>无限循环这个过程，若最终变为 1 就是快乐数，否则不是</li></ul><p>题解：<code>N1-&gt;N2-&gt;...-&gt;Ni</code>的过程可以看作链表，且一定有环，分为两种情况</p><ol><li><code>a-&gt;b-&gt;c-&gt;b-&gt;c...</code>不合法</li><li><code>a-&gt;b-&gt;c-&gt;1-&gt;1...</code>合法，即<strong>快慢指针的值相等时为1</strong></li></ol><h2 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h2><blockquote><p>参考链接: <a target="_blank" rel="noopener" href="https://leetcode.cn/circle/article/xYBtLt/">二分法题单</a></p></blockquote><h3 id="lower-bound实现"><a href="#lower-bound实现" class="headerlink" title="lower_bound实现"></a>lower_bound实现</h3><pre><code class="cpp">// 返回首个≥target的元素下标
+int Bsearch(vector&lt;int&gt;&amp; nums,int target)&#123;
+    int l = 0,r = nums.size() - 1;
+    while(l &lt; r)&#123;
+        int m = l + r &gt;&gt; 1;
+        if(nums[m] &lt; target) l = m + 1;
+        else r = m;
+    &#125;
+    return nums[l] == target ? l : -1;
+&#125;
+</code></pre><h3 id="常见模板"><a href="#常见模板" class="headerlink" title="常见模板"></a>常见模板</h3><blockquote><p><code>l = mid</code>可能导致相邻两元素时陷入死循环：区间 <code>[l, r]</code> 落入 <code>[mid, r]</code> 后实际没变</p></blockquote><pre><code class="cpp">// 升序 从左向右找
+while(l &lt; r) &#123;
+    int mid = l + r &gt;&gt; 1;
+    if(flag) l = mid + 1;
+    else r = m;
+&#125;
+// 升序 从右向左找
+while(l &lt; r) &#123;
+    int mid = l + r + 1 &gt;&gt; 1; 
+    if(flag) r = mid - 1;
+    else l = mid;
+&#125;
+
+while(l &lt;= r)&#123;
+    int m = l + r &gt;&gt; 1;
+    if(flag) ans = mid, l = mid + 1;  // 需记录答案
+    else r = mid - 1;
+&#125;
+</code></pre><h3 id="旋转数组"><a href="#旋转数组" class="headerlink" title="旋转数组"></a>旋转数组</h3><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/search-rotate-array-lcci/">面试题 10.03. 搜索旋转数组</a>：查找值（有重复，返回最小索引）</p><pre><code class="cpp">int search(vector&lt;int&gt;&amp; arr, int target) &#123;
+  int n = arr.size(), l = 0, r = n - 1;
+  while (l &lt;= r) &#123;
+    int m = l + r &gt;&gt; 1;
+    if (arr[m] == target) &#123;  // 重复选首个下标
+      while (m &amp;&amp; arr[m - 1] == arr[m]) m--;
+      return m;
+    &#125;
+    if (arr[l] &lt; arr[m]) &#123;  // 左侧有序
+      if (arr[l] &lt;= target &amp;&amp; arr[m] &gt; target) 
+        r = m - 1;
+      else l = m + 1;
+    &#125; else if (arr[l] &gt; arr[m]) &#123;  // 右侧有序
+      if (arr[m] &lt; target &amp;&amp; arr[r] &gt;= target)
+        l = m + 1;
+      else r = m - 1;
+    &#125; else &#123;
+      l++;
+    &#125;
+  &#125;
+  return -1;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array-ii/">寻找旋转排序数组中的最小值 II</a>：找最小值（有重复）</p><pre><code class="cpp">int findMin(vector&lt;int&gt;&amp; num) &#123;
+  int n = num.size(), l = 0, r = n - 1;
+  while(l &lt; r) &#123;
+    int m = l + r &gt;&gt; 1;
+    //与num[l]比较无法确定num[m]在哪侧排序数组中
+    if (num[m] &lt; num[r]) r = m;
+    else if (num[m] &gt; num[r]) l = m + 1;
+    else r--;
+  &#125;
+  return num[l];
+&#125;
+</code></pre><h2 id="数学问题"><a href="#数学问题" class="headerlink" title="数学问题"></a>数学问题</h2><h3 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h3><pre><code class="cpp">double quickMul(double x, int N)&#123;
+  double ans = 1.0;
+  while(N) &#123;
+    if(N &amp; 1) ans *= x;
+    x *= x;
+    N &gt;&gt;= 1;
+  &#125;
+  return ans;
+&#125;
+</code></pre><h3 id="因数-倍数-质数"><a href="#因数-倍数-质数" class="headerlink" title="因数&#x2F;倍数&#x2F;质数"></a>因数&#x2F;倍数&#x2F;质数</h3><pre><code class="c++">// 最大公因数
+int gcd(int a, int b) &#123;
+    return b == 0 ? a : gcd(b, a % b);
+&#125;
+// 最小公倍数
+int lcm(int a, int b) &#123;
+    return a * b / gcd(a, b);
+&#125;
+// 质数（小于n）
+vector&lt;int&gt; Primes(int n) &#123;
+  vector&lt;bool&gt; prime(n, true);
+  prime[0] = prime[1] = false;
+  for(int i=2; i &lt; n; ++i)&#123;
+    if(!prime[i]) continue;
+    for(int j = 2 * i; j &lt; n; j += i) &#123;
+      prime[j] = false;
+    &#125;
+  &#125;
+  return prime;
+&#125;
+</code></pre><h3 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h3><h4 id="与-处理某位"><a href="#与-处理某位" class="headerlink" title="与 (处理某位)"></a>与 (处理某位)</h4><ul><li>取低位第k位：<code>1&amp;(num&gt;&gt;k)</code></li><li>将最低位的1变为0：<code>n&amp;(n-1)</code>，如110100-&gt;110000</li><li>保留最低位1其他清0：<code>n&amp;(-n)</code>，如110100-&gt;000100</li></ul><h4 id="异或-找缺失数、出现一次数"><a href="#异或-找缺失数、出现一次数" class="headerlink" title="异或 (找缺失数、出现一次数)"></a>异或 (找缺失数、出现一次数)</h4><ul><li>第k位取反：<code>num^(1&lt;&lt;k)</code></li></ul><table><thead><tr><th>x ^ 000 &#x3D; x</th><th>x ^ 111 &#x3D; ~x</th><th>x ^ x &#x3D; 0</th></tr></thead></table><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/single-number/">1. 只出现一次的数字</a>：数组中每个数都出现两次，找出仅有出现一次的</p><p>题解：遍历全部异或一遍，x^x&#x3D;0, x^0&#x3D;x，最后结果就是仅出现一次的</p><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/missing-number/">2. 丢失的数字</a>：找出范围0～n的数组中缺少的一个数</p><p>题解：先将0～n异或一遍，再异或该数组，这样缺失值即仅出现一次</p><h3 id="摩尔投票法"><a href="#摩尔投票法" class="headerlink" title="摩尔投票法"></a>摩尔投票法</h3><blockquote><p>一次遍历，统计次数超过 <code>n/k</code> 的数，可知这样的数最多 <code>k-1</code>个</p></blockquote><p>假设当前遍历到的元素为 <code>x</code> ：</p><ul><li><p>如果 <code>x</code> 本身是候选者，票数加一</p></li><li><p>如果 <code>x</code> 不是候选者，检查是否有候选者票数为 <code>0</code></p><ul><li><p>若有，则让 <code>x</code> 代替其成为候选者，记录票数为 <code>1</code></p></li><li><p>若无，则让所有候选者票数减一</p></li></ul></li></ul><p>最后二次遍历，将票数符合要求的候选者加到答案</p><pre><code class="cpp">vector&lt;int&gt; majorityElement(vector&lt;int&gt;&amp; nums) &#123;
+    vector&lt;int&gt; ans;
+    const int m=2; //adjust
+    vector&lt;int&gt; elem(m),vote(m);
+    for(auto x:nums)&#123;
+        bool flag=false;  // x是候选者，票+1
+        for(int i=0;i&lt;m;++i)
+            if(vote[i]&gt;0 &amp;&amp; elem[i]==x)&#123;
+                vote[i]++;
+                flag = true; break;
+            &#125;
+        if(flag) continue;
+        
+        flag = false;   // x非候选者，且有空闲候选位
+        for(int i=0;i&lt;m;++i)
+            if(vote[i]==0)&#123;
+                elem[i]=x; vote[i]++;
+                flag = true; break;
+            &#125;
+        if(flag) continue;
+        
+        for(int i=0;i&lt;m;++i) // x非候选者，且无空闲候选位
+            vote[i]--;
+    &#125;
+    vector&lt;int&gt; cnts(m);
+    for(auto x:nums)&#123;
+        for(int i=0;i&lt;m;++i)
+            if(x==elem[i] &amp;&amp; vote[i]&gt;0)
+                cnts[i]++;
+    &#125;
+    for(int i=0;i&lt;m;++i)&#123;
+        if(vote[i]&gt;0 &amp;&amp; cnts[i]&gt;nums.size()/3)
+            ans.push_back(elem[i]);
+    &#125;
+    return ans;
+&#125;
+</code></pre><h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="字符串加法"><a href="#字符串加法" class="headerlink" title="字符串加法"></a>字符串加法</h3><pre><code class="cpp">string addStr(string num1, string num2) &#123;
+  string ans;
+  int add = 0,i = num1.size() - 1, j = num2.size() - 1;
+  while(add || i &gt;= 0 || j &gt;= 0)&#123;
+    int x= i &gt;= 0? num1[i] - &#39;0&#39;: 0;
+    int y= j &gt;= 0? num2[j] - &#39;0&#39;: 0;
+    int result = x + y + add;
+    ans += char(&#39;0&#39; + result % 10);
+    add = result / 10;
+    i--; j--;
+  &#125;
+  reverse(ans.begin(), ans.end());
+  return ans;
+&#125;
+</code></pre><h3 id="字符串乘法"><a href="#字符串乘法" class="headerlink" title="字符串乘法"></a>字符串乘法</h3><pre><code class="cpp">string ans;
+string multiply(string num1, string num2) &#123;
+  if (num1 == &quot;0&quot; || num2 == &quot;0&quot;) return &quot;0&quot;;
+  int m = num1.size(), n = num2.size();
+  for(int i = n - 1; i &gt;= 0; i--)&#123;
+    string tmp;
+    int add = 0, y = num2[i] - &#39;0&#39;;
+    for(int k = n - 1; k &gt; i; --k) tmp += &#39;0&#39;;
+    for(int j = m - 1; j &gt;= 0 || add; --j)&#123;
+      int x = j &lt; 0 ? 0 : num1[j] - &#39;0&#39;;
+      int multi = x * y + add;
+      tmp += char(&#39;0&#39; + multi % 10);
+      add = multi / 10;
+    &#125;
+    reverse(tmp.begin(), tmp.end());
+    ans = addStr(tmp, ans);
+  &#125;
+  return ans;
+&#125;
+</code></pre><h3 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h3><pre><code class="cpp">vector&lt;string&gt; ret;
+void split(string s, char del)&#123;
+  stringstream ss(s);
+  string tmp;
+  while(getline(ss, tmp, del))&#123;
+    if(tmp.size()) ret.push_back(tmp);
+  &#125;
+&#125;
+</code></pre><h3 id="回文串"><a href="#回文串" class="headerlink" title="回文串"></a>回文串</h3><p><code>check[i][j]</code> 表示区间 <code>s[i~j]</code> 是否回文</p><pre><code class="c++">vector&lt;vector&lt;int&gt;&gt; check(n, vector&lt;int&gt;(n, 1));
+for (int i = n - 1; i &gt;= 0; --i)&#123;
+  for (int j = i + 1 ; j &lt; n; ++j)&#123;
+    check[i][j] = s[i] == s[j] &amp;&amp; check[i + 1][j - 1];
+  &#125;
+&#125;
+</code></pre><h3 id="计算器"><a href="#计算器" class="headerlink" title="计算器"></a>计算器</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/basic-calculator-ii/">基本计算器 II</a> 参考『宫水三叶』题解</p><p>对遍历到的字符做分情况讨论：</p><ul><li><code>空格</code>: 跳过</li><li><code>(</code> : 直接加入 op 中，等待与之匹配的 )</li><li><code>)</code> : 使用现有的 num 和 op 进行计算，直到遇到左括号为止，将结果存入 num</li><li><code>数字</code> : 从当前继续往右，取出完整数字加入 num</li><li><code>运算符</code> : 放入 op 中，并且在放入前应先把栈内可以算的 <strong>运算符优先级更高&#x2F;同</strong> 的都算掉，每次取 2 个 num 和 1 个 op 计算并存储，直到 <strong>没有操作</strong> 或者 <strong>遇到左括号</strong></li></ul><pre><code class="c++">stack&lt;char&gt; op;
+stack&lt;int&gt; num;
+unordered_map&lt;char,int&gt; level &#123;
+  &#123;&#39;+&#39;, 1&#125;, &#123;&#39;-&#39;, 1&#125;, &#123;&#39;*&#39;, 2&#125;, &#123;&#39;/&#39;, 2&#125;, &#123;&#39;^&#39;, 3&#125;
+&#125;;
+void cal()&#123;
+  long b = num.top(); num.pop();
+  long a = num.top(); num.pop();
+  char op_ =op.top(); op.pop();
+  long long res;
+  switch(op_)&#123;
+    case &#39;+&#39;: res = a + b; break;
+    case &#39;-&#39;: res = a - b; break;
+    case &#39;*&#39;: res = a * b; break;
+    case &#39;/&#39;: res = a / b; break;
+    case &#39;^&#39;: res = pow(a, b); break;
+  &#125;
+  num.push(res);
+&#125;
+int calculate(string s) &#123;
+  num.push(0); //确保2个操作数
+  int n = s.size();
+  for (int i = 0; i &lt; n; ++i) &#123;
+    if (s[i] == &#39; &#39;) continue;
+    else if (s[i] == &#39;(&#39;) &#123;
+      op.push(&#39;(&#39;);
+      if(s[i + 1] == &#39;-&#39;)&#123;
+        num.push(0); //确保2个操作数
+        op.push(&#39;-&#39;);
+        i++;
+      &#125;
+    &#125; else if(s[i] == &#39;)&#39;) &#123;
+      while (op.top() != &#39;(&#39;)
+        cal();
+      op.pop();
+    &#125; else if(isdigit(s[i])) &#123;
+      int k = i + 1;
+      while(k &lt; n &amp;&amp; isdigit(s[k])) k++;
+      num.push(stoi(s.substr(i, k - i)));
+      i = k - 1;
+    &#125; else &#123;
+      while(!op.empty() &amp;&amp; op.top() != &#39;(&#39; &amp;&amp; level[op.top()] &gt;= level[s[i]])
+        cal();
+      op.push(s[i]);
+    &#125;
+  &#125;
+  while(!op.empty() &amp;&amp; op.top() != &#39;(&#39;)
+    cal();
+  return num.top();
+&#125;
+</code></pre><h3 id="KMP"><a href="#KMP" class="headerlink" title="KMP"></a>KMP</h3><pre><code class="c++">int strStr(string haystack, string needle) &#123;
+    int k=-1,n=haystack.length(),p=needle.length();
+    if(!p) return 0;
+    vector&lt;int&gt; next(p,-1);
+    calNext(needle,next);
+    for(int i=0;i&lt;n;++i)&#123;
+        while(k&gt;-1 &amp;&amp; needle[k+1]!=haystack[i])
+            k=next[k];
+        if(needle[k+1]==haystack[i])
+            k++;
+        if(k==p-1) 
+            return i-p+1;
+    &#125;
+    return -1;
+&#125;
+void calNext(string&amp; needle,vector&lt;int&gt;&amp; next)&#123;
+    for(int j=1,p=-1;j&lt;needle.length();++j)&#123;
+        while(p&gt;-1 &amp;&amp; needle[p+1]!=needle[j])
+            p=next[p];
+        if(needle[p+1]==needle[j])
+            p++;
+        next[j]=p;
+    &#125;
+&#125;
+</code></pre><h2 id="单调栈-队列"><a href="#单调栈-队列" class="headerlink" title="单调栈&amp;队列"></a>单调栈&amp;队列</h2><blockquote><p>寻找下一个最&#x2F;更大值</p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a>: 给定 n 个柱子的高度（宽度为 1），求能勾勒矩形的最大面积</p><p>题解：遍历每个高度，要以当前高度为基准，寻找最大的宽度组成最大的矩形面积。就是分别找<strong>左边&#x2F;右边首个小于当前高度</strong>的下标left、right，宽度即为right-left-1，用<strong>单调栈</strong>就可以很方便确定这两个边界了。</p><pre><code class="c++">int largestRectangleArea(vector&lt;int&gt;&amp; heights) &#123;
+    int n=heights.size()+2, ans=0;
+    vector&lt;int&gt; h(n);
+    for(int i=1;i&lt;n-1;++i) h[i]=heights[i-1];
+    stack&lt;int&gt; st;
+    for(int i=0;i&lt;n;++i)&#123;
+        while(!st.empty() &amp;&amp; h[i]&lt;h[st.top()])&#123;  //≤也可以
+            int cur=st.top(); st.pop();
+            if(st.empty()) break;
+            int pre=st.top();
+            ans = max(ans, (i-pre-1)*(h[cur]));
+        &#125;
+        st.push(i);
+    &#125;
+    return ans;
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sliding-window-maximum/">滑动窗口最大值</a>：求数组中每个长度为K的区间内的最大值</p><ol><li>在窗口内，若 <code>nums[j] &lt; nums[j+1]</code> 则 <code>nums[j]</code> 没用了可以扔掉，因为有更大的值后出窗口</li><li>因此用一个单调递减队列（deque）维护窗口内有意义的元素，直接 <code>deque.front()</code> 获得最大值</li><li>用 <code>l, i</code> 维护窗口左右边界，从队列中 pop 的条件是窗口大小固定为 k，即 <code>i - l == k</code></li></ol><h2 id="前缀和-哈希"><a href="#前缀和-哈希" class="headerlink" title="前缀和+哈希"></a>前缀和+哈希</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/A1NYOS/">剑指 Offer II 011. 0 和 1 个数相同的子数组</a>：找到含有相同数量的 <code>0</code> 和 <code>1</code> 的最长连续子数组长度</p><p>题解：将数组中的 <code>0</code> 视作 <code>−1</code>，则原问题转换成「求最长的连续子数组，其元素和为 0」</p><ul><li><strong>前缀和</strong>：求任意区间元素和，前缀和 <code>s[i]=s[j]</code> 时，区间<code>[i,j]</code>元素和为0</li><li><strong>哈希表</strong>：保存前缀和每个值首次出现的下标，可直接查找左区间</li></ul><pre><code class="c++">int findMaxLength(vector&lt;int&gt;&amp; nums) &#123;
+    int n=nums.size(),ans=0,sum=0;
+    unordered_map&lt;int, int&gt; mp;
+    mp[sum] = -1;
+    for (int i = 0; i &lt; n; i++) &#123;
+        if (nums[i] == 1) sum++;
+        else sum--;
+        if (mp.count(sum)) &#123;
+            int prevIndex = mp[sum];
+            ans = max(ans, i-prevIndex);
+        &#125; else &#123;
+            mp[sum] = i;
+        &#125;
+    &#125;
+    return ans;
+&#125;
+</code></pre><h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p><p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p><pre><code class="cpp">string minWindow(string s, string t) &#123;
+  int valid = 0, ans_idx = -1, ans_len = INT_MAX;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: t) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s.size(); ++i) &#123;
+    char c = s[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    while (valid &gt;= t.size()) &#123;
+      if (i - l + 1 &lt; ans_len) &#123;
+        ans_len = i - l + 1;
+        ans_idx = l;
+      &#125;
+      char d = s[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+  &#125;
+  return ans_idx &lt; 0 ? &quot;&quot; : s.substr(ans_idx, ans_len);
+&#125;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为 <code>s2</code> 的子串</p><p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p><pre><code class="c++">bool checkInclusion(string s1, string s2) &#123;
+  int valid = 0;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: s1) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s2.size(); ++i) &#123;
+    char c = s2[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    if (i - l == s1.size()) &#123;
+      char d = s2[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+    if (valid == s1.size()) return true;
+  &#125;
+  return false;
+&#125;
+</code></pre><h2 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h2><blockquote><p>剑指Offer II ：62-67</p></blockquote><pre><code class="c++">class Trie &#123;
+public:
+  bool isWord;
+  vector&lt;Trie*&gt; child;
+  Trie(): isWord(false), child(26, nullptr) &#123;&#125;
+
+  void insert(string&amp; s) &#123;
+    Trie* p = this;
+    for(auto c: s) &#123;
+      if(p-&gt;child[c - &#39;a&#39;] == nullptr)
+        p-&gt;child[c - &#39;a&#39;] = new Trie();
+      p = p-&gt;child[c - &#39;a&#39;];
+    &#125;
+    p-&gt;isWord = true;
+  &#125;
+&#125;;
+</code></pre><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/design-add-and-search-words-data-structure/description/?envType=study-plan-v2&envId=top-interview-150">添加与搜索单词</a>：将一些 word 添加到 dict 中，用来判断能否与后续字符串匹配（含 ‘.’ 匹配符）</p><pre><code class="cpp">class WordDictionary &#123;
+public:
+  bool end&#123;false&#125;;
+  vector&lt;WordDictionary*&gt; childs;
+  WordDictionary(): childs(26, nullptr) &#123;&#125;
+  
+  void addWord(string word) &#123;
+    WordDictionary *w = this;
+    for (auto c : word) &#123;
+      if (!w-&gt;childs[c-&#39;a&#39;]) &#123;
+        w-&gt;childs[c-&#39;a&#39;] = new WordDictionary();
+      &#125;
+      w = w-&gt;childs[c-&#39;a&#39;];
+    &#125;
+    w-&gt;end = true;
+  &#125;
+  bool search(string word) &#123;
+    return find(word, 0, this);
+  &#125;
+  bool find(string&amp; word, int i, WordDictionary* w) &#123;
+    if (i == word.size()) return w-&gt;end;
+    if (isalpha(word[i])) &#123;
+      // 单路径
+      return w-&gt;childs[word[i]-&#39;a&#39;] &amp;&amp;
+              find(word, i+1, w-&gt;childs[word[i]-&#39;a&#39;]);
+    &#125; else &#123;
+      // 通配符，需遍历多个分支，其一满足即可
+      for (auto c : w-&gt;childs) &#123;
+        if (c &amp;&amp; find(word, i+1, c)) return true;
+      &#125;
+    &#125;
+    // 都走不通
+    return false;
+  &#125;
+&#125;;
+</code></pre><h2 id="多路归并"><a href="#多路归并" class="headerlink" title="多路归并"></a>多路归并</h2><blockquote><p>相关题目：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/find-k-pairs-with-smallest-sums/">查找和最小的 K 对数字</a> <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/range-sum-of-sorted-subarray-sums/">子数组和排序后的区间和</a></p></blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/super-ugly-number/">超级丑数</a>：给定质数primes数组，丑数由其中任意质数累乘得到，求第k个丑数</p><h3 id="DP-先求再存"><a href="#DP-先求再存" class="headerlink" title="DP-先求再存"></a>DP-先求再存</h3><ol><li>求第k个丑数，需要遍历每个<code>prime[i]</code>与以有丑数<code>dp[j]</code>相乘的最小值，遍历<code>prime</code>复杂度O(n)，遍历已有丑数同为O(n)，对于后者可以考虑优化</li><li>直观上，<code>prime[i]*dp[0]</code>为最小，但为了防止重复乘<code>dp[0]、dp[1]...</code>，需要用<code>next[i]</code>记录<code>prime[i]</code>已经乘过了前几个丑数，即<strong>下次该从下一个</strong>（next[i]）<strong>丑数开始乘</strong></li><li>具体流程，每求下一个丑数时，遍历<code>prime[i]*dp[next[i]]</code>找到最小值，对于每个最小令<code>next[i]++</code></li></ol><pre><code class="cpp">int nthSuperUglyNumber(int n, vector&lt;int&gt;&amp; primes) &#123;
+  vector&lt;int&gt; next(primes.size(), 0), dp&#123;1&#125;;
+  while (dp.size() &lt; n) &#123;
+    int pid = -1, ugly = INT_MAX;
+    long tmp;
+    for (int i = 0; i &lt; primes.size(); ++i) &#123;
+      tmp = (long)primes[i] * dp[next[i]];
+      if (tmp &lt; ugly) &#123;
+        ugly = tmp;
+        pid = i;
+      &#125;
+    &#125;
+    next[pid]++;
+    if (dp.back() &lt; ugly) &#123;  // 去重
+      dp.push_back(ugly);
+    &#125;
+  &#125;
+  return dp.back();
+&#125;
+</code></pre><h3 id="优先队列-先存再求"><a href="#优先队列-先存再求" class="headerlink" title="优先队列-先存再求"></a>优先队列-先存再求</h3><ol><li>可知第一个丑数为1，初始化加入优先队列中</li><li>每轮求下一个丑数时，取<code>q.top()</code>即可，同时将一系列<code>prime[i]*q.top()</code>存入队列中</li><li>去重问题用set</li><li>时间复杂度高 <code>O(m * n * log(m * n))</code>，可能会乘法溢出</li></ol><pre><code class="cpp">int nthSuperUglyNumber(int n, vector&lt;int&gt;&amp; primes) &#123;
+  priority_queue &lt;double, vector&lt;double&gt;, greater&lt;double&gt; &gt; q;
+  unordered_set&lt;int&gt; s;
+  s.insert(1);
+  int answer = 1;
+  for (int i = 1; i &lt; n; ++i)&#123;
+    for (int j: primes) &#123;
+      int multi = answer * j;
+      if(!s.count(multi))&#123;
+        q.push(multi);
+        s.insert(multi);
+      &#125;
+    &#125;
+    answer = q.top();
+    q.pop();
+  &#125;
+  return answer;
+&#125;
+</code></pre><h2 id="原地哈希"><a href="#原地哈希" class="headerlink" title="原地哈希"></a>原地哈希</h2><blockquote><p>限制不使用额外空间，哈希函数为：<code>f(nums[i]) = nums[i] - 1</code></p></blockquote><p>原地哈希就相当于，让每个数字 n 都回到下标为 n-1 的家里（或者下标为 n 的家里）</p><p>而那些没有回到家里的就成了孤魂野鬼流浪在外，他们要么是根本就没有自己的家（<code>n&lt;=0</code> || <code>n&gt;=nums.size()</code>），要么是自己的家被别人占领了（出现了重复）。这些流浪汉被临时安置在下标为 i 的空房子里，之所以有空房子是因为房子 i 的主人 i+1 失踪了（数字 i+1 缺失）</p><p>因此通过原地构建哈希让各个数字回家，我们就可以找到原始数组中<strong>重复的数字</strong>还有<strong>消失的数字</strong></p><blockquote><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/first-missing-positive/solution/tong-pai-xu-python-dai-ma-by-liweiwei1419/">几道例题</a></p></blockquote><h2 id="随机化"><a href="#随机化" class="headerlink" title="随机化"></a>随机化</h2><p>1.随机数生成</p><pre><code class="cpp">random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution&lt;&gt; dis(1, 10);
+cout &lt;&lt; dis(gen) &lt;&lt; endl;
+</code></pre><p>2.已知小范围随机数，得到一个<strong>大范围</strong>随机数</p><p>对于 <code>randN = [1,n]</code>，通过<code>(randN-1) * N + randN</code> 得到 <code>[1,n*n]</code> 范围的等概率随机数</p><p>3.已知小范围随机数，得到一个<strong>确定范围</strong>的随机数</p><p>先采用 1 得到更大范围的随机数 randK，然后对超过确定范围数进行拒绝</p><p>4.已知大范围随机数，得到一个<strong>小范围</strong>随机数</p><p>如果 <strong>N 是 K 的整数倍</strong>，可以通过 randN 一步得到 randK：<code>randK = (randN % K) + 1</code>;</p><h2 id="差分数组"><a href="#差分数组" class="headerlink" title="差分数组"></a>差分数组</h2><p>原数组为a，差分数组为b</p><pre><code class="cpp">b[0] = a[0]
+b[i] = a[i] - a[i - 1]
+</code></pre><p>对区间 <code>[x1, x2]</code> 所有值加 <code>y</code></p><pre><code class="cpp">b[x1] += y
+b[x2 + 1] -= y  (x2 + 1 &lt; n)
+</code></pre><p>根据差分数组求原数组</p><pre><code class="cpp">a[0] = b[0]
+a[i] = a[i - 1] + b[i]
+</code></pre><h2 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h2><p>可以动态维护序列前缀和的数据结构（序列下标从 1 开始）：</p><ul><li>单点修改 <code>add(index,val)</code>：把序列第 index 个数增加 val，O(nlgn)</li><li>区间查询 <code>prefixSum(index)</code>：查询前 index 个元素的前缀和，O(nlgn)</li></ul><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/range-sum-query-mutable/">区域和检索 - 数组可修改</a>：求区间和且会更新数组元素</p><pre><code class="cpp">vector&lt;int&gt; tree; //tree[i]为前i-1前缀和
+vector&lt;int&gt; &amp;nums; //原数组
+
+int lowBit(int x) &#123;
+    return x &amp; -x;
+&#125;
+void add(int index, int val) &#123;
+    while (index &lt; tree.size()) &#123;
+        tree[index] += val;
+        index += lowBit(index);
+    &#125;
+&#125;
+int prefixSum(int index) &#123;
+    int sum = 0;
+    while (index &gt; 0) &#123;
+        sum += tree[index];
+        index -= lowBit(index);
+    &#125;
+    return sum;
+&#125;
+int main(vector&lt;int&gt;&amp; nums)&#123;
+    nums = nums;
+    // 初始化tree为全0数组，遍历更新
+    tree.assign(nums.size()+1,0);
+    for(int i=0;i&lt;nums.size();++i)&#123;
+        add(i+1,nums[i]);
+    &#125;
+&#125;
+</code></pre></div><div class="footer"></div><div class="article-meta" id="bottom"><div class="new-meta-box"><div class="new-meta-item date" itemprop="dateModified" datetime="2024-04-28T14:55:12+08:00"><a class="notlink"><i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i><p>更新于：Apr 28, 2024</p></a></div><div class="new-meta-item meta-tags"><a class="tag" href="/tags/CPP/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>CPP</p></a></div><span hidden itemprop="keywords">CPP</span></div></div><div class="prev-next"><a class="prev" href="/2023/03/30/Database/Mysql/"><p class="title"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>MySQL</p><p class="content">SQL与NoSQL关系型数据库采用了关系模型来组织数据， 关系模型可以简单理解为二维表格模型，而一个关系型数据库就是由二维表及其之间的关系组成的一个数据组织 优点：①容易理解，二维表比网状模型贴...</p></a><a class="next" href="/2023/01/22/Storage/Kafka/"><p class="title">Kafka<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p><p class="content">补充参考链接 kafka的使用场景为什么要使用 Kafka 消息队列解耦、削峰：传统的方式上游发送数据下游需要实时接收，如果上游在某些业务场景：例如上午十点会流量激增至顶峰，那么下游资源可能...</p></a></div></article></div><aside id="l_side" itemscope itemtype="http://schema.org/WPSideBar"><div class="widget-sticky pjax"><section class="widget toc-wrapper desktop mobile" id="toc-div"><header><i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class="name">本文目录</span></header><div class="content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips"><span class="toc-number">1.</span> <span class="toc-text">Tips</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FindK"><span class="toc-number">2.</span> <span class="toc-text">FindK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Dijkstra"><span class="toc-number">3.</span> <span class="toc-text">Dijkstra</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-number">4.</span> <span class="toc-text">排序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6"><span class="toc-number">4.1.</span> <span class="toc-text">归并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E6%8E%92"><span class="toc-number">4.2.</span> <span class="toc-text">堆排</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="toc-number">5.</span> <span class="toc-text">动态规划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">正则表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-number">5.2.</span> <span class="toc-text">子序列问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-number">5.3.</span> <span class="toc-text">背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#0-1%E8%83%8C%E5%8C%85"><span class="toc-number">5.3.1.</span> <span class="toc-text">0-1背包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%8C%E5%85%A8%E8%83%8C%E5%8C%85"><span class="toc-number">5.3.2.</span> <span class="toc-text">完全背包</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98"><span class="toc-number">5.4.</span> <span class="toc-text">字符串相关问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E5%85%AC%E5%BC%8F%EF%BC%9A%E4%BB%8E%E5%89%8D%E5%88%B0%E5%90%8E"><span class="toc-number">5.4.1.</span> <span class="toc-text">递推公式：从前到后</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E5%85%AC%E5%BC%8F%EF%BC%9A%E4%B8%AD%E9%97%B4%E5%90%91%E4%B8%A4%E7%AB%AF%E6%89%A9%E6%95%A3"><span class="toc-number">5.4.2.</span> <span class="toc-text">递推公式：中间向两端扩散</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E5%9B%9E%E6%BA%AF%EF%BC%9A%E4%BB%8E%E5%90%8E%E5%90%91%E5%89%8D"><span class="toc-number">5.4.3.</span> <span class="toc-text">记忆化回溯：从后向前</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E9%97%AE%E9%A2%98"><span class="toc-number">5.5.</span> <span class="toc-text">股票问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E4%BD%8DDP"><span class="toc-number">5.6.</span> <span class="toc-text">数位DP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8"><span class="toc-number">6.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91"><span class="toc-number">7.</span> <span class="toc-text">树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2"><span class="toc-number">8.</span> <span class="toc-text">搜索</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF"><span class="toc-number">8.1.</span> <span class="toc-text">模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2"><span class="toc-number">8.2.</span> <span class="toc-text">记忆化搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="toc-number">8.3.</span> <span class="toc-text">状态转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DFS-BFS"><span class="toc-number">8.4.</span> <span class="toc-text">DFS+BFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B1%E5%A4%96%E5%88%B0%E5%86%85"><span class="toc-number">8.5.</span> <span class="toc-text">由外到内</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%BA%AF"><span class="toc-number">9.</span> <span class="toc-text">回溯</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-number">9.1.</span> <span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-number">9.2.</span> <span class="toc-text">二维</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88"><span class="toc-number">10.</span> <span class="toc-text">双指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88"><span class="toc-number">10.1.</span> <span class="toc-text">快慢指针</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%88%86%E6%B3%95"><span class="toc-number">11.</span> <span class="toc-text">二分法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#lower-bound%E5%AE%9E%E7%8E%B0"><span class="toc-number">11.1.</span> <span class="toc-text">lower_bound实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E6%A8%A1%E6%9D%BF"><span class="toc-number">11.2.</span> <span class="toc-text">常见模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84"><span class="toc-number">11.3.</span> <span class="toc-text">旋转数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E9%97%AE%E9%A2%98"><span class="toc-number">12.</span> <span class="toc-text">数学问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%B9%82"><span class="toc-number">12.1.</span> <span class="toc-text">快速幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%A0%E6%95%B0-%E5%80%8D%E6%95%B0-%E8%B4%A8%E6%95%B0"><span class="toc-number">12.2.</span> <span class="toc-text">因数&#x2F;倍数&#x2F;质数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="toc-number">12.3.</span> <span class="toc-text">位运算</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8E-%E5%A4%84%E7%90%86%E6%9F%90%E4%BD%8D"><span class="toc-number">12.3.1.</span> <span class="toc-text">与 (处理某位)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%88%96-%E6%89%BE%E7%BC%BA%E5%A4%B1%E6%95%B0%E3%80%81%E5%87%BA%E7%8E%B0%E4%B8%80%E6%AC%A1%E6%95%B0"><span class="toc-number">12.3.2.</span> <span class="toc-text">异或 (找缺失数、出现一次数)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%A9%E5%B0%94%E6%8A%95%E7%A5%A8%E6%B3%95"><span class="toc-number">12.4.</span> <span class="toc-text">摩尔投票法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">13.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E6%B3%95"><span class="toc-number">13.1.</span> <span class="toc-text">字符串加法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%98%E6%B3%95"><span class="toc-number">13.2.</span> <span class="toc-text">字符串乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%88%86%E5%89%B2"><span class="toc-number">13.3.</span> <span class="toc-text">字符串分割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E6%96%87%E4%B8%B2"><span class="toc-number">13.4.</span> <span class="toc-text">回文串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="toc-number">13.5.</span> <span class="toc-text">计算器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KMP"><span class="toc-number">13.6.</span> <span class="toc-text">KMP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E8%B0%83%E6%A0%88-%E9%98%9F%E5%88%97"><span class="toc-number">14.</span> <span class="toc-text">单调栈&amp;队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BC%80%E5%92%8C-%E5%93%88%E5%B8%8C"><span class="toc-number">15.</span> <span class="toc-text">前缀和+哈希</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">16.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E5%85%B8%E6%A0%91"><span class="toc-number">17.</span> <span class="toc-text">字典树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6"><span class="toc-number">18.</span> <span class="toc-text">多路归并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DP-%E5%85%88%E6%B1%82%E5%86%8D%E5%AD%98"><span class="toc-number">18.1.</span> <span class="toc-text">DP-先求再存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%85%88%E5%AD%98%E5%86%8D%E6%B1%82"><span class="toc-number">18.2.</span> <span class="toc-text">优先队列-先存再求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9C%B0%E5%93%88%E5%B8%8C"><span class="toc-number">19.</span> <span class="toc-text">原地哈希</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="toc-number">20.</span> <span class="toc-text">随机化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84"><span class="toc-number">21.</span> <span class="toc-text">差分数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84"><span class="toc-number">22.</span> <span class="toc-text">树状数组</span></a></li></ol></div></section></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div></aside><pjax><script>window.pdata={},pdata.ispage=!0,pdata.commentPath="",pdata.commentPlaceholder="",pdata.commentConfig={};var l_header=document.getElementById("l_header");l_header.classList.remove("show");var cover_wrapper=document.querySelector("#l_cover .cover-wrapper"),scroll_down=document.getElementById("scroll-down");cover_wrapper.id="half",cover_wrapper.style.display="",scroll_down.style.display="none"</script></pjax></div><footer class="footer clearfix" itemscope itemtype="http://schema.org/WPFooter"><br><br></footer><a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return!1" title="top"></a></div></div><div><script>volantis.dom.bodyAnchor=volantis.dom.$(document.getElementById("safearea")),volantis.dom.topBtn=volantis.dom.$(document.getElementById("s-top")),volantis.dom.wrapper=volantis.dom.$(document.getElementById("wrapper")),volantis.dom.coverAnchor=volantis.dom.$(document.querySelector("#l_cover .cover-wrapper")),volantis.dom.switcher=volantis.dom.$(document.querySelector("#l_header .switcher .s-search")),volantis.dom.header=volantis.dom.$(document.getElementById("l_header")),volantis.dom.search=volantis.dom.$(document.querySelector("#l_header .m_search")),volantis.dom.mPhoneList=volantis.dom.$(document.querySelectorAll("#l_header .m-phone .list-v"))</script><script>volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css")</script><script src="/js/app.js"></script><script>const rootElement=document.documentElement,darkModeStorageKey="color-scheme",rootElementDarkModeAttributeName="color-scheme",setLS=(e,t)=>{localStorage.setItem(e,t)},removeLS=e=>{localStorage.removeItem(e)},getLS=e=>localStorage.getItem(e),getModeFromCSSMediaQuery=()=>window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",resetRootDarkModeAttributeAndLS=()=>{var e;rootElement.removeAttribute("color-scheme"),e="color-scheme",localStorage.removeItem(e)},validColorModeKeys={dark:!0,light:!0},applyCustomDarkModeSettings=e=>{const t=e||getLS("color-scheme");getCustomDarkMode(),t===getModeFromCSSMediaQuery()?resetRootDarkModeAttributeAndLS():validColorModeKeys[t]?rootElement.setAttribute("color-scheme",t):resetRootDarkModeAttributeAndLS()},invertDarkModeObj={dark:"light",light:"dark"},getCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}volantis.dark.mode="dark"==e?"light":"dark"},toggleCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}var t,o;return t="color-scheme",o=e,localStorage.setItem(t,o),e};function bindToggleButton(){document.querySelectorAll("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn").forEach((function(e){volantis.dom.$(e).on("click",volantis.dark.toggle)}))}volantis.dark.toggle=()=>{const e=toggleCustomDarkMode();applyCustomDarkModeSettings(e),volantis.dark.method.toggle.start()},applyCustomDarkModeSettings(),document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(bindToggleButton)}),volantis.pjax.push(bindToggleButton);const darkModelListeners={dark:e=>{e.matches&&(volantis.dark.mode="dark"),volantis.dark.method.toggle.start()},light:e=>{e.matches&&(volantis.dark.mode="light"),volantis.dark.method.toggle.start()}};window.matchMedia("(prefers-color-scheme: dark)").addListener(darkModelListeners.dark),window.matchMedia("(prefers-color-scheme: light)").addListener(darkModelListeners.light)</script><script>function loadIssuesJS(){null!=document.getElementById("sites-api")&&"undefined"==typeof SitesJS&&volantis.js("/js/plugins/tags/sites.js");null!=document.getElementById("friends-api")&&"undefined"==typeof FriendsJS&&volantis.js("/js/plugins/tags/friends.js");null!=document.getElementById("contributors-api")&&"undefined"==typeof ContributorsJS&&volantis.js("/js/plugins/tags/contributors.js")}loadIssuesJS(),volantis.pjax.push(()=>{loadIssuesJS()})</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script><script>window.lazyLoadOptions={elements_selector:".lazyload",threshold:0},window.addEventListener("LazyLoad::Initialized",(function(n){window.lazyLoadInstance=n.detail.instance}),!1),document.addEventListener("DOMContentLoaded",(function(){lazyLoadInstance.update()})),document.addEventListener("pjax:complete",(function(){lazyLoadInstance.update()}))</script><script>window.FPConfig={delay:0,ignoreKeywords:["#"],maxRPS:6,hoverDelay:0}</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script><script>const SearchServiceDataPathRoot="/".endsWith("/")?"/":"//",SearchServiceDataPath=SearchServiceDataPathRoot+"content.json";function loadSearchScript(){return volantis.js("/js/search/hexo.js")}function loadSearchService(){loadSearchScript(),document.querySelectorAll(".input.u-search-input").forEach(e=>{e.removeEventListener("focus",loadSearchService,!1)}),document.querySelectorAll(".u-search-form").forEach(e=>{e.addEventListener("submit",e=>{e.preventDefault()},!1)})}function OpenSearch(e){"undefined"==typeof SearchService?loadSearchScript().then(()=>{SearchService.setQueryText(e),SearchService.search()}):(SearchService.setQueryText(e),SearchService.search())}if(window.location.search&&/^\?s=/g.test(window.location.search)){OpenSearch(decodeURI(window.location.search).replace(/\ /g,"-").replace(/^\?s=/g,""))}document.querySelectorAll(".input.u-search-input").forEach(e=>{e.addEventListener("focus",loadSearchService,!1)})</script><script>function pjax_highlightjs_copyCode(){(document.querySelector(".highlight .code pre")||document.querySelector(".article pre code"))&&VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")}volantis.css("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/default.min.css"),volantis.js("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js").then(()=>{volantis.requestAnimationFrame(hljs.highlightAll)}),volantis.pjax.push(()=>{document.querySelectorAll("pre code").forEach(e=>{hljs.highlightElement(e)})},"highlightjs"),volantis.requestAnimationFrame(pjax_highlightjs_copyCode),volantis.pjax.push(pjax_highlightjs_copyCode)</script><script>let imgs=["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"],index=0,IntervalParallax=null;function parallax(){let a=document.querySelector("#parallax-window");a=document.querySelector("html"),Parallax.window=a,Parallax.options.fade=1e3,Parallax.cache=1,next_parallax(),Parallax.init(),imgs.length>1&&(IntervalParallax=setInterval((function(){next_parallax()}),"20000"))}function next_parallax(){"undefined"!=typeof Parallax&&imgs.length>=1&&(Parallax.options.src=imgs[index%imgs.length],Parallax.start(),index++,Parallax.cache&&(fetch(imgs[index%imgs.length]+"?t="+(new Date).getTime()),index==imgs.length&&(Parallax.cache=0)))}var runningOnBrowser="undefined"!=typeof window,isBot=runningOnBrowser&&!("onscroll"in window)||"undefined"!=typeof navigator&&/(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);isBot||(volantis.js("/js/plugins/parallax.js").then(()=>{parallax()}),volantis.pjax.send(()=>{clearInterval(IntervalParallax)},"clearIntervalParallax"),volantis.pjax.push(parallax))</script><script>function load_swiper(){document.querySelectorAll(".swiper-container")[0]&&(volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css"),volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(()=>{pjax_swiper()}))}function pjax_swiper(){volantis.swiper=new Swiper(".swiper-container",{slidesPerView:"auto",spaceBetween:8,centeredSlides:!0,loop:!0,pagination:{el:".swiper-pagination",clickable:!0},navigation:{nextEl:".swiper-button-next",prevEl:".swiper-button-prev"}})}load_swiper(),volantis.pjax.push(()=>{document.querySelectorAll(".swiper-container")[0]&&(void 0===volantis.swiper?load_swiper():pjax_swiper())})</script><pjax></pjax><script>function listennSidebarTOC(){const t=document.querySelectorAll(".toc li");if(!t.length)return;let e=[];[...t].map(t=>{const n=t.querySelector(".toc-link"),i=document.getElementById(decodeURI(n.getAttribute("href")).replace("#",""));return e.push(i),n.setAttribute("onclick","return false;"),n.setAttribute("toc-action","toc-"+decodeURI(n.getAttribute("href")).replace("#","")),n.setAttribute("href","/"),n.addEventListener("click",t=>{t.preventDefault(),volantis.scroll.to(i,{addTop:5,observer:!0}),history.pushState(null,document.title,"#"+i.id)}),i});function n(t){if(t.classList.contains("active-current"))return;document.querySelectorAll(".toc .active").forEach(t=>{t.classList.remove("active","active-current")}),t.classList.add("active","active-current");let e=t.parentNode;for(;!e.matches(".toc");)e.matches("li")&&e.classList.add("active"),e=e.parentNode}volantis.activateNavIndex=0,n(t[volantis.activateNavIndex]),volantis.scroll.push(()=>{if(e[0].getBoundingClientRect().top>=0)volantis.activateNavIndex=0;else if(e[e.length-1].getBoundingClientRect().top<0)volantis.activateNavIndex=e.length-1;else for(let t=0;t<e.length;t++){const n=e[t],i=e[(t+1)%e.length];if(n.getBoundingClientRect().top<0&&i.getBoundingClientRect().top>=0){volantis.activateNavIndex=t;break}}n(t[volantis.activateNavIndex])})}document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(listennSidebarTOC)}),document.addEventListener("pjax:success",()=>{volantis.requestAnimationFrame(listennSidebarTOC)})</script><script>document.onreadystatechange=function(){if("complete"==document.readyState){const{saveData:e,effectiveType:t}=navigator.connection||navigator.mozConnection||navigator.webkitConnection||{};("none"==getComputedStyle(document.querySelector("#safearea"),null).display||e||/2g/.test(t))&&(document.querySelectorAll(".reveal").forEach((function(e){e.style.opacity="1"})),document.querySelector("#safearea").style.display="block")}}</script><script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/CPP/","name":"CPP"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/03/24/CPP/Leetcode/","name":"Leetcode"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Leetcode","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/03/24/CPP/Leetcode/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/03/24/CPP/Leetcode/","wordCount":0,"datePublished":"2023-03-24T00:39:04.000Z","dateModified":"2024-04-28T06:55:12.377Z","articleSection":"CPP","keywords":"CPP","image":{"@type":"ImageObject","url":"/img/leetcode.jpg","width":1024,"height":768}}]</script><script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script><script>var pjax;document.addEventListener("DOMContentLoaded",(function(){pjax=new Pjax({elements:'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',selectors:["head title","head meta[name=keywords]","head meta[name=description]","#l_main","#pjax-header-nav-list",".pjax","pjax","script[data-pjax], .pjax-reload script"],cacheBust:!1,timeout:5e3})})),document.addEventListener("pjax:send",(function(e){try{var t=window.location.pathname,n=e.triggerElement.href,a=[""];""!=a[0]&&a.forEach(e=>{-1==t.indexOf(e)&&-1==n.indexOf(e)||(window.location.href=n)})}catch(e){}volantis.pjax.method.send.start()})),document.addEventListener("pjax:complete",(function(){volantis.pjax.method.complete.start()})),document.addEventListener("pjax:error",(function(e){volantis.debug?(console.error(e),console.log("pjax error: \n"+JSON.stringify(e))):(volantis.pjax.method.error.start(),window.location.href=e.triggerElement.href)}))</script></div></body></html>

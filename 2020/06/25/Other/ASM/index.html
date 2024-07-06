@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="en"><head hexo-theme="https://github.com/volantis-x/hexo-theme-volantis/#5.8.0"><meta name="generator" content="Hexo 6.3.0"><meta name="Volantis" content="5.8.0"><meta charset="utf-8"><link rel="canonical" href="http://example.com/2020/06/25/other/asm/"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://unpkg.com"><link rel="preconnect" href="https://unpkg.com" crossorigin><meta name="renderer" content="webkit"><meta name="force-rendering" content="webkit"><meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><meta name="HandheldFriendly" content="True"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><link rel="preload" href="/css/style.css" as="style"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous"><title>Assembly - Hexo</title><meta name="keywords" content="null"><meta desc name="description" content="Hexo - John Doe - Hexo"> div  byte  ptr  ds:[0]  //8位
+ (al)=((ax)/(ds)*16+0)的商
+ (ah)=(ax)/((ds)*16+0)的余数
+</code></pre><p><code>mul</code> 8位相乘,乘数默认AL,结果AX；16位相乘,乘数默认AX,DX AX结构高低位</p><pre><code class="textile"> mul  word ptr [bx+8]  //16位
+ (ax)=(ax)*((ds)*16+(bx)+8)结果的低16位
+ (dx)=(ax)*((ds)*16+(bx)+8)结果的高16位
+</code></pre><p><code>db dw dd</code> 定义字节、字、双字型数据</p><pre><code class="textile"> db  1        //01H
+ dw  1        //0001H
+ dd  1        //00000001H
+</code></pre><p><code>dup</code> 定义重复数据</p><pre><code class="textile"> db  3  dup (1,2) //db 1,2,1,2,1,2
+</code></pre><p><code>movsb movsw movsd</code> 数据传送</p><pre><code class="textile"> 源地址是DS:SI,目的地址是ES:DI
+ DF=0正向传送,DF=1反向传送
+ 在传送完成之后SI和DI会增或减小对应数据长度
+ 若反复传送，加指令前缀rep并在CX中设置次数 
+</code></pre></blockquote><hr><h2 id="数据长度"><a href="#数据长度" class="headerlink" title="数据长度"></a>数据长度</h2><p>8086CPU中可以指定两种尺寸的数据，byte和word</p><blockquote><ul><li><p>在有寄存器参与的时候使用寄存器的种类区分</p><ol><li>字：mov ax,1</li><li>字节：mov al,1</li></ol></li><li><p>在没有寄存器参与的时候，使用X ptr指明内存单元长度，X是word或byte</p><ol><li><p>字：mov word ptr ds:[0],1 add word ptr [bx],2</p></li><li><p>字节：mov byte ptr ds:[0],1 add byte ptr [bx],2</p></li></ol></li><li><p>其他默认指明处理类型的指令</p><ol><li>push [1000H]，push默认只进行字操作</li></ol></li></ul></blockquote><p>灵活使用寻址方式的例子，修改下面内存空间中的数据：</p><table><thead><tr><th>起始地址</th><th>内容</th></tr></thead><tbody><tr><td>00</td><td>‘DEC’</td></tr><tr><td>03</td><td>‘Ken Oslen’</td></tr><tr><td>0C</td><td>137</td></tr><tr><td>0E</td><td>40</td></tr><tr><td>10</td><td>‘PDP’</td></tr></tbody></table><pre><code class="assembly"> ;第三字段改为38
+mov word ptr [bx].0ch,38   
+
+ ;修改最后一个字段的三个字符
+mov si,0
+mov byte ptr [bx].10h[si],&#39;v&#39;  
+inc si
+mov byte ptr [bx].10h[si],&#39;A&#39;
+inc si
+mov byte ptr [bx].10h[si],&#39;X&#39;
+
+;类似结构体[i]表示第几个字符
+</code></pre><hr><h2 id="编译-Debug"><a href="#编译-Debug" class="headerlink" title="编译&amp;Debug"></a>编译&amp;Debug</h2><h3 id="EXE加载过程"><a href="#EXE加载过程" class="headerlink" title="EXE加载过程"></a>EXE加载过程</h3><p>PSP：程序与dos之间通信<br>CX：程序长度<br>DS：程序内存位置<br>CS：程序代码位置(CS&#x3D;DS+10H)</p><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E5%8A%A0%E8%BD%BD.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><h3 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h3><pre><code class="textile">R：查看，改变CPU寄存器内容
+    直接-r查看寄存器内容
+    -r 寄存器名，改变寄存器内容
+D：查看内存中内容
+    -d直接查看
+    -d 段地址:偏移地址 查看固定地址开始的内容
+    -d 段地址:偏移地址 结尾偏移地址 查看指定范围内存
+E：改写内存中内容
+    -e 起始地址 数据 数据 数据 …
+    提问方式修改 -e 段地址:偏移地址 从这个地址开始一个一个改，空格下一个，回车结束
+    也可以写入字符 ‘a’
+U：将内存中的机器指令翻译成汇编指令
+    -u 段地址:偏移地址
+T：执行一条机器指令
+    -t 执行cs:ip指向的命令
+P：同T单步跟踪，但P命令不会跟踪进入子程序或软中断(跳过循环)
+A：以汇编指令格式在内存中写入一条机器指令
+    -a 段地址:偏移地址 从这个地址开始一行一行的写入汇编语句
+G：g 0012 从当前CS:IP开始一直执行到0012处暂停
+</code></pre><hr><h2 id="转移指令"><a href="#转移指令" class="headerlink" title="转移指令"></a>转移指令</h2><p>可以修改IP或同时修改CS，IP的系统指令：</p><ul><li>转移行为：<ol><li>只修改IP，称为段内转移，如jmp ax</li><li>同时修改CS和IP，称为段间转移，如jmp 1000:0</li></ol></li><li>修改范围（段内转移）：<ol><li>短转移：修改IP范围-128~127</li><li>近转移：修改IP范围-32768~32767</li></ol></li><li>转移指令分类：<ol><li>无条件转移：jmp</li><li>条件转移：jcxz</li><li>循环指令：loop</li><li>过程</li><li>中断</li></ol></li></ul><h3 id="offset指令"><a href="#offset指令" class="headerlink" title="offset指令"></a>offset指令</h3><blockquote><p><code>offset start</code> : 取得偏移地址</p></blockquote><h3 id="jmp指令"><a href="#jmp指令" class="headerlink" title="jmp指令"></a>jmp指令</h3><blockquote><p><code>jmp short 标号</code>：位移字类型8位，段内短转移</p><p><code>jmp near ptr 标号</code>：位移字类型16位，段内近转移</p><p><code>jmp far ptr 标号</code>：段间远转移，机器码中指明目的地址的CS和IP值</p></blockquote><h3 id="jcxz指令"><a href="#jcxz指令" class="headerlink" title="jcxz指令"></a>jcxz指令</h3><blockquote><p><code>jcxz 标号</code>：条件转移指令，短转移，如果(cx)&#x3D;0则跳转</p></blockquote><h3 id="loop指令"><a href="#loop指令" class="headerlink" title="loop指令"></a>loop指令</h3><blockquote><p><code>loop 标号</code>：循环指令，短转移，如果(cx)!&#x3D;0那么跳转到标号处执行</p></blockquote><h3 id="ret-retf-iret指令"><a href="#ret-retf-iret指令" class="headerlink" title="ret&#x2F;retf&#x2F;iret指令"></a>ret&#x2F;retf&#x2F;iret指令</h3><blockquote><p>用栈中的数据修改CS和IP的值，实现近、远转移</p><ul><li><p><code>ret</code> 指令相当于 <code>pop ip</code></p><pre><code class="textile">(IP)=((SS)*16+(SP))
+(SP)=(SP)+2
+</code></pre></li><li><p><code>retf</code> 指令相当于 <code>pop ip, pop cs</code></p><pre><code class="textile">(IP)=((SS)*16+(SP))
+(SP)=(SP)+2
+(CS)=((SS)*16+(SP))
+(SP)=(SP)+2
+</code></pre></li><li><p><code>iret</code> 指令相当于 <code>pop ip, pop cs, popf</code></p></li></ul></blockquote><h3 id="call指令"><a href="#call指令" class="headerlink" title="call指令"></a>call指令</h3><blockquote><p>将当前的IP或CS和IP入栈，转移，且位移字类型16位</p><p>call不能实现短转移，但它实现转移的原理和jmp相同。</p><ul><li><code>call 标号</code>相当于 <code>push ip, jmp near ptr 标号</code></li><li><code>call far ptr 标号</code> 相当于 <code>push cs, push ip, jmp far ptr 标号</code></li></ul></blockquote><hr><h2 id="标志寄存器"><a href="#标志寄存器" class="headerlink" title="标志寄存器"></a>标志寄存器</h2><p>CPU内部特殊寄存器，用来存储指令执行结果，简称flag寄存器，按位起作用</p><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><blockquote><p><code>ZF</code> 零标志位，结果是否为0</p><p><code>PF</code> 奇偶标志位，结果二进制位中1的个数是否偶</p><p><code>SF</code> 符号标志位，结果是否为负；得知有符号数结果正负，对无符号数无意义</p><p><code>CF</code> 进位标志位，记录无符号数运算是否向更高位进&#x2F;借位</p><p><code>OF</code> 溢出标志位，记录有符号数运算是否发生溢出</p><p><code>TF</code> 调试标志位，为1时处理器每次只执行一条指令，即单步执行</p><p><code>IF</code> 中断允许标志位，为1时能响应外部中断，反之则屏蔽</p><p><code>DF</code> 方向标志位，为0则<code>si、di</code>递增，为1递减；<code>cld</code>命令置为0，<code>std</code>置为1</p><pre><code>adc   带进位加法，adc ax, bx 即(ax) = (ax)+(bx)+CF
+//计算001EF000H + 00201000H，结果放在ax(高16位)和bx(低16位)中
+mov ax, 001EH
+mov bx, 0F000H
+add bx, 1000H
+adc ax, 0020H   
+//高位: ax = ax + 0020H +1  (CF保存了进位1)
+sbb   带借位减法，sbb ax,bx 即(ax)=(ax)-(bx)-CF
+</code></pre><p><code>cmp</code> 比较指令，<code>cmp ax,bx</code>即<code>(ax)-(bx)</code>，结果正负靠SF(正负)和OF(溢出)共同判断</p></blockquote><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flag%E5%AF%84%E5%AD%98%E5%99%A8%E5%90%84%E4%BD%8D%E7%A4%BA%E6%84%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><hr><h2 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h2><h3 id="什么是端⼝"><a href="#什么是端⼝" class="headerlink" title="什么是端⼝"></a>什么是端⼝</h3><p>各种存储器都和CPU的地址线、数据线、控制线相连。CPU在操控它们的时候，把它们都当作内存来对待，把它们总的看做⼀个若⼲存储单元组成的逻辑存储器，这个逻辑存储器我们称其为内存地址空间。</p><blockquote><p>在PC机系统中，和CPU通过总线相连的芯⽚除各种存储器外，还有以下3种芯⽚。</p><ul><li>各种接⼝卡（⽐如，⽹卡、显卡）上的接⼝芯⽚，它们控制接⼝卡进⾏⼯作；</li><li>主板上的接⼝芯⽚，CPU通过它们对部分外设进⾏访问；</li><li>其他芯⽚，⽤来存储相关的系统信息，或进⾏相关的输⼊输出处理。</li></ul></blockquote><p>在这些芯⽚中，都有⼀组可以由CPU读写的寄存器。这些寄存器都和CPU的总线相连，CPU进⾏读或写的时候都通过控制线向它们所在的芯⽚发出端⼝读写命令。可⻅，从CPU的⻆度，将这些寄存器都当作端⼝，对它们进⾏统⼀编址，从⽽建⽴了⼀个统⼀的端⼝地址空间。</p><p>CPU可以直接读写以下3个地⽅的数据：CPU内部的寄存器、内存单元、端⼝</p><br><h3 id="端口的读写"><a href="#端口的读写" class="headerlink" title="端口的读写"></a>端口的读写</h3><blockquote><p>在访问端⼝的时候，CPU通过端⼝地址来定位端⼝，因为端⼝所在的芯⽚和CPU通过总线相连，所以，端⼝地址和内存地址⼀样，通过地址总线来传送。在PC系统中，CPU最多可以定位64KB个不同的端⼝。则端⼝地址的范围为0～65535</p><p>端⼝的读写指令只有两条： in 和 out ，分别⽤于从端⼝读取数据和往端⼝写⼊数据</p></blockquote><p>对比CPU执⾏内存访问指令和端⼝访问指令时候，总线上的信息：</p><ol><li><p>访问内存</p><pre><code class="assembly">mov ax,ds:[8]                 ;假设执⾏前(ds)=0
+</code></pre><ul><li>CPU通过地址线将地址信息8发出</li><li>CPU通过控制线发出内存读写命令，选中存储器芯⽚，并通知它，将要从中读取数据</li><li>存储器将8号单元中的数据通过数据线送⼊CPU</li></ul></li><li><p>访问端⼝</p><pre><code class="assembly">in al,60h                   ;从60h号端⼝读⼊⼀个字节
+</code></pre><ul><li>CPU通过地址线将地址信息60h发出</li><li>CPU通过控制线发出端⼝读命令，选中端⼝所在的芯⽚，并通知它，将要从中读取数据</li><li>端⼝所在的芯⽚将60h端⼝中的数据通过数据线送⼊CPU</li></ul></li></ol><blockquote><p>注意：</p><p>在 in 和 out 指令中，只能使⽤ ax 或 al 来存放、发送到端⼝中的数据。<br>访问8位端⼝时⽤ al ，访问16位端⼝时⽤ ax 。</p></blockquote><br><h3 id="CMOS-RAM芯⽚的读写"><a href="#CMOS-RAM芯⽚的读写" class="headerlink" title="CMOS RAM芯⽚的读写"></a>CMOS RAM芯⽚的读写</h3><p>PC机中，有⼀个CMOS RAM芯⽚，⼀般简称为CMOS。此芯⽚的特征如下:</p><blockquote><p>包含⼀个实时时钟和⼀个有128个存储单元的RAM存储器（早期的计算机为64个字节）</p><p>该芯⽚靠电池供电。所以，关机后其内部的实时时钟仍可正常⼯作，RAM中的信息不丢失</p><p>128个字节的RAM中，内部实时时钟占⽤0～0dh单元来保存时间信息，其余⼤部分单元⽤于保存系统配置信息，供系统启动时BIOS程序读取。BIOS也提供了相关的程序，使我们可以在开机的时候配置CMOS RAM中的系统信息</p><p>该芯⽚内部有两个端⼝，端⼝地址为<code>70h</code>和<code>71h</code>。CPU通过这两个端⼝来读写CMOS RAM</p><p><code>70h</code>为地址端⼝，存放要访问的CMOS RAM单元的地址；<code>71h</code>为数据端⼝，存放从选定的CMOS RAM单元中读取的数据，或要写⼊到其中的数据。可⻅，CPU对CMOS RAM的读写分两步进⾏。⽐如，读CMOS RAM的2号单元：将2送⼊端⼝<code>70h</code>；从端⼝<code>71h</code>读出2号单元的内容</p></blockquote><hr><h2 id="程序编写"><a href="#程序编写" class="headerlink" title="程序编写"></a>程序编写</h2><h3 id="显存显示字符串"><a href="#显存显示字符串" class="headerlink" title="显存显示字符串"></a>显存显示字符串</h3><pre><code class="assembly">assume cs:code
+
+data segment
+    db &#39;welcome to masm!&#39; 
+data ends
+
+code segment
+start:
+    mov ax,data
+    mov ds,ax
+
+    //显存地址 ES:DI
+    mov ax,0b800h
+    mov es,ax
+    mov di,10*160+80 ; 
+
+    //数据地址 DS:SI
+    mov si,0
+    mov cx,16
+s1:
+    mov al,ds:[si]  //低位字符
+    mov ah,00000010B ; //高位颜色
+    mov es:[di],ax
+    inc si
+    add di,2
+    loop s1
+
+    mov ax, 4c00h
+    int 21h ;
+code ends
+end start
+</code></pre><h3 id="除法溢出中断程序"><a href="#除法溢出中断程序" class="headerlink" title="除法溢出中断程序"></a>除法溢出中断程序</h3><pre><code class="assembly">assume cs:code
+code segment
+
+start:
+mov ax,cs
+mov ds,ax
+mov si,offset do
+mov ax,0
+mov es,ax
+mov di,200h
+
+mov cx,offset doend-offset do ; 安装中断例程
+cld
+rep movsb
+
+mov word ptr es:[0],200h
+mov word ptr es:[2],0 ; 设置中断向量表
+
+mov dx,0ffffh
+mov bx,1 ; 测试一下
+div bx
+
+mov ax, 4c00h
+int 21h 
+
+do:jmp short dostart
+db &#39;divide error!&#39;
+dostart:
+mov ax,0
+mov ds,ax
+mov si,202h
+
+mov ax,0b800h
+mov es,ax
+mov di,160*12+60
+
+mov cx,13
+s:
+mov al,ds:[si]
+mov ah,2
+mov es:[di],ax
+inc si
+add di,2
+loop s
+
+mov ax, 4c00h
+int 21h
+
+doend:nop
+
+code ends
+end start
+</code></pre><h3 id="利用中断和栈实现loop"><a href="#利用中断和栈实现loop" class="headerlink" title="利用中断和栈实现loop"></a>利用中断和栈实现loop</h3><p>原题：在屏幕中间显示80个<code>！</code></p><p>参数：<code>(cx)</code>&#x3D;循环次数，<code>(bx)</code>&#x3D;位移</p><pre><code class="assembly">assume cs:code
+code segment
+start:
+    mov ax,cs
+    mov ds,ax
+    mov si,offset lp
+    mov ax,0
+    mov es,ax
+    mov di,200h
+
+    mov cx,offset lpend-offset lp ; 安装中断例程
+    cld
+    rep movsb
+
+    mov word ptr es:[7ch*4],200h
+    mov word ptr es:[7ch*4+2],0 ; 设置中断向量表
+
+    mov ax,0b800h
+    mov es,ax
+    mov di,160*12
+    mov bx,offset s-offset se ;设置回退位移
+    mov cx,80            ;设置loop次数
+s:mov byte ptr es:[di],&#39;!&#39; ; 完成第一次显示
+    add di,2
+    int 7ch ;测试int 7ch
+se:nop
+
+    mov ax, 4c00h
+    int 21h
+
+lp: ;中断例程
+    dec cx
+    jcxz f
+    push bp   ;修改bp前先保存
+    mov bp,sp  ;SP指向栈顶，即存入的IP
+    add [bp+2],bx  ;指针回退位移....为什么+2？？？？
+f: pop bp
+    iret
+    lpend:nop
+
+code ends
+end start
+</code></pre><hr><h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><blockquote><p>1.对<code>mov ax,[0]</code>，Debug指内存数据，masm指0，可用段前缀区分如<code>mov al，ds:[0]</code></p><p>2.数据不能以字母开头，大于<code>9fffH</code>的数据在开头加0，如<code>0A000H</code></p><p>3.子程序要先将<code>所用到的寄存器</code>存到栈里</p><p>4.使用<code>&#39;xxx&#39;</code>的方式指明数据是以字符形式给出的，编译器会自动将它们转化为ASCII码</p></blockquote></div><div class="footer"></div><div class="article-meta" id="bottom"><div class="new-meta-box"><div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-06T10:22:39+08:00"><a class="notlink"><i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i><p>更新于：Jul 6, 2024</p></a></div><div class="new-meta-item meta-tags"><a class="tag" href="/tags/ASM/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>ASM</p></a></div><span hidden itemprop="keywords">ASM</span></div></div><div class="prev-next"><a class="prev" href="/2020/07/20/Other/Financing/"><p class="title"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Financing</p><p class="content">基金种类 货币型：投资于货币市场上短期有价证券，银行存款、央行票据——余额宝 债权型：投资于国债、企业债，市场低迷仍有稳定收益 混合型：可同时投资股票、债权和货币基金 股票型：基金80%投股市 ...</p></a><a class="next" href="/2020/06/05/Software/UML/"><p class="title">UML<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p><p class="content">UML从考虑系统的不同角度出发，定义了用况图、类图、对象图、包图、状态图、活动图、序列图、通信图、构件图、部署图等10种图 甘特图也称为条状图，是一种按照时间进度标出工作活动，用于项目管理的图表...</p></a></div></article></div><aside id="l_side" itemscope itemtype="http://schema.org/WPSideBar"><div class="widget-sticky pjax"><section class="widget toc-wrapper desktop mobile" id="toc-div"><header><i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class="name">本文目录</span></header><div class="content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97"><span class="toc-number">1.</span> <span class="toc-text">字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">寄存器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88"><span class="toc-number">3.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">寻址方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="toc-number">5.</span> <span class="toc-text">数据处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%95%BF%E5%BA%A6"><span class="toc-number">6.</span> <span class="toc-text">数据长度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91-Debug"><span class="toc-number">7.</span> <span class="toc-text">编译&amp;Debug</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXE%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="toc-number">7.1.</span> <span class="toc-text">EXE加载过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Debug"><span class="toc-number">7.2.</span> <span class="toc-text">Debug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E7%A7%BB%E6%8C%87%E4%BB%A4"><span class="toc-number">8.</span> <span class="toc-text">转移指令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#offset%E6%8C%87%E4%BB%A4"><span class="toc-number">8.1.</span> <span class="toc-text">offset指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jmp%E6%8C%87%E4%BB%A4"><span class="toc-number">8.2.</span> <span class="toc-text">jmp指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jcxz%E6%8C%87%E4%BB%A4"><span class="toc-number">8.3.</span> <span class="toc-text">jcxz指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#loop%E6%8C%87%E4%BB%A4"><span class="toc-number">8.4.</span> <span class="toc-text">loop指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ret-retf-iret%E6%8C%87%E4%BB%A4"><span class="toc-number">8.5.</span> <span class="toc-text">ret&#x2F;retf&#x2F;iret指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#call%E6%8C%87%E4%BB%A4"><span class="toc-number">8.6.</span> <span class="toc-text">call指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%BF%97%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">9.</span> <span class="toc-text">标志寄存器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3"><span class="toc-number">10.</span> <span class="toc-text">端口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AB%AF%E2%BC%9D"><span class="toc-number">10.1.</span> <span class="toc-text">什么是端⼝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%AF%BB%E5%86%99"><span class="toc-number">10.2.</span> <span class="toc-text">端口的读写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMOS-RAM%E8%8A%AF%E2%BD%9A%E7%9A%84%E8%AF%BB%E5%86%99"><span class="toc-number">10.3.</span> <span class="toc-text">CMOS RAM芯⽚的读写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E7%BC%96%E5%86%99"><span class="toc-number">11.</span> <span class="toc-text">程序编写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%BE%E5%AD%98%E6%98%BE%E7%A4%BA%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">11.1.</span> <span class="toc-text">显存显示字符串</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%A4%E6%B3%95%E6%BA%A2%E5%87%BA%E4%B8%AD%E6%96%AD%E7%A8%8B%E5%BA%8F"><span class="toc-number">11.2.</span> <span class="toc-text">除法溢出中断程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E4%B8%AD%E6%96%AD%E5%92%8C%E6%A0%88%E5%AE%9E%E7%8E%B0loop"><span class="toc-number">11.3.</span> <span class="toc-text">利用中断和栈实现loop</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">12.</span> <span class="toc-text">注意</span></a></li></ol></div></section></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div><div class="pjax"></div></aside><pjax><script>window.pdata={},pdata.ispage=!0,pdata.commentPath="",pdata.commentPlaceholder="",pdata.commentConfig={};var l_header=document.getElementById("l_header");l_header.classList.remove("show");var cover_wrapper=document.querySelector("#l_cover .cover-wrapper"),scroll_down=document.getElementById("scroll-down");cover_wrapper.id="half",cover_wrapper.style.display="",scroll_down.style.display="none"</script></pjax></div><footer class="footer clearfix" itemscope itemtype="http://schema.org/WPFooter"><br><br></footer><a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return!1" title="top"></a></div></div><div><script>volantis.dom.bodyAnchor=volantis.dom.$(document.getElementById("safearea")),volantis.dom.topBtn=volantis.dom.$(document.getElementById("s-top")),volantis.dom.wrapper=volantis.dom.$(document.getElementById("wrapper")),volantis.dom.coverAnchor=volantis.dom.$(document.querySelector("#l_cover .cover-wrapper")),volantis.dom.switcher=volantis.dom.$(document.querySelector("#l_header .switcher .s-search")),volantis.dom.header=volantis.dom.$(document.getElementById("l_header")),volantis.dom.search=volantis.dom.$(document.querySelector("#l_header .m_search")),volantis.dom.mPhoneList=volantis.dom.$(document.querySelectorAll("#l_header .m-phone .list-v"))</script><script>volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css")</script><script src="/js/app.js"></script><script>const rootElement=document.documentElement,darkModeStorageKey="color-scheme",rootElementDarkModeAttributeName="color-scheme",setLS=(e,t)=>{localStorage.setItem(e,t)},removeLS=e=>{localStorage.removeItem(e)},getLS=e=>localStorage.getItem(e),getModeFromCSSMediaQuery=()=>window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",resetRootDarkModeAttributeAndLS=()=>{var e;rootElement.removeAttribute("color-scheme"),e="color-scheme",localStorage.removeItem(e)},validColorModeKeys={dark:!0,light:!0},applyCustomDarkModeSettings=e=>{const t=e||getLS("color-scheme");getCustomDarkMode(),t===getModeFromCSSMediaQuery()?resetRootDarkModeAttributeAndLS():validColorModeKeys[t]?rootElement.setAttribute("color-scheme",t):resetRootDarkModeAttributeAndLS()},invertDarkModeObj={dark:"light",light:"dark"},getCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}volantis.dark.mode="dark"==e?"light":"dark"},toggleCustomDarkMode=()=>{let e=getLS("color-scheme");if(validColorModeKeys[e])e=invertDarkModeObj[e];else{if(null!==e)return;e=invertDarkModeObj[getModeFromCSSMediaQuery()]}var t,o;return t="color-scheme",o=e,localStorage.setItem(t,o),e};function bindToggleButton(){document.querySelectorAll("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn").forEach((function(e){volantis.dom.$(e).on("click",volantis.dark.toggle)}))}volantis.dark.toggle=()=>{const e=toggleCustomDarkMode();applyCustomDarkModeSettings(e),volantis.dark.method.toggle.start()},applyCustomDarkModeSettings(),document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(bindToggleButton)}),volantis.pjax.push(bindToggleButton);const darkModelListeners={dark:e=>{e.matches&&(volantis.dark.mode="dark"),volantis.dark.method.toggle.start()},light:e=>{e.matches&&(volantis.dark.mode="light"),volantis.dark.method.toggle.start()}};window.matchMedia("(prefers-color-scheme: dark)").addListener(darkModelListeners.dark),window.matchMedia("(prefers-color-scheme: light)").addListener(darkModelListeners.light)</script><script>function loadIssuesJS(){null!=document.getElementById("sites-api")&&"undefined"==typeof SitesJS&&volantis.js("/js/plugins/tags/sites.js");null!=document.getElementById("friends-api")&&"undefined"==typeof FriendsJS&&volantis.js("/js/plugins/tags/friends.js");null!=document.getElementById("contributors-api")&&"undefined"==typeof ContributorsJS&&volantis.js("/js/plugins/tags/contributors.js")}loadIssuesJS(),volantis.pjax.push(()=>{loadIssuesJS()})</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script><script>window.lazyLoadOptions={elements_selector:".lazyload",threshold:0},window.addEventListener("LazyLoad::Initialized",(function(n){window.lazyLoadInstance=n.detail.instance}),!1),document.addEventListener("DOMContentLoaded",(function(){lazyLoadInstance.update()})),document.addEventListener("pjax:complete",(function(){lazyLoadInstance.update()}))</script><script>window.FPConfig={delay:0,ignoreKeywords:["#"],maxRPS:6,hoverDelay:0}</script><script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script><script>const SearchServiceDataPathRoot="/".endsWith("/")?"/":"//",SearchServiceDataPath=SearchServiceDataPathRoot+"content.json";function loadSearchScript(){return volantis.js("/js/search/hexo.js")}function loadSearchService(){loadSearchScript(),document.querySelectorAll(".input.u-search-input").forEach(e=>{e.removeEventListener("focus",loadSearchService,!1)}),document.querySelectorAll(".u-search-form").forEach(e=>{e.addEventListener("submit",e=>{e.preventDefault()},!1)})}function OpenSearch(e){"undefined"==typeof SearchService?loadSearchScript().then(()=>{SearchService.setQueryText(e),SearchService.search()}):(SearchService.setQueryText(e),SearchService.search())}if(window.location.search&&/^\?s=/g.test(window.location.search)){OpenSearch(decodeURI(window.location.search).replace(/\ /g,"-").replace(/^\?s=/g,""))}document.querySelectorAll(".input.u-search-input").forEach(e=>{e.addEventListener("focus",loadSearchService,!1)})</script><script>function pjax_highlightjs_copyCode(){(document.querySelector(".highlight .code pre")||document.querySelector(".article pre code"))&&VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")}volantis.css("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/default.min.css"),volantis.js("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js").then(()=>{volantis.requestAnimationFrame(hljs.highlightAll)}),volantis.pjax.push(()=>{document.querySelectorAll("pre code").forEach(e=>{hljs.highlightElement(e)})},"highlightjs"),volantis.requestAnimationFrame(pjax_highlightjs_copyCode),volantis.pjax.push(pjax_highlightjs_copyCode)</script><script>let imgs=["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"],index=0,IntervalParallax=null;function parallax(){let a=document.querySelector("#parallax-window");a=document.querySelector("html"),Parallax.window=a,Parallax.options.fade=1e3,Parallax.cache=1,next_parallax(),Parallax.init(),imgs.length>1&&(IntervalParallax=setInterval((function(){next_parallax()}),"20000"))}function next_parallax(){"undefined"!=typeof Parallax&&imgs.length>=1&&(Parallax.options.src=imgs[index%imgs.length],Parallax.start(),index++,Parallax.cache&&(fetch(imgs[index%imgs.length]+"?t="+(new Date).getTime()),index==imgs.length&&(Parallax.cache=0)))}var runningOnBrowser="undefined"!=typeof window,isBot=runningOnBrowser&&!("onscroll"in window)||"undefined"!=typeof navigator&&/(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);isBot||(volantis.js("/js/plugins/parallax.js").then(()=>{parallax()}),volantis.pjax.send(()=>{clearInterval(IntervalParallax)},"clearIntervalParallax"),volantis.pjax.push(parallax))</script><script>function load_swiper(){document.querySelectorAll(".swiper-container")[0]&&(volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css"),volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(()=>{pjax_swiper()}))}function pjax_swiper(){volantis.swiper=new Swiper(".swiper-container",{slidesPerView:"auto",spaceBetween:8,centeredSlides:!0,loop:!0,pagination:{el:".swiper-pagination",clickable:!0},navigation:{nextEl:".swiper-button-next",prevEl:".swiper-button-prev"}})}load_swiper(),volantis.pjax.push(()=>{document.querySelectorAll(".swiper-container")[0]&&(void 0===volantis.swiper?load_swiper():pjax_swiper())})</script><pjax></pjax><script>function listennSidebarTOC(){const t=document.querySelectorAll(".toc li");if(!t.length)return;let e=[];[...t].map(t=>{const n=t.querySelector(".toc-link"),i=document.getElementById(decodeURI(n.getAttribute("href")).replace("#",""));return e.push(i),n.setAttribute("onclick","return false;"),n.setAttribute("toc-action","toc-"+decodeURI(n.getAttribute("href")).replace("#","")),n.setAttribute("href","/"),n.addEventListener("click",t=>{t.preventDefault(),volantis.scroll.to(i,{addTop:5,observer:!0}),history.pushState(null,document.title,"#"+i.id)}),i});function n(t){if(t.classList.contains("active-current"))return;document.querySelectorAll(".toc .active").forEach(t=>{t.classList.remove("active","active-current")}),t.classList.add("active","active-current");let e=t.parentNode;for(;!e.matches(".toc");)e.matches("li")&&e.classList.add("active"),e=e.parentNode}volantis.activateNavIndex=0,n(t[volantis.activateNavIndex]),volantis.scroll.push(()=>{if(e[0].getBoundingClientRect().top>=0)volantis.activateNavIndex=0;else if(e[e.length-1].getBoundingClientRect().top<0)volantis.activateNavIndex=e.length-1;else for(let t=0;t<e.length;t++){const n=e[t],i=e[(t+1)%e.length];if(n.getBoundingClientRect().top<0&&i.getBoundingClientRect().top>=0){volantis.activateNavIndex=t;break}}n(t[volantis.activateNavIndex])})}document.addEventListener("DOMContentLoaded",()=>{volantis.requestAnimationFrame(listennSidebarTOC)}),document.addEventListener("pjax:success",()=>{volantis.requestAnimationFrame(listennSidebarTOC)})</script><script>document.onreadystatechange=function(){if("complete"==document.readyState){const{saveData:e,effectiveType:t}=navigator.connection||navigator.mozConnection||navigator.webkitConnection||{};("none"==getComputedStyle(document.querySelector("#safearea"),null).display||e||/2g/.test(t))&&(document.querySelectorAll(".reveal").forEach((function(e){e.style.opacity="1"})),document.querySelector("#safearea").style.display="block")}}</script><script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Other/","name":"Other"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2020/06/25/Other/ASM/","name":"Assembly"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Assembly","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2020/06/25/Other/ASM/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2020/06/25/Other/ASM/","wordCount":0,"datePublished":"2020-06-25T04:44:04.000Z","dateModified":"2024-07-06T02:22:39.053Z","articleSection":"Other","keywords":"ASM","image":{"@type":"ImageObject","url":"/img/Assembly.jpg","width":1024,"height":768}}]</script><script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script><script>var pjax;document.addEventListener("DOMContentLoaded",(function(){pjax=new Pjax({elements:'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',selectors:["head title","head meta[name=keywords]","head meta[name=description]","#l_main","#pjax-header-nav-list",".pjax","pjax","script[data-pjax], .pjax-reload script"],cacheBust:!1,timeout:5e3})})),document.addEventListener("pjax:send",(function(e){try{var t=window.location.pathname,n=e.triggerElement.href,a=[""];""!=a[0]&&a.forEach(e=>{-1==t.indexOf(e)&&-1==n.indexOf(e)||(window.location.href=n)})}catch(e){}volantis.pjax.method.send.start()})),document.addEventListener("pjax:complete",(function(){volantis.pjax.method.complete.start()})),document.addEventListener("pjax:error",(function(e){volantis.debug?(console.error(e),console.log("pjax error: \n"+JSON.stringify(e))):(volantis.pjax.method.error.start(),window.location.href=e.triggerElement.href)}))</script></div></body></html>

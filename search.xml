@@ -2036,6 +2036,7 @@ void hsort(vector&lt;int&gt;&amp; a)&#123;
   return dp[m][n];
 &#125;
 </code></pre>
+<hr>
 <h3 id="子序列问题"><a href="#子序列问题" class="headerlink" title="子序列问题"></a>子序列问题</h3><p><a href="https://leetcode.cn/problems/longest-increasing-subsequence/">最长递增子序列</a>（贪心+二分）：返回最长递增子序列（字典序）</p>
 <pre><code class="cpp">//  返回长度 &amp; 输出任意序列
 int lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
@@ -2077,9 +2078,9 @@ vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
   return lis;
 &#125;
 </code></pre>
-<p><a href="https://leetcode.cn/problems/longest-common-subsequence/">1143. 最长公共子序列</a>：返回两个字符串的最长公共序列</p>
+<p><a href="https://leetcode.cn/problems/longest-common-subsequence/">最长公共子序列</a>：返回两个字符串的最长公共序列</p>
 <blockquote>
-<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">583. 两个字符串的删除操作</a>：求出最长公共序列后，相减则得出删几个字符使两者相同</p>
+<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">两个字符串的删除操作</a>：求出最长公共序列后，相减则得出删几个字符使两者相同</p>
 </blockquote>
 <p>方案一：二维DP空间 + 输出全部LCS路径</p>
 <pre><code class="c++">int longestCommonSubsequence(string text1, string text2) &#123;
@@ -2135,9 +2136,47 @@ vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
   return dp[n];
 &#125;
 </code></pre>
-<h3 id="背包问题"><a href="#背包问题" class="headerlink" title="背包问题"></a>背包问题</h3><h4 id="0-1背包"><a href="#0-1背包" class="headerlink" title="0-1背包"></a>0-1背包</h4><p><a href="https://leetcode.cn/problems/partition-equal-subset-sum/description/">分割等和子集</a></p>
-<p>状态转移式：<code>dp[i][j] = max(dp[i-1][j], dp[i-1][j-w] + v);</code></p>
-<pre><code class="c++">int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
+<h3 id="背包问题"><a href="#背包问题" class="headerlink" title="背包问题"></a>背包问题</h3><h4 id="递推公式"><a href="#递推公式" class="headerlink" title="递推公式"></a>递推公式</h4><p>问能否装满背包（或最多装多少）：<br><code>dp[j] = max(dp[j], dp[j - nums[i]] + nums[i])</code> 或 <code>dp[j] |= dp[j - v]</code></p>
+<ul>
+<li><a href="https://leetcode.cn/problems/partition-equal-subset-sum/description/">分割等和子集</a><ul>
+<li>能否装满SUM的一半</li>
+</ul>
+</li>
+<li><a href="https://leetcode.cn/problems/last-stone-weight-ii/description/">最后一块石头的重量 II</a>：不断取任意两数相减，最终最小值？<ul>
+<li>设最多装满SUM&#x2F;2中的大小为 A，则最小值为 <code>(SUM - A) - A</code>，转化为求 A 最大多少</li>
+</ul>
+</li>
+</ul>
+<p>问装满背包有几种方法：<code>dp[j] += dp[j - nums[i]]</code></p>
+<ul>
+<li><a href="https://leetcode.cn/problems/target-sum/description/">目标和</a>：给数组每个数用<code>+</code>或<code>-</code>串联计算出结果，求结果为target的方式数<ul>
+<li>令<code>+</code>的部分和为 A，<code>-</code>的部分和为 B，则 <code>A + B = SUM, A - B = target</code>，即 <code>A = (SUM + target) / 2</code>，求<strong>装满 A 的方法数</strong></li>
+</ul>
+</li>
+<li><a href="https://leetcode.cn/problems/coin-change-ii/description/">零钱兑换II</a>：给定不同面额的硬币（无限个）和一个总金额，求凑成总金额的硬币组合数<ul>
+<li>完全背包，注意是求<strong>装满空间的组合数</strong>，要外层循环物品(硬币)、内层循环空间(金额)，这样挑物品不会重复。否则，对于金额 6 会出现 {1, 5}, {5, 1} 这两个重复组合</li>
+</ul>
+</li>
+<li><a href="https://leetcode.cn/problems/combination-sum-iv/description/">组合总和 Ⅳ</a>：从 nums 中找出总和为 target 的元素组合的个数（顺序不同的序列视作不同组合）<ul>
+<li>完全背包，注意是求<strong>装满空间的排列数</strong>，要外层循环空间(target)、内层循环物品(nums)，这样对于 target &#x3D; 3 时 {1, 2} 和 {2, 1} 两种均有效</li>
+</ul>
+</li>
+</ul>
+<p>问背包装满最大价值：<code>dp[j] = max(dp[j], dp[j - weight[i]] + value[i])</code></p>
+<ul>
+<li><a href="https://leetcode.cn/problems/ones-and-zeroes/description/">一和零</a>：strs 是仅含 0&#x2F;1 的字符串数组，找出 strs 的最大子集的长度，该子集中最多有 m 个 0 和 n 个 1<ul>
+<li>空间限制变成了二维，多加一重循环即可</li>
+</ul>
+</li>
+</ul>
+<p>问装满背包所有物品的最小个数：<code>dp[j] = min(dp[j - coins[i]] + 1, dp[j])</code></p>
+<ul>
+<li><a href="https://leetcode.cn/problems/coin-change/description/">零钱兑换</a>：硬币面额 coins，总金额 amount，求凑成总金额的最少的硬币个数</li>
+<li><a href="https://leetcode.cn/problems/perfect-squares/description/">完全平方数</a>：求和为 n 的完全平方数的最少数量</li>
+</ul>
+<h1 id=""><a href="#" class="headerlink" title=""></a></h1><h4 id="遍历顺序"><a href="#遍历顺序" class="headerlink" title="遍历顺序"></a>遍历顺序</h4><p><strong>(一) 01背包</strong></p>
+<pre><code class="c++">// 二维 dp 先遍历物品或背包都行
+int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
     vector&lt;vector&lt;int&gt;&gt; dp(N + 1, vector&lt;int&gt;(W + 1, 0));
     for (int i = 1; i &lt;= N; ++i) &#123;
         int w = weights[i-1], v = values[i-1];
@@ -2149,7 +2188,7 @@ vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
     &#125;
     return dp[N][W];
 &#125;
-// 空间压缩后
+// 一维 dp 只能先遍历物品再遍历容量，且第二层循环从大到小遍历
 int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
     vector&lt;int&gt; dp(W + 1, 0);
     for (int i = 1; i &lt;= N; ++i) &#123;
@@ -2160,7 +2199,14 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
     return dp[W];
 &#125;
 </code></pre>
-<h4 id="完全背包"><a href="#完全背包" class="headerlink" title="完全背包"></a>完全背包</h4><p>状态转移式：<code>dp[i][j] = max(dp[i-1][j], dp[i][j-w] + v);</code></p>
+<p><strong>(二) 完全背包</strong></p>
+<p>纯完全背包的一维dp数组实现，先遍历物品或背包都行，且第二层循环从小到大遍历。</p>
+<p>但是要注意特殊情况：</p>
+<ul>
+<li>如果求组合数就是外层遍历物品，内层遍历背包：<a href="https://leetcode.cn/problems/coin-change-ii/description/">零钱兑换II</a></li>
+<li>如果求排列数就是外层遍历背包，内层遍历物品：<a href="https://leetcode.cn/problems/combination-sum-iv/description/">组合总和 Ⅳ</a></li>
+<li>如果求最小数，那么循环的先后顺序无关：<a href="https://leetcode.cn/problems/coin-change/description/">零钱兑换</a>, <a href="https://leetcode.cn/problems/perfect-squares/description/">完全平方数</a></li>
+</ul>
 <pre><code class="c++">int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) &#123;
     vector&lt;vector&lt;int&gt;&gt; dp(N + 1, vector&lt;int&gt;(W + 1, 0));
     for (int i = 1; i &lt;= N; ++i) &#123;
@@ -2174,7 +2220,14 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
     return dp[N][W];
 &#125;
 </code></pre>
-<h3 id="字符串相关问题"><a href="#字符串相关问题" class="headerlink" title="字符串相关问题"></a>字符串相关问题</h3><h4 id="递推公式：从前到后"><a href="#递推公式：从前到后" class="headerlink" title="递推公式：从前到后"></a>递推公式：从前到后</h4><p><a href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p>
+<hr>
+<h3 id="字符串问题"><a href="#字符串问题" class="headerlink" title="字符串问题"></a>字符串问题</h3><h4 id="递推公式：从前到后"><a href="#递推公式：从前到后" class="headerlink" title="递推公式：从前到后"></a>递推公式：从前到后</h4><p><a href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p>
+<p><a href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：返回在 s 的子序列中 t 出现的个数</p>
+<ul>
+<li><code>dp[i][j]</code> 为 s 的前 i 个字符与 t 的前 j 个匹配，初始化 <code>dp[i][0] = 1</code></li>
+<li>若 <code>s[i-1] == t[j-1]</code>，<code>dp[i][j] = dp[i-1][j-1] + dp[i-1][j]</code></li>
+<li>若 <code>s[i-1] != t[j-1]</code>，<code>dp[i][j] = dp[i-1][j]</code></li>
+</ul>
 <p><a href="https://leetcode.cn/problems/edit-distance/">编辑距离</a>：求将 <code>word1</code> 转换成 <code>word2</code> 所使用的最少操作数，可以任意位置删除、替换、插入</p>
 <p>题解：</p>
 <ul>
@@ -2202,6 +2255,20 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
 </li>
 </ul>
 <pre><code class="cpp">int minDistance(string word1, string word2) &#123;
+  int m = word1.size(), n = word2.size();
+  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
+  for (int j = 1; j &lt;= n; ++j) dp[0][j] = j;
+  for (int i = 1; i &lt;= m; ++i) dp[i][0] = i;
+  for (int i = 1; i &lt;= m; ++i) &#123;
+    for (int j = 1; j &lt;= n; ++j) &#123;
+      if (word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+      else dp[i][j] = 1 + min(&#123;dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]&#125;);
+    &#125;
+  &#125;
+  return dp[m][n];
+&#125;
+// 优化空间复杂度
+int minDistance(string word1, string word2) &#123;
     int m = word1.size(), n = word2.size();
     vector&lt;int&gt; dp(n + 1, 0);
     for (int j = 1; j &lt;= n; ++j) dp[j] = j;
@@ -2220,33 +2287,7 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
 </code></pre>
 <h4 id="递推公式：中间向两端扩散"><a href="#递推公式：中间向两端扩散" class="headerlink" title="递推公式：中间向两端扩散"></a>递推公式：中间向两端扩散</h4><p><a href="https://leetcode.cn/problems/palindrome-partitioning/">分割回文串</a>：求<code>s</code>的任意子串是否回文</p>
 <p><a href="https://leetcode.cn/problems/longest-valid-parentheses/">最长有效括号</a>：从含 <code>&#39;(&#39;</code> 和 <code>&#39;)&#39;</code> 的字符串中找出最长有效括号子串的长度</p>
-<h4 id="记忆化回溯：从后向前"><a href="#记忆化回溯：从后向前" class="headerlink" title="记忆化回溯：从后向前"></a>记忆化回溯：从后向前</h4><blockquote>
-<p>从两字符串中顺序”挑选”，使得满足某种条件 –&gt; 因此可以从后往前分析，缩小问题范围</p>
-</blockquote>
-<p><a href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：求 <code>s</code> 的多少子序列可以匹配 <code>t</code> 串</p>
-<p>题解：</p>
-<ol>
-<li>抓住“<strong>选</strong>“，<code>s</code> 要照着 <code>t</code> 来挑选，从末尾逐字符考察选或不选，分别来到什么状态</li>
-<li>防止超时，需记忆化保存 <code>fun(i-1,j-1)</code>，即dp数组</li>
-</ol>
-<pre><code class="cpp">  vector&lt;vector&lt;int&gt;&gt; dp;
-  int fun(string&amp; s, int i, string&amp; t, int j) &#123;
-    if (j &lt; 0) return 1;
-    if (i &lt; 0) return 0;
-    if (dp[i][j] &gt;= 0) return dp[i][j];
-    int ret = 0;
-    if (s[i] == t[j]) &#123;
-      ret += fun(s, i - 1, t, j - 1);
-    &#125;
-    ret += fun(s, i - 1, t, j);
-    dp[i][j] = ret;
-    return ret;
-  &#125;
-  int numDistinct(string s, string t) &#123;
-    dp.assign(s.size(), vector&lt;int&gt;(t.size(), -1));
-    return fun(s, s.size() - 1, t, t.size() - 1);
-  &#125;
-</code></pre>
+<hr>
 <h3 id="股票问题"><a href="#股票问题" class="headerlink" title="股票问题"></a>股票问题</h3><p><a href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/">买卖股票的最佳时机 IV</a>：给定price[i]共可交易k次，求最大利润</p>
 <ol>
 <li><p>状态定义：</p>
@@ -2411,7 +2452,7 @@ int main()&#123;
     TreeNode* root = Build(v);
 &#125;
 </code></pre>
-<p><strong>非递归前&#x2F;中序遍历树</strong></p>
+<p><strong>迭代前&#x2F;中序遍历</strong></p>
 <pre><code class="c++">stack&lt;TreeNode*&gt; st;
 TreeNode* p = root;
 while (p || !st.empty()) &#123;
@@ -2421,6 +2462,17 @@ while (p || !st.empty()) &#123;
     &#125;
     p = st.top(); st.pop();
     p = p-&gt;right;
+&#125;
+</code></pre>
+<p><strong>迭代前&#x2F;后序遍历</strong></p>
+<pre><code class="cpp">stack&lt;TreeNode*&gt; st;
+if (!root) return;
+st.push(root);
+while (!st.empty()) &#123;
+  TreeNode *t = st.top();
+  st.pop();
+  if (t-&gt;right) st.push(t-&gt;right); //前序先入右子节点
+  if (t-&gt;left) st.push(t-&gt;left);
 &#125;
 </code></pre>
 <h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><pre><code class="c++">// DFS
@@ -2788,7 +2840,7 @@ while(l &lt; r) &#123;
 &#125;
 
 while(l &lt;= r)&#123;
-    int m = l + r &gt;&gt; 1;
+    int mid = l + r &gt;&gt; 1;
     if(flag) ans = mid, l = mid + 1;  // 需记录答案
     else r = mid - 1;
 &#125;
@@ -2980,11 +3032,12 @@ void split(string s, char del)&#123;
   &#125;
 &#125;
 </code></pre>
-<h3 id="回文串"><a href="#回文串" class="headerlink" title="回文串"></a>回文串</h3><p><code>check[i][j]</code> 表示区间 <code>s[i~j]</code> 是否回文</p>
-<pre><code class="c++">vector&lt;vector&lt;int&gt;&gt; check(n, vector&lt;int&gt;(n, 1));
-for (int i = n - 1; i &gt;= 0; --i)&#123;
-  for (int j = i + 1 ; j &lt; n; ++j)&#123;
-    check[i][j] = s[i] == s[j] &amp;&amp; check[i + 1][j - 1];
+<h3 id="回文串"><a href="#回文串" class="headerlink" title="回文串"></a>回文串</h3><p><code>dp[i][j]</code> 表示区间 <code>s[i~j]</code> 是否回文</p>
+<pre><code class="c++">vector&lt;vector&lt;int&gt;&gt; dp(n, vector&lt;int&gt;(n));
+for (int i = n - 1; i &gt;= 0; --i) &#123;
+  for (int j = i; j &lt; n; ++j) &#123;
+    if (i + 1 &gt;= j - 1) dp[i][j] = s[i] == s[j];
+    else dp[i][j] = dp[i + 1][j - 1] &amp;&amp; s[i] == s[j];
   &#125;
 &#125;
 </code></pre>

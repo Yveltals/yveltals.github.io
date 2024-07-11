@@ -2079,9 +2079,6 @@ vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
 &#125;
 </code></pre>
 <p><a href="https://leetcode.cn/problems/longest-common-subsequence/">最长公共子序列</a>：返回两个字符串的最长公共序列</p>
-<blockquote>
-<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">两个字符串的删除操作</a>：求出最长公共序列后，相减则得出删几个字符使两者相同</p>
-</blockquote>
 <p>方案一：二维DP空间 + 输出全部LCS路径</p>
 <pre><code class="c++">int longestCommonSubsequence(string text1, string text2) &#123;
   int m = text1.size(), n = text2.size();
@@ -2229,6 +2226,9 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
 <li>若 <code>s[i-1] != t[j-1]</code>，<code>dp[i][j] = dp[i-1][j]</code></li>
 </ul>
 <p><a href="https://leetcode.cn/problems/edit-distance/">编辑距离</a>：求将 <code>word1</code> 转换成 <code>word2</code> 所使用的最少操作数，可以任意位置删除、替换、插入</p>
+<blockquote>
+<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">两个字符串的删除操作</a>：编辑距离的简化版，仅删除操作</p>
+</blockquote>
 <p>题解：</p>
 <ul>
 <li>定义<code>dp[i][j]</code>为使两单词前<code>i j</code>部分相同的最少操作数</li>
@@ -3130,22 +3130,24 @@ void calNext(string&amp; needle,vector&lt;int&gt;&amp; next)&#123;
 <p>寻找下一个最&#x2F;更大值</p>
 </blockquote>
 <p><a href="https://leetcode.cn/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a>: 给定 n 个柱子的高度（宽度为 1），求能勾勒矩形的最大面积</p>
-<p>题解：遍历每个高度，要以当前高度为基准，寻找最大的宽度组成最大的矩形面积。就是分别找<strong>左边&#x2F;右边首个小于当前高度</strong>的下标left、right，宽度即为right-left-1，用<strong>单调栈</strong>就可以很方便确定这两个边界了。</p>
+<p>题解：遍历每个高度，以当前高度为基准，寻找最大的宽度组成最大的矩形面积，也就是分别找<strong>左边&#x2F;右边首个小于当前高度</strong>的下标left、right。用<strong>递增的单调栈</strong>来确定这两个边界：right 为当前遍历的下标 i，left 为单调栈中保存的前一个下标（高度更低）。</p>
 <pre><code class="c++">int largestRectangleArea(vector&lt;int&gt;&amp; heights) &#123;
-    int n=heights.size()+2, ans=0;
-    vector&lt;int&gt; h(n);
-    for(int i=1;i&lt;n-1;++i) h[i]=heights[i-1];
-    stack&lt;int&gt; st;
-    for(int i=0;i&lt;n;++i)&#123;
-        while(!st.empty() &amp;&amp; h[i]&lt;h[st.top()])&#123;  //≤也可以
-            int cur=st.top(); st.pop();
-            if(st.empty()) break;
-            int pre=st.top();
-            ans = max(ans, (i-pre-1)*(h[cur]));
-        &#125;
-        st.push(i);
+  int n = heights.size() + 2, ans = 0;
+  vector&lt;int&gt; h(n, 0);
+  for (int i = 0; i &lt; heights.size(); ++i) &#123;
+    h[i + 1] = heights[i];
+  &#125;
+  stack&lt;int&gt; st;
+  for (int i = 0; i &lt; n; ++i) &#123;
+    while (!st.empty() &amp;&amp; h[i] &lt; h[st.top()]) &#123;  // &lt;= 也可以
+      int height = h[st.top()]; st.pop();
+      if (st.empty()) continue;
+      int l = st.top();
+      ans = max(ans, (i - l - 1) * height);
     &#125;
-    return ans;
+    st.push(i);
+  &#125;
+  return ans;
 &#125;
 </code></pre>
 <p><a href="https://leetcode.cn/problems/sliding-window-maximum/">滑动窗口最大值</a>：求数组中每个长度为K的区间内的最大值</p>
@@ -3226,6 +3228,34 @@ void calNext(string&amp; needle,vector&lt;int&gt;&amp; next)&#123;
   return false;
 &#125;
 </code></pre>
+<hr>
+<h2 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h2><pre><code class="cpp">int n = 1005; // n根据题目中节点数量而定
+vector&lt;int&gt; father = vector&lt;int&gt; (n, 0);
+
+void init() &#123;
+  for (int i = 0; i &lt; n; ++i) &#123;
+    father[i] = i;
+  &#125;
+&#125;
+// 并查集里寻根的过程
+int find(int u) &#123;
+  return u == father[u] ? u : father[u] = find(father[u]); // 路径压缩
+&#125;
+// 判断 u 和 v是否找到同一个根
+bool isSame(int u, int v) &#123;
+  u = find(u);
+  v = find(v);
+  return u == v;
+&#125;
+// 将v-&gt;u 这条边加入并查集
+void join(int u, int v) &#123;
+  u = find(u);
+  v = find(v);
+  if (u == v) return;
+  father[v] = u;
+&#125;
+</code></pre>
+<hr>
 <h2 id="字典树"><a href="#字典树" class="headerlink" title="字典树"></a>字典树</h2><blockquote>
 <p>剑指Offer II ：62-67</p>
 </blockquote>

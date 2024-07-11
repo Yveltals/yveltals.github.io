@@ -5588,7 +5588,7 @@ end start
 <li>OSI在网络层支持无连接和面向连接的通信，但在传输层仅有面向连接通信。而TCP&#x2F;IP则相反，在网际层仅有无连接服务，在传输层支持无连接和面向连接两种模式。</li>
 </ol>
 <hr>
-<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520161056918.png" alt="img"></p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520161056918.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520161056918.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
 <h4 id="三次握手过程"><a href="#三次握手过程" class="headerlink" title="三次握手过程"></a>三次握手过程</h4><ul>
 <li>第一次握手：客户端请求建立连接，向服务端发送一个<strong>同步报文</strong>（SYN&#x3D;1），同时选择一个随机数 <code>seq=x</code>作为<strong>初始序列号</strong>，并进入 SYN_SENT 状态，等待服务器确认。</li>
 <li>第二次握手：服务端收到连接请求报文后，向客户端发送<strong>同步确认报文</strong>（SYN&#x3D;1，ACK&#x3D;1），确认号为 <code>ack=x+1</code>，同时选择一个随机数 <code>seq = y</code> 作为初始序列号，此时服务器进入 SYN_RECV 状态。</li>
@@ -5606,7 +5606,7 @@ end start
 <li>第三次握手时，客户端已经处于 ESTABLISHED 状态，对客户端来说已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据</li>
 </ul>
 <hr>
-<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520180127547.png" alt="img"></p>
+<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520180127547.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520180127547.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
 <h4 id="四次挥手过程"><a href="#四次挥手过程" class="headerlink" title="四次挥手过程"></a>四次挥手过程</h4><ul>
 <li>第一次挥手：客户端向服务端发送<strong>连接释放报文</strong>（FIN&#x3D;1，ACK&#x3D;1），主动关闭连接并等待服务端的确认。<ul>
 <li>序列号 <code>seq = u</code>，即客户端上次发送的报文的最后一个字节的序号 + 1</li>
@@ -5915,7 +5915,7 @@ end start
 </ul>
 <p><strong>本质区别</strong>：</p>
 <p>GET是<strong>幂等</strong>的，而POST不是幂等的。幂等性是指一次和多次请求某一个资源应该具有同样的副作用，即对同一URL的多个请求应该返回同样的结果。所以不应该 GET 请求做数据的增删改操作，因为 GET 请求是幂等的，在网络不好的隧道中会尝试重试，有<strong>重复操作</strong>的风险。</p>
-<h3 id="HTTP状态码"><a href="#HTTP状态码" class="headerlink" title="HTTP状态码"></a>HTTP状态码</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210525114439748.png"></p>
+<h3 id="HTTP状态码"><a href="#HTTP状态码" class="headerlink" title="HTTP状态码"></a>HTTP状态码</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210525114439748.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210525114439748.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
 <li>301：(永久移动) 请求的网页已永久移动到新位置。服务器返回此响应时，会自动将请求者转到新位置</li>
 <li>302：(临时移动) 服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求</li>
@@ -6055,7 +6055,7 @@ end start
 <td>运行在SSL协议之上，SSL运行在TCP协议之上</td>
 </tr>
 </tbody></table>
-<h3 id="HTTPS的原理-流程（SSL是怎么保证安全的）"><a href="#HTTPS的原理-流程（SSL是怎么保证安全的）" class="headerlink" title="HTTPS的原理&#x2F;流程（SSL是怎么保证安全的）"></a>HTTPS的原理&#x2F;流程（SSL是怎么保证安全的）</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210525160006424.png"></p>
+<h3 id="HTTPS的原理-流程（SSL是怎么保证安全的）"><a href="#HTTPS的原理-流程（SSL是怎么保证安全的）" class="headerlink" title="HTTPS的原理&#x2F;流程（SSL是怎么保证安全的）"></a>HTTPS的原理&#x2F;流程（SSL是怎么保证安全的）</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210525160006424.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210525160006424.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ol>
 <li>客户端请求 HTTPS 网址连接443 端口，将 SSL 协议版本的信息发送给服务端</li>
 <li>采用 HTTPS 协议的服务器必须要有一套数字 CA 证书。颁发证书的同时会产生一个私钥和公钥。私钥由服务端自己保存，不可泄漏，公钥则是附带在证书的信息中，可以公开。证书本身也附带一个证书电子签名，用来验证证书的完整性和真实性，防止被篡改</li>
@@ -8420,7 +8420,7 @@ int main()
   <entry>
     <title>政治知识点</title>
     <url>/2021/12/26/%E8%80%83%E7%A0%94/%E6%94%BF%E6%B2%BB/</url>
-    <content><![CDATA[<h3 id="时政"><a href="#时政" class="headerlink" title="时政"></a>时政</h3><p><strong>会议文件</strong><br>国际服贸会：数字服务<br>共同构建人与自然生命共同体：共同有别的责任原则<br>中央人才工作会议：世界重要人才中心和创新高地<br>博鳌峰会《同舟共济，命运与共》：世界大变局<br>世界经济论坛20：全球力量<br>世界经济论坛21：世界复兴<br>世界经济论坛”达沃斯议程”：把握<br>中关村论坛：智慧 健康 碳中和<br>联合国人权问题：殖民主义<br>气候变化：人与自然命运共同体<br>共克时艰：全球发展命运共同体<br>新冠肺炎：人类卫生健康共同体<br>生物多样：地球生命共同体<br>冬奥会：一起向未来<br>阿富汗问题联合峰会：原则”阿人主导阿人所有”<br>中国共产党和国际政党会议：为人民谋幸福：政党的责任<br>《反外国制裁法》：反击西方、维护利益、推进法制<br>《加强网络文明建设》：社会精神文明、社会矛盾、建设网络强国</p>
+    <content><![CDATA[<h2 id="时政"><a href="#时政" class="headerlink" title="时政"></a>时政</h2><p><strong>会议文件</strong><br>国际服贸会：数字服务<br>共同构建人与自然生命共同体：共同有别的责任原则<br>中央人才工作会议：世界重要人才中心和创新高地<br>博鳌峰会《同舟共济，命运与共》：世界大变局<br>世界经济论坛20：全球力量<br>世界经济论坛21：世界复兴<br>世界经济论坛”达沃斯议程”：把握<br>中关村论坛：智慧 健康 碳中和<br>联合国人权问题：殖民主义<br>气候变化：人与自然命运共同体<br>共克时艰：全球发展命运共同体<br>新冠肺炎：人类卫生健康共同体<br>生物多样：地球生命共同体<br>冬奥会：一起向未来<br>阿富汗问题联合峰会：原则”阿人主导阿人所有”<br>中国共产党和国际政党会议：为人民谋幸福：政党的责任<br>《反外国制裁法》：反击西方、维护利益、推进法制<br>《加强网络文明建设》：社会精神文明、社会矛盾、建设网络强国</p>
 <p><strong>经济社会绿色转型</strong><br>源头：资源利用<br>总抓手：实现减污降碳协同增效<br>关键：产业结构调整</p>
 <p><strong>新时代民族工作</strong><br>主题：共同团结奋斗、共同繁荣发展<br>主线：共同体意识<br>出发落脚点：伟大复兴<br>重要任务：共同奋斗</p>
 <p><strong>人类高质量发展新征程</strong><br>引领：生态文明建设<br>驱动：绿色转型<br>中心：人民福祉<br>基础：国际法</p>
@@ -8453,7 +8453,7 @@ int main()
 <p>宪法制定、实施均与人民有关（区分立法&amp;制定）<br>法律适用主体只能是司法机关</p>
 <p>开放型经济体系：互多安<br>对外开放格局：大宽深</p>
 </blockquote>
-<h3 id="马原"><a href="#马原" class="headerlink" title="马原"></a>马原</h3><p>政治经济学：劳动二重性<br>经济学说：剩余价值理论</p>
+<h2 id="马原"><a href="#马原" class="headerlink" title="马原"></a>马原</h2><p>政治经济学：劳动二重性<br>经济学说：剩余价值理论</p>
 <p>知识性认识：以”真”的认识为目的<br>价值评价：以”善美”的认识为目的，评价有对错之分</p>
 <p><strong>金融寡头</strong><br>资本形成：融 资 人<br>控制：政策咨询 参与制 个人联合</p>
 <p>产业资本连续循环：流通过程+生产过程、货币&amp;生产&amp;商品资本循环统一<br>商品生产过程：劳动+价值形成<br>资本主义生产过程：劳动+价值增值</p>
@@ -8506,7 +8506,7 @@ int main()
 <p>马恩在唯物史观+剩余价值的 (理论基础) 上阐述了无产阶级革命+无产阶级政党 (内容)</p>
 </blockquote>
 <hr>
-<h3 id="中特"><a href="#中特" class="headerlink" title="中特"></a>中特</h3><p>新发展理念&#x2F;一带一路目标：高标准 可持续 惠民生</p>
+<h2 id="中特"><a href="#中特" class="headerlink" title="中特"></a>中特</h2><p>新发展理念&#x2F;一带一路目标：高标准 可持续 惠民生</p>
 <p><strong>共产党成立后早期活动</strong><br>建党问题讨论、共青团、宣传马克思</p>
 <p><strong>最新关于党的说法</strong><br>百年奋斗结论：走自己的路<br>党的灵魂旗帜：马克思主义<br>政治优势：密切联系群众<br>根本成就：中特<br>优良传统、鲜明特色、政治优势：思想政治工作(是一切工作的生命线)<br>历经千锤百炼朝气蓬勃：党要管党、从严治党</p>
 <p><strong>新时代党的建设总要求</strong><br>根本方针：党要管党，全面从严治党<br>主线：加强长期执政能力建设、先进性、纯洁性<br>着力点：调动积极性、主动性、创造性<br>统领：党的政治建设<br>根基：坚定理想信念宗旨<br>长远&#x2F;根本之策：制度建设<br>基础性建设：思想——首要任务：坚定理想信念<br>根本性建设：政治——首要任务：保证全党服从中央、中央权威、统一领导</p>
@@ -8574,7 +8574,7 @@ int main()
 <p>社会主义先进文化建设以社会主义核心价值观为引领</p>
 </blockquote>
 <hr>
-<h3 id="思修"><a href="#思修" class="headerlink" title="思修"></a>思修</h3><p>人生目的决定人生道路</p>
+<h2 id="思修"><a href="#思修" class="headerlink" title="思修"></a>思修</h2><p>人生目的决定人生道路</p>
 <p>道德支撑滋养法律<br>法律促进保障道德</p>
 <p>民族精神：民族生存发展的精神支柱，民族精神独立性的保证<br>时代精神：民族生存发展的精神支柱，引领新时代的根源</p>
 <p>理想人格：明先富（明于庶物、先天下之忧、富贵不能淫）<br>仁爱：立人或带”仁爱”（己立而立人）<br>理想：天下、苍生、万民、志士仁人<br>理想人格：君子、圣人、真、新民</p>
@@ -8590,7 +8590,7 @@ int main()
 <p><strong>社会主义道德</strong><br>核心：为人民服务<br>原则：集体主义</p>
 <p><strong>集体主义道德要求</strong><br>最高：无私奉献、一心为公<br>最基本：顾全大局、热爱祖国、诚实劳动</p>
 <p><strong>职业道德</strong>：<br>爱岗敬业——基本<br>诚实守信——公民道德建设重点<br>办事公道、服务群众<br>奉献社会——最高</p>
-<p><strong>个人品德：</strong>勤 明 宽 奉</p>
+<p><strong>个人品德</strong>：勤 明 宽 奉</p>
 <p><strong>法律</strong></p>
 <p>本质特征：科学先进性、人民性、阶级性、党和人民意志</p>
 <p>立法原则：公平、公正、公开<br>执法原则：合法、合理、信赖保护、效率<br>司法原则：一律平等、以事实为依据、司法机关公正行使司法权</p>
@@ -8615,7 +8615,7 @@ int main()
 <p><strong>民族区域自治制度</strong>：与国外、历史、宗教无关</p>
 <p><strong>爱国主义</strong>：历史、具体、现实、有阶级性、随发展变化<br><strong>本质</strong>：坚持爱国 爱党 爱社会主义高度统一</p>
 <hr>
-<h3 id="史纲"><a href="#史纲" class="headerlink" title="史纲"></a>史纲</h3><p><strong>三三制</strong>：抗日民族统一战线政权、一切赞民政权、革命阶级联合的民主专政<br>党员：工农<br>中间派：民资、开明绅士(不包括地方实力派)<br>非党左派进步：小资</p>
+<h2 id="史纲"><a href="#史纲" class="headerlink" title="史纲"></a>史纲</h2><p><strong>三三制</strong>：抗日民族统一战线政权、一切赞民政权、革命阶级联合的民主专政<br>党员：工农<br>中间派：民资、开明绅士(不包括地方实力派)<br>非党左派进步：小资</p>
 <p><strong>中共二大</strong><br>采取群众路线，建立民主联合战线<br>第一次提出统一战线思想、反帝纲领、《中国共产党宣言》、《中国共产党章程》</p>
 <p><strong>瓦窑堡会议</strong>：抗日战线，批判左倾关门主义，《论反日》强调党战线领导作用，”人民共和国”代替</p>
 <p>《反对本本主义》—— 没调查没发言权、中国革命的胜利靠中国同志了解国情<br>《关于调查人口和土地状况的通知》—— 不做正确的调查同样没有发言权<br>“第二次全国工农兵代表大会”—— 关心群众生活，注意工作方法“</p>
@@ -8721,7 +8721,7 @@ timestamp: 1593230319442 offset: 197971606
   <entry>
     <title>英语作文</title>
     <url>/2021/12/26/%E8%80%83%E7%A0%94/%E8%8B%B1%E8%AF%AD/</url>
-    <content><![CDATA[<h3 id="大作文-图表"><a href="#大作文-图表" class="headerlink" title="大作文(图表)"></a>大作文(图表)</h3><h4 id="第一段"><a href="#第一段" class="headerlink" title="第一段"></a>第一段</h4><p><code>动态图 </code> What is clearly presented in the above line chart is that dramatic changes have taken place in purpose of mobile reading among students at a certain college from … to …  . Based upon the data given above, we can conclude that the proportion of … has gained momentum substantially from A to B, a rise&#x2F;decline of 50 million, whereas the statistics of … have continued its downward trend slightly&#x2F;significantly from C to D. In the meanwhile, the … remains steady.</p>
+    <content><![CDATA[<h2 id="大作文-图表"><a href="#大作文-图表" class="headerlink" title="大作文(图表)"></a>大作文(图表)</h2><h3 id="第一段"><a href="#第一段" class="headerlink" title="第一段"></a>第一段</h3><p><code>动态图 </code> What is clearly presented in the above line chart is that dramatic changes have taken place in purpose of mobile reading among students at a certain college from … to …  . Based upon the data given above, we can conclude that the proportion of … has gained momentum substantially from A to B, a rise&#x2F;decline of 50 million, whereas the statistics of … have continued its downward trend slightly&#x2F;significantly from C to D. In the meanwhile, the … remains steady.</p>
 <p><code>静态图</code> What is clearly presented in the above table is the statistics of … in a certain city&#x2F;group. Based upon the data given above, we can conclude that the proportion of … is the highest accounting for 60% among all the four categories. On the contrary, the statistics of … and other factors take up A and B respectively&#x2F; for only a small proportion. </p>
 <p><code>补充描述</code></p>
 <blockquote>
@@ -8732,9 +8732,9 @@ timestamp: 1593230319442 offset: 197971606
 <p>反超  the … showed an upward trend, overtaking that of … in 1980.</p>
 </blockquote>
 <hr>
-<h4 id="第二段"><a href="#第二段" class="headerlink" title="第二段"></a>第二段</h4><p>As a matter of fact, what the author tries to show us is more than statistics. The table leads us to find out what causes the differences. Several primary causes that contribute to the above-mentioned phenomenon could be summarized as follows. </p>
+<h3 id="第二段"><a href="#第二段" class="headerlink" title="第二段"></a>第二段</h3><p>As a matter of fact, what the author tries to show us is more than statistics. The table leads us to find out what causes the differences. Several primary causes that contribute to the above-mentioned phenomenon could be summarized as follows. </p>
 <hr>
-<h4 id="第三段"><a href="#第三段" class="headerlink" title="第三段"></a>第三段</h4><p><code>预测</code> Taking into account what has been argued, we can come to the conclusion that whatever causes it, this established tendency of the majority of students taking jobs will continue in the forthcoming years unless current conditions go through enormous changes. The government and individuals should collaborate as much as possible to improve people’s standard of living and make the current social system more sociable. Only with joint effort, can these changes be made most use of. </p>
+<h3 id="第三段"><a href="#第三段" class="headerlink" title="第三段"></a>第三段</h3><p><code>预测</code> Taking into account what has been argued, we can come to the conclusion that whatever causes it, this established tendency of the majority of students taking jobs will continue in the forthcoming years unless current conditions go through enormous changes. The government and individuals should collaborate as much as possible to improve people’s standard of living and make the current social system more sociable. Only with joint effort, can these changes be made most use of. </p>
 <p><code>利弊</code> XXX seems to be a double-edged sword. On the one hand, it enables more people to live a better life, but on the other hand, it is conceivable that its acceleration will put an extra stress on city resources. </p>
 <ol>
 <li><p>Given the gravity of the situation, we should figure out ways to alleviate the problem. It is advisable to launch a public awareness campaign which highlights the dangers of …</p>
@@ -8743,24 +8743,24 @@ timestamp: 1593230319442 offset: 197971606
 </li>
 </ol>
 <hr>
-<h4 id="万能原因"><a href="#万能原因" class="headerlink" title="万能原因"></a>万能原因</h4><h5 id="1-环境背景"><a href="#1-环境背景" class="headerlink" title="1.环境背景"></a>1.环境背景</h5><p><code>经济</code> On the basis of latest survey by the Chinese academy of science, with the quickening pace of modern life and the fierce competition of society, people’s values have changed gradually, an increasing amount of people aged 40 to 50 chose to … in order to adapt to the rapid development of society.  XXX is no longer as essential it used to be.</p>
+<h3 id="万能原因"><a href="#万能原因" class="headerlink" title="万能原因"></a>万能原因</h3><h4 id="环境背景"><a href="#环境背景" class="headerlink" title="环境背景"></a>环境背景</h4><p><code>经济</code> On the basis of latest survey by the Chinese academy of science, with the quickening pace of modern life and the fierce competition of society, people’s values have changed gradually, an increasing amount of people aged 40 to 50 chose to … in order to adapt to the rapid development of society.  XXX is no longer as essential it used to be.</p>
 <p><code>媒体</code> The mass media such as radio, television, and the Internet, might have appropriately trumped the benefits of a higher education.</p>
 <p><code>政府</code> The changes are enhanced and promoted by the superior policy of the government in the infrastructure field. That is to say, it is the enforcement of pertinent laws and regulations that make this surprising trend come into being.</p>
 <p><code>发展</code> The development of the job market on the whole cannot keep pace with the expansion of college graduates, which has obliged a large number of students to  to get better prepared for their careers.</p>
 <p><code>科技</code> Advancements in science and technology have offered a technical foundation for the rapid development of the Chinese automobile industry by providing a material basis and technical means.</p>
-<h5 id="2-主观意愿"><a href="#2-主观意愿" class="headerlink" title="2.主观意愿"></a>2.主观意愿</h5><p><code>目标</code> People generally have shifted their life goals from achieving the ultimate success to a relatively easy and comfortable life and therefore are inclined to …</p>
+<h4 id="主观意愿"><a href="#主观意愿" class="headerlink" title="主观意愿"></a>主观意愿</h4><p><code>目标</code> People generally have shifted their life goals from achieving the ultimate success to a relatively easy and comfortable life and therefore are inclined to …</p>
 <p><code>思想</code> With the social ideology becoming more open and inclusive, the public are more willing to publicize their individuality and have higher demand for ….</p>
 <p><code>进步</code> It is a well-established fact that people have made extraordinary progress in pursuit of spiritual life. Undoubtedly, they will secure a bright future and better life. </p>
 <p><code>解压</code> People, who have to juggle academic work, romantic relationships and a busy social calendar, are particularly susceptible to tremendous pressure. By XXX they can successfully manage and reduce stress. </p>
 <p><code>渴望</code> It is not uncommon to find that  aspire to enhance their overall competitiveness. Therefore, XXX can gain great popularity among them. This development is believed to be in the interest of both individuals and society as a whole. </p>
-<h5 id="3-带来的好处"><a href="#3-带来的好处" class="headerlink" title="3.带来的好处"></a>3.带来的好处</h5><p><code>关系</code> In a bid to develop interpersonal relationship and enjoy comfortable life, people in mounting numbers prefer service and environment to other factors.</p>
+<h4 id="带来的好处"><a href="#带来的好处" class="headerlink" title="带来的好处"></a>带来的好处</h4><p><code>关系</code> In a bid to develop interpersonal relationship and enjoy comfortable life, people in mounting numbers prefer service and environment to other factors.</p>
 <p><code>学识</code> XXX increases one’s knowledge, widens one’s horizons and enhances mutual understanding. &#x2F;Through XXX, we Chinese have expanded our scope of knowledge, and we have come to know the world better and have been learning how to develop our country better. </p>
 <p><code>能力</code> XXX can boost people’s development of interpersonal relationships. Awareness of cooperation, dependability, responsibility and punctuality are cultivated and fostered as people …</p>
-<h5 id="4-负面现象"><a href="#4-负面现象" class="headerlink" title="4.负面现象"></a>4.负面现象</h5><p><code>意识</code> General public lacks the basic awareness about the significance&#x2F;danger of ……</p>
+<h4 id="负面现象"><a href="#负面现象" class="headerlink" title="负面现象"></a>负面现象</h4><p><code>意识</code> General public lacks the basic awareness about the significance&#x2F;danger of ……</p>
 <p><code>法规</code> Laws may not have been strictly enforced to warn people not to do. </p>
 <p><code>利益</code> Driven by short-term profits, XXX, as a result, leading to our ecology in grave danger.</p>
 <hr>
-<h3 id="小作文-应用"><a href="#小作文-应用" class="headerlink" title="小作文(应用)"></a>小作文(应用)</h3><h4 id="邀请信"><a href="#邀请信" class="headerlink" title="邀请信"></a>邀请信</h4><p>On behalf of the Student Union, I am writing this letter to cordially invite you to attend the … located at (place) on (date)</p>
+<h2 id="小作文-应用"><a href="#小作文-应用" class="headerlink" title="小作文(应用)"></a>小作文(应用)</h2><h3 id="邀请信"><a href="#邀请信" class="headerlink" title="邀请信"></a>邀请信</h3><p>On behalf of the Student Union, I am writing this letter to cordially invite you to attend the … located at (place) on (date)</p>
 <pre><code class="textile">You are sincerely invited to participate in this important event as our judge/keynote speaker/distinguished guest. As you are one of the outstanding experts in ... all over the world, I believe the students will not only be able to learn from you,  but to be inspired by you as well. 
 
 The conference will be held for about xxx hours, including lectures/ seminars/ tea break/ discussion.
@@ -8771,7 +8771,7 @@ Firstly, it is organized with the primary objective to allow participants to exp
 Your participation is necessary to achieve this aim.
 </code></pre>
 <p>We will surely look forward to your gracious presence that day. If you have any concerns regarding this, please do not hesitate to contact us.</p>
-<h4 id="推荐信"><a href="#推荐信" class="headerlink" title="推荐信"></a>推荐信</h4><p><code>介绍人</code></p>
+<h3 id="推荐信"><a href="#推荐信" class="headerlink" title="推荐信"></a>推荐信</h3><p><code>介绍人</code></p>
 <p>I am pleased to recommend XXX for the position of …</p>
 <pre><code class="textile">XXX is one of the most pleasant persons you&#39;ll ever meet or work with./ The characteristic that is most commendable in XXX is...
 
@@ -8787,7 +8787,7 @@ In addition, XXX is an easy-going and dedicated team member who can constantly l
 Moreover, XXX is able to create a comprehensive and unforgettable experience for everyone, which makes it stand out from the others.
 </code></pre>
 <p>I give it my highest recommendation without reservation. I hope that you will have… and I would be pleased to answer any additional questions you may have.</p>
-<h4 id="建议信"><a href="#建议信" class="headerlink" title="建议信"></a>建议信</h4><p><code>个人</code> As one of your closest friends, it is my pleasure to put forward some suggestions with regard to…</p>
+<h3 id="建议信"><a href="#建议信" class="headerlink" title="建议信"></a>建议信</h3><p><code>个人</code> As one of your closest friends, it is my pleasure to put forward some suggestions with regard to…</p>
 <pre><code class="textile">First of all, you should always retain a flexible mind when you are receiving advice and insight from those who have rich experience. Besides, you should take active steps to deal with your problem, since everything will become meaningless if you sit back and wait for solutions.
 
 In the second place, a solid foundation is to be lied in order to avoid detours.
@@ -8809,11 +8809,11 @@ Besides, it is advisable to cultivate the public awareness of ... More activitie
 I deem that it is alse necessary to enhance the ...Only when xxx becomes more convenient and comfortable, can citizens xxx and the problem be solved.
 </code></pre>
 <p> Hope you take these suggestions positively and improve your services as soon as possible.</p>
-<h4 id="倡议信"><a href="#倡议信" class="headerlink" title="倡议信"></a>倡议信</h4><p>As most of you know, ….&#x2F; These days, the Students’ Union is doing sth. and this open letter is for the purpose of advocating all the students on campus to …</p>
+<h3 id="倡议信"><a href="#倡议信" class="headerlink" title="倡议信"></a>倡议信</h3><p>As most of you know, ….&#x2F; These days, the Students’ Union is doing sth. and this open letter is for the purpose of advocating all the students on campus to …</p>
 <pre><code class="textile">Compared with the past years, we enjoy a higher quailty of life but ... This phenomenon is particularly worth concerning and it is advisable for us to reverse this trend. Thus, everyone is supposed to take actions to ..., such as doing sth.
 </code></pre>
 <p>As students of this university, we need to show our … to … by donating money to assit in a speedy recovery. Please consider our suggestions and we are looking forward to your actions and participation!</p>
-<h4 id="申请信"><a href="#申请信" class="headerlink" title="申请信"></a>申请信</h4><p>① From the… website I learned about your need for a… I am very interested in this position, and<br>believe that my education and employment background are appropriate for the position.</p>
+<h3 id="申请信"><a href="#申请信" class="headerlink" title="申请信"></a>申请信</h3><p>① From the… website I learned about your need for a… I am very interested in this position, and<br>believe that my education and employment background are appropriate for the position.</p>
 <p>② As a college student about to graduate, I am writing to apply for the … position in your company&#x2F;admission to your university majoring in …</p>
 <p>③ Moved by the noble cause of xxx Project and encouraged by what has been achieved so far, I would like to contribute my bit to the project by offering …</p>
 <pre><code class="textile">The key strengths that I possess for success in this position include ...
@@ -8824,20 +8824,20 @@ I believe my combination of... experience and... training is an excellent match 
 My experience also includes...
 </code></pre>
 <p>Thank you for taking time from your busy schedule to read this letter, and I will appreciate it if …， I am looking forward to your favorable reply.</p>
-<h4 id="道歉信"><a href="#道歉信" class="headerlink" title="道歉信"></a>道歉信</h4><p>① Please accept this letter as my formal apology for what happened on（location&#x2F;event&#x2F;issue.）It was not my intention to cause any damage or inconvenience. In retrospect, I believe the situation resulted from…<br>② I would like to thank you for arranging to meet with me. Unfortunately, I have recently been diagnosed with a serious ear infection which will require surgery on the same day as our interview. I am so sorry to say thar I will therefore not be able to … </p>
+<h3 id="道歉信"><a href="#道歉信" class="headerlink" title="道歉信"></a>道歉信</h3><p>① Please accept this letter as my formal apology for what happened on（location&#x2F;event&#x2F;issue.）It was not my intention to cause any damage or inconvenience. In retrospect, I believe the situation resulted from…<br>② I would like to thank you for arranging to meet with me. Unfortunately, I have recently been diagnosed with a serious ear infection which will require surgery on the same day as our interview. I am so sorry to say thar I will therefore not be able to … </p>
 <pre><code class="textile">Do you mind if I postpone ... to another day later in the week? 
 Please let me know which time is most convenient for you.
 
 I take full responsibility for this unpleasant result and do truly hope that you can stand in my place and forgive me in this matter. I will exercise caution in the future to prevent a similar mistake from happening a second time.
 </code></pre>
 <p>I sincerely thank you for hearing me out. Again, I apologize for any inconvenience this may cause you.</p>
-<h4 id="祝贺信"><a href="#祝贺信" class="headerlink" title="祝贺信"></a>祝贺信</h4><p>I am very happy today to hear the news that… Hereby I am writing this letter to you to congratulate you on this achievement.</p>
+<h3 id="祝贺信"><a href="#祝贺信" class="headerlink" title="祝贺信"></a>祝贺信</h3><p>I am very happy today to hear the news that… Hereby I am writing this letter to you to congratulate you on this achievement.</p>
 <pre><code class="textile">This only could be achieved by your painstaking efforts and talent. You really deserve...
 
 I&#39;m so proud of you for setting your sights high, and making every effort to achieve that goal.
 </code></pre>
 <p>Many congratulations on your achievement and best wishes for future growth as well.</p>
-<h4 id="感谢信"><a href="#感谢信" class="headerlink" title="感谢信"></a>感谢信</h4><p>① On behalf of..， I express heartfelt thanks for all you do.<br>② I am writing to express my gratitude for your time and consideration in your endeavors. Your perspective and encouragement mean a great deal to me.</p>
+<h3 id="感谢信"><a href="#感谢信" class="headerlink" title="感谢信"></a>感谢信</h3><p>① On behalf of..， I express heartfelt thanks for all you do.<br>② I am writing to express my gratitude for your time and consideration in your endeavors. Your perspective and encouragement mean a great deal to me.</p>
 <pre><code class="text">We appreciate your unfailing attention to detail and several participants commented on how well the event was organized.
 
 You showed up in good time to help me, which made such an enormous contribution to my current accomplishments. If there had not been your very generous input, it would have been tremendously difficult for me to attempt to do this.
@@ -8845,14 +8845,14 @@ You showed up in good time to help me, which made such an enormous contribution 
 You left a deep impression upon me. Indeed, the program is one of the most wonderful memories in my life.
 </code></pre>
 <p>If I can be of any service to you in the future, please don’t hesitate to contact me.</p>
-<h4 id="投诉信"><a href="#投诉信" class="headerlink" title="投诉信"></a>投诉信</h4><p>I’m writing to file a complaint about the service I received during my November 15 visit to your store. I am disappointed because——</p>
+<h3 id="投诉信"><a href="#投诉信" class="headerlink" title="投诉信"></a>投诉信</h3><p>I’m writing to file a complaint about the service I received during my November 15 visit to your store. I am disappointed because——</p>
 <p>① It did not function the way it was supposed to and therefore, resulted in a great deal of interruptions to my life. Besides, I have been trying to negotiate with one of your staff members, but no agreement has been reached because of his indifference.<br>② The service was not performed correctly &#x2F;I was billed the wrong amount &#x2F;something was not disclosed clearly or was misrepresented.<br>③ It was the frequent breakdowns and problems that led me to make inadequate preparation for GRE.<br>④ It was the guide’s rude attitude that caused us to enjoy no comfort in the trip.</p>
 <pre><code class="textile">To resolve the problem, I would appreciate your money refunded/ charge card credit/ repair/ exchange. 
 I expect you to provide a new one for replacement or ,at least, to follow the warranty policy by repairing it. If no satisfaction can be gained by these means, I will have to demand a refund.
 Enclosed are originals of my records include receipts guarantees/warranties/canceled checks/contracts and any other documents
 </code></pre>
 <p>I believe you will take this matter into serious consideration and give a satisfactory reply as soon as possible. At the same time, I sincerely hope that you will review … If detailed information is required, please contact me at the above address or by phone at 111.</p>
-<h4 id="通知-告示"><a href="#通知-告示" class="headerlink" title="通知&#x2F;告示"></a>通知&#x2F;告示</h4><p>① Your attention, please… It is announced that… &#x2F; Owing to… we beg to inform you that…<br>A and B will be invited to be the guests of honor.<br>② All individuals are hereby informed that legislation regarding… has been approved.</p>
+<h3 id="通知-告示"><a href="#通知-告示" class="headerlink" title="通知&#x2F;告示"></a>通知&#x2F;告示</h3><p>① Your attention, please… It is announced that… &#x2F; Owing to… we beg to inform you that…<br>A and B will be invited to be the guests of honor.<br>② All individuals are hereby informed that legislation regarding… has been approved.</p>
 <pre><code class="textile">参与活动
 You can be involved in a variety of activities, including (taste some special local delicacies, visit local attractions/Mount Tai) 
 These activities are high beneficial in multiple regards. 
@@ -8864,7 +8864,7 @@ We are now searching for volunteers for the coming event.
 They are required to help organize activities and cope with daily affairs during the summer camp.
 He or she are supposed to have nice appearance and temperament, and should be good at communication and cooperation. Having relevant experience is perferred.
 </code></pre>
-<p>If you are interested in this activity, please feel free to contact us via <a href="mailto:&#120;&#x78;&#120;&#x40;&#x31;&#54;&#x33;&#x2e;&#x63;&#x6f;&#109;">&#120;&#x78;&#120;&#x40;&#x31;&#54;&#x33;&#x2e;&#x63;&#x6f;&#109;</a>. The deadline is…<br>Come and join us now！</p>
+<p>If you are interested in this activity, please feel free to contact us via <a href="mailto:&#x78;&#120;&#120;&#x40;&#49;&#x36;&#x33;&#x2e;&#x63;&#x6f;&#109;">&#x78;&#120;&#120;&#x40;&#49;&#x36;&#x33;&#x2e;&#x63;&#x6f;&#109;</a>. The deadline is…<br>Come and join us now！</p>
 ]]></content>
       <categories>
         <category>考研</category>
@@ -9354,12 +9354,12 @@ He or she are supposed to have nice appearance and temperament, and should be go
   <entry>
     <title>408计网</title>
     <url>/2021/12/26/%E8%80%83%E7%A0%94/%E8%AE%A1%E7%BD%91/</url>
-    <content><![CDATA[<h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E8%AE%A1%E7%BD%91%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png"></p>
-<h3 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%89%A9%E7%90%86%E5%B1%82.png"></p>
-<h3 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82.png"></p>
-<h3 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%BD%91%E7%BB%9C%E5%B1%82.png"></p>
-<h3 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BC%A0%E8%BE%93%E5%B1%82.png"></p>
-<h3 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%BA%94%E7%94%A8%E5%B1%82.png"></p>
+    <content><![CDATA[<h2 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E8%AE%A1%E7%BD%91%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E8%AE%A1%E7%BD%91%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%89%A9%E7%90%86%E5%B1%82.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%89%A9%E7%90%86%E5%B1%82.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%BD%91%E7%BB%9C%E5%B1%82.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E7%BD%91%E7%BB%9C%E5%B1%82.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BC%A0%E8%BE%93%E5%B1%82.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BC%A0%E8%BE%93%E5%B1%82.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%BA%94%E7%94%A8%E5%B1%82.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%BA%94%E7%94%A8%E5%B1%82.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 ]]></content>
       <categories>
         <category>考研</category>
@@ -9371,20 +9371,20 @@ He or she are supposed to have nice appearance and temperament, and should be go
   <entry>
     <title>高数十八讲</title>
     <url>/2021/12/26/%E8%80%83%E7%A0%94/%E9%AB%98%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="第1讲-函数极限与连续"><a href="#第1讲-函数极限与连续" class="headerlink" title="第1讲 函数极限与连续"></a>第1讲 函数极限与连续</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%87%BD%E6%95%B0%E6%9E%81%E9%99%90%E4%B8%8E%E8%BF%9E%E7%BB%AD.png"></p>
-<h3 id="第2讲-数列极限"><a href="#第2讲-数列极限" class="headerlink" title="第2讲 数列极限"></a>第2讲 数列极限</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E5%88%97%E6%9E%81%E9%99%90.png"></p>
-<h3 id="第3讲-一元微分学概念"><a href="#第3讲-一元微分学概念" class="headerlink" title="第3讲 一元微分学概念"></a>第3讲 一元微分学概念</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png"></p>
-<h3 id="第5讲-一元微分学几何"><a href="#第5讲-一元微分学几何" class="headerlink" title="第5讲 一元微分学几何"></a>第5讲 一元微分学几何</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E5%87%A0%E4%BD%95.png"></p>
-<h3 id="第6讲-一元微分学证明"><a href="#第6讲-一元微分学证明" class="headerlink" title="第6讲 一元微分学证明"></a>第6讲 一元微分学证明</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png"></p>
-<h3 id="第8讲-一元积分学概念"><a href="#第8讲-一元积分学概念" class="headerlink" title="第8讲 一元积分学概念"></a>第8讲 一元积分学概念</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png"></p>
-<h3 id="第9讲-一元积分学计算"><a href="#第9讲-一元积分学计算" class="headerlink" title="第9讲 一元积分学计算"></a>第9讲 一元积分学计算</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AE%A1%E7%AE%97.png"></p>
-<h3 id="第11讲-一元积分学证明"><a href="#第11讲-一元积分学证明" class="headerlink" title="第11讲 一元积分学证明"></a>第11讲 一元积分学证明</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png"></p>
-<h3 id="第13讲-多元微分学"><a href="#第13讲-多元微分学" class="headerlink" title="第13讲 多元微分学"></a>第13讲 多元微分学</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6.png"></p>
-<h3 id="第14讲-二重积分"><a href="#第14讲-二重积分" class="headerlink" title="第14讲 二重积分"></a>第14讲 二重积分</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BA%8C%E9%87%8D%E7%A7%AF%E5%88%86.png"></p>
-<h3 id="第15讲-微分方程"><a href="#第15讲-微分方程" class="headerlink" title="第15讲 微分方程"></a>第15讲 微分方程</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B.png"></p>
-<h3 id="第16讲-无穷级数"><a href="#第16讲-无穷级数" class="headerlink" title="第16讲 无穷级数"></a>第16讲 无穷级数</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%97%A0%E7%A9%B7%E7%BA%A7%E6%95%B0.png"></p>
-<h3 id="第17讲-多元积分学预备知识"><a href="#第17讲-多元积分学预备知识" class="headerlink" title="第17讲 多元积分学预备知识"></a>第17讲 多元积分学预备知识</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86.png"></p>
-<h3 id="第18讲-多元函数积分学"><a href="#第18讲-多元函数积分学" class="headerlink" title="第18讲 多元函数积分学"></a>第18讲 多元函数积分学</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E7%A7%AF%E5%88%86%E5%AD%A6.png"></p>
+    <content><![CDATA[<h2 id="函数极限与连续"><a href="#函数极限与连续" class="headerlink" title="函数极限与连续"></a>函数极限与连续</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%87%BD%E6%95%B0%E6%9E%81%E9%99%90%E4%B8%8E%E8%BF%9E%E7%BB%AD.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%87%BD%E6%95%B0%E6%9E%81%E9%99%90%E4%B8%8E%E8%BF%9E%E7%BB%AD.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="数列极限"><a href="#数列极限" class="headerlink" title="数列极限"></a>数列极限</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E5%88%97%E6%9E%81%E9%99%90.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%95%B0%E5%88%97%E6%9E%81%E9%99%90.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元微分学概念"><a href="#一元微分学概念" class="headerlink" title="一元微分学概念"></a>一元微分学概念</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元微分学几何"><a href="#一元微分学几何" class="headerlink" title="一元微分学几何"></a>一元微分学几何</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E5%87%A0%E4%BD%95.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E5%87%A0%E4%BD%95.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元微分学证明"><a href="#一元微分学证明" class="headerlink" title="一元微分学证明"></a>一元微分学证明</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元积分学概念"><a href="#一元积分学概念" class="headerlink" title="一元积分学概念"></a>一元积分学概念</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E6%A6%82%E5%BF%B5.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元积分学计算"><a href="#一元积分学计算" class="headerlink" title="一元积分学计算"></a>一元积分学计算</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AE%A1%E7%AE%97.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AE%A1%E7%AE%97.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="一元积分学证明"><a href="#一元积分学证明" class="headerlink" title="一元积分学证明"></a>一元积分学证明</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%B8%80%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E8%AF%81%E6%98%8E.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="多元微分学"><a href="#多元微分学" class="headerlink" title="多元微分学"></a>多元微分学</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%BE%AE%E5%88%86%E5%AD%A6.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="二重积分"><a href="#二重积分" class="headerlink" title="二重积分"></a>二重积分</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BA%8C%E9%87%8D%E7%A7%AF%E5%88%86.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E4%BA%8C%E9%87%8D%E7%A7%AF%E5%88%86.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="微分方程"><a href="#微分方程" class="headerlink" title="微分方程"></a>微分方程</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="无穷级数"><a href="#无穷级数" class="headerlink" title="无穷级数"></a>无穷级数</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%97%A0%E7%A9%B7%E7%BA%A7%E6%95%B0.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E6%97%A0%E7%A9%B7%E7%BA%A7%E6%95%B0.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="多元积分学预备知识"><a href="#多元积分学预备知识" class="headerlink" title="多元积分学预备知识"></a>多元积分学预备知识</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E7%A7%AF%E5%88%86%E5%AD%A6%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="多元函数积分学"><a href="#多元函数积分学" class="headerlink" title="多元函数积分学"></a>多元函数积分学</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E7%A7%AF%E5%88%86%E5%AD%A6.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%80%83%E7%A0%94/%E5%A4%9A%E5%85%83%E5%87%BD%E6%95%B0%E7%A7%AF%E5%88%86%E5%AD%A6.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 ]]></content>
       <categories>
         <category>考研</category>

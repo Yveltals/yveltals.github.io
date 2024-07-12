@@ -1867,79 +1867,312 @@ public:
   <entry>
     <title>Leetcode</title>
     <url>/2023/03/24/CPP/Leetcode/</url>
-    <content><![CDATA[<h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>链表或数组遍历跳过相同元素时，统一先遍历至右边界，而非下个不同值</p>
-<pre><code class="cpp">int l=i; //相同元素左边界
-while(i+1&lt;n &amp;&amp; a[i+1]==a[i]) 
-    i++; //到相同元素右边界
-i++;     //到不同元素
+    <content><![CDATA[<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><pre><code class="cpp">void adjust(vector&lt;int&gt;&amp; a, int len, int i)&#123;
+  int l = i * 2 + 1, r = l + 1, maxId = i;
+  if (l &lt; len &amp;&amp; a[maxId] &lt; a[l]) maxId = l;
+  if (r &lt; len &amp;&amp; a[maxId] &lt; a[r]) maxId = r;
+  if (maxId != i) &#123;
+    swap(a[i], a[maxId]);
+    adjust(a, len, maxId);
+  &#125;
+&#125;
+void hsort(vector&lt;int&gt;&amp; a)&#123;
+  for(int i = a.size() / 2 - 1; i &gt;= 0; --i)&#123;
+    adjust(a, a.size(), i);
+  &#125;
+  for(int i = a.size() - 1; i &gt; 0; --i)&#123;
+    swap(a[0], a[i]);
+    adjust(a, i, 0);
+  &#125;
+&#125;
 </code></pre>
-<h2 id="FindK"><a href="#FindK" class="headerlink" title="FindK"></a>FindK</h2><p>找两个有序数组中第K大</p>
-<pre><code class="cpp">int findK(vector&lt;int&gt;&amp; a,vector&lt;int&gt;&amp; b,int k)&#123;
-    int m=a.size(), n=b.size();
-    int i=0,j=0;
-    while(true)&#123;
-        if(i==m) return b[j+k-1];
-        if(j==n) return a[i+k-1];
-        if(k==1) return min(a[i],b[j]);
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><blockquote>
+<p>在merge过程中，易知两子数组元素大小的个数关系，如以下两题</p>
+<p><a href="https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/">数组中的逆序对</a>     <a href="https://leetcode.cn/problems/count-of-smaller-numbers-after-self/">计算右侧小于当前元素的个数</a></p>
+</blockquote>
+<pre><code class="cpp">vector&lt;int&gt; tmp;
+vector&lt;int&gt; sortArray(vector&lt;int&gt;&amp; nums) &#123;
+  tmp = vector&lt;int&gt;(nums.size());
+  mergesort(nums, 0, nums.size()-1);
+  return nums;
+&#125;
+void mergesort(vector&lt;int&gt;&amp; nums, int l, int r)&#123;
+  if (l &lt; r) &#123;
+    int m = l + r &gt;&gt; 1;
+    mergesort(nums, l, m);
+    mergesort(nums, m + 1, r);
+    merge(nums, l, m, r);
+  &#125;
+&#125;
+void merge(vector&lt;int&gt;&amp; nums, int l, int m, int r)&#123;
+  int i = l, j = m + 1, k = l;
+  while (i &lt;= m &amp;&amp; j &lt;= r) &#123;
+    if (nums[i] &lt;= nums[j]) &#123;
+      //求解逆序对 ans += j-m-1;
+      tmp[k++] = nums[i++];
+    &#125; else &#123;
+      tmp[k++]=nums[j++];
+    &#125;
+  &#125;
+  while (i &lt;= m) tmp[k++] = nums[i++];
+  while (j &lt;= r) tmp[k++] = nums[j++];
+  for (int i = l; i &lt;= r; ++i) nums[i] = tmp[i];
+&#125;
+</code></pre>
+<h3 id="原地哈希"><a href="#原地哈希" class="headerlink" title="原地哈希"></a>原地哈希</h3><blockquote>
+<p>限制不使用额外空间，哈希函数为：<code>f(nums[i]) = nums[i] - 1</code></p>
+</blockquote>
+<p>原地哈希就相当于，让每个数字 n 都回到下标为 n-1 的家里（或者下标为 n 的家里）</p>
+<p>而那些没有回到家里的就成了孤魂野鬼流浪在外，他们要么是根本就没有自己的家（<code>n&lt;=0</code> || <code>n&gt;=nums.size()</code>），要么是自己的家被别人占领了（出现了重复）。这些流浪汉被临时安置在下标为 i 的空房子里，之所以有空房子是因为房子 i 的主人 i+1 失踪了（数字 i+1 缺失）</p>
+<p>因此通过原地构建哈希让各个数字回家，我们就可以找到原始数组中<strong>重复的数字</strong>还有<strong>消失的数字</strong></p>
+<blockquote>
+<p><a href="https://leetcode.cn/problems/first-missing-positive/solution/tong-pai-xu-python-dai-ma-by-liweiwei1419/">几道例题</a></p>
+</blockquote>
+<h3 id="前缀和-哈希"><a href="#前缀和-哈希" class="headerlink" title="前缀和+哈希"></a>前缀和+哈希</h3><p><a href="https://leetcode.cn/problems/A1NYOS/">剑指 Offer II 011. 0 和 1 个数相同的子数组</a>：找到含有相同数量的 <code>0</code> 和 <code>1</code> 的最长连续子数组长度</p>
+<p>题解：将数组中的 <code>0</code> 视作 <code>−1</code>，则原问题转换成「求最长的连续子数组，其元素和为 0」</p>
+<ul>
+<li><strong>前缀和</strong>：求任意区间元素和，前缀和 <code>s[i]=s[j]</code> 时，区间<code>[i,j]</code>元素和为0</li>
+<li><strong>哈希表</strong>：保存前缀和每个值首次出现的下标，可直接查找左区间</li>
+</ul>
+<pre><code class="c++">int findMaxLength(vector&lt;int&gt;&amp; nums) &#123;
+    int n=nums.size(),ans=0,sum=0;
+    unordered_map&lt;int, int&gt; mp;
+    mp[sum] = -1;
+    for (int i = 0; i &lt; n; i++) &#123;
+        if (nums[i] == 1) sum++;
+        else sum--;
+        if (mp.count(sum)) &#123;
+            int prevIndex = mp[sum];
+            ans = max(ans, i-prevIndex);
+        &#125; else &#123;
+            mp[sum] = i;
+        &#125;
+    &#125;
+    return ans;
+&#125;
+</code></pre>
+<hr>
+<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p><a href="https://leetcode.cn/problems/sort-list/description/">排序链表</a>：找链表中位数 + 合并链表</p>
+<pre><code class="cpp">ListNode *midLeft(ListNode* p)&#123;
+  ListNode *f = p, *s = p;
+  while(f-&gt;next &amp;&amp; f-&gt;next-&gt;next)&#123;
+    s = s-&gt;next;
+    f = f-&gt;next-&gt;next;
+  &#125;
+  return s;
+&#125;
+ListNode *reverse(ListNode* p)&#123;
+  ListNode *dummy=new ListNode(),*q;
+  while(p)&#123;
+    q=p-&gt;next;
+    p-&gt;next=dummy-&gt;next;
+    dummy-&gt;next=p;
+    p=q;
+  &#125;
+  return dummy-&gt;next;
+&#125;
+</code></pre>
+<hr>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="字符串加法"><a href="#字符串加法" class="headerlink" title="字符串加法"></a>字符串加法</h3><pre><code class="cpp">string addStr(string num1, string num2) &#123;
+  string ans;
+  int add = 0,i = num1.size() - 1, j = num2.size() - 1;
+  while(add || i &gt;= 0 || j &gt;= 0)&#123;
+    int x= i &gt;= 0 ? num1[i] - &#39;0&#39;: 0;
+    int y= j &gt;= 0 ? num2[j] - &#39;0&#39;: 0;
+    int result = x + y + add;
+    ans += char(&#39;0&#39; + result % 10);
+    add = result / 10;
+    i--; j--;
+  &#125;
+  reverse(ans.begin(), ans.end());
+  return ans;
+&#125;
+</code></pre>
+<h3 id="字符串乘法"><a href="#字符串乘法" class="headerlink" title="字符串乘法"></a>字符串乘法</h3><pre><code class="cpp">string ans;
+string multiply(string num1, string num2) &#123;
+  if (num1 == &quot;0&quot; || num2 == &quot;0&quot;) return &quot;0&quot;;
+  int m = num1.size(), n = num2.size();
+  for(int i = n - 1; i &gt;= 0; i--)&#123;
+    string tmp;
+    int add = 0, y = num2[i] - &#39;0&#39;;
+    for(int k = n - 1; k &gt; i; --k) tmp += &#39;0&#39;;
+    for(int j = m - 1; j &gt;= 0 || add; --j)&#123;
+      int x = j &lt; 0 ? 0 : num1[j] - &#39;0&#39;;
+      int multi = x * y + add;
+      tmp += char(&#39;0&#39; + multi % 10);
+      add = multi / 10;
+    &#125;
+    reverse(tmp.begin(), tmp.end());
+    ans = addStr(tmp, ans);
+  &#125;
+  return ans;
+&#125;
+</code></pre>
+<h3 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h3><pre><code class="cpp">vector&lt;string&gt; ret;
+void split(string s, char del)&#123;
+  stringstream ss(s);
+  string tmp;
+  while(getline(ss, tmp, del))&#123;
+    if(tmp.size()) ret.push_back(tmp);
+  &#125;
+&#125;
+</code></pre>
+<h3 id="计算器"><a href="#计算器" class="headerlink" title="计算器"></a>计算器</h3><p><a href="https://leetcode.cn/problems/basic-calculator-ii/">基本计算器 II</a>  参考『宫水三叶』题解</p>
+<p>对遍历到的字符做分情况讨论：</p>
+<ul>
+<li><code>空格 </code>: 跳过</li>
+<li><code>(</code> : 直接加入 op 中，等待与之匹配的 )</li>
+<li><code>)</code> : 使用现有的 num 和 op 进行计算，直到遇到左括号为止，将结果存入 num</li>
+<li><code>数字</code> : 从当前继续往右，取出完整数字加入 num</li>
+<li><code>运算符</code> : 放入 op 中，并且在放入前应先把栈内可以算的 <strong>运算符优先级更高&#x2F;同</strong> 的都算掉，每次取 2 个 num 和 1 个 op 计算并存储，直到 <strong>没有操作</strong> 或者 <strong>遇到左括号</strong></li>
+</ul>
+<pre><code class="c++">stack&lt;char&gt; op;
+stack&lt;int&gt; num;
+unordered_map&lt;char,int&gt; level &#123;
+  &#123;&#39;+&#39;, 1&#125;, &#123;&#39;-&#39;, 1&#125;, &#123;&#39;*&#39;, 2&#125;, &#123;&#39;/&#39;, 2&#125;, &#123;&#39;^&#39;, 3&#125;
+&#125;;
+void cal()&#123;
+  long b = num.top(); num.pop();
+  long a = num.top(); num.pop();
+  char op_ =op.top(); op.pop();
+  long long res;
+  switch(op_)&#123;
+    case &#39;+&#39;: res = a + b; break;
+    case &#39;-&#39;: res = a - b; break;
+    case &#39;*&#39;: res = a * b; break;
+    case &#39;/&#39;: res = a / b; break;
+    case &#39;^&#39;: res = pow(a, b); break;
+  &#125;
+  num.push(res);
+&#125;
+int calculate(string s) &#123;
+  num.push(0); //确保2个操作数
+  int n = s.size();
+  for (int i = 0; i &lt; n; ++i) &#123;
+    if (s[i] == &#39; &#39;) continue;
+    else if (s[i] == &#39;(&#39;) &#123;
+      op.push(&#39;(&#39;);
+      if(s[i + 1] == &#39;-&#39;)&#123;
+        num.push(0); //确保2个操作数
+        op.push(&#39;-&#39;);
+        i++;
+      &#125;
+    &#125; else if(s[i] == &#39;)&#39;) &#123;
+      while (op.top() != &#39;(&#39;)
+        cal();
+      op.pop();
+    &#125; else if(isdigit(s[i])) &#123;
+      int k = i + 1;
+      while(k &lt; n &amp;&amp; isdigit(s[k])) k++;
+      num.push(stoi(s.substr(i, k - i)));
+      i = k - 1;
+    &#125; else &#123;
+      while(!op.empty() &amp;&amp; op.top() != &#39;(&#39; &amp;&amp; level[op.top()] &gt;= level[s[i]])
+        cal();
+      op.push(s[i]);
+    &#125;
+  &#125;
+  while(!op.empty() &amp;&amp; op.top() != &#39;(&#39;)
+    cal();
+  return num.top();
+&#125;
+</code></pre>
+<h3 id="KMP"><a href="#KMP" class="headerlink" title="KMP"></a>KMP</h3><details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="c++">int strStr(string haystack, string needle) {    int k=-1,n=haystack.length(),p=needle.length();    if(!p) return 0;    vector&lt;int&gt; next(p,-1);    calNext(needle,next);    for(int i=0;i&lt;n;++i){        while(k&gt;-1 &amp;&amp; needle[k+1]!=haystack[i])            k=next[k];        if(needle[k+1]==haystack[i])            k++;        if(k==p-1)             return i-p+1;    }    return -1;}void calNext(string&amp; needle,vector&lt;int&gt;&amp; next){    for(int j=1,p=-1;j&lt;needle.length();++j){        while(p&gt;-1 &amp;&amp; needle[p+1]!=needle[j])            p=next[p];        if(needle[p+1]==needle[j])            p++;        next[j]=p;    }}</code></pre>
+              </div>
+            </details>
+<hr>
+<h2 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h2><p><strong>ACM模式树插入</strong></p>
+<pre><code class="cpp">TreeNode *buildTree(vector&lt;int&gt;&amp; vec) &#123;
+  vector&lt;TreeNode*&gt; tree(vec.size(), nullptr);
+  for (int i = 0; i &lt; vec.size(); ++i) &#123;
+    if (vec[i] != -1) tree[i] = new TreeNode(vec[i]);
+  &#125;
+  for (int i = 0; i &lt; vec.size() / 2; ++i) &#123;
+    if (vec[i] != -1) &#123;
+      tree[i]-&gt;left = tree[i * 2 + 1];
+      tree[i]-&gt;right = tree[i * 2 + 2];
+    &#125;
+  &#125;
+  return tree[0];
+&#125;
+int main()&#123;
+    vector&lt;int&gt; v = &#123;4,1,6,0,2,5,7,-1,-1,-1,3,-1,-1&#125;;
+    TreeNode* root = Build(v);
+&#125;
+</code></pre>
+<p><strong>迭代前&#x2F;中序遍历</strong></p>
+<pre><code class="c++">stack&lt;TreeNode*&gt; st;
+TreeNode* p = root;
+while (p || !st.empty()) &#123;
+    while (p) &#123;
+        st.push(p);
+        p = p-&gt;left;
+    &#125;
+    p = st.top(); st.pop();
+    p = p-&gt;right;
+&#125;
+</code></pre>
+<p><strong>迭代前&#x2F;后序遍历</strong></p>
+<pre><code class="cpp">stack&lt;TreeNode*&gt; st;
+if (!root) return;
+st.push(root);
+while (!st.empty()) &#123;
+  TreeNode *t = st.top();
+  st.pop();
+  if (t-&gt;right) st.push(t-&gt;right); //前序先入右子节点
+  if (t-&gt;left) st.push(t-&gt;left);
+&#125;
+</code></pre>
+<h2 id="图论"><a href="#图论" class="headerlink" title="图论"></a>图论</h2><h3 id="DFS-BFS"><a href="#DFS-BFS" class="headerlink" title="DFS&#x2F;BFS"></a>DFS&#x2F;BFS</h3><p><a href="https://leetcode.cn/problems/shortest-bridge/">最短的桥</a>：二维数组A中0代表海，1代表岛（四个方向相连），求至少将几个 0 变为 1能把两岛连起来</p>
+<p>题解：</p>
+<ol>
+<li>找到任意一个岛</li>
+<li>通过dfs将整个岛1标记为2，并把边缘点0入队列</li>
+<li>从边缘点0作bfs扩散，访问过的记录为2，碰到另一个岛1时的层数为所得</li>
+</ol>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="c++">class Solution {public:  int n;  vector&lt;int&gt; d{-1, 0, 1, 0, -1};  queue&lt;pair&lt;int, int&gt;&gt; q;  void dfs(vector&lt;vector&lt;int&gt;&gt;&amp; grid, int i, int j) {    if (i &lt; 0 || j &lt; 0 || i == n || j == n || grid[i][j] == 2) return;    if (grid[i][j] == 0) {      q.emplace(i, j);      return;    }    grid[i][j] = 2;    for (int k = 0; k &lt; 4; ++k) {      dfs(grid, i + d[k], j + d[k + 1]);    }  }  int shortestBridge(vector&lt;vector&lt;int&gt;&gt;&amp; grid) {    n = grid.size();    for (int i = 0, stop = 0; i &lt; n &amp;&amp; !stop; ++i) {      for (int j = 0; j &lt; n &amp;&amp; !stop; ++j) {        if (grid[i][j] == 1) {          dfs(grid, i, j);          stop = 1;        }      }    }    int ans = 0;    while (!q.empty()) {      ans++;      int size = q.size();      while (size--) {        auto [i, j] = q.front(); q.pop();        for (int k = 0; k &lt; 4; ++k) {          int r = i + d[k], c = j + d[k + 1];          if (r &lt; 0 || c &lt; 0 || r == n || c == n) continue;          if (grid[r][c] == 1) return ans;          if (grid[r][c] == 0) {            q.emplace(r, c);            grid[r][c] = 2;          }        }      }    }    return -1;  }};</code></pre>
+              </div>
+            </details>
 
-        int ir=min(m-1,i+k/2-1);
-        int jr=min(n-1,j+k/2-1);
-        if(a[ir]&lt;=b[jr])&#123;
-            k -= ir+1-i;
-            i = ir+1;
-        &#125;else&#123;
-            k -= jr+1-j;
-            j = jr+1;
-        &#125;
-    &#125;
-&#125;
-</code></pre>
-<p>找[1,n]中字典序第K大</p>
-<pre><code class="cpp">ll get_count(ll prefix,ll n)&#123;
-    ll cnt=0;
-    for(ll a=prefix,b=prefix+1;a&lt;=n;a*=10,b*=10)&#123;
-        cnt += min(n+1,b)-a;
-    &#125;
-    return cnt;
-&#125;
-int findKthNumber(int n, int k) &#123;
-    int prefix=1, p=1; //当前字典序第p个
-    while(p&lt;k)&#123;
-        ll cnt=get_count(prefix,n);
-        if(p+cnt&gt;k)&#123;
-            prefix*=10; //字典序相邻下一个
-            p++;
-        &#125;else&#123;
-            prefix++;  //跳过prefix开头的cnt个
-            p+=cnt;
-        &#125;
-    &#125;
-    return prefix;
-&#125;
-</code></pre>
-<p>找第K小的元素</p>
-<pre><code class="cpp">int key;
-void Qsort(int a[], int l ,int r)&#123;
-  while(l&lt;=r)&#123;
-    int pivot = Part(a,l,r);
-    if(pivot==key) do();
-    else if(pivot&gt;key) r=pivot-1;
-    else l=pivot+1;
-  &#125;
-&#125;
-int Part(int a[], int l, int r)&#123;
-  int pivot = a[l];
-  while(l&lt;r)&#123;
-    while(l&lt;r &amp;&amp; a[r]&gt;=pivot) r--;
-    a[l]=a[r];
-    while(l&lt;r &amp;&amp; a[l]&lt;=pivot) l++;
-    a[r]=a[l];
-  &#125;
-  a[l] = pivot;
-  return l;
-&#125;
-</code></pre>
-<h2 id="Dijkstra"><a href="#Dijkstra" class="headerlink" title="Dijkstra"></a>Dijkstra</h2><pre><code class="cpp">int n;
+<p><a href="https://leetcode.cn/problems/surrounded-regions/">被围绕的区域</a>：矩阵包含 <code>X</code> 和 <code>O</code> ，找到所有被 <code>X</code> 围绕(四个方向)的区域，并将这些区域里所有的 <code>O</code> 用 <code>X</code> 填充。</p>
+<p>题解： 找到未被包围区域不填充即可，且注意到未包围区域一定挨着边界，故从四个边界开始dfs找到<code>O</code>区域即可</p>
+<h3 id="状态转换"><a href="#状态转换" class="headerlink" title="状态转换"></a>状态转换</h3><blockquote>
+<p>关键在于“建图”，过程灵活，只需能完成遍历即可</p>
+<p>相关题目：<a href="https://leetcode.cn/problems/zlDJc7/">剑指 Offer II 109. 开密码锁</a>，<a href="https://leetcode.cn/problems/vlzXQL/">剑指 Offer II 111. 计算除法</a></p>
+</blockquote>
+<p><a href="https://leetcode.cn/problems/word-ladder/"> 单词接龙</a>：求字符串 <code>start</code> 转换至 <code>end</code> 最小步数，每次转换仅改变一个字符，且改变后字符串在所给 <code>dic</code> 中</p>
+<p>题解：</p>
+<ol>
+<li>字符串之间的转换关系可抽象为无向图。遍历找相邻结点时，依次查找改变字符后的新字符串是否在 <code>dic</code> 内</li>
+<li>无向图中顶点间的最短路径的长度通过BFS得到。为防止回路，将访问过的结点记录下来</li>
+</ol>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">queue&lt;string&gt; q;int ladderLength(string beginWord, string endWord, vector&lt;string&gt;&amp; wordList) {  unordered_set&lt;string&gt; dic(wordList.begin(), wordList.end());  if(!dic.count(endWord)) return 0;  int step = 1;  q.push(beginWord);  dic.erase(beginWord);//访问后直接删除，防止回路  while(!q.empty()){    int k = q.size();    while(k--){      string s = q.front(); q.pop();      //判断更改一个字符后是否满足结果      if(check(s, endWord, dic)){          return step + 1;      }    }    step++;  }  return 0;}bool check(string cur, string target, unordered_set&lt;string&gt;&amp; dic){  for(int i = 0; i &lt; cur.size(); ++i){    char tmp = cur[i];    for(char c = &#39;a&#39;; c &lt;= &#39;z&#39;; c++){      if(tmp == c) continue;      cur[i] = c;      if(dic.count(cur)){        if(cur == target) return true;        else{          q.push(cur);          dic.erase(cur);//访问后直接删除，防止回路        }      }    }    cur[i] = tmp;  }  return false;}</code></pre>
+              </div>
+            </details>
+
+<p><a href="https://leetcode.cn/problems/water-and-jug-problem/">水壶问题</a>：两水壶容量<code>x</code>,<code>y</code>，能否经操作使得盛水之和为<code>z</code>：①装满一水壶 ②清空一水壶 ③相互倒水至满或空</p>
+<p>题解：记当前盛水量为<strong>状态(a,b)</strong></p>
+<ul>
+<li><p>每次操作有6种状态转换：</p>
+<p>① a倒满至<code>(x,b)</code> ② b倒满至<code>(a,y)</code> ③ a清空至<code>(0,b)</code> ④ b清空至<code>(a,0)</code> </p>
+<p>⑤ a往b倒水至<code>(a-move,b+move)</code> ⑥ 反之<code>(a+move,b-move)</code></p>
+</li>
+<li><p>BFS进行搜索，set记录已访问过状态（将pair转换成int64_t存储）</p>
+</li>
+</ul>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">  inline int64_t hash(int a, int b) {    return (int64_t)a &lt;&lt; 32 | b;  }  pair&lt;int, int&gt; op(int i, int a, int b, int x, int y) {    switch (i) {      case 0: return make_pair(0, b);      case 1: return make_pair(a, 0);      case 2: return make_pair(x, b);      case 3: return make_pair(a, y);      case 4: {        int move = min(a, y - b);        return make_pair(a - move, b + move);      }      case 5: {        int move = min(b, y - a);        return make_pair(a + move, b - move);      }    }    return make_pair(0, 0);  }  bool canMeasureWater(int x, int y, int target) {    queue&lt;pair&lt;int, int&gt;&gt; q;    unordered_set&lt;int64_t&gt; vis;    q.emplace(0, 0);    while (!q.empty()) {      int size = q.size();      while (size--) {        auto [a, b] = q.front(); q.pop();        for (int i = 0; i &lt; 6; ++i) {          auto [new_a, new_b] = op(i, a, b, x, y);          if (new_a + new_b == target) return true;          if (!vis.count(hash(new_a, new_b))) {            vis.insert(hash(new_a, new_b));            q.emplace(new_a, new_b);          }        }      }    }    return false;  }</code></pre>
+              </div>
+            </details>
+
+<h3 id="Dijkstra"><a href="#Dijkstra" class="headerlink" title="Dijkstra"></a>Dijkstra</h3><pre><code class="cpp">int n;
 vector&lt;int&gt; vis,dis;
 vector&lt;vector&lt;int&gt;&gt; g;  // 邻接矩阵
 void dijkstra(int start)&#123;
@@ -1964,80 +2197,119 @@ void dijkstra(int start)&#123;
     &#125;
 &#125;
 </code></pre>
-<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><h3 id="归并"><a href="#归并" class="headerlink" title="归并"></a>归并</h3><blockquote>
-<p>在merge过程中，易知两子数组元素大小的个数关系，如以下两题</p>
-<p><a href="https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/">数组中的逆序对</a>     <a href="https://leetcode.cn/problems/count-of-smaller-numbers-after-self/">计算右侧小于当前元素的个数</a></p>
+<hr>
+<h2 id="回溯"><a href="#回溯" class="headerlink" title="回溯"></a>回溯</h2><blockquote>
+<p>两个诀窍：一是按值传状态，二是所有的状态修改在递归完成后回改。<br>两种情况：一种是修改最后一位输出，如排列组合；一种是修改访问标记，如矩阵里搜字符串</p>
 </blockquote>
-<pre><code class="cpp">vector&lt;int&gt; tmp;
-vector&lt;int&gt; sortArray(vector&lt;int&gt;&amp; nums) &#123;
-    tmp = vector&lt;int&gt;(nums.size());
-    mergesort(nums,0,nums.size()-1);
-    return nums;
+<h3 id="一维"><a href="#一维" class="headerlink" title="一维"></a>一维</h3><p><a href="https://leetcode.cn/problems/permutations-ii/">全排列 II</a>：序列包含重复数字，按任意顺序返回所有不重复的全排列。</p>
+<pre><code class="c++">vector&lt;int&gt; vis, tmp;
+vector&lt;vector&lt;int&gt;&gt; ans;
+vector&lt;vector&lt;int&gt;&gt; permuteUnique(vector&lt;int&gt;&amp; nums) &#123;
+  vis.assign(nums.size(), 0);
+  sort(nums.begin(), nums.end());
+  fun(nums);
+  return ans;
 &#125;
-void mergesort(vector&lt;int&gt;&amp; nums, int l ,int r)&#123;
-    if(l&lt;r)&#123;
-        int m=l+r&gt;&gt;1;
-        mergesort(nums,l,m);
-        mergesort(nums,m+1,r);
-        merge(nums,l,m,r);
+void fun(vector&lt;int&gt;&amp; nums) &#123;
+  if (tmp.size() == nums.size()) &#123;
+    ans.push_back(tmp);
+    return;
+  &#125;
+  for (int i = 0; i &lt; nums.size(); ++i) &#123;
+    if (vis[i] || i &amp;&amp; nums[i] == nums[i - 1] &amp;&amp; vis[i - 1]) &#123;
+      continue;
     &#125;
-&#125;
-void merge(vector&lt;int&gt;&amp; nums,int l,int m,int r)&#123;
-    int i=l,j=m+1,k=l;
-    while(i&lt;=m &amp;&amp; j&lt;=r)&#123;
-        if(nums[i]&lt;=nums[j]) tmp[k++]=nums[i++]; //求解逆序对 ans += j-m-1;
-        else tmp[k++]=nums[j++];
-    &#125;
-    while(i&lt;=m) tmp[k++]=nums[i++];
-    while(j&lt;=r) tmp[k++]=nums[j++];
-    for(int i=l;i&lt;=r;++i) nums[i]=tmp[i];
-&#125;
-</code></pre>
-<h3 id="堆排"><a href="#堆排" class="headerlink" title="堆排"></a>堆排</h3><pre><code class="cpp">void adjust(vector&lt;int&gt;&amp; a,int len,int i)&#123;
-    int l=i*2+1, r=l+1, maxId=i;
-    if(l&lt;len &amp;&amp; a[maxId]&lt;a[l]) maxId=l;
-    if(r&lt;len &amp;&amp; a[maxId]&lt;a[r]) maxId=r;
-    if(maxId!=i)&#123;
-        swap(a[i],a[maxId]);
-        adjust(a,len,maxId);
-    &#125;
-&#125;
-void hsort(vector&lt;int&gt;&amp; a)&#123;
-    for(int i=a.size()/2-1;i&gt;=0;--i)&#123;
-        adjust(a,a.size(),i);
-    &#125;
-    for(int i=a.size()-1;i&gt;0;--i)&#123;
-        swap(a[0],a[i]);
-        adjust(a,i,0);
-    &#125;
+    tmp.push_back(nums[i]);
+    vis[i] = 1;
+    fun(nums);
+    vis[i] = 0;
+    tmp.pop_back();
+  &#125;
 &#125;
 </code></pre>
-<h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><pre><code class="cpp">bool articleMatch(string s, string p) &#123;
-  int m = s.size(), n = p.size();
-  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
-  auto check = [&amp;] (int i, int j) &#123;
-    if (!i || !j) return false;
-    if (p[j - 1] == &#39;.&#39;) return true;
-    return p[j - 1] == s[i - 1];
-  &#125;;
-  dp[0][0] = 1;
-  for (int i = 0; i &lt;= m; ++i) &#123;  // &quot;&quot; match &quot;A**&quot;
-    for (int j = 1; j &lt;= n; ++j) &#123;
-      if (p[j - 1] != &#39;*&#39;) &#123;
-        dp[i][j] |= check(i, j) &amp;&amp; dp[i - 1][j - 1];
-      &#125; else &#123;
-        // *匹配0个
-        dp[i][j] |= dp[i][j - 2];
-        // s[i-1] = p[j-2], 各抵消一个字符a后，S对应前i-1，而P的a*是无限个，j不减
-        dp[i][j] |= check(i, j - 1) &amp;&amp; dp[i - 1][j];
-      &#125;
+<p><a href="https://leetcode.cn/problems/n-queens/">N 皇后</a>：如何将 <code>n</code> 个皇后放置在 <code>n×n</code> 的棋盘上，使得横竖斜直线上均仅一个皇后</p>
+<p>题解：实质从0到n-1行依次选择一个位置（<strong>一维搜索</strong>），选择前修改矩阵，退出dfs后恢复修改。另需设置set集合记录哪些行列已存在皇后。</p>
+<pre><code class="c++">vector&lt;string&gt; cur;
+vector&lt;vector&lt;string&gt;&gt; ans;
+set&lt;int&gt; row, bias1, bias2;
+
+void dfs(int i, int n)&#123;
+  if(i &gt;= n)&#123;
+    ans.push_back(cur);
+    return;
+  &#125;
+  for(int j = 0; j &lt; n; ++j)&#123;
+    if(!row.count(j) &amp;&amp; !bias1.count(j - i) &amp;&amp; !bias2.count(j + i))&#123;
+      cur[i][j] = &#39;Q&#39;; row.insert(j); bias1.insert(j - i); bias2.insert(j + i);
+      dfs(i + 1, n);
+      cur[i][j] = &#39;.&#39;; row.erase(j); bias1.erase(j - i); bias2.erase(j + i);
     &#125;
   &#125;
-  return dp[m][n];
+&#125;
+vector&lt;vector&lt;string&gt;&gt; solveNQueens(int n) &#123;
+    cur = vector&lt;string&gt;(n, string(n, &#39;.&#39;));
+    dfs(0, n);
+    return ans;
+&#125;
+</code></pre>
+<h3 id="二维"><a href="#二维" class="headerlink" title="二维"></a>二维</h3><p><a href="https://leetcode.cn/problems/sudoku-solver/">解数独</a>：数字 <code>1-9</code> 在每行、每列、每个粗实线分隔的 <code>3x3</code> 宫内只能出现一次，矩阵由数字和空白 <code>&#39;.&#39;</code> 表示</p>
+<pre><code class="c++">bool check(vector&lt;vector&lt;char&gt;&gt;&amp; a, int i, int j, char x)&#123;
+  for(int k = 0; k &lt; 9; ++k)&#123;
+    if(a[i][k] == x) return false;
+    if(a[k][j] == x) return false;
+    if(a[i / 3 * 3 + k / 3][j / 3 * 3 + k % 3] == x) &#123;
+      return false;
+    &#125;
+  &#125;
+  return true;
+&#125;
+int dfs(vector&lt;vector&lt;char&gt;&gt;&amp; a,int i,int j)&#123;
+  if(j == 9) j = 0, i++;
+  if(i == 9) return true;
+  if(a[i][j] != &#39;.&#39;) return dfs(a, i, j + 1);
+  
+  for(char x = &#39;1&#39;; x &lt;= &#39;9&#39;; ++x)&#123;
+    if(check(a, i, j, x))&#123;
+      a[i][j] = x;
+      if(dfs(a, i, j + 1)) return true;
+      a[i][j] = &#39;.&#39;;
+    &#125;
+  &#125;
+  return false;
+&#125;
+void solveSudoku(vector&lt;vector&lt;char&gt;&gt;&amp; a) &#123;
+  dfs(a, 0, 0);
+&#125;
+</code></pre>
+<h3 id="记忆化搜索"><a href="#记忆化搜索" class="headerlink" title="记忆化搜索"></a>记忆化搜索</h3><p><a href="https://leetcode.cn/problems/fpTFWP/">最长递增路径</a>：求矩阵中最长递增路径长度（上下左右移动）</p>
+<pre><code class="cpp">int m, n, ans;
+vector&lt;int&gt; d&#123;-1, 0, 1, 0, -1&#125;;
+vector&lt;vector&lt;int&gt;&gt; dp;
+int longestIncreasingPath(vector&lt;vector&lt;int&gt;&gt;&amp; matrix) &#123;
+  m = matrix.size(), n = matrix[0].size();
+  dp.assign(m, vector&lt;int&gt;(n, -1));  // cache, 仅增加了注释的三行代码
+  for (int i = 0; i &lt; m; ++i) &#123;
+    for (int j = 0; j &lt; n; ++j) &#123;
+      ans = max(ans, fun(matrix, i, j, INT_MAX + 1l));
+    &#125;
+  &#125;
+  return ans;
+&#125;
+int fun(vector&lt;vector&lt;int&gt;&gt;&amp; matrix, int i, int j, long value) &#123;
+  if (i &lt; 0 || j &lt; 0 || i == m || j == n || (long)matrix[i][j] &gt;= value) &#123;
+    return 0;
+  &#125;
+  if (dp[i][j] != -1) return dp[i][j];  // load
+  int len = 0;
+  for (int k = 0; k &lt; 4; ++k) &#123;
+    len = max(len, fun(matrix, i + d[k], j + d[k + 1], matrix[i][j]));
+  &#125;
+  dp[i][j] = len + 1;  // save
+  return len + 1;
 &#125;
 </code></pre>
 <hr>
-<h3 id="子序列问题"><a href="#子序列问题" class="headerlink" title="子序列问题"></a>子序列问题</h3><p><a href="https://leetcode.cn/problems/longest-increasing-subsequence/">最长递增子序列</a>（贪心+二分）：返回最长递增子序列（字典序）</p>
+<h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h3 id="子序列问题"><a href="#子序列问题" class="headerlink" title="子序列问题"></a>子序列问题</h3><p><a href="https://leetcode.cn/problems/longest-increasing-subsequence/">最长递增子序列</a>（贪心+二分）：返回最长递增子序列（字典序）</p>
 <pre><code class="cpp">//  返回长度 &amp; 输出任意序列
 int lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
   int n = nums.size(), len = 1;
@@ -2133,6 +2405,66 @@ vector&lt;int&gt; lengthOfLIS(vector&lt;int&gt;&amp; nums) &#123;
   return dp[n];
 &#125;
 </code></pre>
+<h3 id="字符串问题"><a href="#字符串问题" class="headerlink" title="字符串问题"></a>字符串问题</h3><p><a href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p>
+<p><a href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：返回在 s 的子序列中 t 出现的个数</p>
+<ul>
+<li><code>dp[i][j]</code> 为 s 的前 i 个字符与 t 的前 j 个匹配，初始化 <code>dp[i][0] = 1</code></li>
+<li>若 <code>s[i-1] == t[j-1]</code>，<code>dp[i][j] = dp[i-1][j-1] + dp[i-1][j]</code></li>
+<li>若 <code>s[i-1] != t[j-1]</code>，<code>dp[i][j] = dp[i-1][j]</code></li>
+</ul>
+<p><a href="https://leetcode.cn/problems/edit-distance/">编辑距离</a>：求将 <code>word1</code> 转换成 <code>word2</code> 所使用的最少操作数，可以任意位置删除、替换、插入</p>
+<blockquote>
+<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">两个字符串的删除操作</a>：编辑距离的简化版，仅删除操作</p>
+</blockquote>
+<p>题解：</p>
+<ul>
+<li>定义<code>dp[i][j]</code>为使两单词前<code>i j</code>部分相同的最少操作数</li>
+<li>状态转移方程<ul>
+<li>若<code>word1[i]=word2[j]</code>：<code>dp[i][j]=dp[i-1][j-1]</code></li>
+<li>若<code>word1[i]≠word2[j]</code>：<ul>
+<li>在<code>i</code>后插入&#x2F;<code>j</code>处删除：<code>dp[i][j]=dp[i][j-1]+1</code></li>
+<li>在<code>j</code>后插入&#x2F;<code>i</code>处删除：<code>dp[i][j]=dp[i-1][j]+1</code></li>
+<li>在<code>i</code>&#x2F;<code>j</code>处修改：<code>dp[i][j]=dp[i-1][j-1]+1</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>考虑初值<code>i=0</code>或<code>j=0</code>的情况：<code>i=0</code>时，word1为空，只能删除&#x2F;插入<code>j</code>次；<code>j=0</code>时同理<ul>
+<li><code>dp[0][j]=j, dp[i][0]=i</code></li>
+</ul>
+</li>
+<li>优化空间<ul>
+<li>正序遍历 <code>j</code> 会丢失 <code>dp[i-1][j-1]</code>，倒序遍历又不知道 <code>dp[i][j-1]</code> 的结果</li>
+<li>因此选择正序遍历，并用 <code>leftup</code> 保存 <code>dp[i-1][j-1]</code></li>
+<li>初值 <code>dp[0][j] = j</code>，仅在第一轮遍历中用到 -&gt; <code>dp[j] = j</code></li>
+<li>初值 <code>dp[i][0] = i</code>，每轮遍历中用到 -&gt; 每轮循环中 <code>dp[0] = i</code></li>
+</ul>
+</li>
+</ul>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">int minDistance(string word1, string word2) {  int m = word1.size(), n = word2.size();  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));  for (int j = 1; j &lt;= n; ++j) dp[0][j] = j;  for (int i = 1; i &lt;= m; ++i) dp[i][0] = i;  for (int i = 1; i &lt;= m; ++i) {    for (int j = 1; j &lt;= n; ++j) {      if (word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];      else dp[i][j] = 1 + min({dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]});    }  }  return dp[m][n];}// 优化空间复杂度int minDistance(string word1, string word2) {    int m = word1.size(), n = word2.size();    vector&lt;int&gt; dp(n + 1, 0);    for (int j = 1; j &lt;= n; ++j) dp[j] = j;    for (int i = 1; i &lt;= m; ++i) {        int leftup = dp[0];        dp[0] = i;        for (int j = 1; j &lt;= n; ++j) {            int tmp = dp[j];            if (word1[i - 1] == word2[j - 1]) dp[j] = leftup;            else dp[j] = min({dp[j], dp[j - 1], leftup}) + 1;            leftup = tmp;        }    }    return dp[n];}</code></pre>
+              </div>
+            </details>
+
+<p><a href="https://leetcode.cn/problems/regular-expression-matching/description/">正则表达式</a>：字符串 s 能否被 p 匹配：<code>.</code> 匹配任意单个字符，<code>*</code> 匹配任意个前一个元素</p>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">bool articleMatch(string s, string p) {  int m = s.size(), n = p.size();  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));  auto check = [&amp;] (int i, int j) {    if (!i || !j) return false;    if (p[j - 1] == &#39;.&#39;) return true;    return p[j - 1] == s[i - 1];  };  dp[0][0] = 1;  for (int i = 0; i &lt;= m; ++i) {  // &quot;&quot; match &quot;A**&quot;    for (int j = 1; j &lt;= n; ++j) {      if (p[j - 1] != &#39;*&#39;) {        dp[i][j] |= check(i, j) &amp;&amp; dp[i - 1][j - 1];      } else {        // *匹配 0 个        dp[i][j] |= dp[i][j - 2];        // s[i-1] = p[j-2], 各抵消一个字符a后，S对应前i-1，而P的a*是无限个，j不减        dp[i][j] |= check(i, j - 1) &amp;&amp; dp[i - 1][j];      }    }  }  return dp[m][n];}</code></pre>
+              </div>
+            </details>
+
+<p><a href="https://leetcode.cn/problems/palindrome-partitioning/">分割回文串</a>：求<code>s</code>的任意子串是否回文</p>
+<pre><code class="c++">vector&lt;vector&lt;int&gt;&gt; dp(n, vector&lt;int&gt;(n));
+for (int i = n - 1; i &gt;= 0; --i) &#123;
+  for (int j = i; j &lt; n; ++j) &#123;
+    if (i + 1 &gt;= j - 1) dp[i][j] = s[i] == s[j];
+    else dp[i][j] = dp[i + 1][j - 1] &amp;&amp; s[i] == s[j];
+  &#125;
+&#125;
+</code></pre>
+<p><a href="https://leetcode.cn/problems/longest-valid-parentheses/">最长有效括号</a>：从含 <code>&#39;(&#39;</code> 和 <code>&#39;)&#39;</code> 的字符串中找出最长有效括号子串的长度</p>
+<hr>
 <h3 id="背包问题"><a href="#背包问题" class="headerlink" title="背包问题"></a>背包问题</h3><h4 id="递推公式"><a href="#递推公式" class="headerlink" title="递推公式"></a>递推公式</h4><p>问能否装满背包（或最多装多少）：<br><code>dp[j] = max(dp[j], dp[j - nums[i]] + nums[i])</code> 或 <code>dp[j] |= dp[j - v]</code></p>
 <ul>
 <li><a href="https://leetcode.cn/problems/partition-equal-subset-sum/description/">分割等和子集</a><ul>
@@ -2217,76 +2549,6 @@ int knapsack(vector&lt;int&gt; weights, vector&lt;int&gt; values, int N, int W) 
     return dp[N][W];
 &#125;
 </code></pre>
-<hr>
-<h3 id="字符串问题"><a href="#字符串问题" class="headerlink" title="字符串问题"></a>字符串问题</h3><h4 id="递推公式：从前到后"><a href="#递推公式：从前到后" class="headerlink" title="递推公式：从前到后"></a>递推公式：从前到后</h4><p><a href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p>
-<p><a href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：返回在 s 的子序列中 t 出现的个数</p>
-<ul>
-<li><code>dp[i][j]</code> 为 s 的前 i 个字符与 t 的前 j 个匹配，初始化 <code>dp[i][0] = 1</code></li>
-<li>若 <code>s[i-1] == t[j-1]</code>，<code>dp[i][j] = dp[i-1][j-1] + dp[i-1][j]</code></li>
-<li>若 <code>s[i-1] != t[j-1]</code>，<code>dp[i][j] = dp[i-1][j]</code></li>
-</ul>
-<p><a href="https://leetcode.cn/problems/edit-distance/">编辑距离</a>：求将 <code>word1</code> 转换成 <code>word2</code> 所使用的最少操作数，可以任意位置删除、替换、插入</p>
-<blockquote>
-<p><a href="https://leetcode.cn/problems/delete-operation-for-two-strings/">两个字符串的删除操作</a>：编辑距离的简化版，仅删除操作</p>
-</blockquote>
-<p>题解：</p>
-<ul>
-<li>定义<code>dp[i][j]</code>为使两单词前<code>i j</code>部分相同的最少操作数</li>
-<li>状态转移方程<ul>
-<li>若<code>word1[i]=word2[j]</code>：<code>dp[i][j]=dp[i-1][j-1]</code></li>
-<li>若<code>word1[i]≠word2[j]</code>：<ul>
-<li>在<code>i</code>后插入&#x2F;<code>j</code>处删除：<code>dp[i][j]=dp[i][j-1]+1</code></li>
-<li>在<code>j</code>后插入&#x2F;<code>i</code>处删除：<code>dp[i][j]=dp[i-1][j]+1</code></li>
-<li>在<code>i</code>&#x2F;<code>j</code>处修改：<code>dp[i][j]=dp[i-1][j-1]+1</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>考虑初值<code>i=0</code>或<code>j=0</code>的情况：<code>i=0</code>时，word1为空，只能删除&#x2F;插入<code>j</code>次；<code>j=0</code>时同理<ul>
-<li><code>dp[0][j]=j, dp[i][0]=i</code></li>
-</ul>
-</li>
-<li>优化空间<ul>
-<li>正序遍历 <code>j</code> 会丢失 <code>dp[i-1][j-1]</code>，倒序遍历又不知道 <code>dp[i][j-1]</code> 的结果</li>
-<li>因此选择正序遍历，并用 <code>leftup</code> 保存 <code>dp[i-1][j-1]</code></li>
-<li>初值 <code>dp[0][j] = j</code>，仅在第一轮遍历中用到 -&gt; <code>dp[j] = j</code></li>
-<li>初值 <code>dp[i][0] = i</code>，每轮遍历中用到 -&gt; 每轮循环中 <code>dp[0] = i</code></li>
-</ul>
-</li>
-</ul>
-<pre><code class="cpp">int minDistance(string word1, string word2) &#123;
-  int m = word1.size(), n = word2.size();
-  vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
-  for (int j = 1; j &lt;= n; ++j) dp[0][j] = j;
-  for (int i = 1; i &lt;= m; ++i) dp[i][0] = i;
-  for (int i = 1; i &lt;= m; ++i) &#123;
-    for (int j = 1; j &lt;= n; ++j) &#123;
-      if (word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
-      else dp[i][j] = 1 + min(&#123;dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]&#125;);
-    &#125;
-  &#125;
-  return dp[m][n];
-&#125;
-// 优化空间复杂度
-int minDistance(string word1, string word2) &#123;
-    int m = word1.size(), n = word2.size();
-    vector&lt;int&gt; dp(n + 1, 0);
-    for (int j = 1; j &lt;= n; ++j) dp[j] = j;
-    for (int i = 1; i &lt;= m; ++i) &#123;
-        int leftup = dp[0];
-        dp[0] = i;
-        for (int j = 1; j &lt;= n; ++j) &#123;
-            int tmp = dp[j];
-            if (word1[i - 1] == word2[j - 1]) dp[j] = leftup;
-            else dp[j] = min(&#123;dp[j], dp[j - 1], leftup&#125;) + 1;
-            leftup = tmp;
-        &#125;
-    &#125;
-    return dp[n];
-&#125;
-</code></pre>
-<h4 id="递推公式：中间向两端扩散"><a href="#递推公式：中间向两端扩散" class="headerlink" title="递推公式：中间向两端扩散"></a>递推公式：中间向两端扩散</h4><p><a href="https://leetcode.cn/problems/palindrome-partitioning/">分割回文串</a>：求<code>s</code>的任意子串是否回文</p>
-<p><a href="https://leetcode.cn/problems/longest-valid-parentheses/">最长有效括号</a>：从含 <code>&#39;(&#39;</code> 和 <code>&#39;)&#39;</code> 的字符串中找出最长有效括号子串的长度</p>
 <hr>
 <h3 id="股票问题"><a href="#股票问题" class="headerlink" title="股票问题"></a>股票问题</h3><p><a href="https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/">买卖股票的最佳时机 IV</a>：给定price[i]共可交易k次，求最大利润</p>
 <ol>
@@ -2413,406 +2675,11 @@ dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
     return f(0, 0, true, false);
 &#125;
 </code></pre>
-<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p><a href="https://leetcode.cn/problems/sort-list/description/">排序链表</a>：找链表中位数 + 合并链表</p>
-<pre><code class="cpp">ListNode *midLeft(ListNode* p)&#123;
-    ListNode *f = p, *s = p;
-    while(f-&gt;next &amp;&amp; f-&gt;next-&gt;next)&#123;
-        s = s-&gt;next;
-        f = f-&gt;next-&gt;next;
-    &#125;
-    return s;
-&#125;
-ListNode *reverse(ListNode* p)&#123;
-    ListNode *dummy=new ListNode(),*q;
-    while(p)&#123;
-        q=p-&gt;next;
-        p-&gt;next=dummy-&gt;next;
-        dummy-&gt;next=p;
-        p=q;
-    &#125;
-    return dummy-&gt;next;
-&#125;
-</code></pre>
-<h2 id="树"><a href="#树" class="headerlink" title="树"></a>树</h2><p><strong>ACM模式树插入</strong></p>
-<pre><code class="cpp">TreeNode *buildTree(vector&lt;int&gt;&amp; vec) &#123;
-  vector&lt;TreeNode*&gt; tree(vec.size(), nullptr);
-  for (int i = 0; i &lt; vec.size(); ++i) &#123;
-    if (vec[i] != -1) tree[i] = new TreeNode(vec[i]);
-  &#125;
-  for (int i = 0; i &lt; vec.size() / 2; ++i) &#123;
-    if (vec[i] != -1) &#123;
-      tree[i]-&gt;left = tree[i * 2 + 1];
-      tree[i]-&gt;right = tree[i * 2 + 2];
-    &#125;
-  &#125;
-  return tree[0];
-&#125;
-int main()&#123;
-    vector&lt;int&gt; v = &#123;4,1,6,0,2,5,7,-1,-1,-1,3,-1,-1&#125;;
-    TreeNode* root = Build(v);
-&#125;
-</code></pre>
-<p><strong>迭代前&#x2F;中序遍历</strong></p>
-<pre><code class="c++">stack&lt;TreeNode*&gt; st;
-TreeNode* p = root;
-while (p || !st.empty()) &#123;
-    while (p) &#123;
-        st.push(p);
-        p = p-&gt;left;
-    &#125;
-    p = st.top(); st.pop();
-    p = p-&gt;right;
-&#125;
-</code></pre>
-<p><strong>迭代前&#x2F;后序遍历</strong></p>
-<pre><code class="cpp">stack&lt;TreeNode*&gt; st;
-if (!root) return;
-st.push(root);
-while (!st.empty()) &#123;
-  TreeNode *t = st.top();
-  st.pop();
-  if (t-&gt;right) st.push(t-&gt;right); //前序先入右子节点
-  if (t-&gt;left) st.push(t-&gt;left);
-&#125;
-</code></pre>
-<h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><pre><code class="c++">// DFS
-void dfs(type i)&#123;
-    if(NULL) return;
-    dfs(i-&gt;next);
-&#125;
-// BFS
-queue&lt;int&gt; q;
-q.push(x);
-while(!q.empty())&#123;
-    int k=q.size();
-    while(k--)&#123;
-        int cur = q.front(); q.pop();
-        for(auto x:CHILD(cur))&#123;
-            q.push(x);
-        &#125;
-    &#125;
-&#125;
-</code></pre>
-<h3 id="记忆化搜索"><a href="#记忆化搜索" class="headerlink" title="记忆化搜索"></a>记忆化搜索</h3><blockquote>
-<p><strong>递归：自上而下调用，子问题自下而上被解决，需记忆化防止子问题重复求解</strong></p>
-<p><strong>DP：从base case出发，通过在DP数组记录中间结果，自下而上地顺序地解决子问题</strong></p>
-</blockquote>
-<p><a href="https://leetcode.cn/problems/fpTFWP/">最长递增路径</a>：求矩阵中最长递增路径长度（上下左右移动）</p>
-<pre><code class="cpp">int m, n, ans;
-vector&lt;int&gt; d&#123;-1, 0, 1, 0, -1&#125;;
-vector&lt;vector&lt;int&gt;&gt; dp;
-int longestIncreasingPath(vector&lt;vector&lt;int&gt;&gt;&amp; matrix) &#123;
-  m = matrix.size(), n = matrix[0].size();
-  dp.assign(m, vector&lt;int&gt;(n, -1));  // cache, 仅增加了注释的三行代码
-  for (int i = 0; i &lt; m; ++i) &#123;
-    for (int j = 0; j &lt; n; ++j) &#123;
-      ans = max(ans, fun(matrix, i, j, INT_MAX + 1l));
-    &#125;
-  &#125;
-  return ans;
-&#125;
-int fun(vector&lt;vector&lt;int&gt;&gt;&amp; matrix, int i, int j, long value) &#123;
-  if (i &lt; 0 || j &lt; 0 || i == m || j == n || (long)matrix[i][j] &gt;= value) &#123;
-    return 0;
-  &#125;
-  if (dp[i][j] != -1) return dp[i][j];  // load
-  int len = 0;
-  for (int k = 0; k &lt; 4; ++k) &#123;
-    len = max(len, fun(matrix, i + d[k], j + d[k + 1], matrix[i][j]));
-  &#125;
-  dp[i][j] = len + 1;  // save
-  return len + 1;
-&#125;
-</code></pre>
-<h3 id="状态转换"><a href="#状态转换" class="headerlink" title="状态转换"></a>状态转换</h3><blockquote>
-<p>关键在于“建图”，过程灵活，只需能完成遍历即可</p>
-<p>相关题目：<a href="https://leetcode.cn/problems/zlDJc7/">剑指 Offer II 109. 开密码锁</a>，<a href="https://leetcode.cn/problems/vlzXQL/">剑指 Offer II 111. 计算除法</a></p>
-</blockquote>
-<p><a href="https://leetcode.cn/problems/word-ladder/"> 单词接龙</a>：求字符串 <code>start</code> 转换至 <code>end</code> 最小步数，每次转换仅改变一个字符，且改变后字符串在所给 <code>dic</code> 中</p>
-<p>题解：</p>
-<ol>
-<li><p>字符串之间的转换关系可抽象为无向图</p>
-<p>遍历找相邻结点时，依次查找改变字符后的新字符串是否在 <code>dic</code> 内</p>
-</li>
-<li><p>无向图中顶点间的最短路径的长度通过BFS得到</p>
-<p>为防止回路，将访问过的结点记录下来</p>
-</li>
-</ol>
-<pre class="mermaid">flowchart LR
-  classDef red stroke:#f00
-  classDef green stroke:#0f0
-
-  hit:::red
-  hit((hit))---hot
-  hot((hot))---dot((dot))
-  hot---lot((lot))
-  dot---dog((dog))
-  lot---log((log))
-  dog---cog:::green
-  log---cog((cog))
-  dot---lot
-  dog---log</pre>
-
-<pre><code class="cpp">queue&lt;string&gt; q;
-int ladderLength(string beginWord, string endWord, vector&lt;string&gt;&amp; wordList) &#123;
-  unordered_set&lt;string&gt; dic(wordList.begin(), wordList.end());
-  if(!dic.count(endWord)) return 0;
-  int step = 1;
-  q.push(beginWord);
-  dic.erase(beginWord);//访问后直接删除，防止回路
-  while(!q.empty())&#123;
-    int k = q.size();
-    while(k--)&#123;
-      string s=q.front(); q.pop();
-      //判断更改一个字符后是否满足结果
-      if(check(s,endWord,dic))&#123;
-          return step + 1;
-      &#125;
-    &#125;
-    step++;
-  &#125;
-  return 0;
-&#125;
-bool check(string cur,string target,unordered_set&lt;string&gt;&amp; dic)&#123;
-  for(int i = 0; i &lt; cur.size(); ++i)&#123;
-    char tmp = cur[i];
-    for(char c = &#39;a&#39;; c&lt;= &#39;z&#39;; c++)&#123;
-      if(tmp == c) continue;
-      cur[i] = c;
-      if(dic.count(cur))&#123;
-        if(cur == target) return true;
-        else&#123;
-          q.push(cur);
-          dic.erase(cur);//访问后直接删除，防止回路
-        &#125;
-      &#125;
-    &#125;
-    cur[i]=tmp;
-  &#125;
-  return false;
-&#125;
-</code></pre>
-<p><a href="https://leetcode.cn/problems/water-and-jug-problem/">水壶问题</a>：两水壶容量<code>x</code>,<code>y</code>，能否经操作使得盛水之和为<code>z</code>：①装满一水壶 ②清空一水壶 ③相互倒水至满或空</p>
-<p>题解：记当前盛水量为<strong>状态(a,b)</strong></p>
-<ul>
-<li><p>每次操作有6种状态转换：</p>
-<p>①a倒满至<code>(x,b)</code> ②b倒满至<code>(a,y)</code> ③a清空至<code>(0,b)</code> ④b清空至<code>(a,0)</code> </p>
-<p>⑤a往b倒水至<code>(a-move,b+move)</code> ⑥反之<code>(a+move,b-move)</code></p>
-</li>
-<li><p>BFS进行搜索，set记录已访问过状态（将pair转换成int64_t存储）</p>
-</li>
-</ul>
-<pre><code class="cpp">  inline int64_t hash(int a, int b) &#123;
-    return (int64_t)a &lt;&lt; 32 | b;
-  &#125;
-  pair&lt;int, int&gt; op(int i, int a, int b, int x, int y) &#123;
-    switch (i) &#123;
-      case 0: return make_pair(0, b);
-      case 1: return make_pair(a, 0);
-      case 2: return make_pair(x, b);
-      case 3: return make_pair(a, y);
-      case 4: &#123;
-        int move = min(a, y - b);
-        return make_pair(a - move, b + move);
-      &#125;
-      case 5: &#123;
-        int move = min(b, y - a);
-        return make_pair(a + move, b - move);
-      &#125;
-    &#125;
-    return make_pair(0, 0);
-  &#125;
-  bool canMeasureWater(int x, int y, int target) &#123;
-    queue&lt;pair&lt;int, int&gt;&gt; q;
-    unordered_set&lt;int64_t&gt; vis;
-    q.emplace(0, 0);
-    while (!q.empty()) &#123;
-      int size = q.size();
-      while (size--) &#123;
-        auto [a, b] = q.front(); q.pop();
-        for (int i = 0; i &lt; 6; ++i) &#123;
-          auto [new_a, new_b] = op(i, a, b, x, y);
-          if (new_a + new_b == target) return true;
-          if (!vis.count(hash(new_a, new_b))) &#123;
-            vis.insert(hash(new_a, new_b));
-            q.emplace(new_a, new_b);
-          &#125;
-        &#125;
-      &#125;
-    &#125;
-    return false;
-  &#125;
-</code></pre>
-<h3 id="DFS-BFS"><a href="#DFS-BFS" class="headerlink" title="DFS+BFS"></a>DFS+BFS</h3><p><a href="https://leetcode.cn/problems/shortest-bridge/">最短的桥</a>：二维数组A中0代表海，1代表岛（四个方向相连），求至少将几个 0 变为 1能把两岛连起来</p>
-<p>题解：</p>
-<ol>
-<li>找到任意一个岛</li>
-<li>通过dfs将整个岛1标记为2，并把边缘点0入队列</li>
-<li>从边缘点0作bfs扩散，访问过的记录为2，碰到另一个岛1时的层数为所得</li>
-</ol>
-<pre><code class="c++">class Solution &#123;
-public:
-  int n;
-  vector&lt;int&gt; d&#123;-1, 0, 1, 0, -1&#125;;
-  queue&lt;pair&lt;int, int&gt;&gt; q;
-  void dfs(vector&lt;vector&lt;int&gt;&gt;&amp; grid, int i, int j) &#123;
-    if (i &lt; 0 || j &lt; 0 || i == n || j == n || grid[i][j] == 2) return;
-    if (grid[i][j] == 0) &#123;
-      q.emplace(i, j);
-      return;
-    &#125;
-    grid[i][j] = 2;
-    for (int k = 0; k &lt; 4; ++k) &#123;
-      dfs(grid, i + d[k], j + d[k + 1]);
-    &#125;
-  &#125;
-  int shortestBridge(vector&lt;vector&lt;int&gt;&gt;&amp; grid) &#123;
-    n = grid.size();
-    for (int i = 0, stop = 0; i &lt; n &amp;&amp; !stop; ++i) &#123;
-      for (int j = 0; j &lt; n &amp;&amp; !stop; ++j) &#123;
-        if (grid[i][j] == 1) &#123;
-          dfs(grid, i, j);
-          stop = 1;
-        &#125;
-      &#125;
-    &#125;
-    int ans = 0;
-    while (!q.empty()) &#123;
-      ans++;
-      int size = q.size();
-      while (size--) &#123;
-        auto [i, j] = q.front(); q.pop();
-        for (int k = 0; k &lt; 4; ++k) &#123;
-          int r = i + d[k], c = j + d[k + 1];
-          if (r &lt; 0 || c &lt; 0 || r == n || c == n) continue;
-          if (grid[r][c] == 1) return ans;
-          if (grid[r][c] == 0) &#123;
-            q.emplace(r, c);
-            grid[r][c] = 2;
-          &#125;
-        &#125;
-      &#125;
-    &#125;
-    return -1;
-  &#125;
-&#125;;
-</code></pre>
-<h3 id="由外到内"><a href="#由外到内" class="headerlink" title="由外到内"></a>由外到内</h3><p><a href="https://leetcode.cn/problems/surrounded-regions/">被围绕的区域</a>：矩阵包含 <code>X</code> 和 <code>O</code> ，找到所有被 <code>X</code> 围绕(四个方向)的区域，并将这些区域里所有的 <code>O</code> 用 <code>X</code> 填充。</p>
-<p>题解： 找到未被包围区域不填充即可，且注意到未包围区域一定挨着边界，故从四个边界开始dfs找到<code>O</code>区域即可</p>
-<h2 id="回溯"><a href="#回溯" class="headerlink" title="回溯"></a>回溯</h2><blockquote>
-<p>两个诀窍，一是按值传状态，二是所有的状态修改在递归完成后回改。<br>两种情况，一种是修改最后一位输出，如排列组合；一种是修改访问标记，如矩阵里搜字符串</p>
-</blockquote>
-<h3 id="一维"><a href="#一维" class="headerlink" title="一维"></a>一维</h3><p><a href="https://leetcode.cn/problems/permutations-ii/">全排列 II</a>：序列包含重复数字，按任意顺序返回所有不重复的全排列。</p>
-<pre><code class="c++">vector&lt;int&gt; vis, tmp;
-vector&lt;vector&lt;int&gt;&gt; ans;
-vector&lt;vector&lt;int&gt;&gt; permuteUnique(vector&lt;int&gt;&amp; nums) &#123;
-  vis.assign(nums.size(), 0);
-  sort(nums.begin(), nums.end());
-  fun(nums);
-  return ans;
-&#125;
-void fun(vector&lt;int&gt;&amp; nums) &#123;
-  if (tmp.size() == nums.size()) &#123;
-    ans.push_back(tmp);
-    return;
-  &#125;
-  for (int i = 0; i &lt; nums.size(); ++i) &#123;
-    if (vis[i] || i &amp;&amp; nums[i] == nums[i - 1] &amp;&amp; vis[i - 1]) &#123;
-      continue;
-    &#125;
-    tmp.push_back(nums[i]);
-    vis[i] = 1;
-    fun(nums);
-    vis[i] = 0;
-    tmp.pop_back();
-  &#125;
-&#125;
-</code></pre>
-<p><a href="https://leetcode.cn/problems/n-queens/">N 皇后</a>：如何将 <code>n</code> 个皇后放置在 <code>n×n</code> 的棋盘上，使得横竖斜直线上均仅一个皇后</p>
-<p>题解：实质从0到n-1行依次选择一个位置（<strong>一维搜索</strong>），选择前修改矩阵，退出dfs后恢复修改。另需设置set集合记录哪些行列已存在皇后。</p>
-<pre><code class="c++">vector&lt;string&gt; cur;
-vector&lt;vector&lt;string&gt;&gt; ans;
-set&lt;int&gt; row, bias1, bias2;
-
-void dfs(int i, int n)&#123;
-  if(i &gt;= n)&#123;
-    ans.push_back(cur);
-    return;
-  &#125;
-  for(int j = 0; j &lt; n; ++j)&#123;
-    if(!row.count(j) &amp;&amp; !bias1.count(j - i) &amp;&amp; !bias2.count(j + i))&#123;
-      cur[i][j] = &#39;Q&#39;; row.insert(j); bias1.insert(j - i); bias2.insert(j + i);
-      dfs(i + 1, n);
-      cur[i][j] = &#39;.&#39;; row.erase(j); bias1.erase(j - i); bias2.erase(j + i);
-    &#125;
-  &#125;
-&#125;
-vector&lt;vector&lt;string&gt;&gt; solveNQueens(int n) &#123;
-    cur = vector&lt;string&gt;(n, string(n, &#39;.&#39;));
-    dfs(0, n);
-    return ans;
-&#125;
-</code></pre>
-<h3 id="二维"><a href="#二维" class="headerlink" title="二维"></a>二维</h3><p><a href="https://leetcode.cn/problems/sudoku-solver/">解数独</a>：数字 <code>1-9</code> 在每行、每列、每个粗实线分隔的 <code>3x3</code> 宫内只能出现一次，矩阵由数字和空白 <code>&#39;.&#39;</code> 表示</p>
-<pre><code class="c++">bool check(vector&lt;vector&lt;char&gt;&gt;&amp; a, int i, int j, char x)&#123;
-  for(int k = 0; k &lt; 9; ++k)&#123;
-    if(a[i][k] == x) return false;
-    if(a[k][j] == x) return false;
-    if(a[i / 3 * 3 + k / 3][j / 3 * 3 + k % 3] == x) &#123;
-      return false;
-    &#125;
-  &#125;
-  return true;
-&#125;
-int dfs(vector&lt;vector&lt;char&gt;&gt;&amp; a,int i,int j)&#123;
-  if(j == 9) j = 0, i++;
-  if(i == 9) return true;
-  if(a[i][j] != &#39;.&#39;) return dfs(a, i, j + 1);
-  
-  for(char x = &#39;1&#39;; x &lt;= &#39;9&#39;; ++x)&#123;
-    if(check(a, i, j, x))&#123;
-      a[i][j] = x;
-      if(dfs(a, i, j + 1)) return true;
-      a[i][j] = &#39;.&#39;;
-    &#125;
-  &#125;
-  return false;
-&#125;
-void solveSudoku(vector&lt;vector&lt;char&gt;&gt;&amp; a) &#123;
-  dfs(a, 0, 0);
-&#125;
-</code></pre>
-<h2 id="双指针"><a href="#双指针" class="headerlink" title="双指针"></a>双指针</h2><h3 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h3><p><a href="https://leetcode.cn/problems/linked-list-cycle-ii/">环形链表 II</a>：输入一个链表，输出环的入节点，否则返回空指针</p>
-<p>题解：实质为链表找环路问题——<strong>Floyed判圈法</strong>。从head开始，指针fast和slow每次前进2、1步，若无环则能走到尽头，否则两者会相遇。第一次相遇时，令fast&#x3D;head，此后fast和slow每次均前进一步，第二次相遇时节点即为入环节点。</p>
-<pre><code class="c++">ListNode *detectCycle(ListNode* head)&#123;
-    ListNode *slow=head,*head=head;
-    do&#123;
-        if(!fast || !fast-&gt;next) return nullptr;
-        fast = fast-&gt;next-&gt;next;
-        slow = slow-&gt;next;
-    &#125;while(fast != slow);
-    fast = head;
-    while(fast != slow)&#123;
-        slow = slow-&gt;next;
-        fast = fast-&gt;next;
-    &#125;
-    return fast;
-&#125;
-</code></pre>
-<p><a href="https://leetcode.cn/problems/happy-number/">快乐数</a>：判断正整数 n 是不是快乐数，其定义为：</p>
-<ul>
-<li>每次将该数替换为其各位数字的平方和</li>
-<li>无限循环这个过程，若最终变为 1 就是快乐数，否则不是</li>
-</ul>
-<p>题解：<code>N1-&gt;N2-&gt;...-&gt;Ni</code>的过程可以看作链表，且一定有环，分为两种情况</p>
-<ol>
-<li><code>a-&gt;b-&gt;c-&gt;b-&gt;c...</code>不合法</li>
-<li><code>a-&gt;b-&gt;c-&gt;1-&gt;1...</code>合法，即<strong>快慢指针的值相等时为1</strong></li>
-</ol>
+<hr>
 <h2 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h2><blockquote>
 <p>参考链接: <a href="https://leetcode.cn/circle/article/xYBtLt/">二分法题单</a></p>
 </blockquote>
-<h3 id="lower-bound实现"><a href="#lower-bound实现" class="headerlink" title="lower_bound实现"></a>lower_bound实现</h3><pre><code class="cpp">// 返回首个≥target的元素下标
+<h3 id="Lower-bound"><a href="#Lower-bound" class="headerlink" title="Lower_bound"></a>Lower_bound</h3><pre><code class="cpp">// 返回首个≥target的元素下标
 int Bsearch(vector&lt;int&gt;&amp; nums,int target)&#123;
     int l = 0,r = nums.size() - 1;
     while(l &lt; r)&#123;
@@ -2882,7 +2749,71 @@ while(l &lt;= r)&#123;
   return num[l];
 &#125;
 </code></pre>
-<h2 id="数学问题"><a href="#数学问题" class="headerlink" title="数学问题"></a>数学问题</h2><h3 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h3><pre><code class="cpp">double quickMul(double x, int N)&#123;
+<h2 id="数学问题"><a href="#数学问题" class="headerlink" title="数学问题"></a>数学问题</h2><h3 id="FindK"><a href="#FindK" class="headerlink" title="FindK"></a>FindK</h3><p>找第K小的元素</p>
+<pre><code class="cpp">int key;
+void Qsort(vector&lt;int&gt;&amp; a, int l ,int r)&#123;
+  while(l &lt;= r)&#123;
+    int pivot = Part(a, l, r);
+    if (pivot == key) do();
+    else if (pivot &gt; key) r = pivot - 1;
+    else l = pivot + 1;
+  &#125;
+&#125;
+int Part(vector&lt;int&gt;&amp; a, int l, int r)&#123;
+  int pivot = a[l];
+  while(l &lt; r ) &#123;
+    while(l &lt; r &amp;&amp; a[r] &gt;= pivot) r--;
+    a[l] = a[r];
+    while(l &lt; r &amp;&amp; a[l] &lt;= pivot) l++;
+    a[r] = a[l];
+  &#125;
+  a[l] = pivot;
+  return l;
+&#125;
+</code></pre>
+<p>找两个有序数组中第K大</p>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">int findK(vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; b, int k){  int m = a.size(), n = b.size();  int i = 0, j = 0;  while(true) {    if(i == m) return b[j + k - 1];    if(j == n) return a[i + k - 1];    if(k == 1) return min(a[i], b[j]);    int ir = min(m - 1, i + k / 2 - 1);    int jr = min(n - 1, j + k / 2 - 1);    if (a[ir] &lt;= b[jr]) {      k -= ir + 1 - i;      i = ir + 1;    } else {      k -= jr + 1 - j;      j = jr + 1;    }  }}</code></pre>
+              </div>
+            </details>
+
+<p>找[1,n]中字典序第K大</p>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <pre><code class="cpp">ll get_count(ll prefix,ll n){    ll cnt=0;    for(ll a=prefix,b=prefix+1;a&lt;=n;a*=10,b*=10){        cnt += min(n+1,b)-a;    }    return cnt;}int findKthNumber(int n, int k) {    int prefix=1, p=1; //当前字典序第p个    while(p&lt;k){        ll cnt=get_count(prefix,n);        if(p+cnt&gt;k){            prefix*=10; //字典序相邻下一个            p++;        }else{            prefix++;  //跳过prefix开头的cnt个            p+=cnt;        }    }    return prefix;}</code></pre>
+              </div>
+            </details>
+
+
+<h3 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h3><p><a href="https://leetcode.cn/problems/linked-list-cycle-ii/">环形链表 II</a>：输入一个链表，输出环的入节点，否则返回空指针</p>
+<p>题解：实质为链表找环路问题——<strong>Floyed判圈法</strong>。从head开始，指针fast和slow每次前进2、1步，若无环则能走到尽头，否则两者会相遇。第一次相遇时，令fast&#x3D;head，此后fast和slow每次均前进一步，第二次相遇时节点即为入环节点。</p>
+<pre><code class="c++">ListNode *detectCycle(ListNode* head)&#123;
+    ListNode *slow=head,*head=head;
+    do&#123;
+        if(!fast || !fast-&gt;next) return nullptr;
+        fast = fast-&gt;next-&gt;next;
+        slow = slow-&gt;next;
+    &#125;while(fast != slow);
+    fast = head;
+    while(fast != slow)&#123;
+        slow = slow-&gt;next;
+        fast = fast-&gt;next;
+    &#125;
+    return fast;
+&#125;
+</code></pre>
+<p><a href="https://leetcode.cn/problems/happy-number/">快乐数</a>：判断正整数 n 是不是快乐数，其定义为：</p>
+<ul>
+<li>每次将该数替换为其各位数字的平方和</li>
+<li>无限循环这个过程，若最终变为 1 就是快乐数，否则不是</li>
+</ul>
+<p>题解：<code>N1-&gt;N2-&gt;...-&gt;Ni</code>的过程可以看作链表，且一定有环，分为两种情况</p>
+<ol>
+<li><code>a-&gt;b-&gt;c-&gt;b-&gt;c...</code>不合法</li>
+<li><code>a-&gt;b-&gt;c-&gt;1-&gt;1...</code>合法，即<strong>快慢指针的值相等时为1</strong></li>
+</ol>
+<h3 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h3><pre><code class="cpp">double quickMul(double x, int N)&#123;
   double ans = 1.0;
   while(N) &#123;
     if(N &amp; 1) ans *= x;
@@ -2894,11 +2825,11 @@ while(l &lt;= r)&#123;
 </code></pre>
 <h3 id="因数-倍数-质数"><a href="#因数-倍数-质数" class="headerlink" title="因数&#x2F;倍数&#x2F;质数"></a>因数&#x2F;倍数&#x2F;质数</h3><pre><code class="c++">// 最大公因数
 int gcd(int a, int b) &#123;
-    return b == 0 ? a : gcd(b, a % b);
+  return b == 0 ? a : gcd(b, a % b);
 &#125;
 // 最小公倍数
 int lcm(int a, int b) &#123;
-    return a * b / gcd(a, b);
+  return a * b / gcd(a, b);
 &#125;
 // 质数（小于n）
 vector&lt;int&gt; Primes(int n) &#123;
@@ -2913,12 +2844,14 @@ vector&lt;int&gt; Primes(int n) &#123;
   return prime;
 &#125;
 </code></pre>
-<h3 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h3><h4 id="与-处理某位"><a href="#与-处理某位" class="headerlink" title="与 (处理某位)"></a>与 (处理某位)</h4><ul>
+<h3 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h3><p><strong>与 (处理某位)</strong></p>
+<ul>
 <li>取低位第k位：<code>1&amp;(num&gt;&gt;k)</code></li>
 <li>将最低位的1变为0：<code>n&amp;(n-1)</code>，如110100-&gt;110000</li>
 <li>保留最低位1其他清0：<code>n&amp;(-n)</code>，如110100-&gt;000100</li>
 </ul>
-<h4 id="异或-找缺失数、出现一次数"><a href="#异或-找缺失数、出现一次数" class="headerlink" title="异或 (找缺失数、出现一次数)"></a>异或 (找缺失数、出现一次数)</h4><ul>
+<p><strong>异或 (找缺失数、出现一次数)</strong></p>
+<ul>
 <li>第k位取反：<code>num^(1&lt;&lt;k)</code></li>
 </ul>
 <table>
@@ -2939,14 +2872,10 @@ vector&lt;int&gt; Primes(int n) &#123;
 </blockquote>
 <p>假设当前遍历到的元素为 <code>x</code> ：</p>
 <ul>
-<li><p>如果 <code>x</code> 本身是候选者，票数加一</p>
-</li>
-<li><p>如果 <code>x</code> 不是候选者，检查是否有候选者票数为 <code>0</code></p>
-<ul>
-<li><p>若有，则让 <code>x</code> 代替其成为候选者，记录票数为 <code>1</code></p>
-</li>
-<li><p>若无，则让所有候选者票数减一</p>
-</li>
+<li>如果 <code>x</code> 本身是候选者，票数加一</li>
+<li>如果 <code>x</code> 不是候选者，检查是否有候选者票数为 <code>0</code><ul>
+<li>若有，则让 <code>x</code> 代替其成为候选者，记录票数为 <code>1</code></li>
+<li>若无，则让所有候选者票数减一</li>
 </ul>
 </li>
 </ul>
@@ -2988,145 +2917,20 @@ vector&lt;int&gt; Primes(int n) &#123;
     return ans;
 &#125;
 </code></pre>
-<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="字符串加法"><a href="#字符串加法" class="headerlink" title="字符串加法"></a>字符串加法</h3><pre><code class="cpp">string addStr(string num1, string num2) &#123;
-  string ans;
-  int add = 0,i = num1.size() - 1, j = num2.size() - 1;
-  while(add || i &gt;= 0 || j &gt;= 0)&#123;
-    int x= i &gt;= 0? num1[i] - &#39;0&#39;: 0;
-    int y= j &gt;= 0? num2[j] - &#39;0&#39;: 0;
-    int result = x + y + add;
-    ans += char(&#39;0&#39; + result % 10);
-    add = result / 10;
-    i--; j--;
-  &#125;
-  reverse(ans.begin(), ans.end());
-  return ans;
-&#125;
+<h3 id="随机化"><a href="#随机化" class="headerlink" title="随机化"></a>随机化</h3><p>1.随机数生成</p>
+<pre><code class="cpp">random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution&lt;&gt; dis(1, 10);
+cout &lt;&lt; dis(gen) &lt;&lt; endl;
 </code></pre>
-<h3 id="字符串乘法"><a href="#字符串乘法" class="headerlink" title="字符串乘法"></a>字符串乘法</h3><pre><code class="cpp">string ans;
-string multiply(string num1, string num2) &#123;
-  if (num1 == &quot;0&quot; || num2 == &quot;0&quot;) return &quot;0&quot;;
-  int m = num1.size(), n = num2.size();
-  for(int i = n - 1; i &gt;= 0; i--)&#123;
-    string tmp;
-    int add = 0, y = num2[i] - &#39;0&#39;;
-    for(int k = n - 1; k &gt; i; --k) tmp += &#39;0&#39;;
-    for(int j = m - 1; j &gt;= 0 || add; --j)&#123;
-      int x = j &lt; 0 ? 0 : num1[j] - &#39;0&#39;;
-      int multi = x * y + add;
-      tmp += char(&#39;0&#39; + multi % 10);
-      add = multi / 10;
-    &#125;
-    reverse(tmp.begin(), tmp.end());
-    ans = addStr(tmp, ans);
-  &#125;
-  return ans;
-&#125;
-</code></pre>
-<h3 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h3><pre><code class="cpp">vector&lt;string&gt; ret;
-void split(string s, char del)&#123;
-  stringstream ss(s);
-  string tmp;
-  while(getline(ss, tmp, del))&#123;
-    if(tmp.size()) ret.push_back(tmp);
-  &#125;
-&#125;
-</code></pre>
-<h3 id="回文串"><a href="#回文串" class="headerlink" title="回文串"></a>回文串</h3><p><code>dp[i][j]</code> 表示区间 <code>s[i~j]</code> 是否回文</p>
-<pre><code class="c++">vector&lt;vector&lt;int&gt;&gt; dp(n, vector&lt;int&gt;(n));
-for (int i = n - 1; i &gt;= 0; --i) &#123;
-  for (int j = i; j &lt; n; ++j) &#123;
-    if (i + 1 &gt;= j - 1) dp[i][j] = s[i] == s[j];
-    else dp[i][j] = dp[i + 1][j - 1] &amp;&amp; s[i] == s[j];
-  &#125;
-&#125;
-</code></pre>
-<h3 id="计算器"><a href="#计算器" class="headerlink" title="计算器"></a>计算器</h3><p><a href="https://leetcode.cn/problems/basic-calculator-ii/">基本计算器 II</a>  参考『宫水三叶』题解</p>
-<p>对遍历到的字符做分情况讨论：</p>
-<ul>
-<li><code>空格 </code>: 跳过</li>
-<li><code>(</code> : 直接加入 op 中，等待与之匹配的 )</li>
-<li><code>)</code> : 使用现有的 num 和 op 进行计算，直到遇到左括号为止，将结果存入 num</li>
-<li><code>数字</code> : 从当前继续往右，取出完整数字加入 num</li>
-<li><code>运算符</code> : 放入 op 中，并且在放入前应先把栈内可以算的 <strong>运算符优先级更高&#x2F;同</strong> 的都算掉，每次取 2 个 num 和 1 个 op 计算并存储，直到 <strong>没有操作</strong> 或者 <strong>遇到左括号</strong></li>
-</ul>
-<pre><code class="c++">stack&lt;char&gt; op;
-stack&lt;int&gt; num;
-unordered_map&lt;char,int&gt; level &#123;
-  &#123;&#39;+&#39;, 1&#125;, &#123;&#39;-&#39;, 1&#125;, &#123;&#39;*&#39;, 2&#125;, &#123;&#39;/&#39;, 2&#125;, &#123;&#39;^&#39;, 3&#125;
-&#125;;
-void cal()&#123;
-  long b = num.top(); num.pop();
-  long a = num.top(); num.pop();
-  char op_ =op.top(); op.pop();
-  long long res;
-  switch(op_)&#123;
-    case &#39;+&#39;: res = a + b; break;
-    case &#39;-&#39;: res = a - b; break;
-    case &#39;*&#39;: res = a * b; break;
-    case &#39;/&#39;: res = a / b; break;
-    case &#39;^&#39;: res = pow(a, b); break;
-  &#125;
-  num.push(res);
-&#125;
-int calculate(string s) &#123;
-  num.push(0); //确保2个操作数
-  int n = s.size();
-  for (int i = 0; i &lt; n; ++i) &#123;
-    if (s[i] == &#39; &#39;) continue;
-    else if (s[i] == &#39;(&#39;) &#123;
-      op.push(&#39;(&#39;);
-      if(s[i + 1] == &#39;-&#39;)&#123;
-        num.push(0); //确保2个操作数
-        op.push(&#39;-&#39;);
-        i++;
-      &#125;
-    &#125; else if(s[i] == &#39;)&#39;) &#123;
-      while (op.top() != &#39;(&#39;)
-        cal();
-      op.pop();
-    &#125; else if(isdigit(s[i])) &#123;
-      int k = i + 1;
-      while(k &lt; n &amp;&amp; isdigit(s[k])) k++;
-      num.push(stoi(s.substr(i, k - i)));
-      i = k - 1;
-    &#125; else &#123;
-      while(!op.empty() &amp;&amp; op.top() != &#39;(&#39; &amp;&amp; level[op.top()] &gt;= level[s[i]])
-        cal();
-      op.push(s[i]);
-    &#125;
-  &#125;
-  while(!op.empty() &amp;&amp; op.top() != &#39;(&#39;)
-    cal();
-  return num.top();
-&#125;
-</code></pre>
-<h3 id="KMP"><a href="#KMP" class="headerlink" title="KMP"></a>KMP</h3><pre><code class="c++">int strStr(string haystack, string needle) &#123;
-    int k=-1,n=haystack.length(),p=needle.length();
-    if(!p) return 0;
-    vector&lt;int&gt; next(p,-1);
-    calNext(needle,next);
-    for(int i=0;i&lt;n;++i)&#123;
-        while(k&gt;-1 &amp;&amp; needle[k+1]!=haystack[i])
-            k=next[k];
-        if(needle[k+1]==haystack[i])
-            k++;
-        if(k==p-1) 
-            return i-p+1;
-    &#125;
-    return -1;
-&#125;
-void calNext(string&amp; needle,vector&lt;int&gt;&amp; next)&#123;
-    for(int j=1,p=-1;j&lt;needle.length();++j)&#123;
-        while(p&gt;-1 &amp;&amp; needle[p+1]!=needle[j])
-            p=next[p];
-        if(needle[p+1]==needle[j])
-            p++;
-        next[j]=p;
-    &#125;
-&#125;
-</code></pre>
-<h2 id="单调栈-队列"><a href="#单调栈-队列" class="headerlink" title="单调栈&amp;队列"></a>单调栈&amp;队列</h2><blockquote>
+<p>2.已知小范围随机数，得到一个<strong>大范围</strong>随机数</p>
+<p>对于 <code>randN = [1,n]</code>，通过<code>(randN-1) * N + randN</code> 得到 <code>[1,n*n]</code> 范围的等概率随机数</p>
+<p>3.已知小范围随机数，得到一个<strong>确定范围</strong>的随机数</p>
+<p>先采用 1 得到更大范围的随机数 randK，然后对超过确定范围数进行拒绝</p>
+<p>4.已知大范围随机数，得到一个<strong>小范围</strong>随机数</p>
+<p>如果 <strong>N 是 K 的整数倍</strong>，可以通过 randN 一步得到 randK：<code>randK = (randN % K) + 1</code>;</p>
+<hr>
+<h2 id="单调栈"><a href="#单调栈" class="headerlink" title="单调栈"></a>单调栈</h2><blockquote>
 <p>寻找下一个最&#x2F;更大值</p>
 </blockquote>
 <p><a href="https://leetcode.cn/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a>: 给定 n 个柱子的高度（宽度为 1），求能勾勒矩形的最大面积</p>
@@ -3156,29 +2960,6 @@ void calNext(string&amp; needle,vector&lt;int&gt;&amp; next)&#123;
 <li>因此用一个单调递减队列（deque）维护窗口内有意义的元素，直接 <code>deque.front()</code> 获得最大值</li>
 <li>用 <code>l, i</code> 维护窗口左右边界，从队列中 pop 的条件是窗口大小固定为 k，即 <code>i - l == k</code></li>
 </ol>
-<h2 id="前缀和-哈希"><a href="#前缀和-哈希" class="headerlink" title="前缀和+哈希"></a>前缀和+哈希</h2><p><a href="https://leetcode.cn/problems/A1NYOS/">剑指 Offer II 011. 0 和 1 个数相同的子数组</a>：找到含有相同数量的 <code>0</code> 和 <code>1</code> 的最长连续子数组长度</p>
-<p>题解：将数组中的 <code>0</code> 视作 <code>−1</code>，则原问题转换成「求最长的连续子数组，其元素和为 0」</p>
-<ul>
-<li><strong>前缀和</strong>：求任意区间元素和，前缀和 <code>s[i]=s[j]</code> 时，区间<code>[i,j]</code>元素和为0</li>
-<li><strong>哈希表</strong>：保存前缀和每个值首次出现的下标，可直接查找左区间</li>
-</ul>
-<pre><code class="c++">int findMaxLength(vector&lt;int&gt;&amp; nums) &#123;
-    int n=nums.size(),ans=0,sum=0;
-    unordered_map&lt;int, int&gt; mp;
-    mp[sum] = -1;
-    for (int i = 0; i &lt; n; i++) &#123;
-        if (nums[i] == 1) sum++;
-        else sum--;
-        if (mp.count(sum)) &#123;
-            int prevIndex = mp[sum];
-            ans = max(ans, i-prevIndex);
-        &#125; else &#123;
-            mp[sum] = i;
-        &#125;
-    &#125;
-    return ans;
-&#125;
-</code></pre>
 <h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><a href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
 <p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
 <pre><code class="cpp">string minWindow(string s, string t) &#123;
@@ -3367,27 +3148,6 @@ public:
   return answer;
 &#125;
 </code></pre>
-<h2 id="原地哈希"><a href="#原地哈希" class="headerlink" title="原地哈希"></a>原地哈希</h2><blockquote>
-<p>限制不使用额外空间，哈希函数为：<code>f(nums[i]) = nums[i] - 1</code></p>
-</blockquote>
-<p>原地哈希就相当于，让每个数字 n 都回到下标为 n-1 的家里（或者下标为 n 的家里）</p>
-<p>而那些没有回到家里的就成了孤魂野鬼流浪在外，他们要么是根本就没有自己的家（<code>n&lt;=0</code> || <code>n&gt;=nums.size()</code>），要么是自己的家被别人占领了（出现了重复）。这些流浪汉被临时安置在下标为 i 的空房子里，之所以有空房子是因为房子 i 的主人 i+1 失踪了（数字 i+1 缺失）</p>
-<p>因此通过原地构建哈希让各个数字回家，我们就可以找到原始数组中<strong>重复的数字</strong>还有<strong>消失的数字</strong></p>
-<blockquote>
-<p><a href="https://leetcode.cn/problems/first-missing-positive/solution/tong-pai-xu-python-dai-ma-by-liweiwei1419/">几道例题</a></p>
-</blockquote>
-<h2 id="随机化"><a href="#随机化" class="headerlink" title="随机化"></a>随机化</h2><p>1.随机数生成</p>
-<pre><code class="cpp">random_device rd;
-mt19937 gen(rd());
-uniform_int_distribution&lt;&gt; dis(1, 10);
-cout &lt;&lt; dis(gen) &lt;&lt; endl;
-</code></pre>
-<p>2.已知小范围随机数，得到一个<strong>大范围</strong>随机数</p>
-<p>对于 <code>randN = [1,n]</code>，通过<code>(randN-1) * N + randN</code> 得到 <code>[1,n*n]</code> 范围的等概率随机数</p>
-<p>3.已知小范围随机数，得到一个<strong>确定范围</strong>的随机数</p>
-<p>先采用 1 得到更大范围的随机数 randK，然后对超过确定范围数进行拒绝</p>
-<p>4.已知大范围随机数，得到一个<strong>小范围</strong>随机数</p>
-<p>如果 <strong>N 是 K 的整数倍</strong>，可以通过 randN 一步得到 randK：<code>randK = (randN % K) + 1</code>;</p>
 <h2 id="差分数组"><a href="#差分数组" class="headerlink" title="差分数组"></a>差分数组</h2><p>原数组为a，差分数组为b</p>
 <pre><code class="cpp">b[0] = a[0]
 b[i] = a[i] - a[i - 1]

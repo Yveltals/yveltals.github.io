@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-03-24T00:39:04.000Z">
-<meta property="article:modified_time" content="2024-07-12T09:59:59.865Z">
+<meta property="article:modified_time" content="2024-07-14T10:17:24.928Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720778410037),
+    lastupdate: new Date(1720955298448),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2756,27 +2756,26 @@ int main()&#123;
     TreeNode* root = Build(v);
 &#125;
 </code></pre>
-<p><strong>迭代前&#x2F;中序遍历</strong></p>
-<pre><code class="c++">stack&lt;TreeNode*&gt; st;
-TreeNode* p = root;
-while (p || !st.empty()) &#123;
-    while (p) &#123;
-        st.push(p);
-        p = p-&gt;left;
-    &#125;
-    p = st.top(); st.pop();
-    p = p-&gt;right;
-&#125;
-</code></pre>
-<p><strong>迭代前&#x2F;后序遍历</strong></p>
-<pre><code class="cpp">stack&lt;TreeNode*&gt; st;
-if (!root) return;
-st.push(root);
+<p><strong>迭代遍历</strong></p>
+<p><code>push</code> 节点的顺序与遍历序相反：</p>
+<ul>
+<li>先序遍历：右 左 中</li>
+<li>中序遍历：右 中 左</li>
+<li>后序遍历：中 右 左</li>
+</ul>
+<pre><code class="c++">// 先序遍历
+stack&lt;TreeNode*&gt; st;
+if (root) st.push(root);
 while (!st.empty()) &#123;
-  TreeNode *t = st.top();
-  st.pop();
-  if (t-&gt;right) st.push(t-&gt;right); //前序先入右子节点
-  if (t-&gt;left) st.push(t-&gt;left);
+  TreeNode* node = st.top(); st.pop();
+  if (node) &#123;
+    if (node-&gt;right) st.push(node-&gt;right); // 添加右节点
+    if (node-&gt;left) st.push(node-&gt;left);   // 添加左节点
+    st.push(node); st.push(nullptr);       // 添加中节点，虽然访问过但没处理，空节点标记
+  &#125; else &#123;                                 // 弹出空节点
+    node = st.top(); st.pop();             // 重新取出栈中元素
+    cout &lt;&lt; node-&gt;val &lt;&lt; endl;
+  &#125;
 &#125;
 </code></pre>
 <h2 id="图论"><a href="#图论" class="headerlink" title="图论"></a>图论</h2><h3 id="DFS-BFS"><a href="#DFS-BFS" class="headerlink" title="DFS&#x2F;BFS"></a>DFS&#x2F;BFS</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/shortest-bridge/">最短的桥</a>：二维数组A中0代表海，1代表岛（四个方向相连），求至少将几个 0 变为 1能把两岛连起来</p>
@@ -3873,10 +3872,10 @@ int main(vector&lt;int&gt;&amp; nums)&#123;
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-12T17:59:59+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-14T18:17:24+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 12, 2024</p>
+    <p>更新于：Jul 14, 2024</p>
   </a>
 </div>
 

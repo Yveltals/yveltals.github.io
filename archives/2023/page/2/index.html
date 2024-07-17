@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1720238189851),
+    lastupdate: new Date(1721208797854),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2462,11 +2462,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
   
   
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
-        <img itemprop="image" class='headimg' alt="操作系统" src='/img/os.jpeg'/>
-      </a>
-    </div>
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
   
   
     
@@ -2530,11 +2528,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
   
   
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/04/05/OS/%E8%AE%A1%E7%BD%91/">
-        <img itemprop="image" class='headimg' alt="计网" src='/img/计网.jpeg'/>
-      </a>
-    </div>
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
   
   
     
@@ -2673,7 +2669,7 @@ Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不�
   
     <div class='headimg-div'>
       <a class='headimg-a' href="/2023/03/30/Database/Mysql/">
-        <img itemprop="image" class='headimg' alt="MySQL" src='/img/mysql.jpeg'/>
+        <img itemprop="image" class='headimg' alt="MySQL" src='/img/mysql.jpg'/>
       </a>
     </div>
   
@@ -2756,11 +2752,7 @@ Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不�
   <div class='md article-desc' itemprop="articleBody">
     
       
-        Tips链表或数组遍历跳过相同元素时，统一先遍历至右边界，而非下个不同值
-int l=i; //相同元素左边界while(i+1&lt;n &amp;&amp; a[i+1]==a[i])     i++; //到相同元素右边界i++;     //到不同元素
-
-FindK找两个有序数组中第K大
-int findK(vector&lt;int&gt;&amp; a,vector&lt;int...
+        数组堆排序void adjust(vector&lt;int&gt;&amp; a, int len, int i)&#123;  int l = i * 2 + 1, r = l + 1, maxId = i;  if (l &lt; len &amp;&amp; a[maxId] &lt; a[l]) maxId = l;  if (r &lt; len &amp;&amp; a[max...
       
     
   </div>
@@ -3005,7 +2997,7 @@ kafka的使用场景为什么要使用 Kafka 消息队列解耦、削峰：传�
           <li><a class="flat-box"
             title="/categories/Software/" href="/categories/Software/"
             active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(4)</div></a></li>
+            ><div class='name'>Software</div><div class='badge'>(3)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/Storage/" href="/categories/Storage/"
@@ -3045,7 +3037,7 @@ kafka的使用场景为什么要使用 Kafka 消息队列解耦、削峰：传�
 
 
     <div class='content'>
-      <a href="/tags/ASM/" style="font-size: 14px; color: #999">ASM</a> <a href="/tags/CPP/" style="font-size: 20.67px; color: #6c6c6c">CPP</a> <a href="/tags/Database/" style="font-size: 14px; color: #999">Database</a> <a href="/tags/Distribution/" style="font-size: 17.33px; color: #828282">Distribution</a> <a href="/tags/Git/" style="font-size: 14px; color: #999">Git</a> <a href="/tags/Linux/" style="font-size: 14px; color: #999">Linux</a> <a href="/tags/OS/" style="font-size: 20.67px; color: #6c6c6c">OS</a> <a href="/tags/Other/" style="font-size: 14px; color: #999">Other</a> <a href="/tags/Storage/" style="font-size: 20.67px; color: #6c6c6c">Storage</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 17.33px; color: #828282">音视频</a>
+      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Database/" style="font-size: 16.5px; color: #888">Database</a> <a href="/tags/Distribution/" style="font-size: 19px; color: #777">Distribution</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 16.5px; color: #888">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
     </div>
   </section>
 
@@ -3467,7 +3459,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/035.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/016.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/051.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3484,7 +3476,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
     if (imgs.length>1) {
       IntervalParallax = setInterval(function () {
         next_parallax();
-      }, '20000');
+      }, '30000');
     }
   }
 

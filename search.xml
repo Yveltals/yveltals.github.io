@@ -10039,7 +10039,7 @@ ffmpeg -i image-%3d.jpeg out5.mp4
       </tags>
   </entry>
   <entry>
-    <title>Leetcode</title>
+    <title>MIT 6.824</title>
     <url>/2024/07/27/Distribution/ShardKV/</url>
     <content><![CDATA[<h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将会是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>

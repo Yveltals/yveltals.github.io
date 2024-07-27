@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <!-- SEO相关 -->
   
-  <link rel="canonical" href="http://example.com/archives/2023/12/"/>
+  <link rel="canonical" href="http://example.com/2024/07/27/distribution/shardkv/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -32,16 +32,21 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>Archive: 2023/12 - Hexo</title>
+  <title>Leetcode - Hexo</title>
   <meta name="keywords" content="null">
   <meta desc name="description" content="Hexo - John Doe - Hexo">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2023/12/index.html">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="Leetcode">
+<meta property="og:url" content="http://example.com/2024/07/27/Distribution/ShardKV/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="ShardKV分布式 KV 服务将会是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。  架构图  主要流程大致的流程是客户端向后端的 servers 发起请求，后端的服务是由多个节点组成的，每个节点之间使用 raft 进行状态复制，客户端会选择将请求发送到 Le">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2024-07-27T11:30:00.000Z">
+<meta property="article:modified_time" content="2024-07-27T16:13:53.487Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Distribution">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
   <style>
@@ -2403,7 +2408,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="half" class='cover-wrapper  search' style="display: ;">
+      <div id="half" class='cover-wrapper post search' style="display: ;">
         
   <div id="parallax-window"></div>
 
@@ -2442,22 +2447,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <div class="body-wrapper">
           
 <div id="l_main" class=''>
-	
-		
-  <section class="post-list">
-    
-      
-        
-          
-        
-      
-    
-    
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/10/OS/Linux/">
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/27/Distribution/ShardKV/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2466,73 +2457,183 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <meta itemprop="description" content="">
   </span>
   
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/12/10/OS/Linux/">
-        <img itemprop="image" class='headimg' alt="Linux" src='/img/linux.jpeg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/12/10/OS/Linux/"  itemprop="url">
-        Linux
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Cgroup进程绑核
-cd /sys/fs/cgroup/cpuset
-mkdir mygroup &amp;&amp; cd mygroup
-## 避免报错 write error: No space left on device
-echo 0 &gt; cpuset.mems
-## 限制进程运行在对应的 processor
-echo &quot;0-19,40-59&quot; &gt;...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-12-10T12:59:04+08:00">2023-12-10</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/OS/">OS</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/12/10/OS/Linux/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
 
+
+  
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title" itemprop="name headline">
+        Leetcode
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
 </div>
 
-          </div>
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/Distribution/">Distribution</a>
+    
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/Distribution/" itemprop="url"><span itemprop="name">Distribution</span></a>
+      </span>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2024-07-27T19:30:00+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Jul 27, 2024</p>
+  </a>
+</div>
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将会是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h2><p>大致的流程是客户端向后端的 servers 发起请求，后端的服务是由多个节点组成的，每个节点之间使用 raft 进行状态复制，客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>客户端 Clerk 会向 KV 服务发送三种类型的请求：</p>
+<ul>
+<li>Get：通过 key 获取 value</li>
+<li>Put：设置 key&#x2F;value 对</li>
+<li>Append：将值追加到 key 对应的 value 上，如果 key 不存在，则相当于 Put</li>
+</ul>
+<p>需要注意的是 <code>Get/Put/Append</code> 方法需要保证是具有线性一致性的：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
+<p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
+<p>客户端的请求到达之后，需要首先通过 raft 模块将其存储到 raft 日志中。当 raft 集群中的 Leader 节点处理了 Start 请求之后，它会向其他的 Follower 节点发送 <code>AppendEntries</code> 消息，将日志同步到其他的 Follower 节点，当大多数的节点都正常处理之后，Leader 会收到消息，然后更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。然后 kv server 收到 apply 消息之后，将命令应用到本地的状态机中，然后返回给客户端。</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>也就是说，客户端需要一直等待 raft 模块同步完成，并且 Leader 节点将操作应用到状态机之后，才会返回结果给客户端</strong>。所以需要启动一个后台线程来执行 apply 任务，从 applyCh 中接收来自 raft 的日志消息，处理完之后，将结果存储到一个 channel 中，这时候 Get&#x2F;Put&#x2F;Append 方法就能从这个 channel 中获取到结果，并返回给客户端。</p>
+<h2 id="重复请求"><a href="#重复请求" class="headerlink" title="重复请求"></a>重复请求</h2><p>假设分布式 KV 有一个客户端，先执行了 Put(x, 1) 请求，将 x 的值设置为 1，接着又执行了 Put(x，2)，将 x 的值设置为了 2。如果 Put(x, 1) 在执行的过程中，对应的节点发生了故障，那么它会重试请求，又将 x 的设置为了 1，那么这便违背了线性一致性。</p>
+<pre><code class="Go">   Client               Client
+-------------      ---------------
+  Put(x, 1)               |
+     |                 Put(x, 2)
+     |                    |
+    失败                  成功
+     |                    |
+    重试                  
+     |
+  Put(x, 1)     
+</code></pre>
+<p>线性一致性要求每个客户端的请求应该立即被执行，并且只被执行一次，对于重试的请求，我们应该如何避免其被执行多次呢？</p>
+<p>一个直观的解决办法就是：给客户端的每个命令赋予一个唯一的标识，当命令执行完之后，将命令标识和执行的结果保存到状态机中的一个 map (<code>duplicateTable</code>)里面。每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
+<blockquote>
+<p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
+</blockquote>
+<p>需要注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-28T00:13:53+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Jul 28, 2024</p>
+  </a>
+</div>
+
         
       
-    
-  </section>
+        
+          
   
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Distribution/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Distribution</p></a></div>
+  <span hidden itemprop="keywords">Distribution</span>
+
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
     
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+      
+        <a class='next' href='/2024/07/04/CPP/Cpp/'>
+          <p class='title'>Cpp<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>Volatile,Atomic与Memory barrier
+参考链接
+
+三者的关联C++ 中的 volatile 关键字，std::atomic 变量及手动插入内存屏障指令（Memory Ba...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
   
 
 
-	
+
+
+
 </div>
 <aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
   
@@ -2541,174 +2642,48 @@ echo &quot;0-19,40-59&quot; &gt;...
     
     
       
-<section class="widget blogger desktop mobile pjax">
-  <div class='content'>
     
-      
-        <a class='avatar flat-box rectangle' href='/about/'>
-          <img no-lazy src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
-        </a>
-      
-    
-    
-      <div class='text'>
-        
-        
-        
-          <p><span id="jinrishici-sentence">Hexo</span></p>
-          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-        
-      </div>
-    
-    
-      <div class="social-wrapper">
-        
-          
-            <a href="/atom.xml"
-              class="social fa-solid fa-rss flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="mailto:me@xxx.com"
-              class="social fa-solid fa-envelope flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="https://github.com/volantis-x/"
-              class="social fab fa-github flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-          
-            <a href="/"
-              class="social fa-solid fa-headphones-alt flat-btn"
-              target="_blank"
-              rel="external nofollow noopener noreferrer">
-              
-            </a>
-          
-        
-      </div>
-    
-  </div>
-</section>
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget category desktop pjax">
-    
-  <header>
-    
-      <a href='/blog/categories/'><i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <ul class="entry navigation">
-        
-          <li><a class="flat-box"
-            title="/categories/CPP/" href="/categories/CPP/"
-            active-action="action-categoriesCPP"
-            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Database/" href="/categories/Database/"
-            active-action="action-categoriesDatabase"
-            ><div class='name'>Database</div><div class='badge'>(2)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Distribution/" href="/categories/Distribution/"
-            active-action="action-categoriesDistribution"
-            ><div class='name'>Distribution</div><div class='badge'>(3)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/OS/" href="/categories/OS/"
-            active-action="action-categoriesOS"
-            ><div class='name'>OS</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Other/" href="/categories/Other/"
-            active-action="action-categoriesOther"
-            ><div class='name'>Other</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Software/" href="/categories/Software/"
-            active-action="action-categoriesSoftware"
-            ><div class='name'>Software</div><div class='badge'>(3)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/Storage/" href="/categories/Storage/"
-            active-action="action-categoriesStorage"
-            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
-            active-action="action-categoriesE88083E7A094"
-            ><div class='name'>考研</div><div class='badge'>(5)</div></a></li>
-        
-          <li><a class="flat-box"
-            title="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/"
-            active-action="action-categoriesE99FB3E8A786E9A291"
-            ><div class='name'>音视频</div><div class='badge'>(2)</div></a></li>
-        
-      </ul>
-    </div>
-  </section>
-
-
-    
-  
-
-  
-    
-    
-      
-  
-  <section class="widget tagcloud desktop mobile pjax">
-    
-  <header>
-    
-      <a href='/blog/tags/'><i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
-    
-  </header>
-
-
-    <div class='content'>
-      <a href="/tags/ASM/" style="font-size: 14px; color: #999">ASM</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Database/" style="font-size: 14px; color: #999">Database</a> <a href="/tags/Distribution/" style="font-size: 19px; color: #777">Distribution</a> <a href="/tags/Git/" style="font-size: 14px; color: #999">Git</a> <a href="/tags/Linux/" style="font-size: 14px; color: #999">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 14px; color: #999">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 16.5px; color: #888">音视频</a>
-    </div>
-  </section>
-
-
-    
-  
-
   
 
 
 <div class="widget-sticky pjax">
 
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardKV"><span class="toc-number">1.</span> <span class="toc-text">ShardKV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">2.</span> <span class="toc-text">架构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">主要流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%A4%8D%E8%AF%B7%E6%B1%82"><span class="toc-number">4.</span> <span class="toc-text">重复请求</span></a></li></ol>
+    </div>
+  </section>
+
+  
+
 </div>
 
 
 <!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
 
   <div class="pjax">
     <!-- pjax占位 -->
@@ -2736,13 +2711,14 @@ echo &quot;0-19,40-59&quot; &gt;...
 </aside>
 
 
+
           <!--此文件用来存放一些不方便取值的变量-->
 <!--思路大概是将值藏到重加载的区域内-->
 
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=false;
+  pdata.ispage=true;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};

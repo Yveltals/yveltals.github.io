@@ -260,7 +260,7 @@ class Sneaky: public Base&#123;
 void fun(Sneaky&amp; s) &#123;s.j=0;&#125; //正确
 void fun(Base&amp; s) &#123;s.i=0;&#125; //错误,无访问权限
 </code></pre>
-<p><img src="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B"></p>
+<p><img src="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><ol>
 <li>将 <code>main()</code> 函数的运行状态进行压栈</li>
 <li>将 <code>func()</code> 函数的返回地址压栈</li>
@@ -484,6 +484,11 @@ delete str;
 <li><strong>全局&#x2F;静态存储区</strong> (bss和data)：内存在程序编译的时候就已经分配好，整个运行期间都存在，存放静态变量、全局变量和常量。static 可以控制变量的可见范围，全局变量不行。</li>
 <li><strong>常量存储区</strong> (rodata)：存放的是常量字符串，不允许修改。</li>
 <li><strong>代码区</strong> (text)：存放程序的二进制代码。</li>
+</ul>
+<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><ul>
+<li>堆内存泄漏：没有<code>free</code> 或 <code>delete</code></li>
+<li>系统资源泄漏：如 SOCKET</li>
+<li>没将基类析构函数定义为虚函数</li>
 </ul>
 <h2 id="内存对齐"><a href="#内存对齐" class="headerlink" title="内存对齐"></a>内存对齐</h2><p><strong>什么是内存对齐</strong></p>
 <p>计算机系统要求数据的首地址值是某个数 k（通常它为4或8）的倍数</p>
@@ -1365,8 +1370,8 @@ int main() &#123;
 &#125;
 </code></pre>
 <hr>
-<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C ++通过虚表解决了后期绑定时查找调用函数的问题。虚表在编译时期初始化，全局共享，存储在常量区。每个使用虚函数的类（或者虚函数类的派生）都有自己的虚拟表。该表是编译器在编译时设置的静态数组，包含了类对象的所有虚函数条目，其中每个条目是一个函数指针，指向该类可访问的派生函数。</p>
-<p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，对于子类虚指针，先在父类构造函数中指向父类的虚表，之后调用子类的构造函数时才会改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C++ 通过虚表解决了后期绑定时查找调用函数的问题。每个含有虚函数的类都有虚表，它是编译时期初始化的静态数组，数组中每个条目是一个函数指针。虚表全局共享，存储在常量区。</p>
+<p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，先在父类构造函数中指向父类的虚表，之后在子类构造函数中改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
 <p><strong>调用过程</strong>：</p>
 <ul>
 <li>对于：<code>ptr -&gt; z()</code></li>
@@ -1445,13 +1450,14 @@ int main() &#123;
 </li>
 <li>析构函数能抛异常吗：不能<ul>
 <li>异常点后无法执行，内存泄漏</li>
-<li>一般出现异常时调用析构函数，此时上个异常还没解决，析构函数中又有新异常，造成崩溃</li>
+<li>出现异常时，在栈展开过程中会调用在栈中构造好的对象的析构函数，此时如果上个异常还没解决，析构函数中又有新异常，会崩溃</li>
 </ul>
 </li>
 </ol>
 <hr>
-<h2 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h2><h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="虚继承-1"><a href="#虚继承-1" class="headerlink" title="虚继承"></a>虚继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h2><h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>虚基类解决了多继承（菱形继承）时命名冲突和冗余数据的问题，使派生类中只保留一份间接基类的成员，需要在继承方式前加上virtual关键字修饰</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>虚基类部分被放到对象内存的最后面，且B和C的对象中有隐藏的虚基类表指针(vbptr)指向虚基类表(vbtable)</p>
 <p>虚基类表中存放了2个偏移量：</p>
 <ol>
@@ -1470,7 +1476,7 @@ int main() &#123;
 <p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
 <ul>
 <li><strong>prvalue</strong>：纯右值，不具名的临时对象，<strong>无名无地址</strong><ul>
-<li>返回非引用类型表达式，x++、x+1、make_shared&lt; int &gt;(32)</li>
+<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
 <li>非字符串字面量，42、true</li>
 <li><code>smart_ptr&lt;shape&gt; p1&#123;new Circle&#125;;</code></li>
 </ul>
@@ -10030,6 +10036,52 @@ ffmpeg -i image-%3d.jpeg out5.mp4
       </categories>
       <tags>
         <tag>音视频</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Leetcode</title>
+    <url>/2024/07/27/Distribution/ShardKV/</url>
+    <content><![CDATA[<h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将会是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/distribute_kv.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h2><p>大致的流程是客户端向后端的 servers 发起请求，后端的服务是由多个节点组成的，每个节点之间使用 raft 进行状态复制，客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>客户端 Clerk 会向 KV 服务发送三种类型的请求：</p>
+<ul>
+<li>Get：通过 key 获取 value</li>
+<li>Put：设置 key&#x2F;value 对</li>
+<li>Append：将值追加到 key 对应的 value 上，如果 key 不存在，则相当于 Put</li>
+</ul>
+<p>需要注意的是 <code>Get/Put/Append</code> 方法需要保证是具有线性一致性的：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
+<p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
+<p>客户端的请求到达之后，需要首先通过 raft 模块将其存储到 raft 日志中。当 raft 集群中的 Leader 节点处理了 Start 请求之后，它会向其他的 Follower 节点发送 <code>AppendEntries</code> 消息，将日志同步到其他的 Follower 节点，当大多数的节点都正常处理之后，Leader 会收到消息，然后更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。然后 kv server 收到 apply 消息之后，将命令应用到本地的状态机中，然后返回给客户端。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>也就是说，客户端需要一直等待 raft 模块同步完成，并且 Leader 节点将操作应用到状态机之后，才会返回结果给客户端</strong>。所以需要启动一个后台线程来执行 apply 任务，从 applyCh 中接收来自 raft 的日志消息，处理完之后，将结果存储到一个 channel 中，这时候 Get&#x2F;Put&#x2F;Append 方法就能从这个 channel 中获取到结果，并返回给客户端。</p>
+<h2 id="重复请求"><a href="#重复请求" class="headerlink" title="重复请求"></a>重复请求</h2><p>假设分布式 KV 有一个客户端，先执行了 Put(x, 1) 请求，将 x 的值设置为 1，接着又执行了 Put(x，2)，将 x 的值设置为了 2。如果 Put(x, 1) 在执行的过程中，对应的节点发生了故障，那么它会重试请求，又将 x 的设置为了 1，那么这便违背了线性一致性。</p>
+<pre><code class="Go">   Client               Client
+-------------      ---------------
+  Put(x, 1)               |
+     |                 Put(x, 2)
+     |                    |
+    失败                  成功
+     |                    |
+    重试                  
+     |
+  Put(x, 1)     
+</code></pre>
+<p>线性一致性要求每个客户端的请求应该立即被执行，并且只被执行一次，对于重试的请求，我们应该如何避免其被执行多次呢？</p>
+<p>一个直观的解决办法就是：给客户端的每个命令赋予一个唯一的标识，当命令执行完之后，将命令标识和执行的结果保存到状态机中的一个 map (<code>duplicateTable</code>)里面。每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
+<blockquote>
+<p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
+</blockquote>
+<p>需要注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
+]]></content>
+      <categories>
+        <category>Distribution</category>
+      </categories>
+      <tags>
+        <tag>Distribution</tag>
       </tags>
   </entry>
 </search>

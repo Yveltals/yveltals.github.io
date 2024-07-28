@@ -40,11 +40,11 @@
 <meta property="og:title" content="MIT 6.824">
 <meta property="og:url" content="http://example.com/2024/07/27/Distribution/ShardKV/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="ShardKV分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。 架构图  主要流程客户端向服务端的 servers 发起请求，servers 节点之间使用 raft 进行状态复制，客户端会选择将请求发送到 Leader 节点，然后由 Lead">
+<meta property="og:description" content="Raft常见QARaft 主要在什么场景中使用  元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。 数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。  Raft 为了简洁性做了哪些牺牲（性能问题）  每个操作都要落盘。如果想">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-07-27T11:30:00.000Z">
-<meta property="article:modified_time" content="2024-07-27T16:20:13.948Z">
+<meta property="article:modified_time" content="2024-07-28T17:22:11.555Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Distribution">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1722097251908),
+    lastupdate: new Date(1722187360456),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2519,40 +2519,118 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
-<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h2 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h2><p>客户端向服务端的 servers 发起请求，servers 节点之间使用 raft 进行状态复制，客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>客户端 Clerk 会向 KV 服务发送三种类型的请求：</p>
+    <h2 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h2><h3 id="常见QA"><a href="#常见QA" class="headerlink" title="常见QA"></a>常见QA</h3><p><strong>Raft 主要在什么场景中使用</strong></p>
 <ul>
-<li>Get：通过 key 获取 value</li>
-<li>Put：设置 key&#x2F;value 对</li>
-<li>Append：将值追加到 key 对应的 value 上，如果 key 不存在，则相当于 Put</li>
+<li>元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。</li>
+<li>数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。</li>
 </ul>
-<p><code>Get/Put/Append</code> 方法需要保证线性一致性：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
-<h3 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h3><p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
-<p>客户端的请求到达之后，需要首先通过 raft 模块将其存储到 raft 日志中。当 raft 集群中的 Leader 节点处理了 Start 请求之后，它会向其他的 Follower 节点发送 <code>AppendEntries</code> 消息，将日志同步到其他的 Follower 节点，当大多数的节点都正常处理之后，Leader 会收到消息，然后更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。然后 kv server 收到 apply 消息之后，将命令应用到本地的状态机中，然后返回给客户端。</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p><strong>也就是说，客户端需要一直等待 raft 模块同步完成，并且 Leader 节点将操作应用到状态机之后，才会返回结果给客户端</strong>。所以需要启动一个后台线程来执行 apply 任务，从 applyCh 中接收来自 raft 的日志消息，处理完之后，将结果存储到一个 channel 中，这时候 Get&#x2F;Put&#x2F;Append 方法就能从这个 channel 中获取到结果，并返回给客户端。</p>
-<h2 id="重复请求"><a href="#重复请求" class="headerlink" title="重复请求"></a>重复请求</h2><p>假设分布式 KV 有一个客户端，先执行了 Put(x, 1) 请求，将 x 的值设置为 1，接着又执行了 Put(x，2)，将 x 的值设置为了 2。如果 Put(x, 1) 在执行的过程中，对应的节点发生了故障，那么它会重试请求，又将 x 的设置为了 1，那么这便违背了线性一致性。</p>
-<pre><code class="Go">   Client               Client
--------------      ---------------
-  Put(x, 1)               |
-     |                 Put(x, 2)
-     |                    |
-    失败                  成功
-     |                    |
-    重试                  
-     |
-  Put(x, 1)     
-</code></pre>
-<p>线性一致性要求每个客户端的请求应该立即被执行，并且只被执行一次，对于重试的请求，我们应该如何避免其被执行多次呢？</p>
-<p>一个直观的解决办法就是：给客户端的每个命令赋予一个唯一的标识，当命令执行完之后，将命令标识和执行的结果保存到状态机中的一个 map (<code>duplicateTable</code>)里面。每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
+<p><strong>Raft 为了简洁性做了哪些牺牲</strong>（性能问题）</p>
+<ul>
+<li>每个操作都要落盘。如果想提高性能可能需要将多个操作 batch 起来。<br>主从同步数据较慢。在每个 Leader 和 Follower 之间只允许有一个已经发出 AppendEntries；只有收到确认了，Leader 才能发下一个。类似 TCP 中的“停等协议”。如果写入速度较大，可能将所有的 AppendEntries Pipeline 起来性能会好一些（即 Leader 不等收到上一个 AppendEntries 的 RPC Reply，就开始发下一个）</li>
+<li>只支持全量快照。如果状态机比较小这种方式还可以接受，如果数据量较大，就得支持增量快照。</li>
+<li>全量快照同步代价大。如果快照数据量很大，每次全量发送代价会过高。尤其是如果 Follower 本地有一些较老的快照时，我们只需要发增量部分即可。</li>
+<li>难以利用多核。因为 log 只有一个写入点，所有操作都得抢这一个写入点。</li>
+</ul>
+<p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p>
+<p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p>
+<p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p>
+<p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p>
+<p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p>
+<p><strong>Raft 对网络有什么假设</strong></p>
+<p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p>
+<p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p>
+<p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p>
+<p><strong>Raft 中的选举流程</strong></p>
+<ol>
+<li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li>
+<li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li>
+<li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li>
+</ol>
+<p><strong>如何避免出现网络分区的 Peer 恢复通信时将整体 Term 推高</strong></p>
+<p><strong>问题解释</strong>：如果某个 Peer （我们不妨称其为 A）和其他 Peers 隔离后，也就是出现了网络分区，会不断推高 Term，发起选举。由于持续要不到其他 Peer 的票，因此会持续推高 Term。一旦其之后某个时刻恢复和其他 Peer 的通信，而由于 Term 是 Raft 中的第一优先级，因此会强迫当前的 Leader 下台。但问题是，由于在隔离期间日志被落下很多，Peer A 通常也无法成为 Leader。最终结果大概率是原来的 Leader 的 Term 被拉上来之后，重新当选为 Leader。有的人也将这个过程形象的称之为“惊群效应”。</p>
+<p><strong>解决办法</strong>：PrevVote。每次 Candidate 发起选举时，不再推高 Term，但是会拿着 Term+1 去跟其他 Peer 要票，如果能要到合法的票数，再去推高 Term（Term+1）。而如果能要到多数票，其实就保证该 Candidate 没有发生网络隔离、日志是最新的。如果要不到多数票，就不能推高 Term，这样会保证发生了网络隔离的 Peer 不会一直推高自己的 Term。</p>
+<p><strong>Raft 和 Paxos 有什么区别</strong></p>
+<ul>
+<li>Raft 和 Paxos 都是共识协议，而所有的共识协议在原理上都可以等价为 Paxos，共识协议本质上都是 Paxos。</li>
+<li>Raft 是为了解决 Paxos 理解和实现都相对复杂的问题。将共识协议拆成两个相对独立的过程：领导者选举和日志复制，以降低理解和实现的复杂度。</li>
+<li>Raft 其实是和 Multi-Paxos 等价，因为 Paxos 只解决单个值的共识问题。</li>
+<li>在 Paxos 中，一旦某个日志在多数节点存在后就可以安全的提交；但在 Raft 中，不总是这样，比如一条日志在多数节点中存在后，但不是当前 Leader 任期的日志，也不能进行直接提交；而只能通过提交当前任期的日志来间接提交。</li>
+<li>在Paxos 在选举时，Leader 可能需要借机补足日志，但 Raft 中选举过程完全不涉及日志复制（这也是 Raft 进行拆分的初衷）。这是因为 Raft 只允许具有最新日志的 Candidate 成为 Leader，而 Paxos 不限制这一点。</li>
+<li>在 Paxos 中，允许乱序 commit 日志，而 Raft 只允许顺序提交。</li>
+<li>在 Paxos 中，每个 Peer 的 term 是不一致的，全局自增的；在 Raft 中 term 是每个 Peer 独立自增的，但需要对齐。</li>
+</ul>
+<p><strong>Raft 在工程中有哪些常见的优化</strong></p>
+<p>由于领导者选举是个低频操作，主要 IO 路径优化还是集中在日志同步流程上。</p>
+<ul>
+<li>batch：Leader 每次攒一批再刷盘和对 Follower 进行同步。降低刷盘和 RPC 开销。</li>
+<li>pipeline：每次发送日志时类似 TCP 的“停-等”协议，收到 Follower 确认后才更新 nextIndex，发送后面日志。其实可以改成流水线式的，不等前面日志确认就更新 nextIndex 继续发后面的。当然，如果后面发现之前日志同步出错，就要回退 nextIndex 重发之前日志——而原始版本 nextIndex 在同步阶段是单调递增的。</li>
+<li>并行 append：Leader 在 append 日志到本地前，就先发送日志给所有 Follower。</li>
+</ul>
+<p><strong>简述基于 raft 的分布式 KV 系统的架构</strong></p>
+<p>一个基于 raft 的分布式 KV 系统，实际上是由一组使用 raft 算法进行状态复制的节点组成。客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
+<p>以上是单个 raft 集群的分布式 KV 系统架构。如果系统中数据量较大，一个 raft 集群可能无法承受大量的数据，性能也会受到影响。因此还基于此设计了可分片的分布式 shardkv 系统。shardkv 由多个 raft 集群组成，每个集群负责一部分 shard 数据。Shard 到 raft 集群的映射关系，保存在独立的配置服务中。</p>
+<p><strong>分布式系统中读数据的流程是什么样的，如何优化</strong></p>
+<p>为了保证线性一致性，目前的实现是利用了 raft 算法，将读请求传入到 raft 并进行状态复制，这样能够<strong>保证读到的数据一定是最新的</strong>。<br>但是由于读请求也进行了一次日志复制，执行效率会受到影响，业界常用的两种优化方式是 ReadIndex 和 LeaseRead。</p>
+<p><strong>如何处理客户端的重复请求</strong></p>
+<p>如果客户端的请求已经提交，但是 server 返回的过程中结果丢失，那么客户端会发起重试，导致这个请求在状态机中被执行了两次，会违背线性一致性。</p>
+<p>因此需要保证客户端的请求只能被状态机应用一次，可以维护一个去重哈希表<code>duplicateTable</code>，客户端 ID + 命令 ID 组成一个唯一的标识符，<br>每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
+<p>还需注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
 <blockquote>
 <p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
 </blockquote>
-<p>需要注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
+<p><strong>Shardkv 的配置怎么保存</strong></p>
+<p>Shardkv 的配置是单独保存在一个服务中，客户端会向这个服务发起请求，查询 key 所属的 shard 应该在哪个 raft 集群中，并向这个集群发起请求。<br>配置服务也需要高可用特性，因为配置服务如果发生故障不可用的话，那么整个分布式 kv 服务都会无法提供服务，因此也使用 raft 算法保证高可用，构建了一个单 raft 集群来存储配置信息。</p>
+<p><strong>Shard 数据如何迁移</strong></p>
+<p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。<br>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
+<p><strong>Shard 迁移的时候，客户端的请求会受到影响吗</strong></p>
+<p>如果客户端请求的 key 所属的 shard 并没有在迁移中，那么可以正常提供服务。<br>否则，说明客户端请求的 key 在迁移中，则返回错误，让客户端进行重试。</p>
+<p><strong>如果处理并发的客户端请求和 shard 迁移请求</strong></p>
+<p>客户端请求和 shard 迁移请求的确存在并发情况，如果处理顺序不一致，会违背线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
+<hr>
+<h3 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h3><h4 id="什么是线性一致性"><a href="#什么是线性一致性" class="headerlink" title="什么是线性一致性"></a>什么是线性一致性</h4><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
+<p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
+<ul>
+<li>对于调用时间有交叠的<code>并发</code>请求，生效的顺序可以任意确定。比如并发读写请求时，读请求无论返回新值、旧值都可以。</li>
+<li>对于调用时间有<code>偏序</code>的请求，比如请求B开始在A结束之后，那么B的结果不能违背A已确定的结果。</li>
+</ul>
+<p><img src="https://codefever.github.io/assets/post_images/linearizability.png" class="lazyload" data-srcset="https://codefever.github.io/assets/post_images/linearizability.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
+<h4 id="Raft线性一致性读"><a href="#Raft线性一致性读" class="headerlink" title="Raft线性一致性读"></a>Raft线性一致性读</h4><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
+<p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p>
+<p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/png/156670/1561613080963-276c9d3e-a657-40f0-8ffb-d98fd510f6dc.png" class="lazyload" data-srcset="https://cdn.nlark.com/yuque/0/2019/png/156670/1561613080963-276c9d3e-a657-40f0-8ffb-d98fd510f6dc.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>一个分布式系统实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机（state machine）的一致性没有做详细规定，用户可以自由实现，如基础的 LogRead 和优化的 ReadIndex、LeaseRead。</p>
+<h4 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h4><p>以 TiKV 为例，Client 将请求发送到 Leader 后，Leader 将请求通过 Raft 复制到自身以及 Follower 的 Log 中，然后将其 commit。TiKV 将 commit 的 Log 应用到状态机（RocksDB）上，由于 Log 都一样，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
+<blockquote>
+<p>这也就是为什么 Rpc Read 也要通过 raft commit</p>
+</blockquote>
+<p>有一个简单的解决方法：<strong>依次应用 Log，将应用后的结果返回给 Client</strong>。</p>
+<ul>
+<li><p>这个方法简单通用，读写请求都可以这样实现。这个方法依据 commit index 对所有请求都做了排序，即 commit 决定了 R&#x2F;W 事件发生的顺序。Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
+</li>
+<li><p>这个方法的缺点是性能差，因为所有请求在 Log 那边就被序列化了，无法并发的操作状态机。</p>
+</li>
+</ul>
+<p>这样的读简称 LogRead。由于读请求不改变状态机，这个实现就显得有些“重“，不仅有 RPC 开销，还有写 Log 开销。优化的方法大致有两种：ReadIndex、LeaseRead</p>
+<h4 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h4><p>相比于 LogRead，ReadIndex 跳过了 Log，节省了磁盘开销，它能大幅提升读的吞吐。Leader 执行 ReadIndex 大致的流程如下：</p>
+<ol>
+<li>记录当前的 commit index，称为 ReadIndex</li>
+<li>向 Follower 发起一次心跳，如果大多数节点回复了，那就能确定现在仍然是 Leader</li>
+<li>等待状态机至少应用到 ReadIndex 记录的 Log</li>
+<li>执行读请求，将结果返回给 Client</li>
+</ol>
+<p>第 3 点中的 <code>至少</code> 是关键要求，它表明状态机应用到 ReadIndex 之后的状态都能使这个请求满足线性一致，不管过了多久，也不管 Leader 有没有飘走。为什么在 ReadIndex 只有就满足了线性一致性呢？之前 LogRead 的读发生点是 commit index，这个点能使 LogRead 满足线性一致，那显然发生这个点之后的 ReadIndex 也能满足。</p>
+<hr>
+<h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
+<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>客户端 Clerk 会向 KV 服务发送三种类型的请求：<code>Get/Put/Append</code>。</p>
+<p>保证线性一致性：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
+<p>客户端的请求到达之后，需要首先通过 raft 模块将其存储到 raft 日志中。当 raft 集群中的 Leader 节点处理了 Start 请求之后，它会向其他的 Follower 节点发送 <code>AppendEntries</code> 消息，将日志同步到其他的 Follower 节点，当大多数的节点都正常处理之后，Leader 会收到消息，然后更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。然后 kv server 收到 apply 消息之后，将命令应用到本地的状态机中，然后返回给客户端。</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>也就是说，服务端需要一直等待 raft 模块同步完成，并且 Leader 节点将操作应用到状态机之后，才会返回结果给客户端</strong>。所以需要启动一个后台线程来执行 apply 任务，从 applyCh 中接收来自 raft 的日志消息，处理完之后，将结果存储到一个 channel 中，这时候 Get&#x2F;Put&#x2F;Append 方法就能从这个 channel 中获取到结果，并返回给客户端。</p>
 
   </div>
   
@@ -2577,10 +2655,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-28T00:20:13+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-29T01:22:11+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 28, 2024</p>
+    <p>更新于：Jul 29, 2024</p>
   </a>
 </div>
 
@@ -2661,7 +2739,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardKV"><span class="toc-number">1.</span> <span class="toc-text">ShardKV</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">2.</span> <span class="toc-text">架构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">主要流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">3.1.</span> <span class="toc-text">客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">3.2.</span> <span class="toc-text">服务端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E5%A4%8D%E8%AF%B7%E6%B1%82"><span class="toc-number">4.</span> <span class="toc-text">重复请求</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Raft"><span class="toc-number">1.</span> <span class="toc-text">Raft</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81QA"><span class="toc-number">1.1.</span> <span class="toc-text">常见QA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E8%AF%BB"><span class="toc-number">1.2.</span> <span class="toc-text">线性一致读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">1.2.1.</span> <span class="toc-text">什么是线性一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Raft%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%E8%AF%BB"><span class="toc-number">1.2.2.</span> <span class="toc-text">Raft线性一致性读</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Raft-LogRead"><span class="toc-number">1.2.3.</span> <span class="toc-text">Raft LogRead</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ReadIndex"><span class="toc-number">1.2.4.</span> <span class="toc-text">ReadIndex</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardKV"><span class="toc-number">2.</span> <span class="toc-text">ShardKV</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">2.1.</span> <span class="toc-text">架构图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">主要流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">2.2.1.</span> <span class="toc-text">客户端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">2.2.2.</span> <span class="toc-text">服务端</span></a></li></ol></li></ol></li></ol>
     </div>
   </section>
 
@@ -3089,7 +3167,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://gcore.jsdelivr.net/gh/Yveltals/Picgo/lxq1.jpeg","https://gcore.jsdelivr.net/gh/Yveltals/Picgo/lxq2.jpg","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/056.webp"];
   let index = 0;
   let IntervalParallax = null;
 

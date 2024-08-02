@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-03-24T00:39:04.000Z">
-<meta property="article:modified_time" content="2024-07-14T10:17:24.928Z">
+<meta property="article:modified_time" content="2024-08-02T14:43:10.868Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1722189226631),
+    lastupdate: new Date(1722611601283),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -3281,6 +3281,20 @@ dp[i][1] = max(dp[i-1][1], dp[i-2][0]-prices[i])
 dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]-fee)
 dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
 </code></pre>
+<h3 id="树状DP"><a href="#树状DP" class="headerlink" title="树状DP"></a>树状DP</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/house-robber-iii/description/">打家劫舍 III</a>：从树中挑选部分节点，要求两两不连续，求最大值</p>
+<p>节点 A 可选偷或不偷，截止到 A 的最大值依赖于 <code>A-&gt;left 偷/不偷</code>、<code>A-&gt;right 偷/不偷</code> 这四个情况，<strong>即当前状态是由前面多个状态推导出的</strong>，只能采用 DFS （记忆化回溯）的方式</p>
+<pre><code class="cpp">pair&lt;int, int&gt; dfs(TreeNode* t) &#123;
+  if (!t) return &#123;0, 0&#125;;
+  pair&lt;int, int&gt; l = dfs(t-&gt;left), r = dfs(t-&gt;right);
+  int stole = t-&gt;val + l.first + r.first;
+  int unstole = max(l.first, l.second) + max(r.first, r.second);
+  return &#123;unstole, stole&#125;;
+&#125;
+int rob(TreeNode* root) &#123;
+  auto pair = dfs(root);
+  return max(pair.first, pair.second);
+&#125;
+</code></pre>
 <h3 id="数位DP"><a href="#数位DP" class="headerlink" title="数位DP"></a>数位DP</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/description/">1～n 整数中 1 出现的次数</a>：无须考虑前导零</p>
 <p>将<code>n</code>转换成字符串 <code>s</code>，定义 <code>f(i,cnt,isLimit)</code> 表示构造从左往右第<code>i</code>位及其之后数位中 1 的个数</p>
 <ul>
@@ -3485,10 +3499,10 @@ int lcm(int a, int b) &#123;
   return a * b / gcd(a, b);
 &#125;
 // 质数（小于n）
-vector&lt;int&gt; Primes(int n) &#123;
+vector&lt;bool&gt; primes(int n) &#123;
   vector&lt;bool&gt; prime(n, true);
   prime[0] = prime[1] = false;
-  for(int i=2; i &lt; n; ++i)&#123;
+  for(int i = 2; i &lt; n; ++i)&#123;
     if(!prime[i]) continue;
     for(int j = 2 * i; j &lt; n; j += i) &#123;
       prime[j] = false;
@@ -3613,55 +3627,6 @@ cout &lt;&lt; dis(gen) &lt;&lt; endl;
 <li>因此用一个单调递减队列（deque）维护窗口内有意义的元素，直接 <code>deque.front()</code> 获得最大值</li>
 <li>用 <code>l, i</code> 维护窗口左右边界，从队列中 pop 的条件是窗口大小固定为 k，即 <code>i - l == k</code></li>
 </ol>
-<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
-<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
-<pre><code class="cpp">string minWindow(string s, string t) &#123;
-  int valid = 0, ans_idx = -1, ans_len = INT_MAX;
-  unordered_map&lt;char, int&gt; mp;
-  for (auto c: t) mp[c]++;
-  for (int i = 0, l = 0; i &lt; s.size(); ++i) &#123;
-    char c = s[i];
-    if (mp.count(c)) &#123;
-      if (--mp[c] &gt;= 0) valid++;
-    &#125;
-    while (valid &gt;= t.size()) &#123;
-      if (i - l + 1 &lt; ans_len) &#123;
-        ans_len = i - l + 1;
-        ans_idx = l;
-      &#125;
-      char d = s[l];
-      if (mp.count(d)) &#123;
-        if (++mp[d] &gt; 0) valid--;
-      &#125;
-      l++;
-    &#125;
-  &#125;
-  return ans_idx &lt; 0 ? &quot;&quot; : s.substr(ans_idx, ans_len);
-&#125;
-</code></pre>
-<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
-<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
-<pre><code class="c++">bool checkInclusion(string s1, string s2) &#123;
-  int valid = 0;
-  unordered_map&lt;char, int&gt; mp;
-  for (auto c: s1) mp[c]++;
-  for (int i = 0, l = 0; i &lt; s2.size(); ++i) &#123;
-    char c = s2[i];
-    if (mp.count(c)) &#123;
-      if (--mp[c] &gt;= 0) valid++;
-    &#125;
-    if (i - l == s1.size()) &#123;
-      char d = s2[l];
-      if (mp.count(d)) &#123;
-        if (++mp[d] &gt; 0) valid--;
-      &#125;
-      l++;
-    &#125;
-    if (valid == s1.size()) return true;
-  &#125;
-  return false;
-&#125;
-</code></pre>
 <hr>
 <h2 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h2><pre><code class="cpp">int n = 1005; // n根据题目中节点数量而定
 vector&lt;int&gt; father = vector&lt;int&gt; (n, 0);
@@ -3801,52 +3766,216 @@ public:
   return answer;
 &#125;
 </code></pre>
-<h2 id="差分数组"><a href="#差分数组" class="headerlink" title="差分数组"></a>差分数组</h2><p>原数组为a，差分数组为b</p>
+<hr>
+<h2 id="区间相关"><a href="#区间相关" class="headerlink" title="区间相关"></a>区间相关</h2><h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
+<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
+<pre><code class="cpp">string minWindow(string s, string t) &#123;
+  int valid = 0, ans_idx = -1, ans_len = INT_MAX;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: t) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s.size(); ++i) &#123;
+    char c = s[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    while (valid &gt;= t.size()) &#123;
+      if (i - l + 1 &lt; ans_len) &#123;
+        ans_len = i - l + 1;
+        ans_idx = l;
+      &#125;
+      char d = s[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+  &#125;
+  return ans_idx &lt; 0 ? &quot;&quot; : s.substr(ans_idx, ans_len);
+&#125;
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
+<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
+<pre><code class="c++">bool checkInclusion(string s1, string s2) &#123;
+  int valid = 0;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: s1) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s2.size(); ++i) &#123;
+    char c = s2[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    if (i - l == s1.size()) &#123;
+      char d = s2[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+    if (valid == s1.size()) return true;
+  &#125;
+  return false;
+&#125;
+</code></pre>
+<h3 id="前缀和"><a href="#前缀和" class="headerlink" title="前缀和"></a>前缀和</h3><blockquote>
+<p>前缀与后缀和的统一写法，但需要特殊处理 0 个元素的前缀&#x2F;后缀和</p>
+</blockquote>
+<pre><code class="cpp">vector&lt;int&gt; nums&#123;1,0,2,4,2,3,1&#125;;
+// pre_sum[i] 为 [0, ..., i]，suf_num[i] 为 [i, ..., n-1]
+vector&lt;int&gt; pre_sum(nums.size()), suf_sum(nums.size());
+pre_sum[0] = nums[0];
+for (int i = 1; i &lt; nums.size(); i++)
+  pre_sum[i] = pre_sum[i - 1] + nums[i];
+
+suf_sum.back() = nums.back();
+for (int i = nums.size() - 2; i &gt;= 0; --i)
+  suf_sum[i] = suf_sum[i + 1] + nums[i];
+</code></pre>
+<h3 id="差分"><a href="#差分" class="headerlink" title="差分"></a>差分</h3><blockquote>
+<p>区间修改（同增同减）- 求修改后的数组</p>
+</blockquote>
+<p>原数组为a，差分数组为b</p>
 <pre><code class="cpp">b[0] = a[0]
 b[i] = a[i] - a[i - 1]
 </code></pre>
 <p>对区间 <code>[x1, x2]</code> 所有值加 <code>y</code></p>
 <pre><code class="cpp">b[x1] += y
-b[x2 + 1] -= y  (x2 + 1 &lt; n)
+b[x2 + 1] -= y  // x2 + 1 &lt; n
 </code></pre>
 <p>根据差分数组求原数组</p>
 <pre><code class="cpp">a[0] = b[0]
 a[i] = a[i - 1] + b[i]
 </code></pre>
-<h2 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h2><p>可以动态维护序列前缀和的数据结构（序列下标从 1 开始）：</p>
-<ul>
-<li>单点修改 <code>add(index,val)</code>：把序列第 index 个数增加 val，O(nlgn)</li>
-<li>区间查询 <code>prefixSum(index)</code>：查询前 index 个元素的前缀和，O(nlgn)</li>
-</ul>
+<h3 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h3><blockquote>
+<p>单点修改 - 区间查询、单点查询</p>
+</blockquote>
 <p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/range-sum-query-mutable/">区域和检索 - 数组可修改</a>：求区间和且会更新数组元素</p>
-<pre><code class="cpp">vector&lt;int&gt; tree; //tree[i]为前i-1前缀和
-vector&lt;int&gt; &amp;nums; //原数组
+<pre><code class="cpp">vector&lt;int&gt; tree;  // tree[i] 为前 i-1 前缀和
+vector&lt;int&gt; nums; // 原数组
 
 int lowBit(int x) &#123;
-    return x &amp; -x;
+  return x &amp; -x;
 &#125;
+// 把序列第 index 个数增加 val，O(nlgn)
 void add(int index, int val) &#123;
-    while (index &lt; tree.size()) &#123;
-        tree[index] += val;
-        index += lowBit(index);
+  while (index &lt; tree.size()) &#123;
+    tree[index] += val;
+    index += lowBit(index);
+  &#125;
+&#125;
+// 查询前 index 个元素的前缀和，O(nlgn)
+int preSum(int index) &#123;
+  int sum = 0;
+  while (index &gt; 0) &#123;
+    sum += tree[index];
+    index -= lowBit(index);
+  &#125;
+  return sum;
+&#125;
+int main()&#123;
+  // input nums
+  tree.assign(nums.size() + 1, 0);
+  for(int i = 0; i &lt; nums.size(); ++i)&#123;
+    add(i + 1, nums[i]);
+  &#125;
+&#125;
+</code></pre>
+<h3 id="线段树"><a href="#线段树" class="headerlink" title="线段树"></a>线段树</h3><blockquote>
+<p>区间修改 - 区间查询、单点查询</p>
+</blockquote>
+<hr>
+<h2 id="一些笔试题目"><a href="#一些笔试题目" class="headerlink" title="一些笔试题目"></a>一些笔试题目</h2><p><a target="_blank" rel="noopener" href="https://www.nowcoder.com/questionTerminal/ef231526f822489d879949226b4bed65">对称飞行器</a></p>
+<p>如果没有对称飞行器，就是一道普通广搜题。但是加了飞行器，如果飞行次数没有限制，也是一道普通广搜题只是除了四个direction多了一个分支。可是飞行器有次数限制。那么如果用(x,y)点的状态应该再加一个维度：飞行次数z。因为当z1不等于z2时，P(x,y,z1)和Q(x,y,z2)是两种不同的状态。</p>
+<p>假设z1 &lt; z2，即P和Q在相同的横纵坐标，但是P剩余的飞行次数更多。如果从(x,y,z2)走到终点的最优解是n步，则从(x,y,z1)一定可以走n步到达终点。此时P状态走到最优点的步数更少。所以在层次遍历的最优解中不该包含z2.</p>
+<p>也就是说在向z增加转移的过程中，我们应该看 <code>matrix[x][y][0]...matrix[x][y][z]</code> 中是否已经有为1的点，如果有就不必再在第z层再走x，y。</p>
+<pre><code class="cpp">struct Node &#123;
+    int x, y;
+    int fly;
+    Node() = default;
+    Node(int x_, int y_, int f_): x(x_), y(y_), fly(f_) &#123;&#125;
+&#125;;
+
+int n, m;
+queue&lt;Node&gt; q;
+vector&lt;vector&lt;int&gt;&gt; vis;
+vector&lt;vector&lt;char&gt;&gt; board;
+vector&lt;int&gt; delta&#123;-1, 0, 1, 0, -1&#125;;
+
+bool check(Node&amp; node) &#123;
+    return node.x &gt;= 0 &amp;&amp; node.x &lt; n &amp;&amp; node.y &gt;= 0 &amp;&amp; node.y &lt; m &amp;&amp;
+           board[node.x][node.y] != &#39;#&#39; &amp;&amp; !vis[node.x][node.y];  
+&#125;
+int bfs(int i, int j) &#123;
+    q.emplace(i, j, 5);
+    vis[i][j] = 1;
+    int level = 0;
+    while (!q.empty()) &#123;
+        int size = q.size();
+        while (size--) &#123;
+            Node cur = q.front(); q.pop();
+            if (board[cur.x][cur.y] == &#39;E&#39;) &#123;
+                return level;
+            &#125;
+            for (int i = 0; i &lt;= 4; ++i) &#123;
+                Node tmp;
+                if (i == 4) &#123;  // fly
+                    if (cur.fly &gt; 0) &#123;
+                        tmp.x = n - 1 - cur.x;
+                        tmp.y = m - 1 - cur.y;
+                        tmp.fly = cur.fly - 1;
+                    &#125;
+                &#125; else &#123;
+                    tmp.x = cur.x + delta[i];
+                    tmp.y = cur.y + delta[i + 1];
+                    tmp.fly = cur.fly;
+                &#125;
+                if (check(tmp)) &#123;
+                    vis[tmp.x][tmp.y] = 1;
+                    q.push(tmp);
+                &#125;
+            &#125;
+        &#125;
+        level++;
+    &#125;
+    return -1;
+&#125;
+int main() &#123;
+    cin &gt;&gt; n &gt;&gt; m;
+    board.assign(n, vector&lt;char&gt;(m, 0));
+    vis.assign(n, vector&lt;int&gt;(m, 0));
+    for (int i = 0; i &lt; n; ++i) &#123;
+        for (int j = 0; j &lt; m; ++j) &#123;
+            cin &gt;&gt; board[i][j];
+        &#125;
+    &#125;
+    for (int i = 0; i &lt; n; ++i) &#123;
+        for (int j = 0; j &lt; m; ++j) &#123;
+            if (board[i][j] == &#39;S&#39;) &#123;
+                cout &lt;&lt; bfs(i, j) &lt;&lt; endl;
+                return 0;
+            &#125;
+        &#125;
     &#125;
 &#125;
-int prefixSum(int index) &#123;
-    int sum = 0;
-    while (index &gt; 0) &#123;
-        sum += tree[index];
-        index -= lowBit(index);
-    &#125;
-    return sum;
-&#125;
-int main(vector&lt;int&gt;&amp; nums)&#123;
-    nums = nums;
-    // 初始化tree为全0数组，遍历更新
-    tree.assign(nums.size()+1,0);
-    for(int i=0;i&lt;nums.size();++i)&#123;
-        add(i+1,nums[i]);
-    &#125;
-&#125;
+</code></pre>
+<p>自定义类型的<code>map/set</code>需要重载<code>hash</code>、<code>&lt;</code>和<code>=</code></p>
+<pre><code class="cpp">struct Node &#123;
+  int a, b;
+  bool operator&lt;(const Node&amp; other) const &#123;
+    return a == other.a &amp;&amp; b == other.b;
+  &#125;;
+  bool operator==(const Node&amp; other) const &#123;
+    return a == other.a &amp;&amp; b == other.b;
+  &#125;;
+&#125;;
+template&lt;&gt;
+struct hash&lt;Node&gt; &#123;
+  size_t operator()(const Node&amp; node) const &#123;
+    return hash&lt;int&gt;()(node.a) &amp; hash&lt;int&gt;()(node.b);
+  &#125;
+&#125;;
+
+unordered_map&lt;Node, int&gt; mp;
+unordered_set&lt;Node&gt; st;
 </code></pre>
 
   </div>
@@ -3872,10 +4001,10 @@ int main(vector&lt;int&gt;&amp; nums)&#123;
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-14T18:17:24+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-02T22:43:10+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 14, 2024</p>
+    <p>更新于：Aug 2, 2024</p>
   </a>
 </div>
 
@@ -3962,7 +4091,7 @@ kafka的使用场景为什么要使用 Kafka 消息队列解耦、削峰：传�
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">1.</span> <span class="toc-text">数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F"><span class="toc-number">1.1.</span> <span class="toc-text">堆排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">1.2.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9C%B0%E5%93%88%E5%B8%8C"><span class="toc-number">1.3.</span> <span class="toc-text">原地哈希</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%BC%80%E5%92%8C-%E5%93%88%E5%B8%8C"><span class="toc-number">1.4.</span> <span class="toc-text">前缀和+哈希</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">字符串加法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%98%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">字符串乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%88%86%E5%89%B2"><span class="toc-number">3.3.</span> <span class="toc-text">字符串分割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="toc-number">3.4.</span> <span class="toc-text">计算器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KMP"><span class="toc-number">3.5.</span> <span class="toc-text">KMP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="toc-number">4.</span> <span class="toc-text">二叉树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">图论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DFS-BFS"><span class="toc-number">5.1.</span> <span class="toc-text">DFS&#x2F;BFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="toc-number">5.2.</span> <span class="toc-text">状态转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dijkstra"><span class="toc-number">5.3.</span> <span class="toc-text">Dijkstra</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%BA%AF"><span class="toc-number">6.</span> <span class="toc-text">回溯</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-number">6.1.</span> <span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-number">6.2.</span> <span class="toc-text">二维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2"><span class="toc-number">6.3.</span> <span class="toc-text">记忆化搜索</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="toc-number">7.</span> <span class="toc-text">动态规划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-number">7.1.</span> <span class="toc-text">子序列问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">字符串问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-number">7.3.</span> <span class="toc-text">背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E5%85%AC%E5%BC%8F"><span class="toc-number">7.3.1.</span> <span class="toc-text">递推公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%8D%E5%8E%86%E9%A1%BA%E5%BA%8F"><span class="toc-number">7.3.2.</span> <span class="toc-text">遍历顺序</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E9%97%AE%E9%A2%98"><span class="toc-number">7.4.</span> <span class="toc-text">股票问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E4%BD%8DDP"><span class="toc-number">7.5.</span> <span class="toc-text">数位DP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%88%86%E6%B3%95"><span class="toc-number">8.</span> <span class="toc-text">二分法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lower-bound"><span class="toc-number">8.1.</span> <span class="toc-text">Lower_bound</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E6%A8%A1%E6%9D%BF"><span class="toc-number">8.2.</span> <span class="toc-text">常见模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84"><span class="toc-number">8.3.</span> <span class="toc-text">旋转数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E9%97%AE%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">数学问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FindK"><span class="toc-number">9.1.</span> <span class="toc-text">FindK</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88"><span class="toc-number">9.2.</span> <span class="toc-text">快慢指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%B9%82"><span class="toc-number">9.3.</span> <span class="toc-text">快速幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%A0%E6%95%B0-%E5%80%8D%E6%95%B0-%E8%B4%A8%E6%95%B0"><span class="toc-number">9.4.</span> <span class="toc-text">因数&#x2F;倍数&#x2F;质数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="toc-number">9.5.</span> <span class="toc-text">位运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%A9%E5%B0%94%E6%8A%95%E7%A5%A8%E6%B3%95"><span class="toc-number">9.6.</span> <span class="toc-text">摩尔投票法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="toc-number">9.7.</span> <span class="toc-text">随机化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E8%B0%83%E6%A0%88"><span class="toc-number">10.</span> <span class="toc-text">单调栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">11.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="toc-number">12.</span> <span class="toc-text">并查集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E5%85%B8%E6%A0%91"><span class="toc-number">13.</span> <span class="toc-text">字典树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6"><span class="toc-number">14.</span> <span class="toc-text">多路归并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DP-%E5%85%88%E6%B1%82%E5%86%8D%E5%AD%98"><span class="toc-number">14.1.</span> <span class="toc-text">DP-先求再存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%85%88%E5%AD%98%E5%86%8D%E6%B1%82"><span class="toc-number">14.2.</span> <span class="toc-text">优先队列-先存再求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84"><span class="toc-number">15.</span> <span class="toc-text">差分数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84"><span class="toc-number">16.</span> <span class="toc-text">树状数组</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">1.</span> <span class="toc-text">数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F"><span class="toc-number">1.1.</span> <span class="toc-text">堆排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">1.2.</span> <span class="toc-text">归并排序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9C%B0%E5%93%88%E5%B8%8C"><span class="toc-number">1.3.</span> <span class="toc-text">原地哈希</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%BC%80%E5%92%8C-%E5%93%88%E5%B8%8C"><span class="toc-number">1.4.</span> <span class="toc-text">前缀和+哈希</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">3.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8A%A0%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">字符串加法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%98%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">字符串乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%88%86%E5%89%B2"><span class="toc-number">3.3.</span> <span class="toc-text">字符串分割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="toc-number">3.4.</span> <span class="toc-text">计算器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KMP"><span class="toc-number">3.5.</span> <span class="toc-text">KMP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="toc-number">4.</span> <span class="toc-text">二叉树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">图论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DFS-BFS"><span class="toc-number">5.1.</span> <span class="toc-text">DFS&#x2F;BFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="toc-number">5.2.</span> <span class="toc-text">状态转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dijkstra"><span class="toc-number">5.3.</span> <span class="toc-text">Dijkstra</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E6%BA%AF"><span class="toc-number">6.</span> <span class="toc-text">回溯</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-number">6.1.</span> <span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-number">6.2.</span> <span class="toc-text">二维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86%E5%8C%96%E6%90%9C%E7%B4%A2"><span class="toc-number">6.3.</span> <span class="toc-text">记忆化搜索</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="toc-number">7.</span> <span class="toc-text">动态规划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E5%BA%8F%E5%88%97%E9%97%AE%E9%A2%98"><span class="toc-number">7.1.</span> <span class="toc-text">子序列问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">字符串问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98"><span class="toc-number">7.3.</span> <span class="toc-text">背包问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%92%E6%8E%A8%E5%85%AC%E5%BC%8F"><span class="toc-number">7.3.1.</span> <span class="toc-text">递推公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%8D%E5%8E%86%E9%A1%BA%E5%BA%8F"><span class="toc-number">7.3.2.</span> <span class="toc-text">遍历顺序</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%82%A1%E7%A5%A8%E9%97%AE%E9%A2%98"><span class="toc-number">7.4.</span> <span class="toc-text">股票问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E7%8A%B6DP"><span class="toc-number">7.5.</span> <span class="toc-text">树状DP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E4%BD%8DDP"><span class="toc-number">7.6.</span> <span class="toc-text">数位DP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%88%86%E6%B3%95"><span class="toc-number">8.</span> <span class="toc-text">二分法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lower-bound"><span class="toc-number">8.1.</span> <span class="toc-text">Lower_bound</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E6%A8%A1%E6%9D%BF"><span class="toc-number">8.2.</span> <span class="toc-text">常见模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E6%95%B0%E7%BB%84"><span class="toc-number">8.3.</span> <span class="toc-text">旋转数组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E9%97%AE%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">数学问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FindK"><span class="toc-number">9.1.</span> <span class="toc-text">FindK</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88"><span class="toc-number">9.2.</span> <span class="toc-text">快慢指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%B9%82"><span class="toc-number">9.3.</span> <span class="toc-text">快速幂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%A0%E6%95%B0-%E5%80%8D%E6%95%B0-%E8%B4%A8%E6%95%B0"><span class="toc-number">9.4.</span> <span class="toc-text">因数&#x2F;倍数&#x2F;质数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="toc-number">9.5.</span> <span class="toc-text">位运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%A9%E5%B0%94%E6%8A%95%E7%A5%A8%E6%B3%95"><span class="toc-number">9.6.</span> <span class="toc-text">摩尔投票法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="toc-number">9.7.</span> <span class="toc-text">随机化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E8%B0%83%E6%A0%88"><span class="toc-number">10.</span> <span class="toc-text">单调栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="toc-number">11.</span> <span class="toc-text">并查集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E5%85%B8%E6%A0%91"><span class="toc-number">12.</span> <span class="toc-text">字典树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6"><span class="toc-number">13.</span> <span class="toc-text">多路归并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DP-%E5%85%88%E6%B1%82%E5%86%8D%E5%AD%98"><span class="toc-number">13.1.</span> <span class="toc-text">DP-先求再存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%85%88%E5%AD%98%E5%86%8D%E6%B1%82"><span class="toc-number">13.2.</span> <span class="toc-text">优先队列-先存再求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E9%97%B4%E7%9B%B8%E5%85%B3"><span class="toc-number">14.</span> <span class="toc-text">区间相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">14.1.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%BC%80%E5%92%8C"><span class="toc-number">14.2.</span> <span class="toc-text">前缀和</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%AE%E5%88%86"><span class="toc-number">14.3.</span> <span class="toc-text">差分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84"><span class="toc-number">14.4.</span> <span class="toc-text">树状数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91"><span class="toc-number">14.5.</span> <span class="toc-text">线段树</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AF%95%E9%A2%98%E7%9B%AE"><span class="toc-number">15.</span> <span class="toc-text">一些笔试题目</span></a></li></ol>
     </div>
   </section>
 

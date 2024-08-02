@@ -2633,6 +2633,20 @@ dp[i][1] = max(dp[i-1][1], dp[i-2][0]-prices[i])
 dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]-fee)
 dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
 </code></pre>
+<h3 id="树状DP"><a href="#树状DP" class="headerlink" title="树状DP"></a>树状DP</h3><p><a href="https://leetcode.cn/problems/house-robber-iii/description/">打家劫舍 III</a>：从树中挑选部分节点，要求两两不连续，求最大值</p>
+<p>节点 A 可选偷或不偷，截止到 A 的最大值依赖于 <code>A-&gt;left 偷/不偷</code>、<code>A-&gt;right 偷/不偷</code> 这四个情况，<strong>即当前状态是由前面多个状态推导出的</strong>，只能采用 DFS （记忆化回溯）的方式</p>
+<pre><code class="cpp">pair&lt;int, int&gt; dfs(TreeNode* t) &#123;
+  if (!t) return &#123;0, 0&#125;;
+  pair&lt;int, int&gt; l = dfs(t-&gt;left), r = dfs(t-&gt;right);
+  int stole = t-&gt;val + l.first + r.first;
+  int unstole = max(l.first, l.second) + max(r.first, r.second);
+  return &#123;unstole, stole&#125;;
+&#125;
+int rob(TreeNode* root) &#123;
+  auto pair = dfs(root);
+  return max(pair.first, pair.second);
+&#125;
+</code></pre>
 <h3 id="数位DP"><a href="#数位DP" class="headerlink" title="数位DP"></a>数位DP</h3><p><a href="https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/description/">1～n 整数中 1 出现的次数</a>：无须考虑前导零</p>
 <p>将<code>n</code>转换成字符串 <code>s</code>，定义 <code>f(i,cnt,isLimit)</code> 表示构造从左往右第<code>i</code>位及其之后数位中 1 的个数</p>
 <ul>
@@ -2837,10 +2851,10 @@ int lcm(int a, int b) &#123;
   return a * b / gcd(a, b);
 &#125;
 // 质数（小于n）
-vector&lt;int&gt; Primes(int n) &#123;
+vector&lt;bool&gt; primes(int n) &#123;
   vector&lt;bool&gt; prime(n, true);
   prime[0] = prime[1] = false;
-  for(int i=2; i &lt; n; ++i)&#123;
+  for(int i = 2; i &lt; n; ++i)&#123;
     if(!prime[i]) continue;
     for(int j = 2 * i; j &lt; n; j += i) &#123;
       prime[j] = false;
@@ -2965,55 +2979,6 @@ cout &lt;&lt; dis(gen) &lt;&lt; endl;
 <li>因此用一个单调递减队列（deque）维护窗口内有意义的元素，直接 <code>deque.front()</code> 获得最大值</li>
 <li>用 <code>l, i</code> 维护窗口左右边界，从队列中 pop 的条件是窗口大小固定为 k，即 <code>i - l == k</code></li>
 </ol>
-<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><a href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
-<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
-<pre><code class="cpp">string minWindow(string s, string t) &#123;
-  int valid = 0, ans_idx = -1, ans_len = INT_MAX;
-  unordered_map&lt;char, int&gt; mp;
-  for (auto c: t) mp[c]++;
-  for (int i = 0, l = 0; i &lt; s.size(); ++i) &#123;
-    char c = s[i];
-    if (mp.count(c)) &#123;
-      if (--mp[c] &gt;= 0) valid++;
-    &#125;
-    while (valid &gt;= t.size()) &#123;
-      if (i - l + 1 &lt; ans_len) &#123;
-        ans_len = i - l + 1;
-        ans_idx = l;
-      &#125;
-      char d = s[l];
-      if (mp.count(d)) &#123;
-        if (++mp[d] &gt; 0) valid--;
-      &#125;
-      l++;
-    &#125;
-  &#125;
-  return ans_idx &lt; 0 ? &quot;&quot; : s.substr(ans_idx, ans_len);
-&#125;
-</code></pre>
-<p><a href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
-<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
-<pre><code class="c++">bool checkInclusion(string s1, string s2) &#123;
-  int valid = 0;
-  unordered_map&lt;char, int&gt; mp;
-  for (auto c: s1) mp[c]++;
-  for (int i = 0, l = 0; i &lt; s2.size(); ++i) &#123;
-    char c = s2[i];
-    if (mp.count(c)) &#123;
-      if (--mp[c] &gt;= 0) valid++;
-    &#125;
-    if (i - l == s1.size()) &#123;
-      char d = s2[l];
-      if (mp.count(d)) &#123;
-        if (++mp[d] &gt; 0) valid--;
-      &#125;
-      l++;
-    &#125;
-    if (valid == s1.size()) return true;
-  &#125;
-  return false;
-&#125;
-</code></pre>
 <hr>
 <h2 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h2><pre><code class="cpp">int n = 1005; // n根据题目中节点数量而定
 vector&lt;int&gt; father = vector&lt;int&gt; (n, 0);
@@ -3153,52 +3118,216 @@ public:
   return answer;
 &#125;
 </code></pre>
-<h2 id="差分数组"><a href="#差分数组" class="headerlink" title="差分数组"></a>差分数组</h2><p>原数组为a，差分数组为b</p>
+<hr>
+<h2 id="区间相关"><a href="#区间相关" class="headerlink" title="区间相关"></a>区间相关</h2><h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p><a href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
+<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
+<pre><code class="cpp">string minWindow(string s, string t) &#123;
+  int valid = 0, ans_idx = -1, ans_len = INT_MAX;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: t) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s.size(); ++i) &#123;
+    char c = s[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    while (valid &gt;= t.size()) &#123;
+      if (i - l + 1 &lt; ans_len) &#123;
+        ans_len = i - l + 1;
+        ans_idx = l;
+      &#125;
+      char d = s[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+  &#125;
+  return ans_idx &lt; 0 ? &quot;&quot; : s.substr(ans_idx, ans_len);
+&#125;
+</code></pre>
+<p><a href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
+<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
+<pre><code class="c++">bool checkInclusion(string s1, string s2) &#123;
+  int valid = 0;
+  unordered_map&lt;char, int&gt; mp;
+  for (auto c: s1) mp[c]++;
+  for (int i = 0, l = 0; i &lt; s2.size(); ++i) &#123;
+    char c = s2[i];
+    if (mp.count(c)) &#123;
+      if (--mp[c] &gt;= 0) valid++;
+    &#125;
+    if (i - l == s1.size()) &#123;
+      char d = s2[l];
+      if (mp.count(d)) &#123;
+        if (++mp[d] &gt; 0) valid--;
+      &#125;
+      l++;
+    &#125;
+    if (valid == s1.size()) return true;
+  &#125;
+  return false;
+&#125;
+</code></pre>
+<h3 id="前缀和"><a href="#前缀和" class="headerlink" title="前缀和"></a>前缀和</h3><blockquote>
+<p>前缀与后缀和的统一写法，但需要特殊处理 0 个元素的前缀&#x2F;后缀和</p>
+</blockquote>
+<pre><code class="cpp">vector&lt;int&gt; nums&#123;1,0,2,4,2,3,1&#125;;
+// pre_sum[i] 为 [0, ..., i]，suf_num[i] 为 [i, ..., n-1]
+vector&lt;int&gt; pre_sum(nums.size()), suf_sum(nums.size());
+pre_sum[0] = nums[0];
+for (int i = 1; i &lt; nums.size(); i++)
+  pre_sum[i] = pre_sum[i - 1] + nums[i];
+
+suf_sum.back() = nums.back();
+for (int i = nums.size() - 2; i &gt;= 0; --i)
+  suf_sum[i] = suf_sum[i + 1] + nums[i];
+</code></pre>
+<h3 id="差分"><a href="#差分" class="headerlink" title="差分"></a>差分</h3><blockquote>
+<p>区间修改（同增同减）- 求修改后的数组</p>
+</blockquote>
+<p>原数组为a，差分数组为b</p>
 <pre><code class="cpp">b[0] = a[0]
 b[i] = a[i] - a[i - 1]
 </code></pre>
 <p>对区间 <code>[x1, x2]</code> 所有值加 <code>y</code></p>
 <pre><code class="cpp">b[x1] += y
-b[x2 + 1] -= y  (x2 + 1 &lt; n)
+b[x2 + 1] -= y  // x2 + 1 &lt; n
 </code></pre>
 <p>根据差分数组求原数组</p>
 <pre><code class="cpp">a[0] = b[0]
 a[i] = a[i - 1] + b[i]
 </code></pre>
-<h2 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h2><p>可以动态维护序列前缀和的数据结构（序列下标从 1 开始）：</p>
-<ul>
-<li>单点修改 <code>add(index,val)</code>：把序列第 index 个数增加 val，O(nlgn)</li>
-<li>区间查询 <code>prefixSum(index)</code>：查询前 index 个元素的前缀和，O(nlgn)</li>
-</ul>
+<h3 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h3><blockquote>
+<p>单点修改 - 区间查询、单点查询</p>
+</blockquote>
 <p><a href="https://leetcode.cn/problems/range-sum-query-mutable/">区域和检索 - 数组可修改</a>：求区间和且会更新数组元素</p>
-<pre><code class="cpp">vector&lt;int&gt; tree; //tree[i]为前i-1前缀和
-vector&lt;int&gt; &amp;nums; //原数组
+<pre><code class="cpp">vector&lt;int&gt; tree;  // tree[i] 为前 i-1 前缀和
+vector&lt;int&gt; nums; // 原数组
 
 int lowBit(int x) &#123;
-    return x &amp; -x;
+  return x &amp; -x;
 &#125;
+// 把序列第 index 个数增加 val，O(nlgn)
 void add(int index, int val) &#123;
-    while (index &lt; tree.size()) &#123;
-        tree[index] += val;
-        index += lowBit(index);
+  while (index &lt; tree.size()) &#123;
+    tree[index] += val;
+    index += lowBit(index);
+  &#125;
+&#125;
+// 查询前 index 个元素的前缀和，O(nlgn)
+int preSum(int index) &#123;
+  int sum = 0;
+  while (index &gt; 0) &#123;
+    sum += tree[index];
+    index -= lowBit(index);
+  &#125;
+  return sum;
+&#125;
+int main()&#123;
+  // input nums
+  tree.assign(nums.size() + 1, 0);
+  for(int i = 0; i &lt; nums.size(); ++i)&#123;
+    add(i + 1, nums[i]);
+  &#125;
+&#125;
+</code></pre>
+<h3 id="线段树"><a href="#线段树" class="headerlink" title="线段树"></a>线段树</h3><blockquote>
+<p>区间修改 - 区间查询、单点查询</p>
+</blockquote>
+<hr>
+<h2 id="一些笔试题目"><a href="#一些笔试题目" class="headerlink" title="一些笔试题目"></a>一些笔试题目</h2><p><a href="https://www.nowcoder.com/questionTerminal/ef231526f822489d879949226b4bed65">对称飞行器</a></p>
+<p>如果没有对称飞行器，就是一道普通广搜题。但是加了飞行器，如果飞行次数没有限制，也是一道普通广搜题只是除了四个direction多了一个分支。可是飞行器有次数限制。那么如果用(x,y)点的状态应该再加一个维度：飞行次数z。因为当z1不等于z2时，P(x,y,z1)和Q(x,y,z2)是两种不同的状态。</p>
+<p>假设z1 &lt; z2，即P和Q在相同的横纵坐标，但是P剩余的飞行次数更多。如果从(x,y,z2)走到终点的最优解是n步，则从(x,y,z1)一定可以走n步到达终点。此时P状态走到最优点的步数更少。所以在层次遍历的最优解中不该包含z2.</p>
+<p>也就是说在向z增加转移的过程中，我们应该看 <code>matrix[x][y][0]...matrix[x][y][z]</code> 中是否已经有为1的点，如果有就不必再在第z层再走x，y。</p>
+<pre><code class="cpp">struct Node &#123;
+    int x, y;
+    int fly;
+    Node() = default;
+    Node(int x_, int y_, int f_): x(x_), y(y_), fly(f_) &#123;&#125;
+&#125;;
+
+int n, m;
+queue&lt;Node&gt; q;
+vector&lt;vector&lt;int&gt;&gt; vis;
+vector&lt;vector&lt;char&gt;&gt; board;
+vector&lt;int&gt; delta&#123;-1, 0, 1, 0, -1&#125;;
+
+bool check(Node&amp; node) &#123;
+    return node.x &gt;= 0 &amp;&amp; node.x &lt; n &amp;&amp; node.y &gt;= 0 &amp;&amp; node.y &lt; m &amp;&amp;
+           board[node.x][node.y] != &#39;#&#39; &amp;&amp; !vis[node.x][node.y];  
+&#125;
+int bfs(int i, int j) &#123;
+    q.emplace(i, j, 5);
+    vis[i][j] = 1;
+    int level = 0;
+    while (!q.empty()) &#123;
+        int size = q.size();
+        while (size--) &#123;
+            Node cur = q.front(); q.pop();
+            if (board[cur.x][cur.y] == &#39;E&#39;) &#123;
+                return level;
+            &#125;
+            for (int i = 0; i &lt;= 4; ++i) &#123;
+                Node tmp;
+                if (i == 4) &#123;  // fly
+                    if (cur.fly &gt; 0) &#123;
+                        tmp.x = n - 1 - cur.x;
+                        tmp.y = m - 1 - cur.y;
+                        tmp.fly = cur.fly - 1;
+                    &#125;
+                &#125; else &#123;
+                    tmp.x = cur.x + delta[i];
+                    tmp.y = cur.y + delta[i + 1];
+                    tmp.fly = cur.fly;
+                &#125;
+                if (check(tmp)) &#123;
+                    vis[tmp.x][tmp.y] = 1;
+                    q.push(tmp);
+                &#125;
+            &#125;
+        &#125;
+        level++;
+    &#125;
+    return -1;
+&#125;
+int main() &#123;
+    cin &gt;&gt; n &gt;&gt; m;
+    board.assign(n, vector&lt;char&gt;(m, 0));
+    vis.assign(n, vector&lt;int&gt;(m, 0));
+    for (int i = 0; i &lt; n; ++i) &#123;
+        for (int j = 0; j &lt; m; ++j) &#123;
+            cin &gt;&gt; board[i][j];
+        &#125;
+    &#125;
+    for (int i = 0; i &lt; n; ++i) &#123;
+        for (int j = 0; j &lt; m; ++j) &#123;
+            if (board[i][j] == &#39;S&#39;) &#123;
+                cout &lt;&lt; bfs(i, j) &lt;&lt; endl;
+                return 0;
+            &#125;
+        &#125;
     &#125;
 &#125;
-int prefixSum(int index) &#123;
-    int sum = 0;
-    while (index &gt; 0) &#123;
-        sum += tree[index];
-        index -= lowBit(index);
-    &#125;
-    return sum;
-&#125;
-int main(vector&lt;int&gt;&amp; nums)&#123;
-    nums = nums;
-    // 初始化tree为全0数组，遍历更新
-    tree.assign(nums.size()+1,0);
-    for(int i=0;i&lt;nums.size();++i)&#123;
-        add(i+1,nums[i]);
-    &#125;
-&#125;
+</code></pre>
+<p>自定义类型的<code>map/set</code>需要重载<code>hash</code>、<code>&lt;</code>和<code>=</code></p>
+<pre><code class="cpp">struct Node &#123;
+  int a, b;
+  bool operator&lt;(const Node&amp; other) const &#123;
+    return a == other.a &amp;&amp; b == other.b;
+  &#125;;
+  bool operator==(const Node&amp; other) const &#123;
+    return a == other.a &amp;&amp; b == other.b;
+  &#125;;
+&#125;;
+template&lt;&gt;
+struct hash&lt;Node&gt; &#123;
+  size_t operator()(const Node&amp; node) const &#123;
+    return hash&lt;int&gt;()(node.a) &amp; hash&lt;int&gt;()(node.b);
+  &#125;
+&#125;;
+
+unordered_map&lt;Node, int&gt; mp;
+unordered_set&lt;Node&gt; st;
 </code></pre>
 ]]></content>
       <categories>

@@ -4978,7 +4978,7 @@ end start
   <entry>
     <title>操作系统</title>
     <url>/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</url>
-    <content><![CDATA[<h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a href="https://yveltals.github.io/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
+    <content><![CDATA[<h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a href="https://yveltals.github.io/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
 <li>协程是一种用户态的<strong>轻量级线程</strong>，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的</li>
 <li><strong>创建开销</strong>：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程</li>
 <li><strong>切换开销</strong>：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上下文和栈，不涉及内核切换的开销，提高了性能，但也失去了使用多CPU的能力</li>
@@ -5313,9 +5313,9 @@ end start
 <p>相比与 Select 和 Poll，Epoll 更加高效：</p>
 <ol>
 <li><strong>没 fd 数量限制</strong>：是一个很大的值，和内存大小有关</li>
-<li><strong>无需遍历</strong>：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
-<li><strong>减少拷贝</strong>：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
-<li><strong>回调</strong>：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>减少拷贝</strong>(用户态&lt;-&gt;内核态)：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
+<li><strong>回调</strong>(<code>监测方式</code>)：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>无需遍历</strong>(<code>处理返回结果</code>)：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
 <li><strong>ET触发</strong>：Epoll的边缘触发模式效率高，系统不会充斥大量不关心的就绪文件描述符</li>
 <li>虽然Epoll的性能最好，但是在连接数少并且连接都十分活跃的情况下，Select和Poll的性能可能比Epoll好，毕竟Epoll的通知机制需要很多函数回调。</li>
 </ol>
@@ -5350,15 +5350,15 @@ end start
 <li>CPU 收到中断请求后，保存中断进程的上下文，然后调用键盘的<strong>中断处理程序</strong>（键盘驱动程序初始化时注册的），从键盘控制器的<strong>寄存器的缓冲区</strong>读取扫描码，如果是显示字符如 <code>ABC</code>，则翻译成对应的 ASCII 码，放到<strong>读缓冲区队列</strong></li>
 <li>若要显示至屏幕，显示设备的驱动程序会定时从<strong>读缓冲区队列</strong>读取数据放到<strong>写缓冲区队列</strong>，最后把数据写入到显示设备的控制器的寄存器数据缓冲区中，显示在屏幕里</li>
 </ol>
-<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
+<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU 不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
 <p>以<strong>读SSD+写网卡</strong>为例，两种实现方式：<br><strong>1. mmap+write</strong>：<strong>4次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，因此 mmap 将 page cache 与用户空间的缓冲区映射到一起，只需从磁盘拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作 IO 都在内核中完成<br><img src="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" class="lazyload" data-srcset="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. sendfile</strong>：<strong>2次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>在两个文件描述符之间传输数据，全程由内核操作的，彻底避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作<br><img src="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" class="lazyload" data-srcset="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。<br><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. 优点</strong></p>
 <ol>
-<li>相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代I&#x2F;O读写，提高了文件读取效率。</li>
-<li>实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
-<li>一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
+<li>(<code>优化读写</code>)相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代 I&#x2F;O 读写，提高了文件读取效率。</li>
+<li>(<code>通过page cache实现内核用户空间交互</code>)实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
+<li>(<code>共享内存，进程间通信</code>)一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
 </ol>
 <p><strong>3. 细节</strong></p>
 <ol>
@@ -5374,7 +5374,7 @@ end start
 </ul>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <p>并发和并行</p><ul><li>并发：指宏观上在一段时间内能同时运行多个程序，通过引入进程和线程使得程序并发运行。</li><li>并行：指同一时刻能运行多个指令，需要硬件支持，如多核处理器或者分布式计算系统。</li></ul><p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
+              <p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
               </div>
             </details>
 
@@ -5482,7 +5482,7 @@ end start
 <li>OSI在网络层支持无连接和面向连接的通信，但在传输层仅有面向连接通信。而TCP&#x2F;IP则相反，在网际层仅有无连接服务，在传输层支持无连接和面向连接两种模式。</li>
 </ol>
 <hr>
-<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520161056918.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520161056918.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_connect.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_connect.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
 <h4 id="三次握手过程"><a href="#三次握手过程" class="headerlink" title="三次握手过程"></a>三次握手过程</h4><ul>
 <li>第一次握手：客户端请求建立连接，向服务端发送一个<strong>同步报文</strong>（SYN&#x3D;1），同时选择一个随机数 <code>seq=x</code>作为<strong>初始序列号</strong>，并进入 SYN_SENT 状态，等待服务器确认。</li>
 <li>第二次握手：服务端收到连接请求报文后，向客户端发送<strong>同步确认报文</strong>（SYN&#x3D;1，ACK&#x3D;1），确认号为 <code>ack=x+1</code>，同时选择一个随机数 <code>seq = y</code> 作为初始序列号，此时服务器进入 SYN_RECV 状态。</li>
@@ -5493,14 +5493,13 @@ end start
 <li>三次握手才能让双方均确认自己和对方的发送和接收能力都正常。<br>第一次握手：客户端只是发送处请求报文段，什么都无法确认，而服务器可以确认自己的接收能力和对方的发送能力正常；<br>第二次握手：客户端可以确认自己发送能力和接收能力正常，对方发送能力和接收能力正常；但<strong>服务器方还不能确定自己发送和客户端接收是否正常</strong>；<br>第三次握手：服务器可以确认自己发送能力和接收能力正常，对方发送能力和接收能力正常；</li>
 <li>告知对方自己的初始序号值，并确认收到对方的初始序号值。<br>TCP 报文段中维护了序号字段和确认序号字段，从而确定发出的数据中哪些已经被对方确认接收。这两个字段的值会在初始序号值得基础递增，如果是两次握手，只有发起方的初始序号可以得到确认，而另一方的初始序号则得不到确认。</li>
 </ol>
-<h4 id="为什么不是四次握手"><a href="#为什么不是四次握手" class="headerlink" title="为什么不是四次握手"></a>为什么不是四次握手</h4><p>因为三次握手已经可以确认双方的发送接收能力正常，双方都知道彼此已经准备好，而且也可以完成对双方初始序号值得确认，也就无需再第四次握手了。</p>
 <h4 id="三次握手可以携带数据吗"><a href="#三次握手可以携带数据吗" class="headerlink" title="三次握手可以携带数据吗"></a>三次握手可以携带数据吗</h4><p>第三次握手可以携带数据的，但是前两次握手不可以</p>
 <ul>
 <li>第一次握手不可以带数据，因为会让服务器更加容易受到攻击（不断发送SYN，并携带长数据）</li>
 <li>第三次握手时，客户端已经处于 ESTABLISHED 状态，对客户端来说已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据</li>
 </ul>
 <hr>
-<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520180127547.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520180127547.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
+<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_close.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_close.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h4 id="四次挥手过程"><a href="#四次挥手过程" class="headerlink" title="四次挥手过程"></a>四次挥手过程</h4><ul>
 <li>第一次挥手：客户端向服务端发送<strong>连接释放报文</strong>（FIN&#x3D;1，ACK&#x3D;1），主动关闭连接并等待服务端的确认。<ul>
 <li>序列号 <code>seq = u</code>，即客户端上次发送的报文的最后一个字节的序号 + 1</li>
@@ -5545,7 +5544,6 @@ end start
 <li><p>调整短连接为长连接</p>
 </li>
 </ul>
-<h4 id="为什么不是三次挥手"><a href="#为什么不是三次挥手" class="headerlink" title="为什么不是三次挥手"></a>为什么不是三次挥手</h4><p>服务器的<strong>ACK和FIN一般都会分开发送</strong>，从而导致多了一次挥手。服务器在收到客户端的 FIN 报文段后，可能还有一些数据要传输，所以会先做出应答返回 ACK报文，等到数据发送完后再发送 FIN 报文请求关闭连接。</p>
 <h4 id="服务器大量-TIME-WAIT-的原因"><a href="#服务器大量-TIME-WAIT-的原因" class="headerlink" title="服务器大量 TIME_WAIT 的原因"></a>服务器大量 TIME_WAIT 的原因</h4><p>即服务端主动关闭连接的情况：</p>
 <ul>
 <li><p>HTTP 没有使用长连接</p>
@@ -5598,7 +5596,10 @@ end start
 <p><strong>优点</strong>： 信道利用率高，容易实现，即使确认丢失，也不必重传。</p>
 <p><strong>缺点</strong>： 不能向发送方反映出已经正确收到的所有分组的信息。中间几条丢失后，由于接收方只能确认前面几条，所以发送方只能将后边几条也重传。这也叫回退N帧，表示需要退回来重传已经发送过的 N 个消息。</p>
 <hr>
-<h3 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h3><table>
+<h3 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h3><blockquote>
+<p>首靠序 传连景</p>
+</blockquote>
+<table>
 <thead>
 <tr>
 <th></th>
@@ -5663,8 +5664,8 @@ end start
 </ul>
 <hr>
 <h3 id="TCP的其他问题"><a href="#TCP的其他问题" class="headerlink" title="TCP的其他问题"></a>TCP的其他问题</h3><h4 id="第三次握手的ACK包丢失会发生什么"><a href="#第三次握手的ACK包丢失会发生什么" class="headerlink" title="第三次握手的ACK包丢失会发生什么"></a>第三次握手的ACK包丢失会发生什么</h4><ul>
-<li><strong>服务端：</strong>第三次的 ACK 在网络中丢失，那么服务端的状态为 SYN_RECV，会根据超时重机制不断重发 SYN+ACK 包，等待客户端确认。如果重发超过指定次数仍未收到应答，服务端自动关闭连接。</li>
-<li><strong>客户端：</strong>客户端认为这个连接已经建立，如果客户端向服务端发送数据，服务端将以 RST 包（Reset，标示复位，用于异常的关闭连接）响应。此时，客户端知道第三次握手失败。</li>
+<li><strong>服务端</strong>：第三次的 ACK 在网络中丢失，那么服务端的状态为 SYN_RECV，会根据超时重机制不断重发 SYN+ACK 包，等待客户端确认。如果重发超过指定次数仍未收到应答，服务端自动关闭连接。</li>
+<li><strong>客户端</strong>：客户端认为这个连接已经建立，如果客户端向服务端发送数据，服务端将以 RST 包（Reset，标示复位，用于异常的关闭连接）响应。此时，客户端知道第三次握手失败。</li>
 </ul>
 <h4 id="建立连接后客户端故障会发生什么（服务端同理）"><a href="#建立连接后客户端故障会发生什么（服务端同理）" class="headerlink" title="建立连接后客户端故障会发生什么（服务端同理）"></a>建立连接后客户端故障会发生什么（服务端同理）</h4><ul>
 <li><strong>客户端进程崩溃</strong>：客户端的进程在发生崩溃的时候，内核会发送 FIN 报文，负责与服务端四次挥手。</li>
@@ -5781,10 +5782,6 @@ end start
 <li>本地域名服务器再查询<strong>权限域名服务器</strong>，最终查询出来的IP地址和TTL值（缓存时间）返回给本地域名服务器</li>
 <li>本地域名服务器缓存IP映射关系，再把解析结果返回给本地电脑，缓存在本地系统缓存中</li>
 </ol>
-<blockquote>
-<h2 id="DNS负载均衡"><a href="#DNS负载均衡" class="headerlink" title="DNS负载均衡"></a>DNS负载均衡</h2><p>假如每次请求的资源都位于同一台机器上面，那么这台机器可能会崩掉。</p>
-<p>因此在DNS服务器中为同一个主机名配置多个IP地址，在应答DNS查询时返回不同的 IP 地址，使得不同的客户端访问不同的服务器，从而达到负载均衡的目的｡</p>
-</blockquote>
 <hr>
 <h2 id="PING"><a href="#PING" class="headerlink" title="PING"></a>PING</h2><h3 id="Ping的工作原理"><a href="#Ping的工作原理" class="headerlink" title="Ping的工作原理"></a>Ping的工作原理</h3><p>ping 命令执行的时候，源主机会发送 <strong>ICMP 回送请求消息</strong>，目的主机返回 <strong>ICMP 回送响应消息</strong>。在规定的时候间内，源主机如果没有接到 ICMP 的应答包，则说明目标主机不可达；如果接收到了则说明可达，此时源主机会用当前时刻减去该数据包最初从源主机上发出的时刻，得到 ICMP 数据包的时间延迟。</p>
 <h3 id="几个地址的区别"><a href="#几个地址的区别" class="headerlink" title="几个地址的区别"></a>几个地址的区别</h3><ul>
@@ -5801,9 +5798,8 @@ end start
 <hr>
 <h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><h3 id="GET和POST的区别"><a href="#GET和POST的区别" class="headerlink" title="GET和POST的区别"></a>GET和POST的区别</h3><p><strong>使用区别</strong>：</p>
 <ul>
-<li>GET使用URL或Cookie传参，而POST将数据放在BODY中，这是因为HTTP协议用法的约定</li>
-<li>GET提交的数据有长度限制，则POST则可以非常大，这是因为操作系统和浏览器设置的不同</li>
-<li>POST比GET安全，因为数据在地址栏上不可见（但在 HTTP下都不安全，因为明文传输可以被抓包）</li>
+<li>GET使用URL或Cookie传参，有长度限制，而POST将数据放在BODY中可以很大</li>
+<li>POST比GET安全，因为数据在地址栏上不可见（但在 HTTP 下都不安全，因为明文传输可以被抓包）</li>
 <li>GET产生一个TCP数据包，将 <code>http header</code> 和 <code>data</code> 一并发送出去，服务器响应<code>200 ok</code> (返回数据)；POST产生两个TCP数据包，浏览器先发送<code>header</code>，服务器响应<code>100 continue</code>，再发送<code>data</code>，服务器响应<code>200 ok</code> (返回数据)。不过 POST 分开发送是部分浏览器或框架的请求方法，并<strong>不是必然</strong>行为</li>
 <li>GET请求会被浏览器主动缓存，而POST不会，除非手动设置</li>
 </ul>
@@ -5910,7 +5906,10 @@ end start
 <li>HTTP 的 Keep-Alive 也叫 HTTP 长连接，该功能是由<strong>应用程序</strong>实现的，可以使得用同一个 TCP 连接来发送和接收多个 HTTP 请求&#x2F;应答，减少了 HTTP 短连接带来的多次 TCP 连接建立和释放的开销。</li>
 <li>TCP 的 Keepalive 也叫 TCP 保活机制，该功能是由<strong>内核</strong>实现的，当客户端和服务端长达一定时间没有进行数据交互时，内核就会发送探测报文，若对方不在线则关闭该连接。</li>
 </ul>
-<h3 id="HTTP和HTTPS的区别"><a href="#HTTP和HTTPS的区别" class="headerlink" title="HTTP和HTTPS的区别"></a>HTTP和HTTPS的区别</h3><table>
+<h3 id="HTTP和HTTPS的区别"><a href="#HTTP和HTTPS的区别" class="headerlink" title="HTTP和HTTPS的区别"></a>HTTP和HTTPS的区别</h3><blockquote>
+<p>端证安耗协</p>
+</blockquote>
+<table>
 <thead>
 <tr>
 <th></th>

@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-04-20T04:59:04.000Z">
-<meta property="article:modified_time" content="2024-07-11T15:55:17.825Z">
+<meta property="article:modified_time" content="2024-08-05T04:53:27.594Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1722611601283),
+    lastupdate: new Date(1722913087897),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2519,7 +2519,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a target="_blank" rel="noopener" href="https://yveltals.github.io/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
+    <h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a target="_blank" rel="noopener" href="https://yveltals.github.io/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
 <li>协程是一种用户态的<strong>轻量级线程</strong>，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的</li>
 <li><strong>创建开销</strong>：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程</li>
 <li><strong>切换开销</strong>：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上下文和栈，不涉及内核切换的开销，提高了性能，但也失去了使用多CPU的能力</li>
@@ -2854,9 +2854,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>相比与 Select 和 Poll，Epoll 更加高效：</p>
 <ol>
 <li><strong>没 fd 数量限制</strong>：是一个很大的值，和内存大小有关</li>
-<li><strong>无需遍历</strong>：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
-<li><strong>减少拷贝</strong>：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
-<li><strong>回调</strong>：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>减少拷贝</strong>(用户态&lt;-&gt;内核态)：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
+<li><strong>回调</strong>(<code>监测方式</code>)：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>无需遍历</strong>(<code>处理返回结果</code>)：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
 <li><strong>ET触发</strong>：Epoll的边缘触发模式效率高，系统不会充斥大量不关心的就绪文件描述符</li>
 <li>虽然Epoll的性能最好，但是在连接数少并且连接都十分活跃的情况下，Select和Poll的性能可能比Epoll好，毕竟Epoll的通知机制需要很多函数回调。</li>
 </ol>
@@ -2891,15 +2891,15 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>CPU 收到中断请求后，保存中断进程的上下文，然后调用键盘的<strong>中断处理程序</strong>（键盘驱动程序初始化时注册的），从键盘控制器的<strong>寄存器的缓冲区</strong>读取扫描码，如果是显示字符如 <code>ABC</code>，则翻译成对应的 ASCII 码，放到<strong>读缓冲区队列</strong></li>
 <li>若要显示至屏幕，显示设备的驱动程序会定时从<strong>读缓冲区队列</strong>读取数据放到<strong>写缓冲区队列</strong>，最后把数据写入到显示设备的控制器的寄存器数据缓冲区中，显示在屏幕里</li>
 </ol>
-<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
+<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU 不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
 <p>以<strong>读SSD+写网卡</strong>为例，两种实现方式：<br><strong>1. mmap+write</strong>：<strong>4次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，因此 mmap 将 page cache 与用户空间的缓冲区映射到一起，只需从磁盘拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作 IO 都在内核中完成<br><img src="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" class="lazyload" data-srcset="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. sendfile</strong>：<strong>2次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>在两个文件描述符之间传输数据，全程由内核操作的，彻底避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作<br><img src="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" class="lazyload" data-srcset="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。<br><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. 优点</strong></p>
 <ol>
-<li>相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代I&#x2F;O读写，提高了文件读取效率。</li>
-<li>实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
-<li>一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
+<li>(<code>优化读写</code>)相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代 I&#x2F;O 读写，提高了文件读取效率。</li>
+<li>(<code>通过page cache实现内核用户空间交互</code>)实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
+<li>(<code>共享内存，进程间通信</code>)一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
 </ol>
 <p><strong>3. 细节</strong></p>
 <ol>
@@ -2915,7 +2915,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <p>并发和并行</p><ul><li>并发：指宏观上在一段时间内能同时运行多个程序，通过引入进程和线程使得程序并发运行。</li><li>并行：指同一时刻能运行多个指令，需要硬件支持，如多核处理器或者分布式计算系统。</li></ul><p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
+              <p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
               </div>
             </details>
 
@@ -2943,10 +2943,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-11T23:55:17+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-05T12:53:27+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 11, 2024</p>
+    <p>更新于：Aug 5, 2024</p>
   </a>
 </div>
 

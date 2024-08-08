@@ -5,7 +5,6 @@
     <url>/2022/11/01/CPP/Cpp%20trivial/</url>
     <content><![CDATA[<h2 id="基本变量类型"><a href="#基本变量类型" class="headerlink" title="基本变量类型"></a>基本变量类型</h2><p>char在不同机器上实现为signed char或unsigned char，因此在存储小数时应特别指定un&#x2F;signed</p>
 <p>混用带&#x2F;无符号类型计算时，带符号数会转成无符号数，如unsigned(1)*signed(-1)&#x3D;4294967295（环境相关）</p>
-<p>列表初始化且初始值会丢失信息时，编译器报错，如 int a{3.14}</p>
 <h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p><code>int i=0, *p=&amp;i</code>，其中基本数据类型<code>int</code>，类型修饰符<code>*或&amp;</code></p>
 <p>引用与指针：不能定义引用的指针，因为引用不是对象；反之可以</p>
 <h2 id="运算符优先级"><a href="#运算符优先级" class="headerlink" title="运算符优先级"></a>运算符优先级</h2><blockquote>
@@ -105,9 +104,6 @@ p+1  //指向第一行地址
 *(p+1)+2, p[1]+2  //第1行第2列地址
 *(p[1]+2)  //第1行第2列元素
 </code></pre>
-<h2 id="Mutable"><a href="#Mutable" class="headerlink" title="Mutable"></a>Mutable</h2><p>mutable也是为了突破const的限制而设置的。</p>
-<p>被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。</p>
-<p>如果需要在const函数里面修改一些跟类状态无关的数据成员，那么这个函数就应该被mutable来修饰。</p>
 <h2 id="This"><a href="#This" class="headerlink" title="This"></a>This</h2><ul>
 <li>指向对象的首地址，只能在非静态成员函数中使用。当类的<strong>非静态成员函数</strong>访问<strong>非静态成员</strong>的时候，编译器会自动将对象本身的地址作为一个隐含参数 this 传递给函数，对各成员的访问均通过 this 进行。this 在成员函数的开始执行前构造，在成员的执行结束后清除。所以This不占用对象空间，会因编译器的不同放置到栈、寄存器、甚至全局变量中</li>
 <li>用途：除了指向首地址，还能区分形参和成员变量名、返回类对象本身</li>
@@ -129,7 +125,7 @@ p+1  //指向第一行地址
 <li><p><strong>普通变量</strong></p>
 <ul>
 <li>可见性本文件，存储在静态存储区（默认初始化为0，全局生存期）</li>
-<li>离开函数仍然存在，具有记忆功能</li>
+<li>全局static变量在<code>main()</code>之前初始化，局部static在执行到声明处时才初始化</li>
 </ul>
 </li>
 <li><p><strong>成员变量</strong></p>
@@ -145,26 +141,19 @@ p+1  //指向第一行地址
 </ul>
 </li>
 </ul>
-<blockquote>
-<p><a href="https://zhuanlan.zhihu.com/p/37439983">初始化时机</a> TODO</p>
-<ul>
-<li>全局static变量在<code>main()</code> 之前初始化</li>
-<li>局部static变量在执行到声明处时才初始化</li>
-<li>static对象首次用到时才构造，因为构造函数的原因</li>
-</ul>
-</blockquote>
 <h2 id="Const"><a href="#Const" class="headerlink" title="Const"></a>Const</h2><ul>
 <li><p><strong>普通变量</strong></p>
 <ul>
-<li>可见性本文件，存储在栈区(<code>局部</code>)、全局存储区(<code>全局</code>)或不分配内存在符号表(<code>const int a = 1</code>)</li>
-<li>const形参可以接收非const类型的实参</li>
+<li>可见性本文件，存储在栈区(<code>局部</code>)、常量存储区(<code>全局</code>)或不分配内存在符号表（如基础数据类型<code>const int a = 1</code>）</li>
 </ul>
 </li>
 <li><p><strong>成员变量</strong></p>
-</li>
+<ul>
 <li><p>只在某个对象生命周期是常量，不同对象的const成员值可以不同</p>
 </li>
 <li><p>不能在类定义外部初始化，通过构造函数初始化列表初始化</p>
+</li>
+</ul>
 </li>
 <li><p><strong>成员函数</strong></p>
 <ul>
@@ -172,7 +161,7 @@ p+1  //指向第一行地址
 </li>
 <li><p>常量对象只能调用常量函数</p>
 </li>
-<li><p>const成员函数想修改变量可用<code>mutable</code>修饰</p>
+<li><p>想在const成员函数中修改类成员变量，可以用<code>mutable</code>修饰</p>
 </li>
 </ul>
 </li>
@@ -180,8 +169,6 @@ p+1  //指向第一行地址
 <blockquote>
 <p><strong>顶层</strong>const：修饰的变量<strong>本身</strong>是一个常量，无法修改，指的是指针，<strong>顶层const不构成重载</strong></p>
 <p><strong>底层</strong>const：修饰的变量<strong>所指向的对象</strong>是一个常量，指的是所指变量</p>
-<p>const存放位置：TODO</p>
-<p>局部常量，存放在栈区<br>全局常量，编译期⼀般不分配内存，放在符号表中以提⾼访问效率<br>字⾯值常量，⽐如字符串，放在常量区</p>
 </blockquote>
 <h2 id="Union"><a href="#Union" class="headerlink" title="Union"></a>Union</h2><p>联合（union）是一种节省空间的特殊的类，一个 union 可以有多个数据成员，但是在任意时刻只有一个数据成员可以有值。当某个成员被赋值后其他成员变为未定义状态。联合有如下特点：</p>
 <ul>
@@ -247,32 +234,18 @@ int main() &#123;
   g(1,2); // 2177
 &#125;
 </code></pre>
-<h2 id="访控与继承"><a href="#访控与继承" class="headerlink" title="访控与继承"></a>访控与继承</h2><p>派生类友元不能访问基类<code>protected</code>成员</p>
-<pre><code class="cpp">class Base&#123;
-protected:
-  int i;
-&#125;
-class Sneaky: public Base&#123;
-  friend void fun(Sneaky&amp;);
-  friend void fun(Base&amp;);
-  int j;
-&#125;
-void fun(Sneaky&amp; s) &#123;s.j=0;&#125; //正确
-void fun(Base&amp; s) &#123;s.i=0;&#125; //错误,无访问权限
-</code></pre>
-<p><img src="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="访控与继承"><a href="#访控与继承" class="headerlink" title="访控与继承"></a>访控与继承</h2><ul>
+<li><code>public</code>成员对<strong>任何访问者可见</strong>(类内、类外和子类)</li>
+<li><code>private</code>成员只对<strong>类内可见</strong></li>
+<li><code>protected</code>介于<code>public</code>和<code>private</code>之间，它对于<strong>类内与派生类可见</strong>。这为继承提供了便利，子类可以访问父类的<code>protected</code>成员。</li>
+<li>但是子类友元不能访问父类<code>protected</code>成员</li>
+</ul>
 <h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><ol>
 <li>将 <code>main()</code> 函数的运行状态进行压栈</li>
 <li>将 <code>func()</code> 函数的返回地址压栈</li>
 <li>将 <code>func()</code> 函数的参数从右到左压栈（形参在函数调用前不分配存储空间，调用结束后弹出栈空间）</li>
 <li>将 <code>func()</code> 定义变量依次压栈</li>
 </ol>
-<h2 id="重载运算符"><a href="#重载运算符" class="headerlink" title="重载运算符"></a>重载运算符</h2><ul>
-<li>引入运算符是为了实现类的多态</li>
-<li>只能重载已有的运算符，且不能改变操作数个数、优先级、结合律</li>
-<li>分为成员运算符重载和非成员运算符重载</li>
-<li>成员运算符重载默认 this 绑定左侧运算符对象，少一个参数，下标和箭头运算符必须用这种方式</li>
-</ul>
 <h2 id="堆和栈"><a href="#堆和栈" class="headerlink" title="堆和栈"></a>堆和栈</h2><table>
 <thead>
 <tr>
@@ -282,24 +255,9 @@ void fun(Base&amp; s) &#123;s.i=0;&#125; //错误,无访问权限
 </tr>
 </thead>
 <tbody><tr>
-<td align="left"><strong>管理方式</strong></td>
-<td>堆资源由程序员控制</td>
-<td>栈资源由编译器自动管理</td>
-</tr>
-<tr>
-<td align="left"><strong>内存管理机制</strong></td>
-<td>系统有一个记录空闲内存地址的链表，遍历该链表找到第一个空间满足的堆结点，从空闲结点链表中删除该结点，并将该结点空间分配给程序</td>
-<td>只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报栈溢出异常。</td>
-</tr>
-<tr>
 <td align="left"><strong>空间大小</strong></td>
-<td>堆是不连续的内存区域，大小受限有效的虚拟内存，所以堆的空间比较灵活、比较大</td>
-<td>栈是一块连续的内存区域，大小是操作系统预定好的，windows是2M</td>
-</tr>
-<tr>
-<td align="left"><strong>碎片问题</strong></td>
-<td>对于堆，频繁的new&#x2F;delete会造成大量碎片，使程序效率降低</td>
-<td>类似于数据结构上的栈，先进后出一一对应，不会产生碎片</td>
+<td>堆空间不连续，频繁分配产生碎片，但空间大（受限于有效的虚拟内存）</td>
+<td>连续的一小块内存区域（1~8M），没有碎片</td>
 </tr>
 <tr>
 <td align="left"><strong>生长方向</strong></td>
@@ -307,13 +265,18 @@ void fun(Base&amp; s) &#123;s.i=0;&#125; //错误,无访问权限
 <td>栈向下，向低地址方向增长。</td>
 </tr>
 <tr>
-<td align="left"><strong>分配方式</strong></td>
-<td>都是动态分配</td>
-<td>静态分配由编译器完成<br />动态分配由alloca函数分配，编译器负责释放</td>
+<td align="left"><strong>管理方式</strong></td>
+<td>程序员控制，都是动态分配</td>
+<td>编译器自动管理，主要静态分配，也可以用alloca函数动态分配（自动释放）</td>
+</tr>
+<tr>
+<td align="left"><strong>内存管理机制</strong></td>
+<td>系统有一个记录空闲内存地址的链表，遍历该链表找到第一个空间满足的堆结点，从空闲结点链表中删除该结点，并将该结点空间分配给程序</td>
+<td>只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报栈溢出异常。</td>
 </tr>
 <tr>
 <td align="left"><strong>分配效率</strong></td>
-<td>堆由C&#x2F;C++函数库提供，分配内存时需要寻找合适大小的内存，并且获取堆的内容需要两次访问（先访问指针得到地址，再访问内存），因此效率比栈低</td>
+<td>堆由C&#x2F;C++函数库提供，分配内存时需要寻找合适大小的内存，并且获取堆的内容需要两次访问（先获取地址，再访问内存），效率低</td>
 <td>计算机在底层对栈提供支持，栈地址有专门寄存器存放，栈操作有专门指令</td>
 </tr>
 </tbody></table>
@@ -370,45 +333,27 @@ void fun(Base&amp; s) &#123;s.i=0;&#125; //错误,无访问权限
 <li><p><strong>类成员变量在进入构造函数之前进行初始化</strong>，所以类成员会在进入构造函数之前先<strong>调用一次默认构造</strong>函数，进入后再做<strong>一次赋值</strong>操作(对象已存在)，而初始化列表只做<strong>一次赋值</strong>操作会更快。</p>
 </li>
 </ul>
-<h2 id="静态绑定、动态绑定"><a href="#静态绑定、动态绑定" class="headerlink" title="静态绑定、动态绑定"></a>静态绑定、动态绑定</h2><p>静态绑定，绑定的是静态类型（在程序中声明的类型），发⽣在编译期间。</p>
-<p>动态绑定，绑定的是动态类型（⽬前所指对象的实际类型），发⽣在运⾏期间。</p>
-<p>虚函数是动态绑定的，⾮虚函数是静态绑定的，<strong>缺省参数值也是静态绑定的</strong>。所以不应该重新定义继承⽽来的缺省参数，否则可能在调用一个派生类内的虚函数时，使用基类指定的缺省参数值。</p>
+<h2 id="静态绑定、动态绑定"><a href="#静态绑定、动态绑定" class="headerlink" title="静态绑定、动态绑定"></a>静态绑定、动态绑定</h2><p>静态绑定，绑定的是在程序中声明的类型，发⽣在编译期间。如非虚函数。</p>
+<p>动态绑定，绑定的是所指对象的实际类型，发⽣在运⾏期间，如虚函数。但是，<strong>缺省参数值也是静态绑定的</strong>，所以不能重新定义继承来的缺省参数，否则可能调用派生类的虚函数时，使用的是基类的缺省参数值。</p>
 <h2 id="四种强制转换"><a href="#四种强制转换" class="headerlink" title="四种强制转换"></a>四种强制转换</h2><ul>
-<li><strong>static_cast</strong>：主要执⾏⾮多态的转换：基本类型互转、void指针转换。基类子类间上⾏转换安全，下⾏转换不安全，得到错误指针；不能转换掉const、volitale属性</li>
+<li><strong>static_cast</strong>：主要执⾏⾮多态的基本类型互转。基类子类间上⾏转换安全，下⾏转换不安全，得到错误指针；不能转换掉const、volitale属性</li>
 <li><strong>dynamic_cast</strong>：主要用于安全的下行转换，支持运行时识别指针、引用<ul>
 <li>（下行转换）须用于<strong>含虚函数</strong>的类，因为运行时转换须要知道类对象的信息，通过虚函数表得到继承关系</li>
 <li>必须转换类指针、引⽤或 void*类型</li>
 <li>上行转换同static_cast，下⾏转换安全，当类型不⼀致时返回nullptr</li>
 </ul>
 </li>
-<li><strong>const_cast</strong>：修改类型的const或volatile属性</li>
+<li><strong>const_cast</strong>：移除const或volatile属性</li>
 <li><strong>reinterpret_cast</strong>：从底层对数据进⾏重新解释，危险性高，依赖具体的平台，可移植性差。可以将整形转指针、指针转数组、指针转引⽤</li>
-</ul>
-<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><strong><a href="">空类默认生成哪些函数 TODO</a></strong></p>
-<p>默认构造函数，拷贝构造函数，析构函数，赋值运算符，取址运算符，取址运算符 const</p>
-<p><strong><a href="">编译器何时生成默认构造函数 TODO</a></strong> （拷贝构造函数同理）</p>
-<ul>
-<li><p>没有显示定义ctor且默认ctor被需要的时候，且满足四点之一：</p>
-</li>
-<li><p>类对象成员有默认ctor、基类有默认ctor、含虚函数、含虚继承</p>
-</li>
-</ul>
-<p><strong>构造函数做了哪些工作</strong></p>
-<ul>
-<li>如果类<strong>虚继承</strong>自基类，准备虚基类位置并实现虚基类机制</li>
-<li>如果类有<strong>虚函数</strong>，将<code>vptr</code>的初始化</li>
-<li>如果类的<strong>父类有默认ctor</strong>且没有显示初始化时，按继承的声明顺序调用父类的默认ctor</li>
-<li>如果类的<strong>成员对象有默认ctor</strong>且没有显示初始化时，按成员声明顺序调用其默认ctor</li>
-<li>如果类没有定义任何构造函数，编译器会为其合成默认构造函数</li>
 </ul>
 <h2 id="C-从代码到可执行程序"><a href="#C-从代码到可执行程序" class="headerlink" title="C++从代码到可执行程序"></a>C++从代码到可执行程序</h2><p><strong>1. 预编译</strong></p>
 <ul>
 <li>处理 <code>#</code> 开头的预编译指令，#define、#include、#ifdef</li>
-<li>删除注释，添加行号和文件标识</li>
+<li>删除注释，添加行号和文件标识，生成 <code>.i</code> 文件</li>
 </ul>
 <p><strong>2. 编译</strong></p>
 <ul>
-<li>把预编译之后生成的 <code>.i</code> 文件，经过词法分析、语法分析、语义分析、优化后，生成汇编代码 <code>.s</code> 文件</li>
+<li>经过词法分析、语法分析、语义分析、优化后，生成汇编代码 <code>.s</code> 文件</li>
 </ul>
 <p><strong>3. 汇编</strong></p>
 <ul>
@@ -457,32 +402,21 @@ delete str;
 <li>new 调用 <code>operator new</code> 的标准库函数分配空间并调用对象的构造函数，delete 先运行析构函数再调用 <code>operator delete</code> 的标准库函数释放内存。</li>
 <li>new 封装了malloc，直接free不会报错，但是这只是释放内存，而不会析构对象</li>
 </ul>
-<h3 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理</a></h3><p>分配的内存小于 128 KB ，通过 <code>brk()</code> 函数将「堆顶」指针向高地址移动，获得新的内存空间。分配的内存大于 128 KB ，通过 <code>mmap()</code> 系统调用中「私有匿名映射」的方式，在文件映射区分配一块内存</p>
-<p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现虚拟内存对应的页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
-<p><strong>1. 为什么不全部使用 mmap 来分配</strong></p>
-<p>如果都用 <code>mmap()</code> 来分配内存，等于每次都要执行系统调用。另外 <code>mmap()</code> 分配的内存释放时都会归还给操作系统，于是在第一次访问该虚拟地址的时候就会缺页中断。<strong>不仅每次都会发生运行态的切换，第一次访问虚拟地址后还会缺页中断，导致 CPU 消耗较大</strong>。</p>
-<p>而通过 <code>brk()</code> 系统调用在堆空间申请内存的时候，由于堆空间是连续的，所以直接预分配更大的内存来作为内存池，当内存释放的时候，就缓存在内存池中。等下次在申请内存的时候，就直接从内存池取出对应的内存块就行了，而且可能这个内存块的虚拟地址与物理地址的映射关系还存在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
-<p><strong>2. 为什么不全部使用 brk 来分配</strong></p>
-<p>如果连续申请了 10k，20k，30k 这三片内存，如果 10k 和 20k 这两片释放了，变为了空闲内存空间。但是如果下次申请的内存大于 30k，没有可用的空闲内存空间，必须向 OS 申请，实际使用内存继续增大。</p>
-<p>因此，随着系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
-<p><strong>3. free 释放内存会归还给操作系统吗</strong> </p>
-<ul>
-<li><code>brk()</code> 申请的内存，释放内存时不会归还给操作系统，而是缓存在 malloc 的内存池中，待下次使用</li>
-<li><code>mmap()</code> 申请的内存，释放内存时会把内存归还给操作系统，内存得到真正的释放</li>
-</ul>
-<p><strong>4. free 如何知道释放多大内存</strong></p>
-<p>malloc返回的地址比堆空间起始地址多了16字节，free向前偏移16字节后分析出内存块大小</p>
+<h3 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理</a></h3><p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
 <blockquote>
 <p>malloc分配的空间包括：cookie、debugger header、(对象数量)、对象(数组)、padding、cookie</p>
-<p>不能用delete回收new[]分配的内存，只会析构一个对象，且delete不知道前面4字节的的对象数量</p>
 </blockquote>
-<h3 id="free回收后的内存"><a href="#free回收后的内存" class="headerlink" title="free回收后的内存"></a>free回收后的内存</h3><p>不是。free回收的内存会被内存管理器用双链表保存起来，当下一次申请内存的时候，会尝试从这些内存中寻找合适的返回。这样减少了频繁的系统调用对系统资源的占用。同时内存管理器也会尝试合并小块内存，减少内存碎片。</p>
+<h4 id="brk"><a href="#brk" class="headerlink" title="brk()"></a>brk()</h4><p>分配的内存小于 128 KB 时：通过 <code>brk()</code> 系统调用将<strong>堆顶指针向高地址移动，申请一块较大的内存块，然后划分成多个小块的内存，用一个空闲内存块的链表维护</strong>，每次申请内存时会从链表中分配一个合适大小的内存块。</p>
+<p>调用 free 时不会立即还给操作系统，而是将内存块放回到空闲内存块链表中，等待下次复用，可能彼时这个内存块的虚拟&#x2F;物理地址的映射关系还在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
+<p>缺点：系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
+<h4 id="mmap"><a href="#mmap" class="headerlink" title="mmap()"></a>mmap()</h4><p>分配的内存大于 128 KB 时，<strong>通过 <code>mmap()</code> 系统调用中<code>私有匿名映射</code>的方式，在文件映射区分配一块内存</strong>。释放内存时会把内存归还给操作系统，内存得到真正的释放。</p>
+<p>缺点：<code>mmap()</code> 每次都要执行系统调用。另外 <code>mmap()</code> 分配的内存释放时都会归还给操作系统，于是在第一次访问该虚拟地址的时候就会缺页中断。不仅每次都会发生运行态的切换，第一次访问虚拟地址后还会缺页中断，导致 CPU 消耗较大。</p>
 <h2 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h2><p>Linux 将高地址的 1GB 空间分配给内核，用户空间只剩 3GB 包括：</p>
 <ul>
 <li><strong>栈</strong>：由编译器管理分配和回收，存放局部变量和函数参数。效率很高，但是分配的内存容量有限。</li>
 <li><strong>堆</strong>：由<code>new</code>、<code>malloc</code>分配的内存块，由应用程序去控制释放。空间很大，但可能内存泄漏和空闲碎片。</li>
-<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：内存在程序编译的时候就已经分配好，整个运行期间都存在，存放静态变量、全局变量和常量。static 可以控制变量的可见范围，全局变量不行。</li>
-<li><strong>常量存储区</strong> (rodata)：存放的是常量字符串，不允许修改。</li>
+<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：存放静态变量、全局变量和常量(<code>static const</code>)，在编译的时就已经分配好，初始化 0，整个运行期间都存在。static 可以控制变量的可见范围，全局变量不行。</li>
+<li><strong>常量存储区</strong> (rodata)：存放的是字面常量和const变量，不允许修改。</li>
 <li><strong>代码区</strong> (text)：存放程序的二进制代码。</li>
 </ul>
 <h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><ul>
@@ -499,10 +433,10 @@ delete str;
 </ul>
 <p><strong>内存对齐的规则</strong></p>
 <ol>
-<li>每个特定平台上的编译器都有自己的默认“对齐系数”。可以通过预编译命令 #pragma pack(n)，n &#x3D; 1,2,4,8 改变。</li>
-<li>有效对齐值：是给定值 #pragma pack(n) 和结构体中最长数据类型长度中较小的那个，有效对齐值也叫对齐单位。      </li>
-<li>结构体每个成员的 offset 都是该<strong>成员大小</strong>与<strong>有效对齐值</strong>中较小那个的整数倍，如有需要编译器会在成员之间加上填充字节。      </li>
-<li>结构体的总大小为<strong>有效对齐值的整数倍</strong>，如有需要编译器会在最末一个成员之后加上填充字节。</li>
+<li>确定对齐系数：和编译器有关，可以通过预编译命令 #pragma pack(n)，n &#x3D; 1,2,4,8 设置。</li>
+<li>确定对齐单位：<code>min(对齐系数，结构体中最长数据类型长度)</code>      </li>
+<li>确定数据的偏移量：<code>min(成员大小，对齐单位)</code>的整数倍，（可选）在成员之间加上填充字节。      </li>
+<li>结构体尾部填充：保证总大小为对齐单位的整数倍</li>
 </ol>
 ]]></content>
       <categories>
@@ -1142,7 +1076,7 @@ int main() &#123;
 <p>可以通过reset()或者赋值nullptr释放管理对象</p>
 <details blue><summary> UniquePtr实现 </summary>
               <div class='content'>
-              <pre><code class="cpp">template&lt;typename T&gt;class UniquePtr{public:    UniquePtr(T* ptr = nullptr) : _ptr(ptr) {}    ~UniquePtr() {        delete _ptr;    }    // 拷贝构造/赋值    UniquePtr(const UniquePtr&amp; u) = delete;    UniquePtr&amp; operator=(const UniquePtr&amp; u) = delete;    // 移动构造/赋值    UniquePtr(UniquePtr&amp;&amp; u) noexcept {        _ptr = u._ptr;        u._ptr = nullptr;    }    UniquePtr&amp; operator=(UniquePtr&amp;&amp; u) noexcept {        _ptr = u._ptr;        u._ptr = nullptr;        return *this;    }        T&amp; operator*() const { return *_ptr; }    T* operator-&gt;() const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;};</code></pre>
+              <pre><code class="cpp">template&lt;typename T&gt;class UniquePtr {public:  UniquePtr(T* ptr = nullptr) : _ptr(ptr) {}  ~UniquePtr() {    delete _ptr;  }  UniquePtr(const UniquePtr&amp; u) = delete;  UniquePtr&amp; operator=(const UniquePtr&amp; u) = delete;  UniquePtr(UniquePtr&amp;&amp; u) noexcept {    _ptr = u._ptr;    u._ptr = nullptr;  }  UniquePtr&amp; operator=(UniquePtr&amp;&amp; u) noexcept {    _ptr = u._ptr;    u._ptr = nullptr;    return *this;  }  T&amp; operator*() const { return *_ptr; }  T* operator-&gt;() const { return _ptr; }  operator bool() const { return _ptr; }private:  T* _ptr;};</code></pre>
               </div>
             </details>
 
@@ -1175,7 +1109,7 @@ int main() &#123;
 </ul>
 <details blue><summary> SharedPtr实现 </summary>
               <div class='content'>
-              <pre><code class="cpp">template&lt;typename T&gt;class SharedPtr{public:    SharedPtr(T* ptr = nullptr) :_ptr(ptr), _count(nullptr){        if(ptr) _count = new int(1);    }    ~SharedPtr() {        if (--(*_count) == 0) {            delete _ptr; _ptr = nullptr;            delete _count; _count = nullptr;        }    }    // 拷贝构造/赋值    SharedPtr(const SharedPtr&amp; s) {        _ptr = s._ptr;        _count = s._count;        ++(*_count);    }    SharedPtr&amp; operator=(const SharedPtr&amp; s){        if (this != &amp;s) {            if (--(*count) == 0) {  //左侧引用-1                delete _ptr;                delete _count;            }            _ptr = s._ptr;            _count = s._count;            ++*(_count);  //右侧引用+1        }        return *this;    }    T&amp; operator*() const { return *_ptr;}    T* operator-&gt;()	const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;    int* _count;};</code></pre>
+              <pre><code class="cpp">template&lt;typename T&gt;class SharedPtr {public:    SharedPtr(T* ptr = nullptr) :_ptr(ptr), _count(new int(0)){    if(ptr) (*_count)++;  }    ~SharedPtr() {        if (--(*_count) == 0) {            delete _ptr; _ptr = nullptr;            delete _count; _count = nullptr;        }    }    SharedPtr(const SharedPtr&amp; s) {    _ptr = s._ptr;        _count = s._count;        (*_count)++;    }    SharedPtr&amp; operator=(const SharedPtr&amp; s){        if (this != &amp;s) {            if (--(*_count) == 0) {                delete _ptr;                delete _count;            }            _ptr = s._ptr;            _count = s._count;            (*_count)++;        }        return *this;    }    T&amp; operator*() const { return *_ptr;}    T* operator-&gt;()	const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;    int* _count;};</code></pre>
               </div>
             </details>
 
@@ -1388,7 +1322,7 @@ int main() &#123;
 <p>派生类和第一个基类共用虚函数表，派生类自己的虚函数放在第一个虚函数表的后面，派生类如果要覆盖基类中的虚函数，那么会在虚函数表中代替其位置</p>
 <p>多继承下影响到虚函数的调用的实质上为this的调整：</p>
 <ol>
-<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不同调整，因为起始地址一致</li>
+<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不用调整，因为起始地址一致</li>
 <li>如果 <code>A2</code> 类型引用 <code>B</code> 对象并且调用 <code>B</code> 重写的虚函数时，由于 <code>A2</code> 引用的起始地址和 <code>B</code> 不同，它的 this 指针地址比 <code>B</code> 对象多了 n 字节的偏移量，所以直接调用虚函数会导致错误，需要调用前调整 this 指针指向 <code>B</code></li>
 </ol>
 <p>Thunk技术解决了这个问题，它允许虚函数表中slot包括两个类型的地址: </p>
@@ -1499,7 +1433,7 @@ int main() &#123;
 <h2 id="多线程简例"><a href="#多线程简例" class="headerlink" title="多线程简例"></a>多线程简例</h2><p><strong>1. 线程池</strong></p>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <pre><code class="cpp">#include &lt;bits/stdc++.h&gt;#include &lt;unistd.h&gt;using namespace std;class ThreadPool{public:  ThreadPool(int num = 4): isclosed(false) {    for(int i = 0; i &lt; num; ++i){      thread([this]{        unique_lock&lt;mutex&gt; lck(m);        while(true){          if(!task.empty()){            auto t = move(task.front());            task.pop();            lck.unlock();            t();            lck.lock();          }          else if(isclosed) break;          else cv.wait(lck);        }      }).detach();    }  }  ~ThreadPool(){    isclosed = true;    cv.notify_all();  }  void addTask(const function&lt;void()&gt;&amp; t) {    {      unique_lock&lt;mutex&gt; lck(m);      task.push(t);    }    cv.notify_one();  }private:  mutex m;  condition_variable cv;  atomic&lt;bool&gt; isclosed;  queue&lt;function&lt;void()&gt;&gt; task;};void fun(int n){  cout&lt;&lt;n&lt;&lt;endl;}int main(){  ThreadPool threadpool;  for(int i = 0; i &lt; 10; ++i){    threadpool.addTask(bind(fun, i));  }  sleep(1);}</code></pre>
+              <pre><code class="cpp">class ThreadPool { public:  ThreadPool(int num = 4): isclosed(false) {    for (int i = 0; i &lt; num; ++i) {      thread([this]{        unique_lock&lt;mutex&gt; lck(m);        while (true) {          if (!tasks.empty()) {            auto task = move(tasks.front());            tasks.pop();            lck.unlock();            task();            lck.lock();          } else if (isclosed) {            break;          } else {            cv.wait(lck);          }        }      }).detach();    }  }  ~ThreadPool() {    isclosed = true;    cv.notify_all();  }  void AddTask(const function&lt;void()&gt;&amp; task) {    {      unique_lock&lt;mutex&gt; lck(m);      tasks.push(task);    }    cv.notify_one();  } private:  mutex m;  condition_variable cv;  atomic&lt;bool&gt; isclosed;  queue&lt;function&lt;void()&gt;&gt; tasks;};int main() {  ThreadPool pool;  pool.AddTask([] { cout &lt;&lt; 12 &lt;&lt; endl; });  pool.AddTask([] { cout &lt;&lt; 34 &lt;&lt; endl; });  this_thread::sleep_for(chrono::seconds(1));}</code></pre>
               </div>
             </details>
 
@@ -4043,19 +3977,19 @@ $
   <entry>
     <title>CPU Cache</title>
     <url>/2024/05/15/OS/CPU%20Cache/</url>
-    <content><![CDATA[<h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" class="lazyload" data-srcset="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+    <content><![CDATA[<h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
-<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
+<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需<code>1个时钟周期</code>这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
 </li>
 <li><p><strong>内存排序缓冲</strong>：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统时正在执行的操作。store缓冲是一个完全的相关性队列，可以用于搜索已经存在store操作，这些store操作在等待L1缓存的时候被队列化。在数据与缓存子系统传输时， 缓冲可以让处理器异步运转。当处理器异步读或者异步写的时候，结果可以乱序返回。为了使之与已发布的内存模型一致，MOB用于消除load和store的顺序。</p>
 </li>
-<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的32K数据缓存和32K指令缓存。访问需要3个时钟周期，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
+<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的<code>32K数据缓存</code>和<code>32K指令缓存</code>。访问需要<code>3个时钟周期</code>，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
 </li>
-<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。L2缓存大小为256K，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为12个时钟周期。</p>
+<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。<code>L2缓存大小为256K</code>，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为<code>12个时钟周期</code>。</p>
 </li>
-<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
+<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，<code>延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期</code>。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
 </li>
-<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的延迟平均为65ns。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
+<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的<code>延迟平均为65ns</code>。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
 </li>
 <li><p><strong>NUMA</strong>：在一个多插槽的服务器上，会使用非一致性内存访问（Non-Uniform Memory Access）。所谓的非一致性是指，需要访问的内存可能在另一个插槽上。只有当CPU访问自身直接attach内存时，才会有较短的响应时间（Local Access）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（Remote Access）。</p>
 </li>

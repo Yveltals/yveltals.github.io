@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-07-04T15:46:04.000Z">
-<meta property="article:modified_time" content="2024-07-18T09:37:08.530Z">
+<meta property="article:modified_time" content="2024-08-08T11:29:22.116Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1722913087897),
+    lastupdate: new Date(1723116632808),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2789,7 +2789,7 @@ int main() &#123;
 <p>可以通过reset()或者赋值nullptr释放管理对象</p>
 <details blue><summary> UniquePtr实现 </summary>
               <div class='content'>
-              <pre><code class="cpp">template&lt;typename T&gt;class UniquePtr{public:    UniquePtr(T* ptr = nullptr) : _ptr(ptr) {}    ~UniquePtr() {        delete _ptr;    }    // 拷贝构造/赋值    UniquePtr(const UniquePtr&amp; u) = delete;    UniquePtr&amp; operator=(const UniquePtr&amp; u) = delete;    // 移动构造/赋值    UniquePtr(UniquePtr&amp;&amp; u) noexcept {        _ptr = u._ptr;        u._ptr = nullptr;    }    UniquePtr&amp; operator=(UniquePtr&amp;&amp; u) noexcept {        _ptr = u._ptr;        u._ptr = nullptr;        return *this;    }        T&amp; operator*() const { return *_ptr; }    T* operator-&gt;() const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;};</code></pre>
+              <pre><code class="cpp">template&lt;typename T&gt;class UniquePtr {public:  UniquePtr(T* ptr = nullptr) : _ptr(ptr) {}  ~UniquePtr() {    delete _ptr;  }  UniquePtr(const UniquePtr&amp; u) = delete;  UniquePtr&amp; operator=(const UniquePtr&amp; u) = delete;  UniquePtr(UniquePtr&amp;&amp; u) noexcept {    _ptr = u._ptr;    u._ptr = nullptr;  }  UniquePtr&amp; operator=(UniquePtr&amp;&amp; u) noexcept {    _ptr = u._ptr;    u._ptr = nullptr;    return *this;  }  T&amp; operator*() const { return *_ptr; }  T* operator-&gt;() const { return _ptr; }  operator bool() const { return _ptr; }private:  T* _ptr;};</code></pre>
               </div>
             </details>
 
@@ -2822,7 +2822,7 @@ int main() &#123;
 </ul>
 <details blue><summary> SharedPtr实现 </summary>
               <div class='content'>
-              <pre><code class="cpp">template&lt;typename T&gt;class SharedPtr{public:    SharedPtr(T* ptr = nullptr) :_ptr(ptr), _count(nullptr){        if(ptr) _count = new int(1);    }    ~SharedPtr() {        if (--(*_count) == 0) {            delete _ptr; _ptr = nullptr;            delete _count; _count = nullptr;        }    }    // 拷贝构造/赋值    SharedPtr(const SharedPtr&amp; s) {        _ptr = s._ptr;        _count = s._count;        ++(*_count);    }    SharedPtr&amp; operator=(const SharedPtr&amp; s){        if (this != &amp;s) {            if (--(*count) == 0) {  //左侧引用-1                delete _ptr;                delete _count;            }            _ptr = s._ptr;            _count = s._count;            ++*(_count);  //右侧引用+1        }        return *this;    }    T&amp; operator*() const { return *_ptr;}    T* operator-&gt;()	const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;    int* _count;};</code></pre>
+              <pre><code class="cpp">template&lt;typename T&gt;class SharedPtr {public:    SharedPtr(T* ptr = nullptr) :_ptr(ptr), _count(new int(0)){    if(ptr) (*_count)++;  }    ~SharedPtr() {        if (--(*_count) == 0) {            delete _ptr; _ptr = nullptr;            delete _count; _count = nullptr;        }    }    SharedPtr(const SharedPtr&amp; s) {    _ptr = s._ptr;        _count = s._count;        (*_count)++;    }    SharedPtr&amp; operator=(const SharedPtr&amp; s){        if (this != &amp;s) {            if (--(*_count) == 0) {                delete _ptr;                delete _count;            }            _ptr = s._ptr;            _count = s._count;            (*_count)++;        }        return *this;    }    T&amp; operator*() const { return *_ptr;}    T* operator-&gt;()	const { return _ptr; }    operator bool() const { return _ptr; }private:    T* _ptr;    int* _count;};</code></pre>
               </div>
             </details>
 
@@ -3035,7 +3035,7 @@ int main() &#123;
 <p>派生类和第一个基类共用虚函数表，派生类自己的虚函数放在第一个虚函数表的后面，派生类如果要覆盖基类中的虚函数，那么会在虚函数表中代替其位置</p>
 <p>多继承下影响到虚函数的调用的实质上为this的调整：</p>
 <ol>
-<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不同调整，因为起始地址一致</li>
+<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不用调整，因为起始地址一致</li>
 <li>如果 <code>A2</code> 类型引用 <code>B</code> 对象并且调用 <code>B</code> 重写的虚函数时，由于 <code>A2</code> 引用的起始地址和 <code>B</code> 不同，它的 this 指针地址比 <code>B</code> 对象多了 n 字节的偏移量，所以直接调用虚函数会导致错误，需要调用前调整 this 指针指向 <code>B</code></li>
 </ol>
 <p>Thunk技术解决了这个问题，它允许虚函数表中slot包括两个类型的地址: </p>
@@ -3146,7 +3146,7 @@ int main() &#123;
 <h2 id="多线程简例"><a href="#多线程简例" class="headerlink" title="多线程简例"></a>多线程简例</h2><p><strong>1. 线程池</strong></p>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <pre><code class="cpp">#include &lt;bits/stdc++.h&gt;#include &lt;unistd.h&gt;using namespace std;class ThreadPool{public:  ThreadPool(int num = 4): isclosed(false) {    for(int i = 0; i &lt; num; ++i){      thread([this]{        unique_lock&lt;mutex&gt; lck(m);        while(true){          if(!task.empty()){            auto t = move(task.front());            task.pop();            lck.unlock();            t();            lck.lock();          }          else if(isclosed) break;          else cv.wait(lck);        }      }).detach();    }  }  ~ThreadPool(){    isclosed = true;    cv.notify_all();  }  void addTask(const function&lt;void()&gt;&amp; t) {    {      unique_lock&lt;mutex&gt; lck(m);      task.push(t);    }    cv.notify_one();  }private:  mutex m;  condition_variable cv;  atomic&lt;bool&gt; isclosed;  queue&lt;function&lt;void()&gt;&gt; task;};void fun(int n){  cout&lt;&lt;n&lt;&lt;endl;}int main(){  ThreadPool threadpool;  for(int i = 0; i &lt; 10; ++i){    threadpool.addTask(bind(fun, i));  }  sleep(1);}</code></pre>
+              <pre><code class="cpp">class ThreadPool { public:  ThreadPool(int num = 4): isclosed(false) {    for (int i = 0; i &lt; num; ++i) {      thread([this]{        unique_lock&lt;mutex&gt; lck(m);        while (true) {          if (!tasks.empty()) {            auto task = move(tasks.front());            tasks.pop();            lck.unlock();            task();            lck.lock();          } else if (isclosed) {            break;          } else {            cv.wait(lck);          }        }      }).detach();    }  }  ~ThreadPool() {    isclosed = true;    cv.notify_all();  }  void AddTask(const function&lt;void()&gt;&amp; task) {    {      unique_lock&lt;mutex&gt; lck(m);      tasks.push(task);    }    cv.notify_one();  } private:  mutex m;  condition_variable cv;  atomic&lt;bool&gt; isclosed;  queue&lt;function&lt;void()&gt;&gt; tasks;};int main() {  ThreadPool pool;  pool.AddTask([] { cout &lt;&lt; 12 &lt;&lt; endl; });  pool.AddTask([] { cout &lt;&lt; 34 &lt;&lt; endl; });  this_thread::sleep_for(chrono::seconds(1));}</code></pre>
               </div>
             </details>
 
@@ -3313,10 +3313,10 @@ public:
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-18T17:37:08+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-08T19:29:22+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 18, 2024</p>
+    <p>更新于：Aug 8, 2024</p>
   </a>
 </div>
 

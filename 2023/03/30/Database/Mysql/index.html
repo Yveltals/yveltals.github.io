@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-03-30T04:59:04.000Z">
-<meta property="article:modified_time" content="2024-07-11T15:51:29.575Z">
+<meta property="article:modified_time" content="2024-08-09T15:38:34.285Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Database">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1723116632808),
+    lastupdate: new Date(1723217921060),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2521,120 +2521,15 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="SQL与NoSQL"><a href="#SQL与NoSQL" class="headerlink" title="SQL与NoSQL"></a>SQL与NoSQL</h2><h3 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a><strong>关系型数据库</strong></h3><p>采用了关系模型来组织数据， 关系模型可以简单理解为二维表格模型，而一个关系型数据库就是由二维表及其之间的关系组成的一个数据组织</p>
+    <h2 id="SQL与NoSQL"><a href="#SQL与NoSQL" class="headerlink" title="SQL与NoSQL"></a>SQL与NoSQL</h2><h3 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a><strong>关系型数据库</strong></h3><p>采用了关系模型来组织数据， 关系模型可以简单理解为<strong>二维表格模型</strong>，而一个关系型数据库就是<strong>由二维表及其之间的关系组成</strong>的一个数据组织</p>
 <p>优点：①容易理解，二维表比网状模型贴近逻辑世界 ②使用方便，支持SQL复杂查询 ③易于维护，通过完整性降低了数据不一致和数据冗余 ④支持事务 ⑤数据存在磁盘中可靠</p>
 <blockquote>
 <p>实体完整性 <code>每个元组唯一、可识别，不允许主键空/重复</code><br>引用完整性 <code>元组间的关联，外键为参照的某个元组主键或空</code><br>用户定义完整性 <code>指明属性取值范围，防止和应用语义矛盾</code></p>
 </blockquote>
 <p>缺点：①表结构固定、数据不易扩展 ②海量数据情况下读写效率低 ③ 高并发读写能力差，数据库连接数、IO受限</p>
-<h3 id="非关系型数据库"><a href="#非关系型数据库" class="headerlink" title="非关系型数据库"></a><strong>非关系型数据库</strong></h3><p>通常指数据以对象的形式存储在数据库中，而对象之间的关系通过每个对象自身的属性来决定，常用于存储非结构化的数据。分为键值、列族、文档、图形数据库</p>
+<h3 id="非关系型数据库"><a href="#非关系型数据库" class="headerlink" title="非关系型数据库"></a>非关系型数据库</h3><p>通常指数据以对象的形式存储在数据库中，而对象之间的关系通过每个对象自身的属性来决定，常用于存储非结构化的数据。分为键值、列族、文档、图形数据库</p>
 <p>优点：①支持多种存储格式：kv、图片、文档 ②速度快、效率高，可以用内存作为载体 ③数据不耦合易扩展 ④可以实现数据分布式处理</p>
 <p>缺点：①不支持SQL学习使用成本高 ②没有事务处理，无法保证数据完整性和安全性</p>
-<h2 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h2><p>MVCC 是 InnoDB 实现隔离级别的一种具体方式，用于实现<strong>提交读</strong>和<strong>可重复读</strong>这两种隔离级别。而未提交读级别总是读取最新的数据行，无需使用 MVCC。可串行化级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。优点是执行普通的SELCT操作时通过访问记录的版本链，使不同事务的读-写操作并发执行，不用加锁</p>
-<h3 id="原理和实现"><a href="#原理和实现" class="headerlink" title="原理和实现"></a>原理和实现</h3><ul>
-<li><strong>隐藏字段</strong>：每行数据都有隐藏字段，包含了最后一次插入&#x2F;更新事务<code>DB_TRX_ID</code>、指向<code>undo log</code>的指针</li>
-<li><strong>基于undo log的版本链</strong>：每行数据的隐藏字段中包含了指向undo log的指针，而每条undo log也会指向更早版本的undo log，从而形成一条版本链。</li>
-<li><strong>ReadView</strong>：执行 <code>select</code> 前会创建一个快照，保存当前系统中活跃的事务ID。当要读取记录行的时候，会将该记录行的 <code>DB_TRX_ID</code> 与 <code>Read View</code> 进行比较，判断是否满足可见性条件，并通过undo log将数据恢复到指定版本：<ul>
-<li><code>ids</code>：Read View 创建时的活跃事务 ID 列表，若<code>DB_TRX_ID</code>不在其中则可见（已提交），否则不可见</li>
-<li><code>low_limit_id</code>：下一个分配事务的ID，若<code>DB_TRX_ID</code>比它大则事务不可见（事务发生在创建快照之后）</li>
-<li><code>up_limit_id</code>：活跃事务中最小的事务ID，若<code>DB_TRX_ID</code>比它小则事务可见（创建快照时最后一次事务已提交）</li>
-</ul>
-</li>
-</ul>
-<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><p>在MVCC并发控制中，读操作可以分成两类：</p>
-<ul>
-<li>快照读：<em>简单select操作</em>，读取的是快照生成的数据。不用加锁，通过undo log和MVCC访问历史版本数据。<ul>
-<li>在RC下，每个select开始执行时都会生成readView直至事务提交，所以之后其它事务所做的更新版本对当前事务并不可见，实现了可重复读</li>
-<li>在RR下，仅在事务开始的时候生成readView，导致不可重复度</li>
-</ul>
-</li>
-<li>当前读：<em>特殊的读操作、插入&#x2F;更新&#x2F;删除操作</em>，读取的是记录的最新版本。要对读的记录上锁，保证其他事务不会再并发修改这条记录，除了<code>lock in share mode</code> 加读锁，其他都加写锁</li>
-</ul>
-<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p>如果其它事务在当前事务查询范围内插入就会产生幻读，<code>InnoDB</code>存储引擎在 RR 级别下通过 <code>MVCC</code>和 <code>Next-key Lock</code> 来解决幻读问题：</p>
-<ul>
-<li><strong>快照读</strong>：通过 <code>MVCC</code> 避免幻读。<br>RR 隔离级别只会在事务第一次查询生成 <code>Read View</code> ，直至事务提交。所以在生成 <code>Read View</code> 之后其它事务所做的插入版本对当前事务并不可见</li>
-<li><strong>当前读</strong>：通过 <code>Next-key Lock</code> 避免幻读<br><code>Record Locks</code> + <code>Gap Locks</code>，前者锁定一个记录上的索引项来锁定当前记录，后者锁定索引之间的间隙来防止其它事务在查询范围内插入数据。当查询的索引含有唯一属性的时候，<code>Next-Key Lock</code> 会降级为<code>Record Lock</code></li>
-</ul>
-<hr>
-<h2 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h2><p>MyISAM适合：插入不频繁、查询非常频繁，大量SELECT</p>
-<p>InnoDB适合：表更新和查询都频繁， 大量INSERT或UPDATE；可靠性要求比较高，或者要求事务</p>
-<ul>
-<li>InnoDB 支持行级别的锁粒度，MyISAM 不支持，只支持表级别的锁粒度。</li>
-<li>MyISAM 不提供事务支持。InnoDB 提供事务支持，实现了 SQL 标准定义了四个隔离级别。</li>
-<li>MyISAM 不支持外键，而 InnoDB 支持。</li>
-<li>MyISAM 不支持 MVCC，而 InnoDB 支持。</li>
-<li>MyISAM 索引文件和数据文件分离，而 InnoDB 数据文件本身就是按 B+Tree 组织的一个索引结构，叶节点 data 域保存了完整的数据记录。</li>
-<li>MyISAM 不支持数据库异常崩溃后的安全恢复，而 InnoDB 支持。</li>
-<li>InnoDB 的性能比 MyISAM 更强大。</li>
-</ul>
-<hr>
-<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><p>索引是一个单独的、存储在磁盘上的数据库结构，包含着对数据表里所有记录的引用指针。使用索引可以提高查询速度，快速找出在某个或多个列中为特定值的行，所有MySQL列类型都可以被索引。</p>
-<p>索引是在存储引擎中实现的，每种存储引擎的索引都不一定完全相同。MySQL中索引类型有BTREE和HASH，InnoDB存储引擎只支持BTREE索引。</p>
-<p>优点：</p>
-<ol>
-<li>通过创建<strong>唯一索引</strong>，可以保证表中每一行数据的唯一性。</li>
-<li>加快数据的<strong>查询速度</strong></li>
-<li>减少查询中<strong>分组和排序</strong>的时间。</li>
-</ol>
-<p>缺点：</p>
-<ol>
-<li><strong>创建和维护</strong>索引要耗费时间</li>
-<li>索引需要<strong>占磁盘空间</strong>，如果有大量的索引，索引文件可能比数据文件更快达到最大文件尺寸。</li>
-<li>当对表中的<strong>数据修改的时候</strong>，索引也要动态地维护，这样就降低了数据的维护速度。</li>
-</ol>
-<p>索引类型：</p>
-<ul>
-<li>普通索引：仅加速查询</li>
-<li>唯一索引：加速查询 + 列值唯一（可以有null）</li>
-<li>主键索引：加速查询 + 列值唯一（不可以有null）+ 表中只有一个</li>
-<li>组合索引：多列值组成一个索引，专门用于组合搜索</li>
-<li>全文索引：对文本的内容进行分词，进行搜索</li>
-<li>覆盖索引：select的数据列只用从索引中就能够取得，不必回表查询数据行</li>
-<li>非&#x2F;聚簇索引</li>
-</ul>
-<p>索引注意事项：</p>
-<ol>
-<li>尽量用在经常搜索、排序的列上</li>
-<li>尽量用覆盖索引，减少 <code>select *</code> 能减少回表次数</li>
-<li>多个单列索引每次查询只能使用一个，换成组合索引</li>
-<li>清理长期不使用的索引</li>
-<li>索引失效：<ol>
-<li>组合索引不遵循“最左前缀匹配”原则</li>
-<li>在索引列上计算&#x2F;函数、不等于（&gt;&lt; !&#x3D;）</li>
-<li>使用<code>like &quot;%value%&quot;</code></li>
-<li>or连接</li>
-<li>字符串不加单引号可能隐式转换</li>
-<li>组合索引中含NULL的列</li>
-</ol>
-</li>
-</ol>
-<h3 id="索引原理"><a href="#索引原理" class="headerlink" title="索引原理"></a>索引原理</h3><p>InnoDB中表数据文件本身就是按B+Tree组织的一个索引结构，这个索引的key是数据表的主键，因此数据文件本身就是<strong>主索引</strong>，B+Tree的叶节点data域保存了完整的数据记录。</p>
-<p>InnoDB的<strong>辅助索引</strong>data域存储相应记录主键的值而不是地址，所以辅助索引搜索需要检索两遍索引：先检索辅助索引获得主键，然后用主键到主索引中检索获得记录</p>
-<p><strong>B+Tree</strong>：多路平衡查找树，所有数据都按键值的大小顺序存在叶结点中，通过指针连接。B+树索引的特点就是高扇出性，例如在InnoDB存储引擎中，每个页的大小为16KB，B+树的高度一般不超过4层，查找的IO次数很少。</p>
-<p><strong>Hash索引和B+Tree索引区别</strong></p>
-<ul>
-<li>hash索引中经过hash函数建立索引之后，索引的顺序与原顺序无法保持一致，不能支持范围查询。而B+树的的所有节点皆遵循(左节点小于父节点，右节点大于父节点，多叉树也类似)，天然支持范围</li>
-<li>hash索引不支持使用索引进行排序</li>
-<li>hash索引不支持模糊查询以及多列索引的最左前缀匹配</li>
-<li>hash索引虽然在等值查询上较快但是不稳定（发生hash碰撞），而B+树的查询效率比较稳定</li>
-</ul>
-<p><strong>B+Tree比BTree优势</strong></p>
-<ul>
-<li>方便扫库，B树只能中序遍历</li>
-<li>查找效率更稳定，叶结点存放数据内容，每次查询路径都相同</li>
-<li>磁盘读写代价更低，因为内部结点只包含关键字，体积小，一个盘块内容纳的关键字数量多，IO读写次数就少</li>
-</ul>
-<h3 id="聚簇-非聚簇索引"><a href="#聚簇-非聚簇索引" class="headerlink" title="聚簇&#x2F;非聚簇索引"></a>聚簇&#x2F;非聚簇索引</h3><p><strong>聚集索引</strong>：索引结构和数据一起存放的索引，InnoDB 中的主键索引就属于聚簇索引。</p>
-<ul>
-<li>优点：查询速度非常快，比非聚簇索引少了一次读取数据的 IO 操作</li>
-<li>缺点：依赖于有序的数据、更新代价大：数据被修改导致对应的索引也会被修改，而且叶子节点还存放着数据</li>
-</ul>
-<p><strong>非聚集索引</strong>：索引结构和数据分开存放的索引，二级索引(辅助索引)就属于非聚簇索引，MySQL 的 MyISAM 引擎主键&#x2F;非主键都是非聚簇索引。非聚簇索引的叶子节点并不一定存放数据的指针，因为二级索引的叶子节点就存放的是主键，根据主键再回表查数据。</p>
-<ul>
-<li>优点：更新代价小，因为叶子节点不存放数据</li>
-<li>缺点：依赖于有序的数据、可能会二次查询(回表)</li>
-</ul>
-<hr>
 <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><table>
 <thead>
 <tr>
@@ -2675,58 +2570,134 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </tr>
 </tbody></table>
 <p>因为隔离级别越低，事务请求的锁越少，所以大部分数据库系统的隔离级别都是 RC </p>
-<p>与 SQL 标准不同的地方在于：InnoDB 在默认的隔离级别 RR 下使用的是<strong>Next-Key Lock 锁</strong>算法，能避免幻读，已经可以完全保证事务的隔离性要求，即达到了 SQL标准的 SERIALIZABLE 隔离级别。具体来讲：</p>
+<p>与 SQL 标准不同的地方在于：InnoDB 在默认的隔离级别 RR 下使用的是<strong>Next-Key Lock 锁</strong>算法，能避免幻读，已经可以完全保证事务的隔离性要求，即达到了 SQL标准的 SERIALIZABLE 隔离级别。</p>
+<h2 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h2><p>MVCC 是 InnoDB 实现隔离级别的一种方式，用于实现<strong>提交读</strong>和<strong>可重复读</strong>这两种隔离级别。而未提交读级别总是读取最新的数据行，无需使用 MVCC。可串行化级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。优点是执行普通的SELECT操作时通过访问记录的版本链，使不同事务的读-写操作并发执行，不用加锁</p>
+<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><p>在MVCC并发控制中，读操作可以分成两类：</p>
 <ul>
-<li><p><strong>READ UNCOMMITTED &amp; READ COMMITTED：</strong></p>
-<p> 通过Record Lock算法实现了行锁，但RU允许读取未提交数据，所以存在脏读问题。而RC允许读取提交数据，所以不存在脏读问题，但存在不可重复读问题。</p>
+<li>快照读：读取的是快照生成的数据，如简单select操作。不用加锁，<strong>通过undo log和MVCC访问历史版本数据</strong>。<ul>
+<li>在RR下，事务启动时会生成readView直至事务提交，所以之后其它事务所做的更新版本对当前事务并不可见，实现了可重复读</li>
+<li>在RC下，每次select都会生成readView，所以事务期间多次读一个数据可能不一致</li>
+</ul>
 </li>
-<li><p><strong>REPEATABLE READ：</strong></p>
-<p> 使用Next-Key Lock算法实现了行锁，并且不允许读取已提交的数据，所以解决了不可重复读的问题。另外，该算法包含了间隙锁，会锁定一个范围，因此也解决了幻读的问题。</p>
+<li>当前读：读取的是记录的最新版本，如插入&#x2F;更新&#x2F;删除操作。要对读的记录上锁，保证其他事务不会再并发修改这条记录，除了<code>lock in share mode</code> 加读锁，<strong>其他都加写锁</strong></li>
+</ul>
+<h3 id="原理和实现"><a href="#原理和实现" class="headerlink" title="原理和实现"></a>原理和实现</h3><ul>
+<li><strong>隐藏字段</strong>：每行数据都有隐藏字段，包含了最后一次插入&#x2F;更新事务<code>DB_TRX_ID</code>、指向<code>undo log</code>的指针，而每条undo log也会指向更早版本的undo log，从而形成一条版本链。</li>
+<li><strong>ReadView</strong>：在进行快照读的时候生成的记录快照，保存当前系统中活跃的事务ID，可以解决可见性问题。当要读取记录行的时候，会将该记录行的 <code>DB_TRX_ID</code> 与 <code>Read View</code> 进行比较，判断是否满足可见性条件，否则通过undo log将数据恢复到指定版本：<ul>
+<li>记录行事务ID &lt; <code>up_limit_id</code>（ReadView中最小的事务ID）：该事务在创建 ReadView 前已经提交了，可见</li>
+<li>记录行事务ID &gt; <code>low_limit_id</code>（ReadView时刻下一个要分配的事务ID）：该事务在创建 ReadView 之后才开启，不可见</li>
+<li><code>up_limit_id</code> &lt; 记录行事务ID &lt; <code>low_limit_id</code>：判断是否在活跃事务ID列表中，不在说明该事务已经提交了，可见，否则不可见</li>
+</ul>
 </li>
-<li><p><strong>SERIALIZABLE：</strong></p>
-<p> 对每个SELECT语句后自动加上LOCK IN SHARE MODE，即为每个读取操作加一个共享锁。因此在这个事务隔离级别下，读占用了锁，对一致性的非锁定读不再予以支持。</p>
+</ul>
+<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p>如果其它事务在当前事务查询范围内插入就会产生幻读，<code>InnoDB</code>存储引擎在 RR 级别下通过 <code>MVCC</code>和 <code>Next-key Lock</code> 来解决幻读问题：</p>
+<ul>
+<li><strong>快照读</strong>：通过 <code>MVCC</code> 避免幻读。<br>RR 隔离级别只会在事务第一次查询生成 <code>Read View</code> ，直至事务提交。所以在生成 <code>Read View</code> 之后其它事务所做的插入版本对当前事务并不可见</li>
+<li><strong>当前读</strong>：通过 <code>Next-key Lock</code> 避免幻读<br><code>Record Locks</code> + <code>Gap Locks</code>，前者锁定一个记录上的索引项来锁定当前记录，后者锁定索引之间的间隙来防止其它事务在查询范围内插入数据。当查询的索引含有唯一属性的时候，<code>Next-Key Lock</code> 会降级为<code>Record Lock</code></li>
+</ul>
+<hr>
+<h2 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h2><p>MyISAM适合：插入不频繁、查询非常频繁，大量SELECT</p>
+<p>InnoDB适合：表更新和查询都频繁， 大量INSERT或UPDATE；可靠性要求比较高，或者要求事务</p>
+<ul>
+<li>MyISAM 只支持表级锁，InnoDB 支持行级别的锁。</li>
+<li>MyISAM 不提供外键、事务、MVCC，InnoDB 支持。</li>
+<li>MyISAM 索引文件和数据文件分离，而 InnoDB 数据文件本身就是按 B+Tree 组织的一个索引结构，叶节点 data 域保存了完整的数据记录。</li>
+<li>MyISAM 不支持崩溃后恢复，而 InnoDB 支持。</li>
+<li>InnoDB 的性能比 MyISAM 更强大。</li>
+</ul>
+<hr>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><blockquote>
+<p>索引是Xxx数据结构、加快查询 -&gt; 不同引擎实现不同 -&gt; 优缺点 -&gt; 类型 -&gt; 使用注意事项<br>索引原理（数据文件组织成B+Tree） -&gt; 主索引与辅助索引 -&gt; B+Tree是啥 -&gt; 与Hash对比</p>
+</blockquote>
+<p>索引是一个单独的、存储在磁盘上的数据库结构，包含着对数据表里所有记录的引用指针。使用索引可以提高查询速度，快速找出在某个或多个列中为特定值的行。索引是在存储引擎中实现的，每种存储引擎的索引都不一定完全相同。MySQL中索引类型有BTREE和HASH，InnoDB存储引擎只支持BTREE索引。</p>
+<p>优点：</p>
+<ol>
+<li>通过创建<strong>唯一索引</strong>，可以保证表中每一行数据的唯一性。</li>
+<li>加快<strong>查询速度</strong>、查询中<strong>分组和排序</strong>的时间。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><strong>创建和维护</strong>索引要耗费时间</li>
+<li>索引需要<strong>占磁盘空间</strong>，如果有大量的索引，索引文件可能比数据文件更快达到最大文件尺寸。</li>
+<li>当对表中的<strong>数据修改的时候</strong>，索引也要动态地维护，这样就降低了数据的维护速度。</li>
+</ol>
+<p>索引类型：</p>
+<ul>
+<li>普通索引：仅加速查询</li>
+<li>唯一索引：加速查询 + 列值唯一（可以有null）</li>
+<li>主键索引：加速查询 + 列值唯一（不可以有null）+ 表中只有一个</li>
+<li>组合索引：多列值组成一个索引，专门用于组合搜索</li>
+<li>全文索引：对文本的内容进行分词，进行搜索</li>
+<li>覆盖索引：select的数据列只用从索引中就能够取得，不必回表查询数据行</li>
+<li>非&#x2F;聚簇索引</li>
+</ul>
+<p>索引注意事项：</p>
+<ol>
+<li>尽量用在经常搜索、排序的列上</li>
+<li>尽量用覆盖索引，减少 <code>select *</code> 能减少回表次数</li>
+<li>多个单列索引每次查询只能使用一个，换成组合索引</li>
+<li>清理长期不使用的索引</li>
+<li>索引失效：<ol>
+<li>组合索引不遵循“最左前缀匹配”原则、含NULL</li>
+<li>在索引列上计算&#x2F;函数、不等于（&gt;&lt; !&#x3D;）</li>
+<li>使用<code>like &quot;%value%&quot;</code></li>
+<li>or连接</li>
+<li>字符串不加单引号可能隐式转换</li>
+</ol>
 </li>
+</ol>
+<h3 id="索引原理"><a href="#索引原理" class="headerlink" title="索引原理"></a>索引原理</h3><p>InnoDB中表数据文件本身就是按B+Tree组织的一个索引结构，这个索引的key是数据表的主键，因此数据文件本身就是<strong>主索引</strong>，B+Tree的叶节点data域保存了完整的数据记录。</p>
+<p>InnoDB的<strong>辅助索引</strong>data域存储相应记录主键的值而不是地址，所以辅助索引搜索需要检索两遍索引：先检索辅助索引获得主键，然后用主键到主索引中检索获得记录</p>
+<p><strong>B+Tree</strong>：多路平衡查找树，所有数据都按键值的大小顺序存在叶结点中，通过指针连接。B+树索引的特点就是高扇出性，例如在InnoDB存储引擎中，每个页的大小为16KB，B+树的高度一般不超过4层，查找的IO次数很少。</p>
+<p><strong>Hash索引和B+Tree索引区别</strong></p>
+<ul>
+<li>hash索引中经过hash函数建立索引之后，索引的顺序与原顺序无法保持一致，不能支持范围查询。而B+树的的所有节点皆遵循(左节点小于父节点，右节点大于父节点，多叉树也类似)，天然支持范围</li>
+<li>hash索引不支持使用索引进行排序</li>
+<li>hash索引不支持模糊查询以及多列索引的最左前缀匹配</li>
+<li>hash索引虽然在等值查询上较快但是不稳定（发生hash碰撞），而B+树的查询效率比较稳定</li>
+</ul>
+<p><strong>B+Tree比BTree优势</strong></p>
+<ul>
+<li>方便扫库，B树只能中序遍历</li>
+<li>查找效率更稳定，叶结点存放数据内容，每次查询路径都相同</li>
+<li>磁盘读写代价更低，因为内部结点只包含关键字，体积小，一个盘块内容纳的关键字数量多，IO读写次数就少</li>
+</ul>
+<h3 id="聚簇-非聚簇索引"><a href="#聚簇-非聚簇索引" class="headerlink" title="聚簇&#x2F;非聚簇索引"></a>聚簇&#x2F;非聚簇索引</h3><p><strong>聚集索引</strong>：索引结构和数据一起存放的索引，InnoDB 中的主键索引就属于聚簇索引。</p>
+<ul>
+<li>优点：查询速度非常快，比非聚簇索引少了一次读取数据的 IO 操作</li>
+<li>缺点：依赖于有序的数据、更新代价大：数据被修改导致对应的索引也会被修改，而且叶子节点还存放着数据</li>
+</ul>
+<p><strong>非聚集索引</strong>：索引结构和数据分开存放的索引，二级索引(辅助索引)就属于非聚簇索引，MySQL 的 MyISAM 引擎主键&#x2F;非主键都是非聚簇索引。非聚簇索引的叶子节点并不一定存放数据的指针，因为二级索引的叶子节点就存放的是主键，根据主键再回表查数据。</p>
+<ul>
+<li>优点：更新代价小，因为叶子节点不存放数据</li>
+<li>缺点：依赖于有序的数据、可能会二次查询(回表)</li>
 </ul>
 <hr>
 <h3 id="三种日志"><a href="#三种日志" class="headerlink" title="三种日志"></a>三种日志</h3><ul>
-<li><strong>binlog</strong>：记录了所有修改数据库的操作，然后以二进制的形式记录在日志文件中，其中还包括每条语句所执行的时间和所消耗的资源，以及相关的事务信息。数据备份、主从同步都离不开 binlog，需要依靠<code>binlog</code>来同步数据，保证数据一致性</li>
-<li><strong>redo log</strong>：记录的是对数据库页的物理修改操作，即每次事务对数据页进行更改后，会先在 <code>redo log</code> 记录这次操作，然后更新到Buffer Pool，最后刷盘到日志文件中。当系统发生异常重启或宕机时，通过重放Redo Log，能够确保已提交事务的修改不会丢失，保证了事务的持久性。它由两部分组成：内存中的重做日志缓冲 ，重做日志文件。<br>刷盘操作（redo log buffer -&gt; redo log file）：<ul>
-<li>后台线程每隔 1 秒或重做日志缓冲占一半时，会把重做日志缓冲内容写到文件系统缓存，再调用 <code>fsync</code> 刷盘</li>
-<li>事务提交时：<ul>
-<li>策略1刷盘，不会丢失（默认）</li>
-<li>策略0不刷盘，MySQL挂了或宕机均可能丢失1s</li>
-<li>策略2只写入page cache，MySQL挂了不会丢失，但宕机可能丢失1秒数据</li>
+<li><strong>bin log</strong>：<strong>逻辑日志</strong>，把对数据库的<strong>所有修改操作</strong>（SQL语句）以<strong>二进制</strong>的形式记录在日志文件中，其中还包括每条语句所执行的时间和所消耗的资源，以及相关的事务信息。<ul>
+<li>用途：主从同步、数据恢复（但无法判断哪些数据已刷盘）</li>
+<li>刷盘策略：先写到 <code>bin log cache</code> 中，① 每次刷盘 ② 只写到页缓存，不刷盘 ③ 写到页缓存，N 次事务提交后才刷盘</li>
 </ul>
 </li>
+<li><strong>redo log</strong>：<code>事务持久性</code> <strong>物理日志</strong>，把对<strong>数据库页的物理修改操作</strong>（包括页地址和修改前后的数据值）记录到二进制文件中，当事务进行修改操作时，采用 WAL 机制，先写 redo log 日志，再写数据。这些记录会先写入到内存中的<code>redo log buffer</code>，后续刷盘到<code>redo log</code>文件中。redo log 分配了固定大小，循环且顺序写入，写满了就等待脏页刷新到磁盘。<ul>
+<li>用途：① 崩溃恢复，记录了未刷盘的数据页变化 ② 优化磁盘随机I&#x2F;O-&gt;顺序I&#x2F;O，减少无效I&#x2F;O（避免每次刷16KB）</li>
+<li>事务提交时刷盘策略：① 立刻刷盘<code>fsync()</code> ② 立即写页缓存，但每秒刷盘 ③ 每秒写页缓存并刷盘</li>
 </ul>
 </li>
-<li><strong>undo log</strong>：是实现事务原子性和一致性的重要机制，它记录了事务对数据库所做的更改的相反操作，会先于数据持久化到磁盘上。它记录的是sql执行相关的信息，属于逻辑日志，两个作用：<ol>
-<li>事务回滚时恢复：根据undo log的内容做相反的工作</li>
-<li>实现MVCC：当读取记录时，若该记录被其他事务占用或当前版本对该事务不可见，则通过 <code>undo log</code> 读取之前的版本数据，从而避免锁竞争，提高并发性能</li>
-</ol>
+<li><strong>undo log</strong>：<code>事务原子性和一致性</code>，<strong>逻辑日志</strong>，记录了<strong>事务所做的更改的相反操作</strong>。数据修改前，根据SQL生成相应的 undo log 记录保存到buffer中，后台线程定期刷盘。<ul>
+<li>用途：事务回滚、MVCC：当读取记录时，若该记录当前版本对该事务不可见，则通过 <code>undo log</code> 读取之前的版本数据，从而避免锁竞争，提高并发性能</li>
+</ul>
 </li>
 </ul>
 <hr>
-<h3 id="ACID的实现"><a href="#ACID的实现" class="headerlink" title="ACID的实现"></a>ACID的实现</h3><p><strong>A 原子性</strong>：事务的操作要么全成功、要么全失败回滚</p>
-<p>关键在于事务回滚时撤销所有已经成功执行的sql语句：<code>undo log</code></p>
-<p><strong>D 持久性</strong>：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失</p>
-<p>由于引入了 Buffer Pool，宕机可能会导致数据丢失，解决方式：<code>redo log</code></p>
-<blockquote>
-<p>为什么不直接将Buffer Pool中修改的数据写入磁盘？</p>
-<ul>
-<li>刷脏是随机IO，因为每次修改的数据位置随机，但写 redo log 是顺序IO，为追加操作</li>
-<li>减少无效IO：刷脏是以数据页16K为单位的，而 redo log 中只包含真正需要写入的部分</li>
-</ul>
-</blockquote>
+<h3 id="ACID的实现"><a href="#ACID的实现" class="headerlink" title="ACID的实现"></a>ACID的实现</h3><p><strong>A 原子性</strong>：<code>undo log</code> 事务的操作要么全成功、要么全失败回滚</p>
+<p><strong>D 持久性</strong>：<code>redo log</code> 事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失</p>
 <p><strong>I 隔离性</strong>：多个并发事务之间要相互隔离，不能干扰，包括四个级别</p>
 <ul>
 <li>写对写：锁机制保证隔离性<br>事务先获得锁才可以修改数据，期间其他事务等待。InnoDB支持表锁和行锁，出于性能考虑通常使用行锁。</li>
 <li>写对读：MVCC保证隔离性<br>InnoDB默认的隔离级别是RR，使用MVCC解决脏读、不可重复读、幻读等问题，优点是读不加锁，因此读写不冲突，并发性能好</li>
 </ul>
-<p><strong>C 一致性</strong>：数据库本身确保插入数据类型、长度正确，应用层面如转账逻辑</p>
-<ul>
-<li>保证原子性、持久性和隔离性，这是一致性的前提</li>
-</ul>
+<p><strong>C 一致性</strong>：数据库本身确保插入数据类型、长度正确，应用层面如转账逻辑。其余三个是一致性的前提。</p>
 <hr>
 <h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><p><strong>锁的模式</strong></p>
 <ul>
@@ -2743,6 +2714,21 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 </li>
 </ul>
+<hr>
+<h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><p><strong>主从复制流程</strong></p>
+<ol>
+<li>主库db的更新事件(update、insert、delete)被写到binlog</li>
+<li>主库创建一个binlog dump 线程，把binlog的内容发送到从库</li>
+<li>从库启动并发起连接，连接到主库</li>
+<li>从库创建一个I&#x2F;O线程，读取主库传过来的binlog内容并写入到relay log</li>
+<li>从库创建一个SQL线程，从relay log里面读取内容，将更新内容写入到slave的db</li>
+</ol>
+<p><strong>用途</strong></p>
+<ol>
+<li>读写分离：主库写、从库读，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作</li>
+<li>数据实时备份：当系统中某个节点发生故障时，可以方便的故障切换</li>
+<li>架构扩展：把IO访问的负载分布到多个节点</li>
+</ol>
 <hr>
 <h2 id="高性能"><a href="#高性能" class="headerlink" title="高性能"></a>高性能</h2><p><strong>数据库结构优化（联合查询的建立中间表、合理加冗余字段）</strong></p>
 <p><strong>加缓存层、加索引</strong></p>
@@ -2768,20 +2754,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 </li>
 </ul>
-<h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><p><strong>主从复制流程</strong></p>
-<ol>
-<li>主库db的更新事件(update、insert、delete)被写到binlog</li>
-<li>主库创建一个binlog dump 线程，把binlog的内容发送到从库</li>
-<li>从库启动并发起连接，连接到主库</li>
-<li>从库创建一个I&#x2F;O线程，读取主库传过来的binlog内容并写入到relay log</li>
-<li>从库创建一个SQL线程，从relay log里面读取内容，将更新内容写入到slave的db</li>
-</ol>
-<p><strong>用途</strong></p>
-<ol>
-<li>读写分离：主库写、从库读，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作</li>
-<li>数据实时备份：当系统中某个节点发生故障时，可以方便的故障切换</li>
-<li>架构扩展：把IO访问的负载分布到多个节点</li>
-</ol>
 <hr>
 <h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h3><ol>
 <li><strong>使用索引</strong>：如果查询时没有使用索引，查询语句将扫描表中的所有记录，使用索引则可以快速定位到待查询记录。但几种特殊情况下索引可能失效。</li>
@@ -2937,10 +2909,10 @@ where id in (
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-11T23:51:29+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-09T23:38:34+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 11, 2024</p>
+    <p>更新于：Aug 9, 2024</p>
   </a>
 </div>
 
@@ -3024,7 +2996,7 @@ where id in (
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL%E4%B8%8ENoSQL"><span class="toc-number">1.</span> <span class="toc-text">SQL与NoSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.1.</span> <span class="toc-text">关系型数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.2.</span> <span class="toc-text">非关系型数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MVCC"><span class="toc-number">2.</span> <span class="toc-text">MVCC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">原理和实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%E4%B8%8E%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="toc-number">2.2.</span> <span class="toc-text">快照读与当前读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%BB%E8%AF%BB"><span class="toc-number">2.3.</span> <span class="toc-text">解决幻读</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E6%93%8E"><span class="toc-number">3.</span> <span class="toc-text">引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">4.</span> <span class="toc-text">索引</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">索引原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E7%B0%87-%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">4.2.</span> <span class="toc-text">聚簇&#x2F;非聚簇索引</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-number">5.</span> <span class="toc-text">事务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">5.1.</span> <span class="toc-text">事务隔离级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E6%97%A5%E5%BF%97"><span class="toc-number">5.2.</span> <span class="toc-text">三种日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ACID%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.3.</span> <span class="toc-text">ACID的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81"><span class="toc-number">6.</span> <span class="toc-text">锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD"><span class="toc-number">7.</span> <span class="toc-text">高性能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="toc-number">7.1.</span> <span class="toc-text">分库分表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">7.2.</span> <span class="toc-text">主从复制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-number">8.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">8.1.</span> <span class="toc-text">查询优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E4%BC%98%E5%8C%96"><span class="toc-number">8.2.</span> <span class="toc-text">插入优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">8.3.</span> <span class="toc-text">慢查询优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E6%95%B0%E6%8D%AE%E9%87%8F%E8%BF%87%E5%A4%A7"><span class="toc-number">8.4.</span> <span class="toc-text">表数据量过大</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Explain"><span class="toc-number">8.5.</span> <span class="toc-text">Explain</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">9.</span> <span class="toc-text">其他</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E5%BC%8F"><span class="toc-number">9.1.</span> <span class="toc-text">范式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9EID"><span class="toc-number">9.2.</span> <span class="toc-text">自增ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8CSQL%E8%BF%87%E7%A8%8B"><span class="toc-number">9.3.</span> <span class="toc-text">执行SQL过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E6%8E%92%E5%BA%8F"><span class="toc-number">9.4.</span> <span class="toc-text">海量数据排序</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL%E4%B8%8ENoSQL"><span class="toc-number">1.</span> <span class="toc-text">SQL与NoSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.1.</span> <span class="toc-text">关系型数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.2.</span> <span class="toc-text">非关系型数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-number">2.</span> <span class="toc-text">事务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">2.1.</span> <span class="toc-text">事务隔离级别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MVCC"><span class="toc-number">3.</span> <span class="toc-text">MVCC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%E4%B8%8E%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="toc-number">3.1.</span> <span class="toc-text">快照读与当前读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.2.</span> <span class="toc-text">原理和实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%B9%BB%E8%AF%BB"><span class="toc-number">3.3.</span> <span class="toc-text">解决幻读</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E6%93%8E"><span class="toc-number">4.</span> <span class="toc-text">引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">5.</span> <span class="toc-text">索引</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86"><span class="toc-number">5.1.</span> <span class="toc-text">索引原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E7%B0%87-%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">5.2.</span> <span class="toc-text">聚簇&#x2F;非聚簇索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E6%97%A5%E5%BF%97"><span class="toc-number">5.3.</span> <span class="toc-text">三种日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ACID%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.4.</span> <span class="toc-text">ACID的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81"><span class="toc-number">6.</span> <span class="toc-text">锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">7.</span> <span class="toc-text">主从复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD"><span class="toc-number">8.</span> <span class="toc-text">高性能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="toc-number">8.1.</span> <span class="toc-text">分库分表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96"><span class="toc-number">9.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">9.1.</span> <span class="toc-text">查询优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%E4%BC%98%E5%8C%96"><span class="toc-number">9.2.</span> <span class="toc-text">插入优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">9.3.</span> <span class="toc-text">慢查询优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E6%95%B0%E6%8D%AE%E9%87%8F%E8%BF%87%E5%A4%A7"><span class="toc-number">9.4.</span> <span class="toc-text">表数据量过大</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Explain"><span class="toc-number">9.5.</span> <span class="toc-text">Explain</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">10.</span> <span class="toc-text">其他</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E5%BC%8F"><span class="toc-number">10.1.</span> <span class="toc-text">范式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9EID"><span class="toc-number">10.2.</span> <span class="toc-text">自增ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8CSQL%E8%BF%87%E7%A8%8B"><span class="toc-number">10.3.</span> <span class="toc-text">执行SQL过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E6%8E%92%E5%BA%8F"><span class="toc-number">10.4.</span> <span class="toc-text">海量数据排序</span></a></li></ol></li></ol>
     </div>
   </section>
 

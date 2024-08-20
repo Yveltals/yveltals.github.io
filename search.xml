@@ -5,7 +5,6 @@
     <url>/2022/11/01/CPP/Cpp%20trivial/</url>
     <content><![CDATA[<h2 id="基本变量类型"><a href="#基本变量类型" class="headerlink" title="基本变量类型"></a>基本变量类型</h2><p>char在不同机器上实现为signed char或unsigned char，因此在存储小数时应特别指定un&#x2F;signed</p>
 <p>混用带&#x2F;无符号类型计算时，带符号数会转成无符号数，如unsigned(1)*signed(-1)&#x3D;4294967295（环境相关）</p>
-<p>列表初始化且初始值会丢失信息时，编译器报错，如 int a{3.14}</p>
 <h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p><code>int i=0, *p=&amp;i</code>，其中基本数据类型<code>int</code>，类型修饰符<code>*或&amp;</code></p>
 <p>引用与指针：不能定义引用的指针，因为引用不是对象；反之可以</p>
 <h2 id="运算符优先级"><a href="#运算符优先级" class="headerlink" title="运算符优先级"></a>运算符优先级</h2><blockquote>
@@ -85,9 +84,6 @@
 <p><strong>3. 相关计算</strong></p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> c[<span class="number">4</span>][<span class="number">5</span>],(*p)[<span class="number">5</span>];</span><br><span class="line">p = c;</span><br><span class="line"></span><br><span class="line">p+<span class="number">1</span>  <span class="comment">//指向第一行地址</span></span><br><span class="line">*(p+<span class="number">1</span>), p[<span class="number">1</span>]  <span class="comment">//第1行首地址</span></span><br><span class="line">*(p+<span class="number">1</span>)+<span class="number">2</span>, p[<span class="number">1</span>]+<span class="number">2</span>  <span class="comment">//第1行第2列地址</span></span><br><span class="line">*(p[<span class="number">1</span>]+<span class="number">2</span>)  <span class="comment">//第1行第2列元素</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="Mutable"><a href="#Mutable" class="headerlink" title="Mutable"></a>Mutable</h2><p>mutable也是为了突破const的限制而设置的。</p>
-<p>被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。</p>
-<p>如果需要在const函数里面修改一些跟类状态无关的数据成员，那么这个函数就应该被mutable来修饰。</p>
 <h2 id="This"><a href="#This" class="headerlink" title="This"></a>This</h2><ul>
 <li>指向对象的首地址，只能在非静态成员函数中使用。当类的<strong>非静态成员函数</strong>访问<strong>非静态成员</strong>的时候，编译器会自动将对象本身的地址作为一个隐含参数 this 传递给函数，对各成员的访问均通过 this 进行。this 在成员函数的开始执行前构造，在成员的执行结束后清除。所以This不占用对象空间，会因编译器的不同放置到栈、寄存器、甚至全局变量中</li>
 <li>用途：除了指向首地址，还能区分形参和成员变量名、返回类对象本身</li>
@@ -104,7 +100,7 @@
 <li><p><strong>普通变量</strong></p>
 <ul>
 <li>可见性本文件，存储在静态存储区（默认初始化为0，全局生存期）</li>
-<li>离开函数仍然存在，具有记忆功能</li>
+<li>全局static变量在<code>main()</code>之前初始化，局部static在执行到声明处时才初始化</li>
 </ul>
 </li>
 <li><p><strong>成员变量</strong></p>
@@ -120,26 +116,19 @@
 </ul>
 </li>
 </ul>
-<blockquote>
-<p><a href="https://zhuanlan.zhihu.com/p/37439983">初始化时机</a> TODO</p>
-<ul>
-<li>全局static变量在<code>main()</code> 之前初始化</li>
-<li>局部static变量在执行到声明处时才初始化</li>
-<li>static对象首次用到时才构造，因为构造函数的原因</li>
-</ul>
-</blockquote>
 <h2 id="Const"><a href="#Const" class="headerlink" title="Const"></a>Const</h2><ul>
 <li><p><strong>普通变量</strong></p>
 <ul>
-<li>可见性本文件，存储在栈区(<code>局部</code>)、全局存储区(<code>全局</code>)或不分配内存在符号表(<code>const int a = 1</code>)</li>
-<li>const形参可以接收非const类型的实参</li>
+<li>可见性本文件，存储在栈区(<code>局部</code>)、常量存储区(<code>全局</code>)或不分配内存在符号表（如基础数据类型<code>const int a = 1</code>）</li>
 </ul>
 </li>
 <li><p><strong>成员变量</strong></p>
-</li>
+<ul>
 <li><p>只在某个对象生命周期是常量，不同对象的const成员值可以不同</p>
 </li>
 <li><p>不能在类定义外部初始化，通过构造函数初始化列表初始化</p>
+</li>
+</ul>
 </li>
 <li><p><strong>成员函数</strong></p>
 <ul>
@@ -147,7 +136,7 @@
 </li>
 <li><p>常量对象只能调用常量函数</p>
 </li>
-<li><p>const成员函数想修改变量可用<code>mutable</code>修饰</p>
+<li><p>想在const成员函数中修改类成员变量，可以用<code>mutable</code>修饰</p>
 </li>
 </ul>
 </li>
@@ -155,8 +144,6 @@
 <blockquote>
 <p><strong>顶层</strong>const：修饰的变量<strong>本身</strong>是一个常量，无法修改，指的是指针，<strong>顶层const不构成重载</strong></p>
 <p><strong>底层</strong>const：修饰的变量<strong>所指向的对象</strong>是一个常量，指的是所指变量</p>
-<p>const存放位置：TODO</p>
-<p>局部常量，存放在栈区<br>全局常量，编译期⼀般不分配内存，放在符号表中以提⾼访问效率<br>字⾯值常量，⽐如字符串，放在常量区</p>
 </blockquote>
 <h2 id="Union"><a href="#Union" class="headerlink" title="Union"></a>Union</h2><p>联合（union）是一种节省空间的特殊的类，一个 union 可以有多个数据成员，但是在任意时刻只有一个数据成员可以有值。当某个成员被赋值后其他成员变为未定义状态。联合有如下特点：</p>
 <ul>
@@ -186,22 +173,18 @@
 </ul>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span> c, <span class="type">const</span> <span class="type">int</span> &amp;d)</span> </span>&#123;</span><br><span class="line">  cout &lt;&lt; a &lt;&lt; b &lt;&lt; c &lt;&lt; d &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n=<span class="number">7</span>;</span><br><span class="line">  <span class="keyword">auto</span> g = <span class="built_in">bind</span>(fun, placeholders::_2, placeholders::_1, n, <span class="built_in">cref</span>(n));</span><br><span class="line">  <span class="built_in">g</span>(<span class="number">1</span>,<span class="number">2</span>); <span class="comment">// 2177</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="访控与继承"><a href="#访控与继承" class="headerlink" title="访控与继承"></a>访控与继承</h2><p>派生类友元不能访问基类<code>protected</code>成员</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span>&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sneaky</span>: <span class="keyword">public</span> Base&#123;</span><br><span class="line">  <span class="function"><span class="keyword">friend</span> <span class="type">void</span> <span class="title">fun</span><span class="params">(Sneaky&amp;)</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">friend</span> <span class="type">void</span> <span class="title">fun</span><span class="params">(Base&amp;)</span></span>;</span><br><span class="line">  <span class="type">int</span> j;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(Sneaky&amp; s)</span> </span>&#123;s.j=<span class="number">0</span>;&#125; <span class="comment">//正确</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(Base&amp; s)</span> </span>&#123;s.i=<span class="number">0</span>;&#125; <span class="comment">//错误,无访问权限</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20210322/274519953_1616401735505/2DDE9FC0B97FEA06451FF02B48B0690B" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="访控与继承"><a href="#访控与继承" class="headerlink" title="访控与继承"></a>访控与继承</h2><ul>
+<li><code>public</code>成员对<strong>任何访问者可见</strong>(类内、类外和子类)</li>
+<li><code>private</code>成员只对<strong>类内可见</strong></li>
+<li><code>protected</code>介于<code>public</code>和<code>private</code>之间，它对于<strong>类内与派生类可见</strong>。这为继承提供了便利，子类可以访问父类的<code>protected</code>成员。</li>
+<li>但是子类友元不能访问父类<code>protected</code>成员</li>
+</ul>
 <h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><ol>
 <li>将 <code>main()</code> 函数的运行状态进行压栈</li>
 <li>将 <code>func()</code> 函数的返回地址压栈</li>
 <li>将 <code>func()</code> 函数的参数从右到左压栈（形参在函数调用前不分配存储空间，调用结束后弹出栈空间）</li>
 <li>将 <code>func()</code> 定义变量依次压栈</li>
 </ol>
-<h2 id="重载运算符"><a href="#重载运算符" class="headerlink" title="重载运算符"></a>重载运算符</h2><ul>
-<li>引入运算符是为了实现类的多态</li>
-<li>只能重载已有的运算符，且不能改变操作数个数、优先级、结合律</li>
-<li>分为成员运算符重载和非成员运算符重载</li>
-<li>成员运算符重载默认 this 绑定左侧运算符对象，少一个参数，下标和箭头运算符必须用这种方式</li>
-</ul>
 <h2 id="堆和栈"><a href="#堆和栈" class="headerlink" title="堆和栈"></a>堆和栈</h2><table>
 <thead>
 <tr>
@@ -211,24 +194,9 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="left"><strong>管理方式</strong></td>
-<td>堆资源由程序员控制</td>
-<td>栈资源由编译器自动管理</td>
-</tr>
-<tr>
-<td align="left"><strong>内存管理机制</strong></td>
-<td>系统有一个记录空闲内存地址的链表，遍历该链表找到第一个空间满足的堆结点，从空闲结点链表中删除该结点，并将该结点空间分配给程序</td>
-<td>只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报栈溢出异常。</td>
-</tr>
-<tr>
 <td align="left"><strong>空间大小</strong></td>
-<td>堆是不连续的内存区域，大小受限有效的虚拟内存，所以堆的空间比较灵活、比较大</td>
-<td>栈是一块连续的内存区域，大小是操作系统预定好的，windows是2M</td>
-</tr>
-<tr>
-<td align="left"><strong>碎片问题</strong></td>
-<td>对于堆，频繁的new&#x2F;delete会造成大量碎片，使程序效率降低</td>
-<td>类似于数据结构上的栈，先进后出一一对应，不会产生碎片</td>
+<td>堆空间不连续，频繁分配产生碎片，但空间大（受限于有效的虚拟内存）</td>
+<td>连续的一小块内存区域（1~8M），没有碎片</td>
 </tr>
 <tr>
 <td align="left"><strong>生长方向</strong></td>
@@ -236,13 +204,18 @@
 <td>栈向下，向低地址方向增长。</td>
 </tr>
 <tr>
-<td align="left"><strong>分配方式</strong></td>
-<td>都是动态分配</td>
-<td>静态分配由编译器完成<br />动态分配由alloca函数分配，编译器负责释放</td>
+<td align="left"><strong>管理方式</strong></td>
+<td>程序员控制，都是动态分配</td>
+<td>编译器自动管理，主要静态分配，也可以用alloca函数动态分配（自动释放）</td>
+</tr>
+<tr>
+<td align="left"><strong>内存管理机制</strong></td>
+<td>系统有一个记录空闲内存地址的链表，遍历该链表找到第一个空间满足的堆结点，从空闲结点链表中删除该结点，并将该结点空间分配给程序</td>
+<td>只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报栈溢出异常。</td>
 </tr>
 <tr>
 <td align="left"><strong>分配效率</strong></td>
-<td>堆由C&#x2F;C++函数库提供，分配内存时需要寻找合适大小的内存，并且获取堆的内容需要两次访问（先访问指针得到地址，再访问内存），因此效率比栈低</td>
+<td>堆由C&#x2F;C++函数库提供，分配内存时需要寻找合适大小的内存，并且获取堆的内容需要两次访问（先获取地址，再访问内存），效率低</td>
 <td>计算机在底层对栈提供支持，栈地址有专门寄存器存放，栈操作有专门指令</td>
 </tr>
 </tbody></table>
@@ -299,45 +272,27 @@
 <li><p><strong>类成员变量在进入构造函数之前进行初始化</strong>，所以类成员会在进入构造函数之前先<strong>调用一次默认构造</strong>函数，进入后再做<strong>一次赋值</strong>操作(对象已存在)，而初始化列表只做<strong>一次赋值</strong>操作会更快。</p>
 </li>
 </ul>
-<h2 id="静态绑定、动态绑定"><a href="#静态绑定、动态绑定" class="headerlink" title="静态绑定、动态绑定"></a>静态绑定、动态绑定</h2><p>静态绑定，绑定的是静态类型（在程序中声明的类型），发⽣在编译期间。</p>
-<p>动态绑定，绑定的是动态类型（⽬前所指对象的实际类型），发⽣在运⾏期间。</p>
-<p>虚函数是动态绑定的，⾮虚函数是静态绑定的，<strong>缺省参数值也是静态绑定的</strong>。所以不应该重新定义继承⽽来的缺省参数，否则可能在调用一个派生类内的虚函数时，使用基类指定的缺省参数值。</p>
+<h2 id="静态绑定、动态绑定"><a href="#静态绑定、动态绑定" class="headerlink" title="静态绑定、动态绑定"></a>静态绑定、动态绑定</h2><p>静态绑定，绑定的是在程序中声明的类型，发⽣在编译期间。如非虚函数。</p>
+<p>动态绑定，绑定的是所指对象的实际类型，发⽣在运⾏期间，如虚函数。但是，<strong>缺省参数值也是静态绑定的</strong>，所以不能重新定义继承来的缺省参数，否则可能调用派生类的虚函数时，使用的是基类的缺省参数值。</p>
 <h2 id="四种强制转换"><a href="#四种强制转换" class="headerlink" title="四种强制转换"></a>四种强制转换</h2><ul>
-<li><strong>static_cast</strong>：主要执⾏⾮多态的转换：基本类型互转、void指针转换。基类子类间上⾏转换安全，下⾏转换不安全，得到错误指针；不能转换掉const、volitale属性</li>
+<li><strong>static_cast</strong>：主要执⾏⾮多态的基本类型互转。基类子类间上⾏转换安全，下⾏转换不安全，得到错误指针；不能转换掉const、volitale属性</li>
 <li><strong>dynamic_cast</strong>：主要用于安全的下行转换，支持运行时识别指针、引用<ul>
 <li>（下行转换）须用于<strong>含虚函数</strong>的类，因为运行时转换须要知道类对象的信息，通过虚函数表得到继承关系</li>
 <li>必须转换类指针、引⽤或 void*类型</li>
 <li>上行转换同static_cast，下⾏转换安全，当类型不⼀致时返回nullptr</li>
 </ul>
 </li>
-<li><strong>const_cast</strong>：修改类型的const或volatile属性</li>
+<li><strong>const_cast</strong>：移除const或volatile属性</li>
 <li><strong>reinterpret_cast</strong>：从底层对数据进⾏重新解释，危险性高，依赖具体的平台，可移植性差。可以将整形转指针、指针转数组、指针转引⽤</li>
-</ul>
-<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><strong><a href="">空类默认生成哪些函数 TODO</a></strong></p>
-<p>默认构造函数，拷贝构造函数，析构函数，赋值运算符，取址运算符，取址运算符 const</p>
-<p><strong><a href="">编译器何时生成默认构造函数 TODO</a></strong> （拷贝构造函数同理）</p>
-<ul>
-<li><p>没有显示定义ctor且默认ctor被需要的时候，且满足四点之一：</p>
-</li>
-<li><p>类对象成员有默认ctor、基类有默认ctor、含虚函数、含虚继承</p>
-</li>
-</ul>
-<p><strong>构造函数做了哪些工作</strong></p>
-<ul>
-<li>如果类<strong>虚继承</strong>自基类，准备虚基类位置并实现虚基类机制</li>
-<li>如果类有<strong>虚函数</strong>，将<code>vptr</code>的初始化</li>
-<li>如果类的<strong>父类有默认ctor</strong>且没有显示初始化时，按继承的声明顺序调用父类的默认ctor</li>
-<li>如果类的<strong>成员对象有默认ctor</strong>且没有显示初始化时，按成员声明顺序调用其默认ctor</li>
-<li>如果类没有定义任何构造函数，编译器会为其合成默认构造函数</li>
 </ul>
 <h2 id="C-从代码到可执行程序"><a href="#C-从代码到可执行程序" class="headerlink" title="C++从代码到可执行程序"></a>C++从代码到可执行程序</h2><p><strong>1. 预编译</strong></p>
 <ul>
 <li>处理 <code>#</code> 开头的预编译指令，#define、#include、#ifdef</li>
-<li>删除注释，添加行号和文件标识</li>
+<li>删除注释，添加行号和文件标识，生成 <code>.i</code> 文件</li>
 </ul>
 <p><strong>2. 编译</strong></p>
 <ul>
-<li>把预编译之后生成的 <code>.i</code> 文件，经过词法分析、语法分析、语义分析、优化后，生成汇编代码 <code>.s</code> 文件</li>
+<li>经过词法分析、语法分析、语义分析、优化后，生成汇编代码 <code>.s</code> 文件</li>
 </ul>
 <p><strong>3. 汇编</strong></p>
 <ul>
@@ -376,32 +331,21 @@
 <li>new 调用 <code>operator new</code> 的标准库函数分配空间并调用对象的构造函数，delete 先运行析构函数再调用 <code>operator delete</code> 的标准库函数释放内存。</li>
 <li>new 封装了malloc，直接free不会报错，但是这只是释放内存，而不会析构对象</li>
 </ul>
-<h3 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理</a></h3><p>分配的内存小于 128 KB ，通过 <code>brk()</code> 函数将「堆顶」指针向高地址移动，获得新的内存空间。分配的内存大于 128 KB ，通过 <code>mmap()</code> 系统调用中「私有匿名映射」的方式，在文件映射区分配一块内存</p>
-<p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现虚拟内存对应的页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
-<p><strong>1. 为什么不全部使用 mmap 来分配</strong></p>
-<p>如果都用 <code>mmap()</code> 来分配内存，等于每次都要执行系统调用。另外 <code>mmap()</code> 分配的内存释放时都会归还给操作系统，于是在第一次访问该虚拟地址的时候就会缺页中断。<strong>不仅每次都会发生运行态的切换，第一次访问虚拟地址后还会缺页中断，导致 CPU 消耗较大</strong>。</p>
-<p>而通过 <code>brk()</code> 系统调用在堆空间申请内存的时候，由于堆空间是连续的，所以直接预分配更大的内存来作为内存池，当内存释放的时候，就缓存在内存池中。等下次在申请内存的时候，就直接从内存池取出对应的内存块就行了，而且可能这个内存块的虚拟地址与物理地址的映射关系还存在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
-<p><strong>2. 为什么不全部使用 brk 来分配</strong></p>
-<p>如果连续申请了 10k，20k，30k 这三片内存，如果 10k 和 20k 这两片释放了，变为了空闲内存空间。但是如果下次申请的内存大于 30k，没有可用的空闲内存空间，必须向 OS 申请，实际使用内存继续增大。</p>
-<p>因此，随着系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
-<p><strong>3. free 释放内存会归还给操作系统吗</strong> </p>
-<ul>
-<li><code>brk()</code> 申请的内存，释放内存时不会归还给操作系统，而是缓存在 malloc 的内存池中，待下次使用</li>
-<li><code>mmap()</code> 申请的内存，释放内存时会把内存归还给操作系统，内存得到真正的释放</li>
-</ul>
-<p><strong>4. free 如何知道释放多大内存</strong></p>
-<p>malloc返回的地址比堆空间起始地址多了16字节，free向前偏移16字节后分析出内存块大小</p>
+<h3 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理</a></h3><p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
 <blockquote>
 <p>malloc分配的空间包括：cookie、debugger header、(对象数量)、对象(数组)、padding、cookie</p>
-<p>不能用delete回收new[]分配的内存，只会析构一个对象，且delete不知道前面4字节的的对象数量</p>
 </blockquote>
-<h3 id="free回收后的内存"><a href="#free回收后的内存" class="headerlink" title="free回收后的内存"></a>free回收后的内存</h3><p>不是。free回收的内存会被内存管理器用双链表保存起来，当下一次申请内存的时候，会尝试从这些内存中寻找合适的返回。这样减少了频繁的系统调用对系统资源的占用。同时内存管理器也会尝试合并小块内存，减少内存碎片。</p>
+<h4 id="brk"><a href="#brk" class="headerlink" title="brk()"></a>brk()</h4><p>分配的内存小于 128 KB 时：通过 <code>brk()</code> 系统调用将<strong>堆顶指针向高地址移动，申请一块较大的内存块，然后划分成多个小块的内存，用一个空闲内存块的链表维护</strong>，每次申请内存时会从链表中分配一个合适大小的内存块。</p>
+<p>调用 free 时不会立即还给操作系统，而是将内存块放回到空闲内存块链表中，等待下次复用，可能彼时这个内存块的虚拟&#x2F;物理地址的映射关系还在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
+<p>缺点：系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
+<h4 id="mmap"><a href="#mmap" class="headerlink" title="mmap()"></a>mmap()</h4><p>分配的内存大于 128 KB 时，<strong>通过 <code>mmap()</code> 系统调用中<code>私有匿名映射</code>的方式，在文件映射区分配一块内存</strong>。释放内存时会把内存归还给操作系统，内存得到真正的释放。</p>
+<p>缺点：<code>mmap()</code> 每次都要执行系统调用。另外 <code>mmap()</code> 分配的内存释放时都会归还给操作系统，于是在第一次访问该虚拟地址的时候就会缺页中断。不仅每次都会发生运行态的切换，第一次访问虚拟地址后还会缺页中断，导致 CPU 消耗较大。</p>
 <h2 id="内存模型"><a href="#内存模型" class="headerlink" title="内存模型"></a>内存模型</h2><p>Linux 将高地址的 1GB 空间分配给内核，用户空间只剩 3GB 包括：</p>
 <ul>
 <li><strong>栈</strong>：由编译器管理分配和回收，存放局部变量和函数参数。效率很高，但是分配的内存容量有限。</li>
 <li><strong>堆</strong>：由<code>new</code>、<code>malloc</code>分配的内存块，由应用程序去控制释放。空间很大，但可能内存泄漏和空闲碎片。</li>
-<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：内存在程序编译的时候就已经分配好，整个运行期间都存在，存放静态变量、全局变量和常量。static 可以控制变量的可见范围，全局变量不行。</li>
-<li><strong>常量存储区</strong> (rodata)：存放的是常量字符串，不允许修改。</li>
+<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：存放静态变量、全局变量和常量(<code>static const</code>)，在编译的时就已经分配好，初始化 0，整个运行期间都存在。static 可以控制变量的可见范围，全局变量不行。</li>
+<li><strong>常量存储区</strong> (rodata)：存放的是字面常量和const变量，不允许修改。</li>
 <li><strong>代码区</strong> (text)：存放程序的二进制代码。</li>
 </ul>
 <h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><ul>
@@ -418,10 +362,10 @@
 </ul>
 <p><strong>内存对齐的规则</strong></p>
 <ol>
-<li>每个特定平台上的编译器都有自己的默认“对齐系数”。可以通过预编译命令 #pragma pack(n)，n &#x3D; 1,2,4,8 改变。</li>
-<li>有效对齐值：是给定值 #pragma pack(n) 和结构体中最长数据类型长度中较小的那个，有效对齐值也叫对齐单位。      </li>
-<li>结构体每个成员的 offset 都是该<strong>成员大小</strong>与<strong>有效对齐值</strong>中较小那个的整数倍，如有需要编译器会在成员之间加上填充字节。      </li>
-<li>结构体的总大小为<strong>有效对齐值的整数倍</strong>，如有需要编译器会在最末一个成员之后加上填充字节。</li>
+<li>确定对齐系数：和编译器有关，可以通过预编译命令 #pragma pack(n)，n &#x3D; 1,2,4,8 设置。</li>
+<li>确定对齐单位：<code>min(对齐系数，结构体中最长数据类型长度)</code>      </li>
+<li>确定数据的偏移量：<code>min(成员大小，对齐单位)</code>的整数倍，（可选）在成员之间加上填充字节。      </li>
+<li>结构体尾部填充：保证总大小为对齐单位的整数倍</li>
 </ol>
 ]]></content>
       <categories>
@@ -614,7 +558,7 @@
 <p>可以通过reset()或者赋值nullptr释放管理对象</p>
 <details blue><summary> UniquePtr实现 </summary>
               <div class='content'>
-              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UniquePtr</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">UniquePtr</span>(T* ptr = <span class="literal">nullptr</span>) : _ptr(ptr) &#123;&#125;</span><br><span class="line">    ~<span class="built_in">UniquePtr</span>() &#123;</span><br><span class="line">        <span class="keyword">delete</span> _ptr;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 拷贝构造/赋值</span></span><br><span class="line">    <span class="built_in">UniquePtr</span>(<span class="type">const</span> UniquePtr&amp; u) = <span class="keyword">delete</span>;</span><br><span class="line">    UniquePtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> UniquePtr&amp; u) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="comment">// 移动构造/赋值</span></span><br><span class="line">    <span class="built_in">UniquePtr</span>(UniquePtr&amp;&amp; u) <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        _ptr = u._ptr;</span><br><span class="line">        u._ptr = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    UniquePtr&amp; <span class="keyword">operator</span>=(UniquePtr&amp;&amp; u) <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        _ptr = u._ptr;</span><br><span class="line">        u._ptr = <span class="literal">nullptr</span>;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;    </span><br><span class="line">    T&amp; <span class="keyword">operator</span>*() <span class="type">const</span> &#123; <span class="keyword">return</span> *_ptr; &#125;</span><br><span class="line">    T* <span class="keyword">operator</span>-&gt;() <span class="type">const</span> &#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UniquePtr</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">UniquePtr</span>(T* ptr = <span class="literal">nullptr</span>) : _ptr(ptr) &#123;&#125;</span><br><span class="line">  ~<span class="built_in">UniquePtr</span>() &#123;</span><br><span class="line">    <span class="keyword">delete</span> _ptr;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">UniquePtr</span>(<span class="type">const</span> UniquePtr&amp; u) = <span class="keyword">delete</span>;</span><br><span class="line">  UniquePtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> UniquePtr&amp; u) = <span class="keyword">delete</span>;</span><br><span class="line">  <span class="built_in">UniquePtr</span>(UniquePtr&amp;&amp; u) <span class="keyword">noexcept</span> &#123;</span><br><span class="line">    _ptr = u._ptr;</span><br><span class="line">    u._ptr = <span class="literal">nullptr</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  UniquePtr&amp; <span class="keyword">operator</span>=(UniquePtr&amp;&amp; u) <span class="keyword">noexcept</span> &#123;</span><br><span class="line">    _ptr = u._ptr;</span><br><span class="line">    u._ptr = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  T&amp; <span class="keyword">operator</span>*() <span class="type">const</span> &#123; <span class="keyword">return</span> *_ptr; &#125;</span><br><span class="line">  T* <span class="keyword">operator</span>-&gt;() <span class="type">const</span> &#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line">  <span class="function"><span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  T* _ptr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
               </div>
             </details>
 
@@ -647,7 +591,7 @@
 </ul>
 <details blue><summary> SharedPtr实现 </summary>
               <div class='content'>
-              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SharedPtr</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">SharedPtr</span>(T* ptr = <span class="literal">nullptr</span>) :_ptr(ptr), _count(<span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(ptr) _count = <span class="keyword">new</span> <span class="built_in">int</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">	~<span class="built_in">SharedPtr</span>() &#123;</span><br><span class="line">		<span class="keyword">if</span> (--(*_count) == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">delete</span> _ptr; _ptr = <span class="literal">nullptr</span>;</span><br><span class="line">			<span class="keyword">delete</span> _count; _count = <span class="literal">nullptr</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 拷贝构造/赋值</span></span><br><span class="line">	<span class="built_in">SharedPtr</span>(<span class="type">const</span> SharedPtr&amp; s) &#123;</span><br><span class="line">        _ptr = s._ptr;</span><br><span class="line">		_count = s._count;</span><br><span class="line">		++(*_count);</span><br><span class="line">	&#125;</span><br><span class="line">	SharedPtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> SharedPtr&amp; s)&#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span> != &amp;s) &#123;</span><br><span class="line">			<span class="keyword">if</span> (--(*count) == <span class="number">0</span>) &#123;  <span class="comment">//左侧引用-1</span></span><br><span class="line">				<span class="keyword">delete</span> _ptr;</span><br><span class="line">				<span class="keyword">delete</span> _count;</span><br><span class="line">			&#125;</span><br><span class="line">			_ptr = s._ptr;</span><br><span class="line">			_count = s._count;</span><br><span class="line">			++*(_count);  <span class="comment">//右侧引用+1</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	T&amp; <span class="keyword">operator</span>*() <span class="type">const</span> &#123; <span class="keyword">return</span> *_ptr;&#125;</span><br><span class="line">	T* <span class="keyword">operator</span>-&gt;()	<span class="type">const</span> &#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line">	<span class="function"><span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	T* _ptr;</span><br><span class="line">	<span class="type">int</span>* _count;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SharedPtr</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">SharedPtr</span>(T* ptr = <span class="literal">nullptr</span>) :_ptr(ptr), _count(<span class="keyword">new</span> <span class="built_in">int</span>(<span class="number">0</span>))&#123;</span><br><span class="line">    <span class="keyword">if</span>(ptr) (*_count)++;</span><br><span class="line">  &#125;</span><br><span class="line">	~<span class="built_in">SharedPtr</span>() &#123;</span><br><span class="line">		<span class="keyword">if</span> (--(*_count) == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">delete</span> _ptr; _ptr = <span class="literal">nullptr</span>;</span><br><span class="line">			<span class="keyword">delete</span> _count; _count = <span class="literal">nullptr</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">SharedPtr</span>(<span class="type">const</span> SharedPtr&amp; s) &#123;</span><br><span class="line">    _ptr = s._ptr;</span><br><span class="line">		_count = s._count;</span><br><span class="line">		(*_count)++;</span><br><span class="line">	&#125;</span><br><span class="line">	SharedPtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> SharedPtr&amp; s)&#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span> != &amp;s) &#123;</span><br><span class="line">			<span class="keyword">if</span> (--(*_count) == <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="keyword">delete</span> _ptr;</span><br><span class="line">				<span class="keyword">delete</span> _count;</span><br><span class="line">			&#125;</span><br><span class="line">			_ptr = s._ptr;</span><br><span class="line">			_count = s._count;</span><br><span class="line">			(*_count)++;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	T&amp; <span class="keyword">operator</span>*() <span class="type">const</span> &#123; <span class="keyword">return</span> *_ptr;&#125;</span><br><span class="line">	T* <span class="keyword">operator</span>-&gt;()	<span class="type">const</span> &#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line">	<span class="function"><span class="keyword">operator</span> <span class="title">bool</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> _ptr; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	T* _ptr;</span><br><span class="line">	<span class="type">int</span>* _count;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
               </div>
             </details>
 
@@ -758,8 +702,8 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//用forward实现完美转发</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(T&amp;&amp; s)</span></span>&#123;</span><br><span class="line">    <span class="built_in">foo</span>(forward&lt;T&gt;(s));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    <span class="built_in">bar</span>(a); <span class="comment">// 输出 &amp;</span></span><br><span class="line">    <span class="built_in">bar</span>(<span class="built_in">A</span>());<span class="comment">//输出 &amp;&amp;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C ++通过虚表解决了后期绑定时查找调用函数的问题。虚表在编译时期初始化，全局共享，存储在常量区。每个使用虚函数的类（或者虚函数类的派生）都有自己的虚拟表。该表是编译器在编译时设置的静态数组，包含了类对象的所有虚函数条目，其中每个条目是一个函数指针，指向该类可访问的派生函数。</p>
-<p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，对于子类虚指针，先在父类构造函数中指向父类的虚表，之后调用子类的构造函数时才会改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C++ 通过虚表解决了后期绑定时查找调用函数的问题。每个含有虚函数的类都有虚表，它是编译时期初始化的静态数组，数组中每个条目是一个函数指针。虚表全局共享，存储在常量区。</p>
+<p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，先在父类构造函数中指向父类的虚表，之后在子类构造函数中改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
 <p><strong>调用过程</strong>：</p>
 <ul>
 <li>对于：<code>ptr -&gt; z()</code></li>
@@ -776,7 +720,7 @@
 <p>派生类和第一个基类共用虚函数表，派生类自己的虚函数放在第一个虚函数表的后面，派生类如果要覆盖基类中的虚函数，那么会在虚函数表中代替其位置</p>
 <p>多继承下影响到虚函数的调用的实质上为this的调整：</p>
 <ol>
-<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不同调整，因为起始地址一致</li>
+<li>如果 <code>A1</code> 类型引用 <code>B</code> 对象时就不用调整，因为起始地址一致</li>
 <li>如果 <code>A2</code> 类型引用 <code>B</code> 对象并且调用 <code>B</code> 重写的虚函数时，由于 <code>A2</code> 引用的起始地址和 <code>B</code> 不同，它的 this 指针地址比 <code>B</code> 对象多了 n 字节的偏移量，所以直接调用虚函数会导致错误，需要调用前调整 this 指针指向 <code>B</code></li>
 </ol>
 <p>Thunk技术解决了这个问题，它允许虚函数表中slot包括两个类型的地址: </p>
@@ -835,13 +779,14 @@
 </li>
 <li>析构函数能抛异常吗：不能<ul>
 <li>异常点后无法执行，内存泄漏</li>
-<li>一般出现异常时调用析构函数，此时上个异常还没解决，析构函数中又有新异常，造成崩溃</li>
+<li>出现异常时，在栈展开过程中会调用在栈中构造好的对象的析构函数，此时如果上个异常还没解决，析构函数中又有新异常，会崩溃</li>
 </ul>
 </li>
 </ol>
 <hr>
-<h2 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h2><h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="虚继承-1"><a href="#虚继承-1" class="headerlink" title="虚继承"></a>虚继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h2><h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>虚基类解决了多继承（菱形继承）时命名冲突和冗余数据的问题，使派生类中只保留一份间接基类的成员，需要在继承方式前加上virtual关键字修饰</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>虚基类部分被放到对象内存的最后面，且B和C的对象中有隐藏的虚基类表指针(vbptr)指向虚基类表(vbtable)</p>
 <p>虚基类表中存放了2个偏移量：</p>
 <ol>
@@ -860,7 +805,7 @@
 <p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
 <ul>
 <li><strong>prvalue</strong>：纯右值，不具名的临时对象，<strong>无名无地址</strong><ul>
-<li>返回非引用类型表达式，x++、x+1、make_shared&lt; int &gt;(32)</li>
+<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
 <li>非字符串字面量，42、true</li>
 <li><code>smart_ptr&lt;shape&gt; p1&#123;new Circle&#125;;</code></li>
 </ul>
@@ -883,7 +828,7 @@
 <h2 id="多线程简例"><a href="#多线程简例" class="headerlink" title="多线程简例"></a>多线程简例</h2><p><strong>1. 线程池</strong></p>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ThreadPool</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">ThreadPool</span>(<span class="type">int</span> num = <span class="number">4</span>): <span class="built_in">isclosed</span>(<span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; num; ++i)&#123;</span><br><span class="line">      <span class="built_in">thread</span>([<span class="keyword">this</span>]&#123;</span><br><span class="line">        unique_lock&lt;mutex&gt; <span class="built_in">lck</span>(m);</span><br><span class="line">        <span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">          <span class="keyword">if</span>(!task.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            <span class="keyword">auto</span> t = <span class="built_in">move</span>(task.<span class="built_in">front</span>());</span><br><span class="line">            task.<span class="built_in">pop</span>();</span><br><span class="line">            lck.<span class="built_in">unlock</span>();</span><br><span class="line">            <span class="built_in">t</span>();</span><br><span class="line">            lck.<span class="built_in">lock</span>();</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span> <span class="keyword">if</span>(isclosed) <span class="keyword">break</span>;</span><br><span class="line">          <span class="keyword">else</span> cv.<span class="built_in">wait</span>(lck);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;).<span class="built_in">detach</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ~<span class="built_in">ThreadPool</span>()&#123;</span><br><span class="line">    isclosed = <span class="literal">true</span>;</span><br><span class="line">    cv.<span class="built_in">notify_all</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">addTask</span><span class="params">(<span class="type">const</span> function&lt;<span class="type">void</span>()&gt;&amp; t)</span> </span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="function">unique_lock&lt;mutex&gt; <span class="title">lck</span><span class="params">(m)</span></span>;</span><br><span class="line">      task.<span class="built_in">push</span>(t);</span><br><span class="line">    &#125;</span><br><span class="line">    cv.<span class="built_in">notify_one</span>();</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  mutex m;</span><br><span class="line">  condition_variable cv;</span><br><span class="line">  atomic&lt;<span class="type">bool</span>&gt; isclosed;</span><br><span class="line">  queue&lt;function&lt;<span class="type">void</span>()&gt;&gt; task;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(<span class="type">int</span> n)</span></span>&#123;</span><br><span class="line">  cout&lt;&lt;n&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  ThreadPool threadpool;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)&#123;</span><br><span class="line">    threadpool.<span class="built_in">addTask</span>(<span class="built_in">bind</span>(fun, i));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">sleep</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ThreadPool</span> &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">ThreadPool</span>(<span class="type">int</span> num = <span class="number">4</span>): <span class="built_in">isclosed</span>(<span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; num; ++i) &#123;</span><br><span class="line">      <span class="built_in">thread</span>([<span class="keyword">this</span>]&#123;</span><br><span class="line">        unique_lock&lt;mutex&gt; <span class="built_in">lck</span>(m);</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">          <span class="keyword">if</span> (!tasks.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">            <span class="keyword">auto</span> task = <span class="built_in">move</span>(tasks.<span class="built_in">front</span>());</span><br><span class="line">            tasks.<span class="built_in">pop</span>();</span><br><span class="line">            lck.<span class="built_in">unlock</span>();</span><br><span class="line">            <span class="built_in">task</span>();</span><br><span class="line">            lck.<span class="built_in">lock</span>();</span><br><span class="line">          &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isclosed) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            cv.<span class="built_in">wait</span>(lck);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;).<span class="built_in">detach</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ~<span class="built_in">ThreadPool</span>() &#123;</span><br><span class="line">    isclosed = <span class="literal">true</span>;</span><br><span class="line">    cv.<span class="built_in">notify_all</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">AddTask</span><span class="params">(<span class="type">const</span> function&lt;<span class="type">void</span>()&gt;&amp; task)</span> </span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="function">unique_lock&lt;mutex&gt; <span class="title">lck</span><span class="params">(m)</span></span>;</span><br><span class="line">      tasks.<span class="built_in">push</span>(task);</span><br><span class="line">    &#125;</span><br><span class="line">    cv.<span class="built_in">notify_one</span>();</span><br><span class="line">  &#125;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  mutex m;</span><br><span class="line">  condition_variable cv;</span><br><span class="line">  atomic&lt;<span class="type">bool</span>&gt; isclosed;</span><br><span class="line">  queue&lt;function&lt;<span class="type">void</span>()&gt;&gt; tasks;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ThreadPool pool;</span><br><span class="line">  pool.<span class="built_in">AddTask</span>([] &#123; cout &lt;&lt; <span class="number">12</span> &lt;&lt; endl; &#125;);</span><br><span class="line">  pool.<span class="built_in">AddTask</span>([] &#123; cout &lt;&lt; <span class="number">34</span> &lt;&lt; endl; &#125;);</span><br><span class="line">  this_thread::<span class="built_in">sleep_for</span>(chrono::<span class="built_in">seconds</span>(<span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
               </div>
             </details>
 
@@ -1130,7 +1075,7 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> m, n, ans;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; d&#123;<span class="number">-1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>&#125;;</span><br><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">longestIncreasingPath</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">  m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">  dp.<span class="built_in">assign</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n, <span class="number">-1</span>));  <span class="comment">// cache, 仅增加了注释的三行代码</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">      ans = <span class="built_in">max</span>(ans, <span class="built_in">fun</span>(matrix, i, j, INT_MAX + <span class="number">1l</span>));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">fun</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix, <span class="type">int</span> i, <span class="type">int</span> j, <span class="type">long</span> value)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (i &lt; <span class="number">0</span> || j &lt; <span class="number">0</span> || i == m || j == n || (<span class="type">long</span>)matrix[i][j] &gt;= value) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (dp[i][j] != <span class="number">-1</span>) <span class="keyword">return</span> dp[i][j];  <span class="comment">// load</span></span><br><span class="line">  <span class="type">int</span> len = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>; k &lt; <span class="number">4</span>; ++k) &#123;</span><br><span class="line">    len = <span class="built_in">max</span>(len, <span class="built_in">fun</span>(matrix, i + d[k], j + d[k + <span class="number">1</span>], matrix[i][j]));</span><br><span class="line">  &#125;</span><br><span class="line">  dp[i][j] = len + <span class="number">1</span>;  <span class="comment">// save</span></span><br><span class="line">  <span class="keyword">return</span> len + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <hr>
 <h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h3 id="子序列问题"><a href="#子序列问题" class="headerlink" title="子序列问题"></a>子序列问题</h3><p><a href="https://leetcode.cn/problems/longest-increasing-subsequence/">最长递增子序列</a>（贪心+二分）：返回最长递增子序列（字典序）</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//  返回长度 &amp; 输出任意序列</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n = nums.<span class="built_in">size</span>(), len = <span class="number">1</span>;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">d</span><span class="params">(n + <span class="number">1</span>, <span class="number">-1</span>)</span></span>;  <span class="comment">// d[i] 维护当前长度为 len 的 LIS</span></span><br><span class="line">  d[<span class="number">1</span>] = nums[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (nums[i] &gt; d[len]) &#123;</span><br><span class="line">      d[++len] = nums[i];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">auto</span> it = <span class="built_in">lower_bound</span>(d.<span class="built_in">begin</span>() + <span class="number">1</span>, d.<span class="built_in">begin</span>() + len + <span class="number">1</span>, nums[i]);</span><br><span class="line">      *it = nums[i];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> len;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 返回字典序最小的序列</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n = nums.<span class="built_in">size</span>(), len = <span class="number">1</span>;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">d</span><span class="params">(n + <span class="number">1</span>, <span class="number">-1</span>)</span></span>;  <span class="comment">// d[i] 维护当前长度为 len 的 LIS</span></span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">p</span><span class="params">(n)</span></span>;  <span class="comment">// p[i]: nums[i] 在 d 中的下标</span></span><br><span class="line">  d[<span class="number">1</span>] = nums[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (nums[i] &gt; d[len]) &#123;</span><br><span class="line">      d[++len] = nums[i];</span><br><span class="line">      p[i] = len;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">auto</span> it = <span class="built_in">lower_bound</span>(d.<span class="built_in">begin</span>() + <span class="number">1</span>, d.<span class="built_in">begin</span>() + len + <span class="number">1</span>, nums[i]);</span><br><span class="line">      *it = nums[i];</span><br><span class="line">      p[i] = it - d.<span class="built_in">begin</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">lis</span><span class="params">(len)</span></span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (p[i] == len) &#123;</span><br><span class="line">      lis[--len] = nums[i];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> lis;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 返回字典序最小的序列</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n = nums.<span class="built_in">size</span>();</span><br><span class="line">  vector&lt;<span class="type">int</span>&gt; d;       <span class="comment">// d[i] 维护当前长度为 len 的 LIS</span></span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pos</span><span class="params">(n)</span></span>;  <span class="comment">// pos[i]: nums[i] 在 d 中的下标</span></span><br><span class="line">  d.<span class="built_in">push_back</span>(nums[<span class="number">0</span>]);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (nums[i] &gt; d.<span class="built_in">back</span>()) &#123;</span><br><span class="line">      d.<span class="built_in">push_back</span>(nums[i]);</span><br><span class="line">      pos[i] = d.<span class="built_in">size</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">auto</span> it = <span class="built_in">lower_bound</span>(d.<span class="built_in">begin</span>(), d.<span class="built_in">end</span>(), nums[i]);</span><br><span class="line">      *it = nums[i];</span><br><span class="line">      pos[i] = it - d.<span class="built_in">begin</span>() + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">	<span class="type">int</span> len = d.<span class="built_in">size</span>();  <span class="comment">// 长度</span></span><br><span class="line">  vector&lt;<span class="type">int</span>&gt; lis;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span> &amp;&amp; len; --i) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pos[i] == len) &#123;</span><br><span class="line">      lis.<span class="built_in">push_back</span>(nums[i]);</span><br><span class="line">      len--;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">reverse</span>(lis.<span class="built_in">begin</span>(), lis.<span class="built_in">end</span>());</span><br><span class="line">  <span class="keyword">return</span> lis;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><a href="https://leetcode.cn/problems/longest-common-subsequence/">最长公共子序列</a>：返回两个字符串的最长公共序列</p>
 <p>方案一：二维DP空间 + 输出全部LCS路径</p>
@@ -1290,6 +1235,10 @@
 <p><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/">买卖股票的最佳时机含手续费</a>：每次交易含手续费</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//定义在卖出的时候扣手续费</span></span><br><span class="line">dp[i][<span class="number">0</span>] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][<span class="number">0</span>], dp[i<span class="number">-1</span>][<span class="number">1</span>]+prices[i]-fee)</span><br><span class="line">dp[i][<span class="number">1</span>] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][<span class="number">1</span>], dp[i<span class="number">-1</span>][<span class="number">0</span>]-prices[i])</span><br></pre></td></tr></table></figure>
 
+<h3 id="树状DP"><a href="#树状DP" class="headerlink" title="树状DP"></a>树状DP</h3><p><a href="https://leetcode.cn/problems/house-robber-iii/description/">打家劫舍 III</a>：从树中挑选部分节点，要求两两不连续，求最大值</p>
+<p>节点 A 可选偷或不偷，截止到 A 的最大值依赖于 <code>A-&gt;left 偷/不偷</code>、<code>A-&gt;right 偷/不偷</code> 这四个情况，<strong>即当前状态是由前面多个状态推导出的</strong>，只能采用 DFS （记忆化回溯）的方式</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; <span class="title">dfs</span><span class="params">(TreeNode* t)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!t) <span class="keyword">return</span> &#123;<span class="number">0</span>, <span class="number">0</span>&#125;;</span><br><span class="line">  pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt; l = <span class="built_in">dfs</span>(t-&gt;left), r = <span class="built_in">dfs</span>(t-&gt;right);</span><br><span class="line">  <span class="type">int</span> stole = t-&gt;val + l.first + r.first;</span><br><span class="line">  <span class="type">int</span> unstole = <span class="built_in">max</span>(l.first, l.second) + <span class="built_in">max</span>(r.first, r.second);</span><br><span class="line">  <span class="keyword">return</span> &#123;unstole, stole&#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">auto</span> pair = <span class="built_in">dfs</span>(root);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">max</span>(pair.first, pair.second);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="数位DP"><a href="#数位DP" class="headerlink" title="数位DP"></a>数位DP</h3><p><a href="https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/description/">1～n 整数中 1 出现的次数</a>：无须考虑前导零</p>
 <p>将<code>n</code>转换成字符串 <code>s</code>，定义 <code>f(i,cnt,isLimit)</code> 表示构造从左往右第<code>i</code>位及其之后数位中 1 的个数</p>
 <ul>
@@ -1356,7 +1305,7 @@
 </ol>
 <h3 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">double</span> <span class="title">quickMul</span><span class="params">(<span class="type">double</span> x, <span class="type">int</span> N)</span></span>&#123;</span><br><span class="line">  <span class="type">double</span> ans = <span class="number">1.0</span>;</span><br><span class="line">  <span class="keyword">while</span>(N) &#123;</span><br><span class="line">    <span class="keyword">if</span>(N &amp; <span class="number">1</span>) ans *= x;</span><br><span class="line">    x *= x;</span><br><span class="line">    N &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="因数-倍数-质数"><a href="#因数-倍数-质数" class="headerlink" title="因数&#x2F;倍数&#x2F;质数"></a>因数&#x2F;倍数&#x2F;质数</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 最大公因数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">gcd</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> b == <span class="number">0</span> ? a : <span class="built_in">gcd</span>(b, a % b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 最小公倍数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lcm</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a * b / <span class="built_in">gcd</span>(a, b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 质数（小于n）</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">Primes</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">prime</span><span class="params">(n, <span class="literal">true</span>)</span></span>;</span><br><span class="line">  prime[<span class="number">0</span>] = prime[<span class="number">1</span>] = <span class="literal">false</span>;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">2</span>; i &lt; n; ++i)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!prime[i]) <span class="keyword">continue</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">2</span> * i; j &lt; n; j += i) &#123;</span><br><span class="line">      prime[j] = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> prime;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="因数-倍数-质数"><a href="#因数-倍数-质数" class="headerlink" title="因数&#x2F;倍数&#x2F;质数"></a>因数&#x2F;倍数&#x2F;质数</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 最大公因数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">gcd</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> b == <span class="number">0</span> ? a : <span class="built_in">gcd</span>(b, a % b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 最小公倍数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lcm</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a * b / <span class="built_in">gcd</span>(a, b);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 质数（小于n）</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">primes</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">bool</span>&gt; <span class="title">prime</span><span class="params">(n, <span class="literal">true</span>)</span></span>;</span><br><span class="line">  prime[<span class="number">0</span>] = prime[<span class="number">1</span>] = <span class="literal">false</span>;</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; n; ++i)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!prime[i]) <span class="keyword">continue</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">2</span> * i; j &lt; n; j += i) &#123;</span><br><span class="line">      prime[j] = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> prime;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h3><p><strong>与 (处理某位)</strong></p>
 <ul>
@@ -1419,13 +1368,6 @@
 <li>因此用一个单调递减队列（deque）维护窗口内有意义的元素，直接 <code>deque.front()</code> 获得最大值</li>
 <li>用 <code>l, i</code> 维护窗口左右边界，从队列中 pop 的条件是窗口大小固定为 k，即 <code>i - l == k</code></li>
 </ol>
-<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><a href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
-<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">string <span class="title">minWindow</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> valid = <span class="number">0</span>, ans_idx = <span class="number">-1</span>, ans_len = INT_MAX;</span><br><span class="line">  unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> c: t) mp[c]++;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, l = <span class="number">0</span>; i &lt; s.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="type">char</span> c = s[i];</span><br><span class="line">    <span class="keyword">if</span> (mp.<span class="built_in">count</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (--mp[c] &gt;= <span class="number">0</span>) valid++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (valid &gt;= t.<span class="built_in">size</span>()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (i - l + <span class="number">1</span> &lt; ans_len) &#123;</span><br><span class="line">        ans_len = i - l + <span class="number">1</span>;</span><br><span class="line">        ans_idx = l;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="type">char</span> d = s[l];</span><br><span class="line">      <span class="keyword">if</span> (mp.<span class="built_in">count</span>(d)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (++mp[d] &gt; <span class="number">0</span>) valid--;</span><br><span class="line">      &#125;</span><br><span class="line">      l++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans_idx &lt; <span class="number">0</span> ? <span class="string">&quot;&quot;</span> : s.<span class="built_in">substr</span>(ans_idx, ans_len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
-<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">checkInclusion</span><span class="params">(string s1, string s2)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> valid = <span class="number">0</span>;</span><br><span class="line">  unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> c: s1) mp[c]++;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, l = <span class="number">0</span>; i &lt; s2.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="type">char</span> c = s2[i];</span><br><span class="line">    <span class="keyword">if</span> (mp.<span class="built_in">count</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (--mp[c] &gt;= <span class="number">0</span>) valid++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (i - l == s1.<span class="built_in">size</span>()) &#123;</span><br><span class="line">      <span class="type">char</span> d = s2[l];</span><br><span class="line">      <span class="keyword">if</span> (mp.<span class="built_in">count</span>(d)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (++mp[d] &gt; <span class="number">0</span>) valid--;</span><br><span class="line">      &#125;</span><br><span class="line">      l++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (valid == s1.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <hr>
 <h2 id="并查集"><a href="#并查集" class="headerlink" title="并查集"></a>并查集</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> n = <span class="number">1005</span>; <span class="comment">// n根据题目中节点数量而定</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; father = <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt; (n, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">    father[i] = i;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 并查集里寻根的过程</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">find</span><span class="params">(<span class="type">int</span> u)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> u == father[u] ? u : father[u] = <span class="built_in">find</span>(father[u]); <span class="comment">// 路径压缩</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 判断 u 和 v是否找到同一个根</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">isSame</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  u = <span class="built_in">find</span>(u);</span><br><span class="line">  v = <span class="built_in">find</span>(v);</span><br><span class="line">  <span class="keyword">return</span> u == v;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 将v-&gt;u 这条边加入并查集</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">join</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">  u = <span class="built_in">find</span>(u);</span><br><span class="line">  v = <span class="built_in">find</span>(v);</span><br><span class="line">  <span class="keyword">if</span> (u == v) <span class="keyword">return</span>;</span><br><span class="line">  father[v] = u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1455,24 +1397,50 @@
 <li>时间复杂度高 <code>O(m * n * log(m * n))</code>，可能会乘法溢出</li>
 </ol>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">nthSuperUglyNumber</span><span class="params">(<span class="type">int</span> n, vector&lt;<span class="type">int</span>&gt;&amp; primes)</span> </span>&#123;</span><br><span class="line">  priority_queue &lt;<span class="type">double</span>, vector&lt;<span class="type">double</span>&gt;, greater&lt;<span class="type">double</span>&gt; &gt; q;</span><br><span class="line">  unordered_set&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">  s.<span class="built_in">insert</span>(<span class="number">1</span>);</span><br><span class="line">  <span class="type">int</span> answer = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i)&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j: primes) &#123;</span><br><span class="line">      <span class="type">int</span> multi = answer * j;</span><br><span class="line">      <span class="keyword">if</span>(!s.<span class="built_in">count</span>(multi))&#123;</span><br><span class="line">        q.<span class="built_in">push</span>(multi);</span><br><span class="line">        s.<span class="built_in">insert</span>(multi);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    answer = q.<span class="built_in">top</span>();</span><br><span class="line">    q.<span class="built_in">pop</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> answer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="区间相关"><a href="#区间相关" class="headerlink" title="区间相关"></a>区间相关</h2><h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p><a href="https://leetcode.cn/problems/minimum-window-substring/">最小覆盖子串</a>：返回 <code>s</code> 中涵盖 <code>t</code> 所有字符的最小子串</p>
+<p>题解：每轮遍历窗口右扩 1，更新有效字符数 valid；<strong>valid 等于 t 长度时</strong>，保存结果，不断尝试收缩左窗口；</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">string <span class="title">minWindow</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> valid = <span class="number">0</span>, ans_idx = <span class="number">-1</span>, ans_len = INT_MAX;</span><br><span class="line">  unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> c: t) mp[c]++;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, l = <span class="number">0</span>; i &lt; s.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="type">char</span> c = s[i];</span><br><span class="line">    <span class="keyword">if</span> (mp.<span class="built_in">count</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (--mp[c] &gt;= <span class="number">0</span>) valid++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (valid &gt;= t.<span class="built_in">size</span>()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (i - l + <span class="number">1</span> &lt; ans_len) &#123;</span><br><span class="line">        ans_len = i - l + <span class="number">1</span>;</span><br><span class="line">        ans_idx = l;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="type">char</span> d = s[l];</span><br><span class="line">      <span class="keyword">if</span> (mp.<span class="built_in">count</span>(d)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (++mp[d] &gt; <span class="number">0</span>) valid--;</span><br><span class="line">      &#125;</span><br><span class="line">      l++;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans_idx &lt; <span class="number">0</span> ? <span class="string">&quot;&quot;</span> : s.<span class="built_in">substr</span>(ans_idx, ans_len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="差分数组"><a href="#差分数组" class="headerlink" title="差分数组"></a>差分数组</h2><p>原数组为a，差分数组为b</p>
+<p><a href="https://leetcode.cn/problems/permutation-in-string/">字符串的排列</a>：判断 <code>s1</code> 的排列之一是否为  <code>s2</code> 的子串 </p>
+<p>题解：每轮遍历窗口右扩 1，更新合法字符数 valid ；<strong>窗口大于 s1 长度时</strong>，收缩左窗口 1 并更新；期间 <code>valid==s1.size()</code> 时返回 true</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">checkInclusion</span><span class="params">(string s1, string s2)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> valid = <span class="number">0</span>;</span><br><span class="line">  unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> c: s1) mp[c]++;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>, l = <span class="number">0</span>; i &lt; s2.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="type">char</span> c = s2[i];</span><br><span class="line">    <span class="keyword">if</span> (mp.<span class="built_in">count</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (--mp[c] &gt;= <span class="number">0</span>) valid++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (i - l == s1.<span class="built_in">size</span>()) &#123;</span><br><span class="line">      <span class="type">char</span> d = s2[l];</span><br><span class="line">      <span class="keyword">if</span> (mp.<span class="built_in">count</span>(d)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (++mp[d] &gt; <span class="number">0</span>) valid--;</span><br><span class="line">      &#125;</span><br><span class="line">      l++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (valid == s1.<span class="built_in">size</span>()) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="前缀和"><a href="#前缀和" class="headerlink" title="前缀和"></a>前缀和</h3><blockquote>
+<p>前缀与后缀和的统一写法，但需要特殊处理 0 个元素的前缀&#x2F;后缀和</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; nums&#123;<span class="number">1</span>,<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">1</span>&#125;;</span><br><span class="line"><span class="comment">// pre_sum[i] 为 [0, ..., i]，suf_num[i] 为 [i, ..., n-1]</span></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">pre_sum</span><span class="params">(nums.size())</span>, <span class="title">suf_sum</span><span class="params">(nums.size())</span></span>;</span><br><span class="line">pre_sum[<span class="number">0</span>] = nums[<span class="number">0</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">  pre_sum[i] = pre_sum[i - <span class="number">1</span>] + nums[i];</span><br><span class="line"></span><br><span class="line">suf_sum.<span class="built_in">back</span>() = nums.<span class="built_in">back</span>();</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = nums.<span class="built_in">size</span>() - <span class="number">2</span>; i &gt;= <span class="number">0</span>; --i)</span><br><span class="line">  suf_sum[i] = suf_sum[i + <span class="number">1</span>] + nums[i];</span><br></pre></td></tr></table></figure>
+
+<h3 id="差分"><a href="#差分" class="headerlink" title="差分"></a>差分</h3><blockquote>
+<p>区间修改（同增同减）- 求修改后的数组</p>
+</blockquote>
+<p>原数组为a，差分数组为b</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">b[<span class="number">0</span>] = a[<span class="number">0</span>]</span><br><span class="line">b[i] = a[i] - a[i - <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
 
 <p>对区间 <code>[x1, x2]</code> 所有值加 <code>y</code></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">b[x1] += y</span><br><span class="line">b[x2 + <span class="number">1</span>] -= <span class="built_in">y</span>  (x2 + <span class="number">1</span> &lt; n)</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">b[x1] += y</span><br><span class="line">b[x2 + <span class="number">1</span>] -= y  <span class="comment">// x2 + 1 &lt; n</span></span><br></pre></td></tr></table></figure>
 
 <p>根据差分数组求原数组</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">a[<span class="number">0</span>] = b[<span class="number">0</span>]</span><br><span class="line">a[i] = a[i - <span class="number">1</span>] + b[i]</span><br></pre></td></tr></table></figure>
 
-<h2 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h2><p>可以动态维护序列前缀和的数据结构（序列下标从 1 开始）：</p>
-<ul>
-<li>单点修改 <code>add(index,val)</code>：把序列第 index 个数增加 val，O(nlgn)</li>
-<li>区间查询 <code>prefixSum(index)</code>：查询前 index 个元素的前缀和，O(nlgn)</li>
-</ul>
+<h3 id="树状数组"><a href="#树状数组" class="headerlink" title="树状数组"></a>树状数组</h3><blockquote>
+<p>单点修改 - 区间查询、单点查询</p>
+</blockquote>
 <p><a href="https://leetcode.cn/problems/range-sum-query-mutable/">区域和检索 - 数组可修改</a>：求区间和且会更新数组元素</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; tree; <span class="comment">//tree[i]为前i-1前缀和</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; &amp;nums; <span class="comment">//原数组</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lowBit</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x &amp; -x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">int</span> index, <span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (index &lt; tree.<span class="built_in">size</span>()) &#123;</span><br><span class="line">        tree[index] += val;</span><br><span class="line">        index += <span class="built_in">lowBit</span>(index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">prefixSum</span><span class="params">(<span class="type">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (index &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        sum += tree[index];</span><br><span class="line">        index -= <span class="built_in">lowBit</span>(index);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span></span>&#123;</span><br><span class="line">    nums = nums;</span><br><span class="line">    <span class="comment">// 初始化tree为全0数组，遍历更新</span></span><br><span class="line">    tree.<span class="built_in">assign</span>(nums.<span class="built_in">size</span>()+<span class="number">1</span>,<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;nums.<span class="built_in">size</span>();++i)&#123;</span><br><span class="line">        <span class="built_in">add</span>(i+<span class="number">1</span>,nums[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; tree;  <span class="comment">// tree[i] 为前 i-1 前缀和</span></span><br><span class="line">vector&lt;<span class="type">int</span>&gt; nums; <span class="comment">// 原数组</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lowBit</span><span class="params">(<span class="type">int</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x &amp; -x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 把序列第 index 个数增加 val，O(nlgn)</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">int</span> index, <span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (index &lt; tree.<span class="built_in">size</span>()) &#123;</span><br><span class="line">    tree[index] += val;</span><br><span class="line">    index += <span class="built_in">lowBit</span>(index);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 查询前 index 个元素的前缀和，O(nlgn)</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">preSum</span><span class="params">(<span class="type">int</span> index)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (index &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    sum += tree[index];</span><br><span class="line">    index -= <span class="built_in">lowBit</span>(index);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="comment">// input nums</span></span><br><span class="line">  tree.<span class="built_in">assign</span>(nums.<span class="built_in">size</span>() + <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); ++i)&#123;</span><br><span class="line">    <span class="built_in">add</span>(i + <span class="number">1</span>, nums[i]);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="线段树"><a href="#线段树" class="headerlink" title="线段树"></a>线段树</h3><blockquote>
+<p>区间修改 - 区间查询、单点查询</p>
+</blockquote>
+<hr>
+<h2 id="一些笔试题目"><a href="#一些笔试题目" class="headerlink" title="一些笔试题目"></a>一些笔试题目</h2><p><a href="https://www.nowcoder.com/questionTerminal/ef231526f822489d879949226b4bed65">对称飞行器</a></p>
+<p>如果没有对称飞行器，就是一道普通广搜题。但是加了飞行器，如果飞行次数没有限制，也是一道普通广搜题只是除了四个direction多了一个分支。可是飞行器有次数限制。那么如果用(x,y)点的状态应该再加一个维度：飞行次数z。因为当z1不等于z2时，P(x,y,z1)和Q(x,y,z2)是两种不同的状态。</p>
+<p>假设z1 &lt; z2，即P和Q在相同的横纵坐标，但是P剩余的飞行次数更多。如果从(x,y,z2)走到终点的最优解是n步，则从(x,y,z1)一定可以走n步到达终点。此时P状态走到最优点的步数更少。所以在层次遍历的最优解中不该包含z2.</p>
+<p>也就是说在向z增加转移的过程中，我们应该看 <code>matrix[x][y][0]...matrix[x][y][z]</code> 中是否已经有为1的点，如果有就不必再在第z层再走x，y。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="type">int</span> x, y;</span><br><span class="line">    <span class="type">int</span> fly;</span><br><span class="line">    <span class="built_in">Node</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="built_in">Node</span>(<span class="type">int</span> x_, <span class="type">int</span> y_, <span class="type">int</span> f_): <span class="built_in">x</span>(x_), <span class="built_in">y</span>(y_), <span class="built_in">fly</span>(f_) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, m;</span><br><span class="line">queue&lt;Node&gt; q;</span><br><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; vis;</span><br><span class="line">vector&lt;vector&lt;<span class="type">char</span>&gt;&gt; board;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; delta&#123;<span class="number">-1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">check</span><span class="params">(Node&amp; node)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> node.x &gt;= <span class="number">0</span> &amp;&amp; node.x &lt; n &amp;&amp; node.y &gt;= <span class="number">0</span> &amp;&amp; node.y &lt; m &amp;&amp;</span><br><span class="line">           board[node.x][node.y] != <span class="string">&#x27;#&#x27;</span> &amp;&amp; !vis[node.x][node.y];  </span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">bfs</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> </span>&#123;</span><br><span class="line">    q.<span class="built_in">emplace</span>(i, j, <span class="number">5</span>);</span><br><span class="line">    vis[i][j] = <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> level = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (!q.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">while</span> (size--) &#123;</span><br><span class="line">            Node cur = q.<span class="built_in">front</span>(); q.<span class="built_in">pop</span>();</span><br><span class="line">            <span class="keyword">if</span> (board[cur.x][cur.y] == <span class="string">&#x27;E&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> level;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">4</span>; ++i) &#123;</span><br><span class="line">                Node tmp;</span><br><span class="line">                <span class="keyword">if</span> (i == <span class="number">4</span>) &#123;  <span class="comment">// fly</span></span><br><span class="line">                    <span class="keyword">if</span> (cur.fly &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        tmp.x = n - <span class="number">1</span> - cur.x;</span><br><span class="line">                        tmp.y = m - <span class="number">1</span> - cur.y;</span><br><span class="line">                        tmp.fly = cur.fly - <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    tmp.x = cur.x + delta[i];</span><br><span class="line">                    tmp.y = cur.y + delta[i + <span class="number">1</span>];</span><br><span class="line">                    tmp.fly = cur.fly;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">check</span>(tmp)) &#123;</span><br><span class="line">                    vis[tmp.x][tmp.y] = <span class="number">1</span>;</span><br><span class="line">                    q.<span class="built_in">push</span>(tmp);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        level++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">    board.<span class="built_in">assign</span>(n, <span class="built_in">vector</span>&lt;<span class="type">char</span>&gt;(m, <span class="number">0</span>));</span><br><span class="line">    vis.<span class="built_in">assign</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m, <span class="number">0</span>));</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; m; ++j) &#123;</span><br><span class="line">            cin &gt;&gt; board[i][j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; m; ++j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (board[i][j] == <span class="string">&#x27;S&#x27;</span>) &#123;</span><br><span class="line">                cout &lt;&lt; <span class="built_in">bfs</span>(i, j) &lt;&lt; endl;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自定义类型的<code>map/set</code>需要重载<code>hash</code>、<code>&lt;</code>和<code>=</code></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">  <span class="type">int</span> a, b;</span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>&lt;(<span class="type">const</span> Node&amp; other) <span class="type">const</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a == other.a &amp;&amp; b == other.b;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>==(<span class="type">const</span> Node&amp; other) <span class="type">const</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a == other.a &amp;&amp; b == other.b;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">template</span>&lt;&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">hash</span>&lt;Node&gt; &#123;</span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> Node&amp; node)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hash</span>&lt;<span class="type">int</span>&gt;()(node.a) &amp; <span class="built_in">hash</span>&lt;<span class="type">int</span>&gt;()(node.b);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">unordered_map&lt;Node, <span class="type">int</span>&gt; mp;</span><br><span class="line">unordered_set&lt;Node&gt; st;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>CPP</category>
       </categories>
@@ -1728,7 +1696,7 @@
     <title>CMU 15445</title>
     <url>/2023/04/26/Database/CMU%2015445/</url>
     <content><![CDATA[<p><img src="https://pic3.zhimg.com/80/v2-9bc6214441f8ca37004ff1389114a692_720w.webp" class="lazyload" data-srcset="https://pic3.zhimg.com/80/v2-9bc6214441f8ca37004ff1389114a692_720w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h2 id="BUFFER-POOL"><a href="#BUFFER-POOL" class="headerlink" title="BUFFER POOL"></a>BUFFER POOL</h2><p>存储管理器中实现缓冲池。缓冲池负责将物理页面从磁盘中读入内存、或从内存中写回磁盘，使得DBMS可以支持大于内存大小的存储容量。页面读入缓冲池时，从<code>free-list</code>（空位页面）后<code>lru_replacer</code>中（未被访问的可替换页面）寻找空间，淘汰的dirty-page还需写回磁盘，<code>page_table</code>映射page到frame的关系</p>
+<h2 id="内存缓冲池"><a href="#内存缓冲池" class="headerlink" title="内存缓冲池"></a>内存缓冲池</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>存储管理器中实现缓冲池。缓冲池负责将物理页面从磁盘中读入内存、或从内存中写回磁盘，使得DBMS可以支持大于内存大小的存储容量。页面读入缓冲池时，从<code>free-list</code>（空位页面）后<code>lru_replacer</code>中（未被访问的可替换页面）寻找空间，淘汰的dirty-page还需写回磁盘，<code>page_table</code>映射page到frame的关系</p>
 <p>并行缓冲池的思想是分配多个独立的缓冲池，并将不同的页面ID映射至各自的缓冲池中，从而减少整体缓冲池的锁粒度，以增加并行性。负载均衡：采用轮转方法选取分配物理页面时使用的缓冲池，<code>start_idx++</code></p>
 <p><strong>为什么不用 OS 磁盘管理模块</strong></p>
 <p>OS 的磁盘管理模块没有 DBMS 中的领域知识，无法恰当地决定数据移动的时机和数量</p>
@@ -1737,20 +1705,19 @@
 <li>定制化缓存置换策略</li>
 <li>根据具体情况预获取数据</li>
 </ul>
-<p><strong>LRU-K</strong>：最近使用过1次 —&gt; 最近使用过K次，降低了“缓存污染”问题，命中率比LRU高</p>
-<p>保存每个页面访问次数、最近K次时间戳、链表中的位置</p>
+<h3 id="淘汰算法"><a href="#淘汰算法" class="headerlink" title="淘汰算法"></a>淘汰算法</h3><p><strong>LRU-K</strong>：最近使用过1次 —&gt; 最近使用过K次，降低了“缓存污染”问题，命中率比LRU高</p>
+<p>需要保存每个页面的访问次数、最近K次时间戳，用两个队列按顺序记录这些页面，优先淘汰访问次数不足K的</p>
 <ul>
 <li>历史队列：访问小于k次的页面，按FIFO存放，每次访问将页面计数++，满k次放入缓存队列</li>
-<li>缓存队列：访问满k次的页面，按照前第K次时间排序，用SET结构存放</li>
+<li>缓存队列：访问满k次的页面，按照<strong>前第K次时间排序</strong>，用SET结构存放</li>
 </ul>
-<p>优先排除历史队列末结点，否则排除缓存队列末结点（前第k次最早） </p>
 <details blue><summary> LRU-K实现 </summary>
               <div class='content'>
-              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">cmp</span>&#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&amp; a,<span class="type">const</span> pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&amp; b)</span> <span class="type">const</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.second &gt; b.second;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//历史队列</span></span><br><span class="line">list&lt;<span class="type">int</span>&gt; hist;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>,list&lt;<span class="type">int</span>&gt;::iterator&gt; hist_map;</span><br><span class="line"><span class="comment">//缓存队列</span></span><br><span class="line">set&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt; cache;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>,set&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt;::iterator&gt; cache_map;</span><br><span class="line"><span class="comment">//页面时间戳与访问次数</span></span><br><span class="line">unordered_map&lt;<span class="type">int</span>,list&lt;<span class="type">int</span>&gt;&gt; timestamp;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>,<span class="type">int</span>&gt; count;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">record</span><span class="params">(<span class="type">int</span> id)</span></span>&#123;</span><br><span class="line">    count_[id]++;</span><br><span class="line">    timestamp[id].<span class="built_in">push_back</span>(TIME++);</span><br><span class="line">    <span class="type">int</span> cnt=count_[id];</span><br><span class="line">    <span class="keyword">if</span>(cnt==<span class="number">1</span>)&#123;</span><br><span class="line">        hist.<span class="built_in">push_front</span>(id);</span><br><span class="line">        hist_map[id]=hist.<span class="built_in">begin</span>();</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(cnt==<span class="number">2</span>)&#123;</span><br><span class="line">        hist.<span class="built_in">erase</span>(hist_map[id]);</span><br><span class="line">        hist_map.<span class="built_in">erase</span>(id);</span><br><span class="line">        <span class="type">int</span> k_time = timestamp[id].<span class="built_in">front</span>();</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">insert</span>(&#123;id,k_time&#125;);</span><br><span class="line">        cache_map[id]=it.first;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        timestamp[id].<span class="built_in">erase</span>(timestamp[id].<span class="built_in">begin</span>());</span><br><span class="line">        cache.<span class="built_in">erase</span>(cache_map[id]);</span><br><span class="line">        <span class="type">int</span> k_time = timestamp[id].<span class="built_in">front</span>();</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">insert</span>(&#123;id,k_time&#125;);</span><br><span class="line">        cache_map[id]=it.first;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">evict</span><span class="params">(<span class="type">int</span>&amp; id)</span></span>&#123; <span class="comment">//从队列末尾剔除</span></span><br><span class="line">    <span class="keyword">if</span>(hist.<span class="built_in">empty</span>() &amp;&amp; cache.<span class="built_in">empty</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span>(hist.<span class="built_in">size</span>())&#123;</span><br><span class="line">        <span class="keyword">auto</span> it = hist.<span class="built_in">end</span>(); --it;</span><br><span class="line">        id = *it;</span><br><span class="line">        count_[id]=<span class="number">0</span>;</span><br><span class="line">        timestamp[id].<span class="built_in">clear</span>();</span><br><span class="line">        hist.<span class="built_in">erase</span>(it);</span><br><span class="line">        hist_map.<span class="built_in">erase</span>(id);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">end</span>(); --it;</span><br><span class="line">        id = it-&gt;first;</span><br><span class="line">        count_[id]=<span class="number">0</span>;</span><br><span class="line">        timestamp[id].<span class="built_in">clear</span>();</span><br><span class="line">        cache.<span class="built_in">erase</span>(it);</span><br><span class="line">        cache_map.<span class="built_in">erase</span>(id);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">cmp</span>&#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; a,<span class="type">const</span> pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; b)</span> <span class="type">const</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.second &lt; b.second;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//历史队列</span></span><br><span class="line">list&lt;<span class="type">int</span>&gt; hist;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>, list&lt;<span class="type">int</span>&gt;::iterator&gt; hist_map;</span><br><span class="line"><span class="comment">//缓存队列</span></span><br><span class="line">set&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt; cache;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>, set&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt;::iterator&gt; cache_map;</span><br><span class="line"><span class="comment">//页面时间戳与访问次数</span></span><br><span class="line">unordered_map&lt;<span class="type">int</span>, list&lt;<span class="type">int</span>&gt;&gt; timestamp;</span><br><span class="line">unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; count;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">record</span><span class="params">(<span class="type">int</span> id)</span></span>&#123;</span><br><span class="line">    count[id]++;</span><br><span class="line">    timestamp[id].<span class="built_in">push_back</span>(TIME++);</span><br><span class="line">    <span class="type">int</span> cnt = count[id];</span><br><span class="line">    <span class="keyword">if</span> (cnt == <span class="number">1</span>) &#123;</span><br><span class="line">        hist.<span class="built_in">push_back</span>(id);</span><br><span class="line">        hist_map[id] = --hist.<span class="built_in">end</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cnt == <span class="number">2</span>) &#123;</span><br><span class="line">        hist.<span class="built_in">erase</span>(hist_map[id]);</span><br><span class="line">        hist_map.<span class="built_in">erase</span>(id);</span><br><span class="line">        <span class="type">int</span> k_time = timestamp[id].<span class="built_in">front</span>();</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">insert</span>(&#123;id, k_time&#125;);</span><br><span class="line">        cache_map[id] = it.first;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        timestamp[id].<span class="built_in">erase</span>(timestamp[id].<span class="built_in">begin</span>());</span><br><span class="line">        cache.<span class="built_in">erase</span>(cache_map[id]);</span><br><span class="line">        <span class="type">int</span> k_time = timestamp[id].<span class="built_in">front</span>();</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">insert</span>(&#123;id, k_time&#125;);</span><br><span class="line">        cache_map[id] = it.first;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">evict</span><span class="params">(<span class="type">int</span> &amp;id)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hist.<span class="built_in">empty</span>() &amp;&amp; cache.<span class="built_in">empty</span>()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (hist.<span class="built_in">size</span>()) &#123;</span><br><span class="line">        <span class="keyword">auto</span> it = hist.<span class="built_in">begin</span>();</span><br><span class="line">        id = *it;</span><br><span class="line">        count.<span class="built_in">erase</span>(id);</span><br><span class="line">        timestamp.<span class="built_in">erase</span>(id);</span><br><span class="line">        hist.<span class="built_in">erase</span>(it);</span><br><span class="line">        hist_map.<span class="built_in">erase</span>(id);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">auto</span> it = cache.<span class="built_in">begin</span>();;</span><br><span class="line">        id = it-&gt;first;</span><br><span class="line">        count.<span class="built_in">erase</span>(id);</span><br><span class="line">        timestamp.<span class="built_in">erase</span>(id);</span><br><span class="line">        cache.<span class="built_in">erase</span>(it);</span><br><span class="line">        cache_map.<span class="built_in">erase</span>(id);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
               </div>
             </details>
 
-<h2 id="EXTENDIBLE-HASH-INDEX"><a href="#EXTENDIBLE-HASH-INDEX" class="headerlink" title="EXTENDIBLE HASH INDEX"></a>EXTENDIBLE HASH INDEX</h2><p><strong>通常的哈希表</strong>如Redis在负载因子高时，把HashTable大小翻倍，HashNode全部rehash一遍</p>
+<h2 id="可扩展哈希"><a href="#可扩展哈希" class="headerlink" title="可扩展哈希"></a>可扩展哈希</h2><h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p><strong>通常的哈希表</strong>如Redis在负载因子高时，把HashTable大小翻倍，HashNode全部rehash一遍</p>
 <p><strong>可扩展哈希表</strong>是一种动态哈希表，其思想在于多个目录项对应一个桶，其特点为桶在充满或清空时<strong>可以桶为单位进行桶分裂或合并</strong>，并且仅需在<strong>特定情况下进行HashTable的扩展和收缩</strong>，以减小扩展和收缩操作对全表的影响</p>
 <p><strong>映射关系</strong>：<code>key-&gt;index</code> 的逻辑是<code>hash(key) &amp; mask</code>，即64位hash的低k位，hashTable大小为 $2^k$。</p>
 <p><strong>哈希表的扩展</strong>：</p>
@@ -1766,8 +1733,7 @@
 <li><strong>局部深度</strong>：每次rehash链表时，对应Bucket的局部深度++。<code>局部深度 &lt; 全局深度</code> 时，仅需rehash对应链表节点。<code>局部深度 = 全局深度</code>时，需要先 reserve 再 rehash 对应链表。</li>
 </ul>
 <p><strong>桶的合并</strong>：满足两桶均空、局部深度相同时，合并桶后局部深度-1，合并后可能缩减全局深度</p>
-<p><strong>并发控制</strong></p>
-<ul>
+<h3 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h3><ul>
 <li><p><code>Getvalue</code>：哈希目录加读锁</p>
 </li>
 <li><p><code>Insert/Remove</code>：Bucket一定会插入或分裂，但 HashTable 只有在桶满分裂时才修改，故采用乐观锁优化：默认 HashTable 只加读锁，Bucket 加写锁；只有桶满时，释放锁并调用另一分裂插入函数，一开始就获取两个写锁，还要注意判断<strong>桶是否仍满</strong></p>
@@ -1775,14 +1741,14 @@
 </ul>
 <div class="note "><p><strong>踩坑</strong></p><p>在 <code>Insert</code> 中释放读锁和写锁到 <code>SplitInsert</code> 之间存在空隙，其他线程可能在该空隙中被调度，从而改变桶页面或目录页面数据。因此，在这里需要重新获取 key 对应的 Bucket（可能与<code>Insert</code>中判断已满的 Bucket 不相同），并检查对应的桶页面是否已满。如果仍是满的，则分配新 Bucket 并 rehash。</p></div>
 
-<h2 id="B-Tree-Index"><a href="#B-Tree-Index" class="headerlink" title="B+Tree Index"></a>B+Tree Index</h2><blockquote>
+<h2 id="B-Tree-索引"><a href="#B-Tree-索引" class="headerlink" title="B+Tree 索引"></a>B+Tree 索引</h2><blockquote>
 <ul>
 <li><strong>TREE_PAGE</strong>: 保存在Page的data中，共4KB，包含size、max_size、parent_page_id、page_id</li>
 <li><strong>TREE_INTERNAL_PAGE</strong>: kv数组 <code>&lt;keyType, page_id&gt;</code></li>
 <li><strong>TREE_LEAF_PAGE</strong>: next_page_id 与 kv数组 <code>&lt;keyType, record_id&gt;</code></li>
 </ul>
 </blockquote>
-<h3 id="理论定义"><a href="#理论定义" class="headerlink" title="理论定义"></a>理论定义</h3><blockquote>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><blockquote>
 <p><a href="https://www.cnblogs.com/nullzx/p/8729425.html">参考链接</a></p>
 </blockquote>
 <ul>
@@ -1803,130 +1769,123 @@
 <h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p><em>下溢：内部结点 (M+1)&#x2F;2，叶结点 M&#x2F;2</em></p>
 <ol>
 <li>从叶节点中删除键值，如果出现下溢就进行后续处理：</li>
-<li>对于叶结点，如果兄弟节点键值对个数大于 M&#x2F;2，从兄弟节点借一个键值对（左侧兄弟就借尾，右侧兄弟就借头），把兄弟节点的键上移替换父节点中的键；如果兄弟节点不够借出，将该节点与兄弟节点合并，同时删除父节点中该位置的键值。</li>
+<li>对于叶结点，如果兄弟节点键值对个数大于 M&#x2F;2，从兄弟节点借一个键值对（左侧兄弟就借尾，右侧兄弟就借头），把兄弟节点的键上移替换父节点中的键（保证左&lt;父&lt;右）；如果兄弟节点不够借出，将该节点与兄弟节点合并，同时删除父节点中对应的键值。</li>
 <li>如果删除后父节点（内部节点）下溢出，仍然是借&amp;修改或合并&amp;删除两种方法处理，但规则与叶节点不同：借&amp;修改时，同样把兄弟节点的键上移，但借来的是 <code>&lt;父节点的键,兄弟节点的值&gt;</code>；合并&amp;删除时，要把父节点的键和兄弟节点的键值一块和该节点合并。</li>
 <li>如果下溢出到了根节点，而且根节点只剩下一个子节点，说明树应该减少一层，将这个子节点设为新的根。</li>
 </ol>
-<h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><p><em>安全节点：插入后不上溢，删除后不下溢，读取时均安全。如果子节点安全，那么对其下面的节点做插入&#x2F;删除操作引起的树结构变化最多会传递到该层，不会影响上层，所以可以放掉祖先节点的锁允许其它操作访问</em></p>
-<p><strong>基础算法</strong>：</p>
-<ul>
-<li><p>对于读操作，子节点获取读锁后就释放父节点读锁，在实现上只需要一个 <code>prev_page</code> 指针解锁父节点</p>
-</li>
-<li><p>对于插入&#x2F;删除操作，在子节点获取写锁，如果安全就释放祖先节点的所有写锁，否则继续持有。在实现上，用 <code>page_set</code>和 <code>deleted_page_set</code>记录查找过程中加写锁的页面和删除的页面。</p>
+<h3 id="并发控制-1"><a href="#并发控制-1" class="headerlink" title="并发控制"></a>并发控制</h3><p><em>安全节点：插入后不上溢，删除后不下溢，读取时均安全。如果子节点安全，那么对其下面的节点做插入&#x2F;删除操作引起的树结构变化最多会传递到该层，不会影响上层，所以可以放掉祖先节点的锁允许其它操作访问</em></p>
+<p><strong>读操作</strong></p>
+<p>子节点获取读锁后就释放父节点读锁，只需要一个 <code>prev_page</code> 指针解锁父节点</p>
+<p><strong>插入&#x2F;删除操作</strong></p>
+<p>从根节点开始往下依次加写锁，直到安全节点才释放祖先节点的所有锁。在实现上，用 <code>page_set</code> 记录查找过程中加写锁的页面。</p>
 <ul>
 <li>对于插入，<code>page_set</code>保存的写锁就足够了，因为新生成的兄弟结点不会被其它操作访问到</li>
-<li>对于删除，还需要访问兄弟节点时上写锁，不在 <code>page_set</code> 中，需要单独释放。此外合并页导致删除的页面记录到 <code>deleted_page_set</code> 中，最后调用内存池接口删除掉</li>
-</ul>
+<li>对于删除，需要对访问的兄弟节点上写锁，不在 <code>page_set</code> 中，单独释放。删除或合并页导致删除的页面记录到 <code>deleted_page_set</code> 中，最后调用内存池接口删除掉</li>
+<li>另需一把锁保护根节点，只有根结点安全情况才能解锁，否则堵塞前后 <code>root_page_id_</code> 可能变了<blockquote>
+<p>瓶颈在于每次都要获取根节点写锁，优化方法：“乐观” 地假设插入&#x2F;删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，最后检查叶节点是否安全：如果安全，则假设正确，只需对叶节点加写锁更新；如果不安全则假设错误，重新调用基础版算法。</p>
+</blockquote>
 </li>
-<li><p>另需一把锁保护根节点，只有根结点安全情况才能解锁，否则堵塞前后 <code>root_page_id_</code> 可能变化了</p>
-</li>
 </ul>
-<p><strong>改进算法</strong></p>
-<p>对于插入删除操作，每次都要获取根节点写锁，成为性能瓶颈，而且大多时候并不会分裂合并。所以 “乐观” 地假设插入&#x2F;删除不会发生分裂或合并，于是只需沿路径<strong>像读取一样获取和释放读锁</strong>，然后检查叶节点：如果叶节点安全，那么假设正确，只需要对叶节点加写锁更新；而如果不安全则假设错误，重新调用基础版算法。</p>
 <div class="note "><p><strong>踩坑</strong></p><p>Unlock 和 Unpin 的顺序：先 Unlock 后 Unpin，因为 Unpin 后这个 Page 的 pin count 可能降为 0，buffer_pool_manager 可能会将该 Page 指针的内容改写为另一个 Page 的，导致 Unlock 错误</p></div>
 
-<h2 id="QUERY-EXECUTION"><a href="#QUERY-EXECUTION" class="headerlink" title="QUERY EXECUTION"></a>QUERY EXECUTION</h2><p>一条 sql 语句，首先经过 parser 生成一棵抽象语法树 AST（采用libpg_query 库），Planner 遍历这棵树，生成初步的查询计划，得到一个Plan Tree，每个Plan结点都代表了一个操作，树中上层的Plan结点每次调用 <code>next()</code> 从下层结点取出一条数据，从而数据自底向上地流动，在根节点输出结果。</p>
-<h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><blockquote>
-<p>由 Planner 得到初步的查询计划后，对 Plan Tree 进行修改优化。优化器遍历原始 Plan Tree，根据已经定义好的一系列规则，对 Plan 结点进行一系列的修改优化等操作。这种优化器不需要知道数据的具体内容，仅是根据预先定义好的规则修改 Plan 结点。</p>
-</blockquote>
-<p><strong>TopN</strong>：对 Plan Tree 进行后续遍历，在遇到父节点 Limit、子节点 Sort 时，则将这两个节点替换为一个 TopN</p>
-<p><strong>HashJoin</strong>：</p>
-<ul>
-<li>把 NestedLoopJoin 替换为 HashJoin</li>
-<li>让小表驱动大表，减少表连接次数，调用已提供的api估计table大小，再根据大小来调整 Plan Tree 里 join 的顺序</li>
-<li>索引识别，默认IndexJoin 里只会尝试为右表匹配 index，左表则被忽略。因此如果左表有 index，右表没有，且为等值连接，则把左右顺序替换一下，便于之后正确识别索引</li>
-</ul>
-<p><strong>谓词下推</strong>：需要把 Filter 正确下推至 Join 算子下。自顶向下地改写，提取 predicate 中的所有 comparison，判断表达式的两边是否一个是 column value，一个是 const value，只有这样的 predicate 可以被下推，再将所有的 predicate 重新组合为 logic expression 生成新的 Filter，根据 column value 的 idx 来选择下推的分支</p>
-<p><strong>列裁剪</strong>：遇到连续的两个投影，合并为 1 个，只取上层投影所需列，其余直接抛弃</p>
-<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><blockquote>
-<p>火山模型</p>
-<ul>
-<li>简单，每个 Operator 可以单独抽象实现、不需要关心其他 Operator 的逻辑</li>
-<li>数据以行为单位进行处理，不利于CPU cache ；且每处理一行需要调用多次next() 函数，虚函数开销大</li>
-</ul>
-</blockquote>
-<p><strong>HashJoinExecutor</strong></p>
-<p>使用基础哈希算法进行连接操作，其原理为将元组的连接键（即某些属性列的组合）作为哈希表的键，并使用其中一个子计划节点的元组构造哈希表。由于具有相同连接键的元组一定具有相同的哈希键值，因此另一个子计划节点中的元组仅需在该元组映射的桶中寻找可与其连接的元组</p>
-<p>用<code>unordered_multimap</code>直接存放等于连接键的元组，再用右子节点的元组作为”探针”寻找与其连接键相同的左子计划节点的元组，可能有多个左子结点对应</p>
-<p><strong>AggregationExecutor</strong></p>
-<p>用哈希表将所有聚合键（即元组的属性列组合）相同的元组映射在一起，以此统计所有聚合键元组的聚合信息</p>
-<h2 id="CONCURRENCY-CONTROL"><a href="#CONCURRENCY-CONTROL" class="headerlink" title="CONCURRENCY CONTROL"></a>CONCURRENCY CONTROL</h2><h3 id="数据结构层面"><a href="#数据结构层面" class="headerlink" title="数据结构层面"></a>数据结构层面</h3><p><code>TablePage</code> 、<code>B+Tree</code>和 <code>ExtendibleHash</code> 内部通过锁实现了元组、索引结构更新时的并发安全</p>
-<ul>
-<li><strong>TablePage</strong><br>TablePage 持有一个WR锁，向 table_page 中增删改 tuple 操作时，会锁住整个 Page 页面，保证对每个元组写入页面的并发安全</li>
-<li><strong>ExtendibleHash</strong></li>
-<li><strong>B+Tree</strong></li>
-</ul>
-<h3 id="事务层面"><a href="#事务层面" class="headerlink" title="事务层面"></a>事务层面</h3><p>由 <code>LockManager</code>使用 2PL 实现了具体的元组级锁，采用严格2PL协议，commit时才一次性释放所有锁，避免级联回滚问题。当一个事务需要读写元组时候，需要根据自身的隔离级别尝试获得元组对应的读锁或写锁，并在适当的时刻将其释放。</p>
-<p><strong>隔离级别</strong>：</p>
+<hr>
+<h2 id="事务与并发控制"><a href="#事务与并发控制" class="headerlink" title="事务与并发控制"></a>事务与并发控制</h2><h3 id="LockManager"><a href="#LockManager" class="headerlink" title="LockManager"></a>LockManager</h3><p><code>LockManager</code> 实现了基于 2PL 的行级锁，自动为并发事务执行加锁解锁。当一个事务需要读写元组时候，根据自身的隔离级别尝试获得元组对应的读锁或写锁，并在适当的时刻将其释放。</p>
+<p><code>LockManager</code> 为每个表&#x2F;行维护一个请求队列，用条件变量阻塞&#x2F;唤醒请求，用 map 建立资源到队列的索引。队列按请求先后排序，记录了每个请求的事务、锁级别、是否授予等。</p>
+<p>实现了三种隔离级别：</p>
 <table>
 <thead>
 <tr>
 <th>隔离级别</th>
-<th>问题</th>
 <th>加锁模式</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>可重复读</td>
-<td>幻读</td>
-<td>GROWING上锁，SHINKING解锁</td>
+<td>在执行器中只加锁，在commit&#x2F;abort时一次性解锁</td>
+<td>仅存在幻读</td>
 </tr>
 <tr>
-<td>提交读</td>
-<td>幻读、不可重复读</td>
-<td>读锁(立即释放)+写锁</td>
+<td>读已提交</td>
+<td>在Growing阶段解读锁(即读完立即释放)+写锁</td>
+<td>不可重复读、幻读</td>
 </tr>
 <tr>
-<td>未提交读</td>
-<td>幻读、不可重复读、脏读</td>
-<td>仅写锁</td>
+<td>读未提交</td>
+<td>读不加锁，写加锁</td>
+<td>脏读、不可重复读、幻读</td>
 </tr>
 </tbody></table>
-<p><strong>数据结构</strong>：</p>
-<ul>
-<li>每个 <code>transaction</code> 保存了持有的读写锁、隔离级别、修改索引&#x2F;元组的记录</li>
-<li>每个 <code>tuple</code> 对应的RID有一个加锁请求队列，用条件变量堵塞&#x2F;唤醒请求，加锁时堵塞，解锁时唤醒。</li>
-</ul>
 <p><strong>加锁操作</strong>：</p>
 <ol>
-<li>检查 txn 的状态：abort 或 shrinking 时是否符合隔离级别（REPEATABLE_READ shrinking 时不允许加任何锁，READ_COMMITTED 只允许加S IS锁）</li>
-<li>获取 table 对应的 <code>lock request queue</code> （获取到之后立刻解 map 锁）</li>
-<li>检查请求是否是升级锁，即队列里是否有和 txn 相同的 id，若有：<ul>
-<li>是否有另一个事务尝试升级</li>
+<li>检查加锁是否兼容隔离级别：如 RR 在 shrinking 时不能加任何锁，RC 只能加读锁</li>
+<li>获取 table 对应的表级锁请求队列</li>
+<li>检查是否是升级锁操作，即队列里是否有相同的 tid，若有：<ul>
+<li>是否有另一个事务尝试升级锁？通过upgrading字段判断，抛异常</li>
 <li>升级是否兼容，即升级后数据是否安全（限制越严越安全）：<code>IS -&gt; [S, X, IX, SIX]</code>, <code>S -&gt; [X, SIX]</code>, <code>IX -&gt; [X, SIX]</code>, <code>SIX -&gt; [X]</code></li>
 <li>释放此前持有的锁，后续把升级作为一个新的请求加入队列</li>
 </ul>
 </li>
 <li>将锁加入请求队列：普通锁直接放到队尾，升级锁因为优先级高，应插入首个未授权的请求前</li>
 <li>后续该请求基于while循环和条件变量尝试获取锁，按 FIFO 遍历请求队列判断能否满足锁请求：<ul>
-<li>若要获取读锁：如果当前txn已经是最早的事务，或前面都持有读锁，则授予</li>
-<li>若要获取写锁：只有当天txn是最早的事务才授予，否则一定冲突，被 <code>cv.lock()</code> 阻塞</li>
+<li>获取读锁：如果当前txn已经是最早的事务，或前面都持有读锁，则授予</li>
+<li>获取写锁：只有当前txn是最早的事务才授予，否则一定冲突，被 <code>cv.lock()</code> 阻塞</li>
 </ul>
 </li>
 </ol>
 <p><strong>解锁操作</strong>：</p>
 <ol>
+<li>找到表&#x2F;元组的锁请求队列，遍历找到要解锁的txn</li>
 <li>根据隔离级别修改事务状态：<ul>
-<li><code>REPEATABLE_READ</code> 时，S&#x2F;X 锁释放使事务进入 Shrinking</li>
-<li><code>READ_COMMITTED</code> 时，仅 X 锁释放使事务进入 Shrinking</li>
-<li><code>READ_UNCOMMITTED</code> 时，X 锁释放使事务 Shrinking，S 锁不会出现</li>
+<li><code>RR</code> 时，事务进入 Shrinking</li>
+<li><code>RC、RU</code> 时，仅 X 锁释放使事务进入 Shrinking</li>
 </ul>
 </li>
-<li><code>cv_.notify_all()</code> 唤醒所有阻塞在此 table 上的事务</li>
+<li><code>cv_.notify_all()</code> 唤醒所有阻塞在此请求队列上的事务</li>
 </ol>
-<p><strong>死锁检测</strong>：</p>
-<ol>
-<li>构建 wait for 图，遍历 table_lock_map 和 row_lock_map 中的每一个请求队列，把每对 <code>&lt;ungrant_tid, granted_tid&gt;</code> 事务 id 加入图的边集，即 <code>ungrant_tid</code> 等待 <code>granted_tid</code> 为一条边</li>
+<h3 id="死锁检测"><a href="#死锁检测" class="headerlink" title="死锁检测"></a>死锁检测</h3><ol>
+<li>构建有向图，遍历表锁和元组锁中的所有请求队列，把每对符合等待关系的事务 <code>&lt;a, b&gt;</code> 加入图的边集，a 是 waiting 请求，b 是 granted 请求。</li>
 <li>用 DFS 来进行环检测，需要记录环上的所有节点。挑选 tid 最大的事务终止，删除图中的边，唤醒阻塞的请求</li>
 <li>重复环检测直到无环为止</li>
 </ol>
-<p><strong>并发控制</strong>：</p>
-<p>为查询计划执行器的顺序扫描、插入、删除计划的<code>NEXT()</code>方法提供元组锁的保护，使得支持并发执行。</p>
+<hr>
+<h2 id="SQL执行器"><a href="#SQL执行器" class="headerlink" title="SQL执行器"></a>SQL执行器</h2><ol>
+<li>SQL 语句先经过 <code>Parser</code> 生成一棵抽象语法树（libpg_query 库）；</li>
+<li><code>Binder</code> 遍历树，将关键字&#x2F;标识符绑定到数据库实体上（c++类）；</li>
+<li><code>Planner</code> 遍历这棵树，生成初步的查询计划 Plan Tree，每个Plan结点都代表了一个操作，树中上层的Plan结点调用 <code>next()</code> 从下层结点取出一条数据，从而数据自底向上地流动，在根节点输出结果。</li>
+<li><code>Optimizer</code> 遍历 Plan Tree 进行逻辑规则，这种优化器不需要知道数据的具体内容，仅是根据预先定义好的规则修改 Plan 结点。</li>
+<li><code>Executor</code> 遍历查询计划树，将树上的 PlanNode 替换成对应的执行算子</li>
+</ol>
+<h3 id="Optimizer"><a href="#Optimizer" class="headerlink" title="Optimizer"></a>Optimizer</h3><p><strong>TopN</strong>：对 Plan Tree 进行后续遍历，在遇到父节点 Limit、子节点 Sort 时，则将这两个节点替换为一个 TopN</p>
+<p><strong>HashJoin</strong>：</p>
+<ul>
+<li>把 NestedLoopJoin 替换为 HashJoin</li>
+<li>让小表驱动大表，减少表连接次数，调用已提供的api估计table大小，再根据大小来调整 Plan Tree 里 join 的顺序</li>
+</ul>
+<p><strong>IndexJoin</strong>：识别 B+Tree Index，默认只会为右表匹配 index，因此如果 左表有 index &amp;&amp; 右表没有 &amp;&amp; 等值连接，则把左右顺序替换一下，便于之后正确识别索引</p>
+<p><strong>谓词下推</strong>：需要把 Filter 正确下推至 Join 算子下，尽量接近叶子节点，减少数据拷贝耗时。自顶向下地改写，提取 predicate 中的所有 comparison，判断表达式的两边是否一个是 column value，一个是 const value，只有这样的 predicate 可以被下推，再将所有的 predicate 重新组合为 logic expression 生成新的 Filter，根据 column value 的 idx 来选择下推的分支</p>
+<p><strong>列裁剪</strong>：遇到连续的两个投影，合并为 1 个，只取上层投影所需列，其余直接抛弃</p>
+<h3 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h3><p><strong>火山模型</strong></p>
+<p>每个算子都有 <code>Init()</code> 和 <code>Next()</code> 两个方法。Init() 对算子进行初始化工作，Next() 向下层算子请求下一条数据，返回 false 时说明下层算子已经没有剩余数据，迭代结束。</p>
+<ul>
+<li>简单，每个 Operator 可以单独抽象实现、不需要关心其他 Operator 的逻辑</li>
+<li>数据以行为单位进行处理，不利于CPU cache；且每处理一行需要调用多次next() 函数，虚函数开销大</li>
+</ul>
+<p><strong>HashJoinExecutor</strong></p>
+<p>使用基础哈希算法进行连接操作，其原理为将元组的连接键（即某些属性列的组合）作为哈希表的键，并使用其中一个子计划节点的元组构造哈希表。由于具有相同连接键的元组一定具有相同的哈希键值，因此另一个子计划节点中的元组仅需在该元组映射的桶中寻找可与其连接的元组</p>
+<p>用<code>unordered_multimap</code>直接存放等于连接键的元组，再用右子节点的元组作为”探针”寻找与其连接键相同的左子计划节点的元组，可能有多个左子结点对应</p>
+<p><strong>AggregationExecutor</strong></p>
+<p>用哈希表将所有聚合键（即元组的属性列组合）相同的元组映射在一起，以此统计所有聚合键元组的聚合信息</p>
+<h3 id="并发控制-2"><a href="#并发控制-2" class="headerlink" title="并发控制"></a>并发控制</h3><p>将 transaction 应用到之前实现的算子中，以支持并发的查询：为查询计划执行器的顺序扫描、插入、删除计划的<code>NEXT()</code>方法提供元组锁的保护</p>
+<p>只需修改以下三个算子，因为其他算子获取的tuple数据均为中间结果：</p>
 <ol>
 <li><p>seq_scan</p>
 <ul>
-<li>元组加读锁，<code>未提交读</code>不加锁，<code>提交读</code>读完 table 立即解锁，<code>可重复读</code>在<code>COMMIT</code>或<code>ABORT</code>时释放锁</li>
-<li>给表加 IS 锁，再给行加 S 锁。为什么不给表加 S 锁？对于 <code>DELETE...WHERE...</code>，同个 query 先在下层加 S 锁，又在 Delete 里加 IX，因为 S 锁不能升级 IX 锁就会卡死（整表读 -&gt; 某行写，锁升级不兼容）</li>
+<li><strong>不同隔离级别怎么加锁</strong>？<code>读未提交</code>不加锁；<code>读已提交</code>读完 table 立即解锁；<code>可重复读</code>在<code>COMMIT</code>或<code>ABORT</code>后才释放锁</li>
+<li><strong>加什么锁</strong>？表加 IS 锁，再给行加 S 锁。<blockquote>
+<p>为什么不给表加 S 锁？对于 <code>DELETE...WHERE...</code>，同个 query 先在下层加 S 锁，又在 Delete 里加 IX，因为 S 锁不能升级 IX 锁就会卡死（整表读 -&gt; 某行写，<strong>锁升级不兼容</strong>）</p>
+</blockquote>
+</li>
 </ul>
 </li>
 <li><p>insert<br>元组插入表时由 tablePage 锁保证并发安全，插入后为了更新索引，需要先获得元组的<strong>写锁</strong>，保证此期间元组不被修改，之后再更新索引依靠 B+tree 的锁</p>
@@ -1936,9 +1895,6 @@
 </ol>
 <h2 id="Bug"><a href="#Bug" class="headerlink" title="Bug"></a>Bug</h2><p>SeqScanExecutor用table_itor遍历元组时，每次访问元组前后加解读锁，而每次next结束时itor++指向下一个元组，会自动跳过已经被删除的元组，<strong>但仍然出现本线程获得读锁之后访问到一个已经删除的tuple</strong>。</p>
 <p>原因：itor++后、本线程还未获取itor指向的tuple的读锁前，其他线程这时将itor指向的tuple删除了。所以需要获取读锁后，再使用GetTuple读一次tuple的值，如果false则跳过该已被删除的tuple</p>
-<blockquote>
-<p><strong>死锁预防</strong>：严格2PL有死锁风险，如事务1请求A,B的锁，事务2请求B,A的锁。采用<code>Wound-Wait</code>策略：当优先级高的事务等待优先级低的事务的锁时，将优先级低的事务杀死；当优先级低的事务等待优先级高的事务的锁时，优先级低的事务将阻塞。其思想在于避免互相等待锁。</p>
-</blockquote>
 ]]></content>
       <categories>
         <category>Database</category>
@@ -1947,121 +1903,16 @@
   <entry>
     <title>MySQL</title>
     <url>/2023/03/30/Database/Mysql/</url>
-    <content><![CDATA[<h2 id="SQL与NoSQL"><a href="#SQL与NoSQL" class="headerlink" title="SQL与NoSQL"></a>SQL与NoSQL</h2><h3 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a><strong>关系型数据库</strong></h3><p>采用了关系模型来组织数据， 关系模型可以简单理解为二维表格模型，而一个关系型数据库就是由二维表及其之间的关系组成的一个数据组织</p>
+    <content><![CDATA[<h2 id="SQL与NoSQL"><a href="#SQL与NoSQL" class="headerlink" title="SQL与NoSQL"></a>SQL与NoSQL</h2><h3 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a><strong>关系型数据库</strong></h3><p>采用了关系模型来组织数据， 关系模型可以简单理解为<strong>二维表格模型</strong>，而一个关系型数据库就是<strong>由二维表及其之间的关系组成</strong>的一个数据组织</p>
 <p>优点：①容易理解，二维表比网状模型贴近逻辑世界 ②使用方便，支持SQL复杂查询 ③易于维护，通过完整性降低了数据不一致和数据冗余 ④支持事务 ⑤数据存在磁盘中可靠</p>
 <blockquote>
 <p>实体完整性 <code>每个元组唯一、可识别，不允许主键空/重复</code><br>引用完整性 <code>元组间的关联，外键为参照的某个元组主键或空</code><br>用户定义完整性 <code>指明属性取值范围，防止和应用语义矛盾</code></p>
 </blockquote>
 <p>缺点：①表结构固定、数据不易扩展 ②海量数据情况下读写效率低 ③ 高并发读写能力差，数据库连接数、IO受限</p>
-<h3 id="非关系型数据库"><a href="#非关系型数据库" class="headerlink" title="非关系型数据库"></a><strong>非关系型数据库</strong></h3><p>通常指数据以对象的形式存储在数据库中，而对象之间的关系通过每个对象自身的属性来决定，常用于存储非结构化的数据。分为键值、列族、文档、图形数据库</p>
+<h3 id="非关系型数据库"><a href="#非关系型数据库" class="headerlink" title="非关系型数据库"></a>非关系型数据库</h3><p>通常指数据以对象的形式存储在数据库中，而对象之间的关系通过每个对象自身的属性来决定，常用于存储非结构化的数据。分为键值、列族、文档、图形数据库</p>
 <p>优点：①支持多种存储格式：kv、图片、文档 ②速度快、效率高，可以用内存作为载体 ③数据不耦合易扩展 ④可以实现数据分布式处理</p>
 <p>缺点：①不支持SQL学习使用成本高 ②没有事务处理，无法保证数据完整性和安全性</p>
-<h2 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h2><p>MVCC 是 InnoDB 实现隔离级别的一种具体方式，用于实现<strong>提交读</strong>和<strong>可重复读</strong>这两种隔离级别。而未提交读级别总是读取最新的数据行，无需使用 MVCC。可串行化级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。优点是执行普通的SELCT操作时通过访问记录的版本链，使不同事务的读-写操作并发执行，不用加锁</p>
-<h3 id="原理和实现"><a href="#原理和实现" class="headerlink" title="原理和实现"></a>原理和实现</h3><ul>
-<li><strong>隐藏字段</strong>：每行数据都有隐藏字段，包含了最后一次插入&#x2F;更新事务<code>DB_TRX_ID</code>、指向<code>undo log</code>的指针</li>
-<li><strong>基于undo log的版本链</strong>：每行数据的隐藏字段中包含了指向undo log的指针，而每条undo log也会指向更早版本的undo log，从而形成一条版本链。</li>
-<li><strong>ReadView</strong>：执行 <code>select</code> 前会创建一个快照，保存当前系统中活跃的事务ID。当要读取记录行的时候，会将该记录行的 <code>DB_TRX_ID</code> 与 <code>Read View</code> 进行比较，判断是否满足可见性条件，并通过undo log将数据恢复到指定版本：<ul>
-<li><code>ids</code>：Read View 创建时的活跃事务 ID 列表，若<code>DB_TRX_ID</code>不在其中则可见（已提交），否则不可见</li>
-<li><code>low_limit_id</code>：下一个分配事务的ID，若<code>DB_TRX_ID</code>比它大则事务不可见（事务发生在创建快照之后）</li>
-<li><code>up_limit_id</code>：活跃事务中最小的事务ID，若<code>DB_TRX_ID</code>比它小则事务可见（创建快照时最后一次事务已提交）</li>
-</ul>
-</li>
-</ul>
-<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><p>在MVCC并发控制中，读操作可以分成两类：</p>
-<ul>
-<li>快照读：<em>简单select操作</em>，读取的是快照生成的数据。不用加锁，通过undo log和MVCC访问历史版本数据。<ul>
-<li>在RC下，每个select开始执行时都会生成readView直至事务提交，所以之后其它事务所做的更新版本对当前事务并不可见，实现了可重复读</li>
-<li>在RR下，仅在事务开始的时候生成readView，导致不可重复度</li>
-</ul>
-</li>
-<li>当前读：<em>特殊的读操作、插入&#x2F;更新&#x2F;删除操作</em>，读取的是记录的最新版本。要对读的记录上锁，保证其他事务不会再并发修改这条记录，除了<code>lock in share mode</code> 加读锁，其他都加写锁</li>
-</ul>
-<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p>如果其它事务在当前事务查询范围内插入就会产生幻读，<code>InnoDB</code>存储引擎在 RR 级别下通过 <code>MVCC</code>和 <code>Next-key Lock</code> 来解决幻读问题：</p>
-<ul>
-<li><strong>快照读</strong>：通过 <code>MVCC</code> 避免幻读。<br>RR 隔离级别只会在事务第一次查询生成 <code>Read View</code> ，直至事务提交。所以在生成 <code>Read View</code> 之后其它事务所做的插入版本对当前事务并不可见</li>
-<li><strong>当前读</strong>：通过 <code>Next-key Lock</code> 避免幻读<br><code>Record Locks</code> + <code>Gap Locks</code>，前者锁定一个记录上的索引项来锁定当前记录，后者锁定索引之间的间隙来防止其它事务在查询范围内插入数据。当查询的索引含有唯一属性的时候，<code>Next-Key Lock</code> 会降级为<code>Record Lock</code></li>
-</ul>
-<hr>
-<h2 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h2><p>MyISAM适合：插入不频繁、查询非常频繁，大量SELECT</p>
-<p>InnoDB适合：表更新和查询都频繁， 大量INSERT或UPDATE；可靠性要求比较高，或者要求事务</p>
-<ul>
-<li>InnoDB 支持行级别的锁粒度，MyISAM 不支持，只支持表级别的锁粒度。</li>
-<li>MyISAM 不提供事务支持。InnoDB 提供事务支持，实现了 SQL 标准定义了四个隔离级别。</li>
-<li>MyISAM 不支持外键，而 InnoDB 支持。</li>
-<li>MyISAM 不支持 MVCC，而 InnoDB 支持。</li>
-<li>MyISAM 索引文件和数据文件分离，而 InnoDB 数据文件本身就是按 B+Tree 组织的一个索引结构，叶节点 data 域保存了完整的数据记录。</li>
-<li>MyISAM 不支持数据库异常崩溃后的安全恢复，而 InnoDB 支持。</li>
-<li>InnoDB 的性能比 MyISAM 更强大。</li>
-</ul>
-<hr>
-<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><p>索引是一个单独的、存储在磁盘上的数据库结构，包含着对数据表里所有记录的引用指针。使用索引可以提高查询速度，快速找出在某个或多个列中为特定值的行，所有MySQL列类型都可以被索引。</p>
-<p>索引是在存储引擎中实现的，每种存储引擎的索引都不一定完全相同。MySQL中索引类型有BTREE和HASH，InnoDB存储引擎只支持BTREE索引。</p>
-<p>优点：</p>
-<ol>
-<li>通过创建<strong>唯一索引</strong>，可以保证表中每一行数据的唯一性。</li>
-<li>加快数据的<strong>查询速度</strong></li>
-<li>减少查询中<strong>分组和排序</strong>的时间。</li>
-</ol>
-<p>缺点：</p>
-<ol>
-<li><strong>创建和维护</strong>索引要耗费时间</li>
-<li>索引需要<strong>占磁盘空间</strong>，如果有大量的索引，索引文件可能比数据文件更快达到最大文件尺寸。</li>
-<li>当对表中的<strong>数据修改的时候</strong>，索引也要动态地维护，这样就降低了数据的维护速度。</li>
-</ol>
-<p>索引类型：</p>
-<ul>
-<li>普通索引：仅加速查询</li>
-<li>唯一索引：加速查询 + 列值唯一（可以有null）</li>
-<li>主键索引：加速查询 + 列值唯一（不可以有null）+ 表中只有一个</li>
-<li>组合索引：多列值组成一个索引，专门用于组合搜索</li>
-<li>全文索引：对文本的内容进行分词，进行搜索</li>
-<li>覆盖索引：select的数据列只用从索引中就能够取得，不必回表查询数据行</li>
-<li>非&#x2F;聚簇索引</li>
-</ul>
-<p>索引注意事项：</p>
-<ol>
-<li>尽量用在经常搜索、排序的列上</li>
-<li>尽量用覆盖索引，减少 <code>select *</code> 能减少回表次数</li>
-<li>多个单列索引每次查询只能使用一个，换成组合索引</li>
-<li>清理长期不使用的索引</li>
-<li>索引失效：<ol>
-<li>组合索引不遵循“最左前缀匹配”原则</li>
-<li>在索引列上计算&#x2F;函数、不等于（&gt;&lt; !&#x3D;）</li>
-<li>使用<code>like &quot;%value%&quot;</code></li>
-<li>or连接</li>
-<li>字符串不加单引号可能隐式转换</li>
-<li>组合索引中含NULL的列</li>
-</ol>
-</li>
-</ol>
-<h3 id="索引原理"><a href="#索引原理" class="headerlink" title="索引原理"></a>索引原理</h3><p>InnoDB中表数据文件本身就是按B+Tree组织的一个索引结构，这个索引的key是数据表的主键，因此数据文件本身就是<strong>主索引</strong>，B+Tree的叶节点data域保存了完整的数据记录。</p>
-<p>InnoDB的<strong>辅助索引</strong>data域存储相应记录主键的值而不是地址，所以辅助索引搜索需要检索两遍索引：先检索辅助索引获得主键，然后用主键到主索引中检索获得记录</p>
-<p><strong>B+Tree</strong>：多路平衡查找树，所有数据都按键值的大小顺序存在叶结点中，通过指针连接。B+树索引的特点就是高扇出性，例如在InnoDB存储引擎中，每个页的大小为16KB，B+树的高度一般不超过4层，查找的IO次数很少。</p>
-<p><strong>Hash索引和B+Tree索引区别</strong></p>
-<ul>
-<li>hash索引中经过hash函数建立索引之后，索引的顺序与原顺序无法保持一致，不能支持范围查询。而B+树的的所有节点皆遵循(左节点小于父节点，右节点大于父节点，多叉树也类似)，天然支持范围</li>
-<li>hash索引不支持使用索引进行排序</li>
-<li>hash索引不支持模糊查询以及多列索引的最左前缀匹配</li>
-<li>hash索引虽然在等值查询上较快但是不稳定（发生hash碰撞），而B+树的查询效率比较稳定</li>
-</ul>
-<p><strong>B+Tree比BTree优势</strong></p>
-<ul>
-<li>方便扫库，B树只能中序遍历</li>
-<li>查找效率更稳定，叶结点存放数据内容，每次查询路径都相同</li>
-<li>磁盘读写代价更低，因为内部结点只包含关键字，体积小，一个盘块内容纳的关键字数量多，IO读写次数就少</li>
-</ul>
-<h3 id="聚簇-非聚簇索引"><a href="#聚簇-非聚簇索引" class="headerlink" title="聚簇&#x2F;非聚簇索引"></a>聚簇&#x2F;非聚簇索引</h3><p><strong>聚集索引</strong>：索引结构和数据一起存放的索引，InnoDB 中的主键索引就属于聚簇索引。</p>
-<ul>
-<li>优点：查询速度非常快，比非聚簇索引少了一次读取数据的 IO 操作</li>
-<li>缺点：依赖于有序的数据、更新代价大：数据被修改导致对应的索引也会被修改，而且叶子节点还存放着数据</li>
-</ul>
-<p><strong>非聚集索引</strong>：索引结构和数据分开存放的索引，二级索引(辅助索引)就属于非聚簇索引，MySQL 的 MyISAM 引擎主键&#x2F;非主键都是非聚簇索引。非聚簇索引的叶子节点并不一定存放数据的指针，因为二级索引的叶子节点就存放的是主键，根据主键再回表查数据。</p>
-<ul>
-<li>优点：更新代价小，因为叶子节点不存放数据</li>
-<li>缺点：依赖于有序的数据、可能会二次查询(回表)</li>
-</ul>
-<hr>
-<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><h3 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h3><table>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><table>
 <thead>
 <tr>
 <th>隔离级别</th>
@@ -2087,7 +1938,7 @@
 </tr>
 <tr>
 <td>REPEATABLE READ</td>
-<td>保证每行记录的结果是一致的，但不能解决幻读</td>
+<td>事务执行中看到的数据和启动时一致</td>
 <td>不可能</td>
 <td>不可能</td>
 <td>可能</td>
@@ -2101,74 +1952,154 @@
 </tr>
 </tbody></table>
 <p>因为隔离级别越低，事务请求的锁越少，所以大部分数据库系统的隔离级别都是 RC </p>
-<p>与 SQL 标准不同的地方在于：InnoDB 在默认的隔离级别 RR 下使用的是<strong>Next-Key Lock 锁</strong>算法，能避免幻读，已经可以完全保证事务的隔离性要求，即达到了 SQL标准的 SERIALIZABLE 隔离级别。具体来讲：</p>
+<p>与 SQL 标准不同的地方在于：InnoDB 在默认的隔离级别 RR 下使用的是<strong>Next-Key Lock 锁</strong>算法，能避免幻读，已经可以完全保证事务的隔离性要求，即达到了 SQL标准的 SERIALIZABLE 隔离级别。</p>
+<h2 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h2><p>MVCC 是 InnoDB 实现隔离级别的一种方式，用于实现<strong>读已提交</strong>和<strong>可重复读</strong>这两种隔离级别。而读未提交级别总是读取最新的数据行，无需使用 MVCC。可串行化级别需要对所有读取的行都加锁，单纯使用 MVCC 无法实现。优点是执行普通的SELECT操作时通过访问记录的版本链，使不同事务的读-写操作并发执行，不用加锁</p>
+<h3 id="快照读与当前读"><a href="#快照读与当前读" class="headerlink" title="快照读与当前读"></a>快照读与当前读</h3><p>在MVCC并发控制中，读操作可以分成两类：</p>
 <ul>
-<li><p><strong>READ UNCOMMITTED &amp; READ COMMITTED：</strong></p>
-<p> 通过Record Lock算法实现了行锁，但RU允许读取未提交数据，所以存在脏读问题。而RC允许读取提交数据，所以不存在脏读问题，但存在不可重复读问题。</p>
+<li>快照读：读取的是快照生成的数据，如简单select操作。不用加锁，<strong>通过undo log和MVCC访问历史版本数据</strong>。<ul>
+<li>在RR下，事务启动时会生成readView直至事务提交，所以之后其它事务所做的更新版本对当前事务并不可见，实现了可重复读</li>
+<li>在RC下，每次select都会生成readView，所以事务期间多次读一个数据可能不一致</li>
+</ul>
 </li>
-<li><p><strong>REPEATABLE READ：</strong></p>
-<p> 使用Next-Key Lock算法实现了行锁，并且不允许读取已提交的数据，所以解决了不可重复读的问题。另外，该算法包含了间隙锁，会锁定一个范围，因此也解决了幻读的问题。</p>
+<li>当前读：读取的是记录的最新版本，如插入&#x2F;更新&#x2F;删除操作。要对读的记录上锁，保证其他事务不会再并发修改这条记录，除了<code>lock in share mode / for update</code> 加读锁，<strong>其他都加写锁</strong></li>
+</ul>
+<h3 id="原理和实现"><a href="#原理和实现" class="headerlink" title="原理和实现"></a>原理和实现</h3><ul>
+<li><strong>隐藏字段</strong>：每行数据都有隐藏字段，包含了最后一次插入&#x2F;更新事务<code>DB_TRX_ID</code>、指向<code>undo log</code>的指针，而每条undo log也会指向更早版本的undo log，从而形成一条版本链。</li>
+<li><strong>ReadView</strong>：在进行快照读的时候生成的记录快照，保存当前系统中活跃的事务ID，可以解决可见性问题。当要读取记录行的时候，会将该记录行的 <code>DB_TRX_ID</code> 与 <code>Read View</code> 进行比较，判断是否满足可见性条件，否则通过undo log将数据恢复到指定版本：<ul>
+<li>记录行事务ID &lt; <code>up_limit_id</code>（ReadView中最小的事务ID）：该事务在创建 ReadView 前已经提交了，可见</li>
+<li>记录行事务ID &gt; <code>low_limit_id</code>（ReadView时刻下一个要分配的事务ID）：该事务在创建 ReadView 之后才开启，不可见</li>
+<li><code>up_limit_id</code> &lt; 记录行事务ID &lt; <code>low_limit_id</code>：判断是否在活跃事务ID列表中，不在说明该事务已经提交了，可见，否则不可见</li>
+</ul>
 </li>
-<li><p><strong>SERIALIZABLE：</strong></p>
-<p> 对每个SELECT语句后自动加上LOCK IN SHARE MODE，即为每个读取操作加一个共享锁。因此在这个事务隔离级别下，读占用了锁，对一致性的非锁定读不再予以支持。</p>
-</li>
+</ul>
+<h3 id="解决幻读"><a href="#解决幻读" class="headerlink" title="解决幻读"></a>解决幻读</h3><p>如果其它事务在当前事务查询范围内插入就会产生幻读，<code>InnoDB</code>存储引擎在 RR 级别下通过 <code>MVCC</code>和 <code>Next-key Lock</code> 来解决幻读问题：</p>
+<ul>
+<li><strong>快照读</strong>：通过 <code>MVCC</code> 避免幻读。<br>RR 隔离级别只会在事务第一次查询生成 <code>Read View</code> ，直至事务提交。所以在生成 <code>Read View</code> 之后其它事务所做的插入版本对当前事务并不可见</li>
+<li><strong>当前读</strong>：通过 <code>Next-key Lock</code> 避免幻读<br><code>Record Locks</code> + <code>Gap Locks</code>，前者锁定一个记录上的索引项来锁定当前记录，后者锁定索引之间的间隙来防止其它事务在查询范围内插入数据。当查询的索引含有唯一属性的时候，<code>Next-Key Lock</code> 会降级为<code>Record Lock</code></li>
 </ul>
 <hr>
-<h3 id="三种日志"><a href="#三种日志" class="headerlink" title="三种日志"></a>三种日志</h3><ul>
-<li><strong>binlog</strong>：记录了所有修改数据库的操作，然后以二进制的形式记录在日志文件中，其中还包括每条语句所执行的时间和所消耗的资源，以及相关的事务信息。数据备份、主从同步都离不开 binlog，需要依靠<code>binlog</code>来同步数据，保证数据一致性</li>
-<li><strong>redo log</strong>：记录的是对数据库页的物理修改操作，即每次事务对数据页进行更改后，会先在 <code>redo log</code> 记录这次操作，然后更新到Buffer Pool，最后刷盘到日志文件中。当系统发生异常重启或宕机时，通过重放Redo Log，能够确保已提交事务的修改不会丢失，保证了事务的持久性。它由两部分组成：内存中的重做日志缓冲 ，重做日志文件。<br>刷盘操作（redo log buffer -&gt; redo log file）：<ul>
-<li>后台线程每隔 1 秒或重做日志缓冲占一半时，会把重做日志缓冲内容写到文件系统缓存，再调用 <code>fsync</code> 刷盘</li>
-<li>事务提交时：<ul>
-<li>策略1刷盘，不会丢失（默认）</li>
-<li>策略0不刷盘，MySQL挂了或宕机均可能丢失1s</li>
-<li>策略2只写入page cache，MySQL挂了不会丢失，但宕机可能丢失1秒数据</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>undo log</strong>：是实现事务原子性和一致性的重要机制，它记录了事务对数据库所做的更改的相反操作，会先于数据持久化到磁盘上。它记录的是sql执行相关的信息，属于逻辑日志，两个作用：<ol>
-<li>事务回滚时恢复：根据undo log的内容做相反的工作</li>
-<li>实现MVCC：当读取记录时，若该记录被其他事务占用或当前版本对该事务不可见，则通过 <code>undo log</code> 读取之前的版本数据，从而避免锁竞争，提高并发性能</li>
-</ol>
-</li>
+<h2 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h2><p>MyISAM适合：插入不频繁、查询非常频繁，大量SELECT</p>
+<p>InnoDB适合：表更新和查询都频繁， 大量INSERT或UPDATE；可靠性要求比较高，或者要求事务</p>
+<ul>
+<li>MyISAM 只支持表级锁，InnoDB 支持行级别的锁。</li>
+<li>MyISAM 不提供外键、事务、MVCC，InnoDB 支持。</li>
+<li>MyISAM 索引文件和数据文件分离，而 InnoDB 数据文件本身就是按 B+Tree 组织的一个索引结构，叶节点 data 域保存了完整的数据记录。</li>
+<li>MyISAM 不支持崩溃后恢复，而 InnoDB 支持。</li>
+<li>InnoDB 的性能比 MyISAM 更强大。</li>
 </ul>
 <hr>
-<h3 id="ACID的实现"><a href="#ACID的实现" class="headerlink" title="ACID的实现"></a>ACID的实现</h3><p><strong>A 原子性</strong>：事务的操作要么全成功、要么全失败回滚</p>
-<p>关键在于事务回滚时撤销所有已经成功执行的sql语句：<code>undo log</code></p>
-<p><strong>D 持久性</strong>：事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失</p>
-<p>由于引入了 Buffer Pool，宕机可能会导致数据丢失，解决方式：<code>redo log</code></p>
-<blockquote>
-<p>为什么不直接将Buffer Pool中修改的数据写入磁盘？</p>
-<ul>
-<li>刷脏是随机IO，因为每次修改的数据位置随机，但写 redo log 是顺序IO，为追加操作</li>
-<li>减少无效IO：刷脏是以数据页16K为单位的，而 redo log 中只包含真正需要写入的部分</li>
-</ul>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><blockquote>
+<p>索引是Xxx数据结构、加快查询 -&gt; 不同引擎实现不同 -&gt; 优缺点 -&gt; 类型 -&gt; 使用注意事项<br>索引原理（数据文件组织成B+Tree） -&gt; 主索引与辅助索引 -&gt; B+Tree是啥 -&gt; 与Hash对比</p>
 </blockquote>
+<p>索引是一个单独的、存储在磁盘上的数据库结构，包含着对数据表里所有记录的引用指针。使用索引可以提高查询速度，快速找出在某个或多个列中为特定值的行。索引是在存储引擎中实现的，每种存储引擎的索引都不一定完全相同。MySQL中索引类型有 <code>B+TREE</code> 和 <code>HASH</code>，InnoDB存储引擎只支持 <code>B+TREE</code> 索引。</p>
+<p>优点：</p>
+<ol>
+<li>创建<strong>唯一索引</strong>可以保证表中每一行数据的唯一性。</li>
+<li>加快<strong>查询速度</strong>、查询中<strong>分组和排序</strong>的时间。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>创建和维护索引要耗费时间</li>
+<li>索引需要占磁盘空间</li>
+</ol>
+<h3 id="索引类型"><a href="#索引类型" class="headerlink" title="索引类型"></a>索引类型</h3><ul>
+<li>普通索引：仅加速查询</li>
+<li>唯一索引：列值唯一（可以有null）</li>
+<li>主键索引：列值唯一（不可以有null）+ 表中只有一个</li>
+<li>组合索引：多列值组成一个索引，专门用于组合搜索</li>
+<li>全文索引：对文本的内容进行分词，进行搜索</li>
+<li>覆盖索引：select的数据列只用从索引中就能够取得，不必回表查询数据行</li>
+<li>聚集索引：索引和数据一起存放，如InnoDB的主键索引。查询速度非常快，比非聚簇索引少了一次读取数据的 IO 操作；但更新代价大，数据被修改导致对应的索引也会被修改</li>
+<li>非聚集索引：索引和数据分开存放，如InnoDB的辅助索引、MyISAM 的主键&#x2F;非主键索引。更新代价小，因为叶子节点不存放数据（指针或主键），但是可能会二次查询(回表)</li>
+</ul>
+<h3 id="索引注意事项"><a href="#索引注意事项" class="headerlink" title="索引注意事项"></a>索引注意事项</h3><ol>
+<li>尽量用在经常搜索、排序的列上，长期不用及时清理</li>
+<li>尽量用覆盖索引，减少 <code>select *</code> 能减少回表次数</li>
+<li>多个单列索引每次查询只能使用一个，换成组合索引</li>
+<li>索引失效：<ul>
+<li>组合索引不遵循“最左前缀匹配”原则、含NULL</li>
+<li>在索引列上计算&#x2F;函数、不等于（&gt;&lt; !&#x3D;）</li>
+<li>使用<code>like &quot;%value%&quot;</code></li>
+<li>or连接</li>
+<li>字符串不加单引号可能隐式转换</li>
+</ul>
+</li>
+</ol>
+<h3 id="索引原理"><a href="#索引原理" class="headerlink" title="索引原理"></a>索引原理</h3><p>InnoDB中表数据文件本身就是按B+Tree组织的一个索引结构，这个索引的key是数据表的主键，因此数据文件本身就是<strong>主索引</strong>，B+Tree的叶节点data域保存了完整的数据记录。</p>
+<p>InnoDB的<strong>辅助索引</strong>data域存储相应记录主键的值而不是地址，所以辅助索引搜索需要检索两遍索引：先检索辅助索引获得主键，然后用主键到主索引中检索获得记录</p>
+<p><strong>B+Tree</strong>：多路平衡查找树，所有数据都按键值的大小顺序存在叶结点中，通过指针连接。B+树索引的特点就是高扇出性，例如在InnoDB存储引擎中，每个页的大小为16KB，B+树的高度一般不超过4层，查找的IO次数很少。</p>
+<ul>
+<li>B+树内部结点不保存数据，只用于索引，所有数据都保存在叶结点中</li>
+<li>m阶B+树内部结点最多有m-1个关键字、m个子树，叶子结点最多存储m-1个记录</li>
+<li>内部结点中的key都按照从小到大的顺序排列，key左子树中的key都小于等于右子树中的key</li>
+<li>叶子结点双向链表相连，自小而大有序</li>
+</ul>
+<p><strong>Hash索引和B+Tree索引区别</strong></p>
+<ul>
+<li>hash索引中经过hash函数建立索引之后，索引的顺序与原顺序无法保持一致，不能支持范围查询。而B+树的的所有节点皆遵循(左节点小于父节点，右节点大于父节点，多叉树也类似)，天然支持范围</li>
+<li>hash索引不支持使用索引进行排序</li>
+<li>hash索引不支持模糊查询以及多列索引的最左前缀匹配</li>
+<li>hash索引虽然在等值查询上较快但是不稳定（发生hash碰撞），而B+树的查询效率比较稳定</li>
+</ul>
+<p><strong>B+Tree比BTree优势</strong></p>
+<ul>
+<li>方便扫库，B树只能中序遍历</li>
+<li>查找效率更稳定，叶结点存放数据内容，每次查询路径都相同</li>
+<li>磁盘读写代价更低，因为内部结点只包含关键字，体积小，一个盘块内容纳的关键字数量多，IO读写次数就少</li>
+</ul>
+<hr>
+<h2 id="三种日志"><a href="#三种日志" class="headerlink" title="三种日志"></a>三种日志</h2><ul>
+<li><strong>bin log</strong>：<strong>逻辑日志</strong>，把对数据库的<strong>所有修改操作</strong>（SQL语句）以<strong>二进制</strong>的形式记录在日志文件中，包括了SQL语句的执行时间和消耗资源，以及相关的事务信息。<ul>
+<li>用途：主从同步、数据恢复（但无法判断哪些数据已刷盘）</li>
+<li>刷盘策略：先写到 <code>bin log cache</code> 中，① 每次刷盘 ② 只写到页缓存，不刷盘 ③ 写到页缓存，N 次事务提交后才刷盘</li>
+</ul>
+</li>
+<li><strong>redo log</strong>：<code>事务持久性</code> <strong>物理日志</strong>，把对<strong>数据库页的物理修改操作</strong>（包括页地址和修改前后的数据值）记录到二进制文件中，当事务进行修改操作时，采用 WAL 机制，先写 redo log 日志，再写数据。这些记录会先写入到内存中的<code>redo log buffer</code>，后续刷盘到<code>redo log</code>文件中。redo log 分配了固定大小，循环且顺序写入，写满了就等待脏页刷新到磁盘。<ul>
+<li>用途：① 崩溃恢复，记录了未刷盘的数据页变化 ② 优化磁盘随机I&#x2F;O-&gt;顺序I&#x2F;O，减少无效I&#x2F;O（避免每次刷16KB）</li>
+<li>事务提交时刷盘策略：① 立刻刷盘<code>fsync()</code> ② 立即写页缓存，但每秒刷盘 ③ 每秒写页缓存并刷盘</li>
+</ul>
+</li>
+<li><strong>undo log</strong>：<code>事务原子性和一致性</code>，<strong>逻辑日志</strong>，记录了<strong>事务所做的更改的相反操作</strong>。数据修改前，根据SQL生成相应的 undo log 记录保存到buffer中，后台线程定期刷盘。<ul>
+<li>用途：事务回滚、MVCC：当读取记录时，若该记录当前版本对该事务不可见，则通过 <code>undo log</code> 读取之前的版本数据，从而避免锁竞争，提高并发性能</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="ACID的实现"><a href="#ACID的实现" class="headerlink" title="ACID的实现"></a>ACID的实现</h2><p><strong>A 原子性</strong>：<code>undo log</code> 事务的操作要么全成功、要么全失败回滚</p>
+<p><strong>D 持久性</strong>：<code>redo log</code> 事务处理结束后，对数据的修改就是永久的，即便系统故障也不会丢失</p>
 <p><strong>I 隔离性</strong>：多个并发事务之间要相互隔离，不能干扰，包括四个级别</p>
 <ul>
 <li>写对写：锁机制保证隔离性<br>事务先获得锁才可以修改数据，期间其他事务等待。InnoDB支持表锁和行锁，出于性能考虑通常使用行锁。</li>
 <li>写对读：MVCC保证隔离性<br>InnoDB默认的隔离级别是RR，使用MVCC解决脏读、不可重复读、幻读等问题，优点是读不加锁，因此读写不冲突，并发性能好</li>
 </ul>
-<p><strong>C 一致性</strong>：数据库本身确保插入数据类型、长度正确，应用层面如转账逻辑</p>
-<ul>
-<li>保证原子性、持久性和隔离性，这是一致性的前提</li>
+<p><strong>C 一致性</strong>：数据库本身确保插入数据类型、长度正确，应用层面如转账逻辑。其余三个是一致性的前提。</p>
+<hr>
+<h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><h3 id="表级锁"><a href="#表级锁" class="headerlink" title="表级锁"></a>表级锁</h3><ul>
+<li><strong>表锁</strong></li>
+<li><strong>元数据锁</strong>：防止其他线程修改表结构，不用手动，而是由数据库自动加上</li>
+<li><strong>意向锁</strong>：加读&#x2F;写锁前要加读&#x2F;写意向锁，用于快速判断表里是否有记录被加锁，从而在加独占表锁时不用去遍历每条记录是否加了锁</li>
+</ul>
+<h3 id="行级锁"><a href="#行级锁" class="headerlink" title="行级锁"></a>行级锁</h3><ul>
+<li><strong>记录锁</strong>：实际是给索引项加锁，不同事务可以使用不同的索引锁定不同行。注意：只有通过索引条件检索数据才使用行锁，否则会把表里的索引项都加锁，相当于锁了整表。</li>
+<li><strong>间隙锁</strong>：为了解决可重复读隔离级别下幻读</li>
+<li><strong>Next-Key Lock</strong>：前两者结合</li>
+<li><strong>插入意向锁</strong>：插入一条记录时，如果插入位置已被其他事务加了间隙锁，插入操作会生成一个插入意向锁并阻塞。不属于意向锁，而是一种特殊的间隙锁，只锁住一个点。</li>
 </ul>
 <hr>
-<h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><p><strong>锁的模式</strong></p>
-<ul>
-<li>读&#x2F;写锁、更新锁</li>
-<li>读&#x2F;写意向锁：用于事务想要获得一张表中某几行的排它锁、共享锁时，便于表锁判断是否冲突</li>
-</ul>
-<p><strong>锁的粒度</strong></p>
-<ul>
-<li><p>表锁</p>
-</li>
-<li><p>行锁：InnoDB 是通过给<strong>索引项加锁</strong>来实现的。只有通过索引条件检索数据才使用行锁，否则使用表锁。不同的事务可以使用不同的索引锁定不同行。</p>
-<ul>
-<li>记录锁、间隙锁、Next-Key Lock</li>
-</ul>
-</li>
-</ul>
+<h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><p><strong>主从复制流程</strong></p>
+<ol>
+<li>主库db的更新事件(update、insert、delete)被写到binlog</li>
+<li>主库创建一个binlog dump 线程，把binlog的内容发送到从库</li>
+<li>从库启动并发起连接，连接到主库</li>
+<li>从库创建一个I&#x2F;O线程，读取主库传过来的binlog内容并写入到relay log</li>
+<li>从库创建一个SQL线程，从relay log里面读取内容，将更新内容写入到slave的db</li>
+</ol>
+<p><strong>用途</strong></p>
+<ol>
+<li>读写分离：主库写、从库读，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作</li>
+<li>数据实时备份：当系统中某个节点发生故障时，可以方便的故障切换</li>
+<li>架构扩展：把IO访问的负载分布到多个节点</li>
+</ol>
 <hr>
 <h2 id="高性能"><a href="#高性能" class="headerlink" title="高性能"></a>高性能</h2><p><strong>数据库结构优化（联合查询的建立中间表、合理加冗余字段）</strong></p>
 <p><strong>加缓存层、加索引</strong></p>
@@ -2194,20 +2125,6 @@
 </ul>
 </li>
 </ul>
-<h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><p><strong>主从复制流程</strong></p>
-<ol>
-<li>主库db的更新事件(update、insert、delete)被写到binlog</li>
-<li>主库创建一个binlog dump 线程，把binlog的内容发送到从库</li>
-<li>从库启动并发起连接，连接到主库</li>
-<li>从库创建一个I&#x2F;O线程，读取主库传过来的binlog内容并写入到relay log</li>
-<li>从库创建一个SQL线程，从relay log里面读取内容，将更新内容写入到slave的db</li>
-</ol>
-<p><strong>用途</strong></p>
-<ol>
-<li>读写分离：主库写、从库读，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作</li>
-<li>数据实时备份：当系统中某个节点发生故障时，可以方便的故障切换</li>
-<li>架构扩展：把IO访问的负载分布到多个节点</li>
-</ol>
 <hr>
 <h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h3><ol>
 <li><strong>使用索引</strong>：如果查询时没有使用索引，查询语句将扫描表中的所有记录，使用索引则可以快速定位到待查询记录。但几种特殊情况下索引可能失效。</li>
@@ -2503,19 +2420,19 @@
   <entry>
     <title>CPU Cache</title>
     <url>/2024/05/15/OS/CPU%20Cache/</url>
-    <content><![CDATA[<h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" class="lazyload" data-srcset="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+    <content><![CDATA[<h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
-<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
+<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需<code>1个时钟周期</code>这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
 </li>
 <li><p><strong>内存排序缓冲</strong>：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统时正在执行的操作。store缓冲是一个完全的相关性队列，可以用于搜索已经存在store操作，这些store操作在等待L1缓存的时候被队列化。在数据与缓存子系统传输时， 缓冲可以让处理器异步运转。当处理器异步读或者异步写的时候，结果可以乱序返回。为了使之与已发布的内存模型一致，MOB用于消除load和store的顺序。</p>
 </li>
-<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的32K数据缓存和32K指令缓存。访问需要3个时钟周期，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
+<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的<code>32K数据缓存</code>和<code>32K指令缓存</code>。访问需要<code>3个时钟周期</code>，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
 </li>
-<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。L2缓存大小为256K，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为12个时钟周期。</p>
+<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。<code>L2缓存大小为256K</code>，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为<code>12个时钟周期</code>。</p>
 </li>
-<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
+<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，<code>延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期</code>。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
 </li>
-<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的延迟平均为65ns。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
+<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的<code>延迟平均为65ns</code>。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
 </li>
 <li><p><strong>NUMA</strong>：在一个多插槽的服务器上，会使用非一致性内存访问（Non-Uniform Memory Access）。所谓的非一致性是指，需要访问的内存可能在另一个插槽上。只有当CPU访问自身直接attach内存时，才会有较短的响应时间（Local Access）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（Remote Access）。</p>
 </li>
@@ -3261,7 +3178,7 @@
   <entry>
     <title>操作系统</title>
     <url>/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</url>
-    <content><![CDATA[<h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a href="https://yveltals.github.io/post/OS/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD.html#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
+    <content><![CDATA[<h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><h3 id="线程与进程区别"><a href="#线程与进程区别" class="headerlink" title="线程与进程区别"></a><a href="https://yveltals.github.io/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/">线程与进程区别</a></h3><h3 id="线程与协程区别"><a href="#线程与协程区别" class="headerlink" title="线程与协程区别"></a>线程与协程区别</h3><ul>
 <li>协程是一种用户态的<strong>轻量级线程</strong>，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的</li>
 <li><strong>创建开销</strong>：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程</li>
 <li><strong>切换开销</strong>：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上下文和栈，不涉及内核切换的开销，提高了性能，但也失去了使用多CPU的能力</li>
@@ -3571,7 +3488,7 @@
 </li>
 <li><p><strong>⾮阻塞 I&#x2F;O</strong><br>当I&#x2F;O操作⽆法完成时不将进程睡眠，⽽是返回⼀个错误如 <code>EWOULDBLOCK</code>、<code>EAGAIN</code>。I&#x2F;O操作函数将不断询问内核数据是否准备好（⼤量的占⽤CPU的时间），当数据准备好时，用户进程会阻塞直到数据从内核空间copy到用户空间完成。<strong>一阶段不阻塞，二阶段阻塞。</strong></p>
 </li>
-<li><p><strong>I&#x2F;O 多路复⽤</strong><br>通过一种机制监视多个描述符，一旦某个描述符就绪，就通知程序进行相应的读写操作。I&#x2F;O复⽤模型会⽤到<code>select</code>、<code>poll</code>、<code>Epoll</code> 函数，这三个函数本身是阻塞的，但可以同时阻塞多个I&#x2F;O操作，并同时对多个读写的 I&#x2F;O 函数进⾏检测。<strong>两阶段均阻塞，但可以一个线程监听多个网络连接。</strong></p>
+<li><p><strong>I&#x2F;O 多路复⽤</strong><br>通过一种机制监视多个描述符，一旦某个描述符就绪，就通知程序进行相应的读写操作，会⽤到<code>select</code>、<code>poll</code>、<code>Epoll</code> 函数。I&#x2F;O多路复用通常是非阻塞的，因为它允许你同时监控多个I&#x2F;O操作而不必等待任何一个特定操作完成，但是第二阶段的I&#x2F;O操作仍阻塞，属于同步。</p>
 </li>
 <li><p><strong>信号驱动 I&#x2F;O</strong><br>Linux通过 <code>sigaction</code> 系统调用，建立起信号驱动IO的socket，并绑定一个信号处理函数；<code>sigaction</code> 不会阻塞，立即返回，进程继续运行。当数据准备好，内核就为进程产生一个 SIGIO 信号，随后在信号处理函数中接收数据。与非阻塞IO的区别在于它提供了消息通知机制，不需要用户进程不断地轮询检查，减少了系统调用次数，提高了效率。<strong>一阶段不阻塞，二阶段阻塞。</strong></p>
 <blockquote>
@@ -3596,9 +3513,9 @@
 <p>相比与 Select 和 Poll，Epoll 更加高效：</p>
 <ol>
 <li><strong>没 fd 数量限制</strong>：是一个很大的值，和内存大小有关</li>
-<li><strong>无需遍历</strong>：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
-<li><strong>减少拷贝</strong>：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
-<li><strong>回调</strong>：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>减少拷贝</strong>(用户态&lt;-&gt;内核态)：Select、Poll都需要将有关 <code>fd</code> 的数据结构拷贝进内核，返回结果时再拷贝出来。Epoll红黑树中已上树的 <code>fd</code> 不用再次拷贝，并且返回文件描述符时使用 <code>mmap()</code> 内存映射避免了内核态到用户态之间的拷贝</li>
+<li><strong>回调</strong>(<code>监测方式</code>)：Select、Poll采用轮询的方式来检查 <code>fd</code> 是否处于就绪态，而Epoll采用回调机制。随着 <code>fd</code> 的增加，Epoll性能不会线性降低，除非活跃的socket很多。</li>
+<li><strong>无需遍历</strong>(<code>处理返回结果</code>)：Select、Poll、Epoll虽然都会返回就绪的文件描述符数量。但是select和poll并不会明确指出是哪些文件描述符就绪，而Epoll会。因此系统调用返回后，Epoll无需遍历监听的整个文件描述符找到是谁处于就绪，直接处理即可。</li>
 <li><strong>ET触发</strong>：Epoll的边缘触发模式效率高，系统不会充斥大量不关心的就绪文件描述符</li>
 <li>虽然Epoll的性能最好，但是在连接数少并且连接都十分活跃的情况下，Select和Poll的性能可能比Epoll好，毕竟Epoll的通知机制需要很多函数回调。</li>
 </ol>
@@ -3633,15 +3550,15 @@
 <li>CPU 收到中断请求后，保存中断进程的上下文，然后调用键盘的<strong>中断处理程序</strong>（键盘驱动程序初始化时注册的），从键盘控制器的<strong>寄存器的缓冲区</strong>读取扫描码，如果是显示字符如 <code>ABC</code>，则翻译成对应的 ASCII 码，放到<strong>读缓冲区队列</strong></li>
 <li>若要显示至屏幕，显示设备的驱动程序会定时从<strong>读缓冲区队列</strong>读取数据放到<strong>写缓冲区队列</strong>，最后把数据写入到显示设备的控制器的寄存器数据缓冲区中，显示在屏幕里</li>
 </ol>
-<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
+<h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a><a href="https://zhuanlan.zhihu.com/p/447890038">零拷贝</a></h3><p>一种 I&#x2F;O 操作优化技术，是指 IO 操作时 CPU 不需要将数据从一个存储区复制到另一个存储区，从而可以减少上下文切换以及CPU的拷贝时间。在实现方式上，也并非完全不拷贝数据，而是减少用户&#x2F;内核态的切换以及CPU拷贝的次数</p>
 <p>以<strong>读SSD+写网卡</strong>为例，两种实现方式：<br><strong>1. mmap+write</strong>：<strong>4次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>借助虚拟内存可以把内核空间和用户空间的虚拟地址映射到同一个物理地址，因此 mmap 将 page cache 与用户空间的缓冲区映射到一起，只需从磁盘拷贝数据到内核缓冲区，省掉了向用户缓冲拷贝的过程，使得读操作 IO 都在内核中完成<br><img src="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" class="lazyload" data-srcset="https://pic3.zhimg.com/80/v2-caec4c762449e606c7ba12271c9e7172_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. sendfile</strong>：<strong>2次</strong>用户&#x2F;内核态切换，2次DMA拷贝和1次CPU拷贝<br>在两个文件描述符之间传输数据，全程由内核操作的，彻底避免了数据从内核缓冲区和用户缓冲区之间的拷贝操作<br><img src="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" class="lazyload" data-srcset="https://pic2.zhimg.com/80/v2-adade585f19dda4c033abd25bfb61511_1440w.webp" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。<br><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。<br><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. 优点</strong></p>
 <ol>
-<li>相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代I&#x2F;O读写，提高了文件读取效率。</li>
-<li>实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
-<li>一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
+<li>(<code>优化读写</code>)相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代 I&#x2F;O 读写，提高了文件读取效率。</li>
+<li>(<code>通过page cache实现内核用户空间交互</code>)实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
+<li>(<code>共享内存，进程间通信</code>)一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
 </ol>
 <p><strong>3. 细节</strong></p>
 <ol>
@@ -3657,7 +3574,7 @@
 </ul>
 <details blue><summary> Folding </summary>
               <div class='content'>
-              <p>并发和并行</p><ul><li>并发：指宏观上在一段时间内能同时运行多个程序，通过引入进程和线程使得程序并发运行。</li><li>并行：指同一时刻能运行多个指令，需要硬件支持，如多核处理器或者分布式计算系统。</li></ul><p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
+              <p>内存覆盖是什么</p><p>程序运行时并非任何时候都要访问程序及数据的各个部分，因此可以把用户空间分成为一个固定区和若干个覆盖区。将经常活跃的部分放在固定区，将即将要访问的段放入覆盖区，其他段放在外存中，在需要时再将其调入并替换覆盖区中原有的段。</p><p>覆盖技术的特点：不必将一个进程的全部信息装入内存后才能运行，但当同时运行程序的代码量大于主存时仍不能运行。同时，内存中能够更新的地方只有覆盖区，固定区的段会常驻内存。</p><p>内存交换是什么</p><p>内存空间紧张时，系统将内存中处于等待状态（或被CPU调度剥夺运行权）的进程暂时换出外存，把外存中某些已具备运行条件的进程换入内存。</p><p>什么是抖动</p><p>页面在内存和外存之间频繁的换入换出。原因是进程频繁访问的页面数目高于可用的物理块数，即分配给进程的物理块不够。</p><p>磁盘调度算法</p><ul><li><strong>先来先服务 FCFS</strong>：按访问请求到达的先后顺序服务。简单公平，但是效率不高，相临两次请求可能会造成最内到最外柱面寻道，使磁头反复移动，增加了服务时间。</li><li><strong>最短寻道时间优先 SSTF</strong>：选择距当前磁头最近的访问请求进行服务。改善了磁盘平均服务时间，但是造成某些请求长期得不到服务。</li><li><strong>扫描算法 SCAN</strong>：当磁头由里向外移动时，不断选择在当前磁道以外且距离最近的进行服务，直至无更外的磁道需要访问时，再将磁臂换向由外向里移动。</li><li><strong>循环扫描算法 CSCAN</strong>：在扫描算法的基础上改为磁臂单方向移动。例如，只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道。</li></ul>
               </div>
             </details>
 
@@ -3765,7 +3682,7 @@
 <li>OSI在网络层支持无连接和面向连接的通信，但在传输层仅有面向连接通信。而TCP&#x2F;IP则相反，在网际层仅有无连接服务，在传输层支持无连接和面向连接两种模式。</li>
 </ol>
 <hr>
-<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520161056918.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520161056918.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><h3 id="TCP的三次握手"><a href="#TCP的三次握手" class="headerlink" title="TCP的三次握手"></a>TCP的三次握手</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_connect.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_connect.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
 <h4 id="三次握手过程"><a href="#三次握手过程" class="headerlink" title="三次握手过程"></a>三次握手过程</h4><ul>
 <li>第一次握手：客户端请求建立连接，向服务端发送一个<strong>同步报文</strong>（SYN&#x3D;1），同时选择一个随机数 <code>seq=x</code>作为<strong>初始序列号</strong>，并进入 SYN_SENT 状态，等待服务器确认。</li>
 <li>第二次握手：服务端收到连接请求报文后，向客户端发送<strong>同步确认报文</strong>（SYN&#x3D;1，ACK&#x3D;1），确认号为 <code>ack=x+1</code>，同时选择一个随机数 <code>seq = y</code> 作为初始序列号，此时服务器进入 SYN_RECV 状态。</li>
@@ -3776,14 +3693,13 @@
 <li>三次握手才能让双方均确认自己和对方的发送和接收能力都正常。<br>第一次握手：客户端只是发送处请求报文段，什么都无法确认，而服务器可以确认自己的接收能力和对方的发送能力正常；<br>第二次握手：客户端可以确认自己发送能力和接收能力正常，对方发送能力和接收能力正常；但<strong>服务器方还不能确定自己发送和客户端接收是否正常</strong>；<br>第三次握手：服务器可以确认自己发送能力和接收能力正常，对方发送能力和接收能力正常；</li>
 <li>告知对方自己的初始序号值，并确认收到对方的初始序号值。<br>TCP 报文段中维护了序号字段和确认序号字段，从而确定发出的数据中哪些已经被对方确认接收。这两个字段的值会在初始序号值得基础递增，如果是两次握手，只有发起方的初始序号可以得到确认，而另一方的初始序号则得不到确认。</li>
 </ol>
-<h4 id="为什么不是四次握手"><a href="#为什么不是四次握手" class="headerlink" title="为什么不是四次握手"></a>为什么不是四次握手</h4><p>因为三次握手已经可以确认双方的发送接收能力正常，双方都知道彼此已经准备好，而且也可以完成对双方初始序号值得确认，也就无需再第四次握手了。</p>
 <h4 id="三次握手可以携带数据吗"><a href="#三次握手可以携带数据吗" class="headerlink" title="三次握手可以携带数据吗"></a>三次握手可以携带数据吗</h4><p>第三次握手可以携带数据的，但是前两次握手不可以</p>
 <ul>
 <li>第一次握手不可以带数据，因为会让服务器更加容易受到攻击（不断发送SYN，并携带长数据）</li>
 <li>第三次握手时，客户端已经处于 ESTABLISHED 状态，对客户端来说已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的了，所以能携带数据</li>
 </ul>
 <hr>
-<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="http://blog-img.coolsen.cn/img/image-20210520180127547.png" class="lazyload" data-srcset="http://blog-img.coolsen.cn/img/image-20210520180127547.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="img"></p>
+<h3 id="TCP的四次挥手"><a href="#TCP的四次挥手" class="headerlink" title="TCP的四次挥手"></a>TCP的四次挥手</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_close.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/tcp_close.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h4 id="四次挥手过程"><a href="#四次挥手过程" class="headerlink" title="四次挥手过程"></a>四次挥手过程</h4><ul>
 <li>第一次挥手：客户端向服务端发送<strong>连接释放报文</strong>（FIN&#x3D;1，ACK&#x3D;1），主动关闭连接并等待服务端的确认。<ul>
 <li>序列号 <code>seq = u</code>，即客户端上次发送的报文的最后一个字节的序号 + 1</li>
@@ -3828,7 +3744,6 @@
 <li><p>调整短连接为长连接</p>
 </li>
 </ul>
-<h4 id="为什么不是三次挥手"><a href="#为什么不是三次挥手" class="headerlink" title="为什么不是三次挥手"></a>为什么不是三次挥手</h4><p>服务器的<strong>ACK和FIN一般都会分开发送</strong>，从而导致多了一次挥手。服务器在收到客户端的 FIN 报文段后，可能还有一些数据要传输，所以会先做出应答返回 ACK报文，等到数据发送完后再发送 FIN 报文请求关闭连接。</p>
 <h4 id="服务器大量-TIME-WAIT-的原因"><a href="#服务器大量-TIME-WAIT-的原因" class="headerlink" title="服务器大量 TIME_WAIT 的原因"></a>服务器大量 TIME_WAIT 的原因</h4><p>即服务端主动关闭连接的情况：</p>
 <ul>
 <li><p>HTTP 没有使用长连接</p>
@@ -3881,7 +3796,10 @@
 <p><strong>优点</strong>： 信道利用率高，容易实现，即使确认丢失，也不必重传。</p>
 <p><strong>缺点</strong>： 不能向发送方反映出已经正确收到的所有分组的信息。中间几条丢失后，由于接收方只能确认前面几条，所以发送方只能将后边几条也重传。这也叫回退N帧，表示需要退回来重传已经发送过的 N 个消息。</p>
 <hr>
-<h3 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h3><table>
+<h3 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h3><blockquote>
+<p>首靠序 传连景</p>
+</blockquote>
+<table>
 <thead>
 <tr>
 <th></th>
@@ -3946,8 +3864,8 @@
 </ul>
 <hr>
 <h3 id="TCP的其他问题"><a href="#TCP的其他问题" class="headerlink" title="TCP的其他问题"></a>TCP的其他问题</h3><h4 id="第三次握手的ACK包丢失会发生什么"><a href="#第三次握手的ACK包丢失会发生什么" class="headerlink" title="第三次握手的ACK包丢失会发生什么"></a>第三次握手的ACK包丢失会发生什么</h4><ul>
-<li><strong>服务端：</strong>第三次的 ACK 在网络中丢失，那么服务端的状态为 SYN_RECV，会根据超时重机制不断重发 SYN+ACK 包，等待客户端确认。如果重发超过指定次数仍未收到应答，服务端自动关闭连接。</li>
-<li><strong>客户端：</strong>客户端认为这个连接已经建立，如果客户端向服务端发送数据，服务端将以 RST 包（Reset，标示复位，用于异常的关闭连接）响应。此时，客户端知道第三次握手失败。</li>
+<li><strong>服务端</strong>：第三次的 ACK 在网络中丢失，那么服务端的状态为 SYN_RECV，会根据超时重机制不断重发 SYN+ACK 包，等待客户端确认。如果重发超过指定次数仍未收到应答，服务端自动关闭连接。</li>
+<li><strong>客户端</strong>：客户端认为这个连接已经建立，如果客户端向服务端发送数据，服务端将以 RST 包（Reset，标示复位，用于异常的关闭连接）响应。此时，客户端知道第三次握手失败。</li>
 </ul>
 <h4 id="建立连接后客户端故障会发生什么（服务端同理）"><a href="#建立连接后客户端故障会发生什么（服务端同理）" class="headerlink" title="建立连接后客户端故障会发生什么（服务端同理）"></a>建立连接后客户端故障会发生什么（服务端同理）</h4><ul>
 <li><strong>客户端进程崩溃</strong>：客户端的进程在发生崩溃的时候，内核会发送 FIN 报文，负责与服务端四次挥手。</li>
@@ -4064,10 +3982,6 @@
 <li>本地域名服务器再查询<strong>权限域名服务器</strong>，最终查询出来的IP地址和TTL值（缓存时间）返回给本地域名服务器</li>
 <li>本地域名服务器缓存IP映射关系，再把解析结果返回给本地电脑，缓存在本地系统缓存中</li>
 </ol>
-<blockquote>
-<h2 id="DNS负载均衡"><a href="#DNS负载均衡" class="headerlink" title="DNS负载均衡"></a>DNS负载均衡</h2><p>假如每次请求的资源都位于同一台机器上面，那么这台机器可能会崩掉。</p>
-<p>因此在DNS服务器中为同一个主机名配置多个IP地址，在应答DNS查询时返回不同的 IP 地址，使得不同的客户端访问不同的服务器，从而达到负载均衡的目的｡</p>
-</blockquote>
 <hr>
 <h2 id="PING"><a href="#PING" class="headerlink" title="PING"></a>PING</h2><h3 id="Ping的工作原理"><a href="#Ping的工作原理" class="headerlink" title="Ping的工作原理"></a>Ping的工作原理</h3><p>ping 命令执行的时候，源主机会发送 <strong>ICMP 回送请求消息</strong>，目的主机返回 <strong>ICMP 回送响应消息</strong>。在规定的时候间内，源主机如果没有接到 ICMP 的应答包，则说明目标主机不可达；如果接收到了则说明可达，此时源主机会用当前时刻减去该数据包最初从源主机上发出的时刻，得到 ICMP 数据包的时间延迟。</p>
 <h3 id="几个地址的区别"><a href="#几个地址的区别" class="headerlink" title="几个地址的区别"></a>几个地址的区别</h3><ul>
@@ -4084,9 +3998,8 @@
 <hr>
 <h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><h3 id="GET和POST的区别"><a href="#GET和POST的区别" class="headerlink" title="GET和POST的区别"></a>GET和POST的区别</h3><p><strong>使用区别</strong>：</p>
 <ul>
-<li>GET使用URL或Cookie传参，而POST将数据放在BODY中，这是因为HTTP协议用法的约定</li>
-<li>GET提交的数据有长度限制，则POST则可以非常大，这是因为操作系统和浏览器设置的不同</li>
-<li>POST比GET安全，因为数据在地址栏上不可见（但在 HTTP下都不安全，因为明文传输可以被抓包）</li>
+<li>GET使用URL或Cookie传参，有长度限制，而POST将数据放在BODY中可以很大</li>
+<li>POST比GET安全，因为数据在地址栏上不可见（但在 HTTP 下都不安全，因为明文传输可以被抓包）</li>
 <li>GET产生一个TCP数据包，将 <code>http header</code> 和 <code>data</code> 一并发送出去，服务器响应<code>200 ok</code> (返回数据)；POST产生两个TCP数据包，浏览器先发送<code>header</code>，服务器响应<code>100 continue</code>，再发送<code>data</code>，服务器响应<code>200 ok</code> (返回数据)。不过 POST 分开发送是部分浏览器或框架的请求方法，并<strong>不是必然</strong>行为</li>
 <li>GET请求会被浏览器主动缓存，而POST不会，除非手动设置</li>
 </ul>
@@ -4193,7 +4106,10 @@
 <li>HTTP 的 Keep-Alive 也叫 HTTP 长连接，该功能是由<strong>应用程序</strong>实现的，可以使得用同一个 TCP 连接来发送和接收多个 HTTP 请求&#x2F;应答，减少了 HTTP 短连接带来的多次 TCP 连接建立和释放的开销。</li>
 <li>TCP 的 Keepalive 也叫 TCP 保活机制，该功能是由<strong>内核</strong>实现的，当客户端和服务端长达一定时间没有进行数据交互时，内核就会发送探测报文，若对方不在线则关闭该连接。</li>
 </ul>
-<h3 id="HTTP和HTTPS的区别"><a href="#HTTP和HTTPS的区别" class="headerlink" title="HTTP和HTTPS的区别"></a>HTTP和HTTPS的区别</h3><table>
+<h3 id="HTTP和HTTPS的区别"><a href="#HTTP和HTTPS的区别" class="headerlink" title="HTTP和HTTPS的区别"></a>HTTP和HTTPS的区别</h3><blockquote>
+<p>端证安耗协</p>
+</blockquote>
+<table>
 <thead>
 <tr>
 <th></th>
@@ -5621,7 +5537,47 @@
   <entry>
     <title>Memo</title>
     <url>/2023/05/19/Software/Projects/</url>
-    <content><![CDATA[<h2 id="UNKNOWN"><a href="#UNKNOWN" class="headerlink" title="UNKNOWN"></a>UNKNOWN</h2><h3 id="写数据"><a href="#写数据" class="headerlink" title="写数据"></a>写数据</h3><h4 id="Threadwork-in-processor"><a href="#Threadwork-in-processor" class="headerlink" title="Threadwork in processor"></a>Threadwork in processor</h4><ol>
+    <content><![CDATA[<h2 id="Ckpt-opt"><a href="#Ckpt-opt" class="headerlink" title="Ckpt opt"></a>Ckpt opt</h2><p>背景：LoadCkpt慢<br>原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载<br>解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度</p>
+<h3 id="线程数"><a href="#线程数" class="headerlink" title="线程数"></a>线程数</h3><p>实验测得 4 线程最佳</p>
+<h3 id="文件创建加速"><a href="#文件创建加速" class="headerlink" title="文件创建加速"></a>文件创建加速</h3><p>fallocate 通过只初始元数据、磁盘预留空间的方式，避免调用 write 写全 0，带宽增加了一倍</p>
+<h3 id="Numa-Aware-Pool"><a href="#Numa-Aware-Pool" class="headerlink" title="Numa Aware Pool"></a>Numa Aware Pool</h3><p>目前：每个 partition 使用 <code>IOThreadPoolExecutor</code> 并行加载 seg_file，每次<strong>读一条</strong> record 写到对应 kv 中。例如 kv 16 个分布在两个 NUMA 上，4 个 seg_file 中的 record 是随机来自这 16 个 kv 中的</p>
+<p>导致：① put 线程可能会访问另一个 NUMA 上的 AEP；② 多个线程并发访问 kv</p>
+<p>方案：</p>
+<ol>
+<li>加载 skpt 优化<ul>
+<li>从快照每次 Batch 读多条 records</li>
+<li>每个 record 解析出 key 后，先 hash 出它在那个 kv，进而得知在那个 numa（初始 kv 时记录所属 numa_id），将 put 任务 submit 到 Pool</li>
+</ul>
+</li>
+<li>Numa aware pool：<ul>
+<li>给每个 numa 创建独立的 <code>folly::CPUThreadPoolExecutor</code>，共 2 个</li>
+<li>创建 pool 时通过传入工厂类参数设置 CPU 亲和性，绑定 cpu_id 列表</li>
+<li><code>pool-&gt;Submit(numa_id, fuction&lt;T()&gt;f)</code> -&gt; <code>pool-&gt;addFuture(f)</code></li>
+</ul>
+</li>
+<li>写 ckpt 优化<ul>
+<li>对每个 partition，用 <code>IOThreadPool</code> 异步并发调用写 seg_file，例如 16 kv 导出为 4 seg_file</li>
+<li>以往是遍历所有 kv 根据 key 取模保存到 seg_file 中，改进为让某 kv_id % 4 &#x3D;&#x3D; seg_id 的保存到一个 seg_file 中，确保单线程写 kv</li>
+<li>对 kv 的读取顺序 shuffle，防止读带宽都集中在一个盘</li>
+</ul>
+</li>
+</ol>
+<h2 id="Cold-keys"><a href="#Cold-keys" class="headerlink" title="Cold keys"></a>Cold keys</h2><p>Delta 在内存中，每个 value 分配 16KB，为了优化 DRAM 利用率，后台线程收集长期不访问的 key，合并到 SSD 的 Base，清空 Delta 仅保留 64B 的 Meta</p>
+<h2 id="SkewMerge"><a href="#SkewMerge" class="headerlink" title="SkewMerge"></a>SkewMerge</h2><p>Delta + Base 合并时，默认是归并，比较次数多且大量的小块复制。<br>由于 Base &gt;&gt; Delta，合并后为 <code>Base*n | Delta*1 | Base*m | Delta*1 | ...</code> 的形式，可遍历 Delta，在 Base 中 find 到有序插入位置，然后将 <code>一段Base + 一个Delta</code> 拷贝到 NewBase</p>
+<p>find 算法在二分基础上优化，由于 Delta 时间戳较新，一般会在 Base 尾部，故从尾部向前用指数查找确定一个范围 <code>[n - 2^k, n - 2^(k/2)]</code>，之后其间二分</p>
+<hr>
+<h2 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ol>
+<li>性能好，M：N （bthread:pthread)高效轻量的线程模型</li>
+<li>自带性能监控和分析功能：bvar，一般的RPC框架没有提供热点分析、延时统计的工具，brpc通过自带的 bvar 能够监控并采集到多种性能相关的数据，便于快速确定热点、定位瓶颈。</li>
+</ol>
+<h3 id="Bthread"><a href="#Bthread" class="headerlink" title="Bthread"></a>Bthread</h3><p>线程模型：1:1，一个内核线程里只有一个用户线程。利于调度到其他核上，多核扩展性好。缺点：线程锁、线程调度到另一个CPU时，data要从L1 cache同步到其他cpu，锁住总线。</p>
+<p>协程模型：n:1，n个用户线程跑在一个CPU上。无多线程竞争，数据的locality好，但难以扩展到多核，一个线程阻塞会阻塞整个内核线程。</p>
+<p>Bthread 通过实现上层 M：N 线程绑定减小了线程间的来回调度，减小了cache buncing；通过内部的多个队列和 stealing worker 机制，保证了整体的并发度<code>QPS*latency</code>最大；</p>
+<p>Bthread的机制核心是 work stealing，即 pthread 之间可以偷bthread来执行，一个bthread被卡住不会影响其他bthread。</p>
+<p>每个bthread两种调度方式，既可以只在某一个内核线程里调度（locality不错），也可以在该bthread被卡住时，允许被偷到其他内核线程去运行，只要有空闲的worker(pthread)在，就不会有bthread被阻塞，保证了多核在任意时刻只要有bthread被创建出来就可以去跑任务。</p>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>BRPC通过IOBuf（非连续零拷贝缓存）方式减少数据传递处理过程中的拷贝，提高了数据传输效率。此外，各种ThreadLocal的ResourcePool、Object Pool等优化了定长的短生命周期的申请和释放，减少了内存分配和释放的开销。</p>
+<h3 id="执行队列"><a href="#执行队列" class="headerlink" title="执行队列"></a>执行队列</h3><p>BRPC使用<strong>多生产者单消费者无锁队列</strong>作为执行队列，实现了多生产者单消费者之间的的高效通信。这种队列设计避免了锁竞争和线程同步的问题，提高了系统的吞吐量和并发性能。在实现单TCP连接复用、高效发送-接收数据等方面发挥了很重要的作用。</p>
+<h2 id="UNKNOWN"><a href="#UNKNOWN" class="headerlink" title="UNKNOWN"></a>UNKNOWN</h2><h3 id="写数据"><a href="#写数据" class="headerlink" title="写数据"></a>写数据</h3><h4 id="Threadwork-in-processor"><a href="#Threadwork-in-processor" class="headerlink" title="Threadwork in processor"></a>Threadwork in processor</h4><ol>
 <li>GetReadPath -&gt; file -&gt; Bufferfile</li>
 <li>StreamLoaderFileStart：解析HDFS path，Make&amp;OpenSstFileWriter</li>
 <li>foreach line: StreamLoaderPut:<ul>
@@ -6131,9 +6087,9 @@
 <h2 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h2><h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><p>把内存中的数据库状态以快照形式压缩保存到一个二进制文件。创建快照之后，可以对快照进行备份，可以复制到其他服务器从而创建具有相同数据的服务器副本，还可以将快照留在原地以便重启服务器的时候使用。</p>
 <p>快照需要保存全部数据，可能导致阻塞主线程运行，redis提供了两种方式：</p>
 <ul>
-<li>save：一种同步保存会阻塞redis主线程</li>
-<li>bgsave：一种是开一个子进程来单独生成RDB，可以避免主线程阻塞<ol>
-<li>bgsave子进程是由主线程fork出来的：通过 fork 创建的子进程能够获得和父进程完全<strong>相同的内存空间</strong>，父进程对内存的修改不影响子进程。另外，创建子进程采用了<strong>写时拷贝</strong>，不会立刻触发大量内存的拷贝，内存在被修改时会以页为单位进行拷贝</li>
+<li>save：同步保存，阻塞redis主线程</li>
+<li>bgsave：开一个子进程来单独生成RDB，只有fork时主进程会短暂阻塞，之后就能正常处理请求<ol>
+<li>bgsave子进程是由主进程fork出来的：通过 fork 创建的子进程能够获得和父进程完全<strong>相同的内存空间</strong>（内存数据相同）。另外，创建子进程采用了<strong>写时拷贝</strong>，不会立刻触发大量内存的拷贝，只有父进程对内存修改时，才会复制相应的内存页</li>
 <li>bgsave子进程会不断读取主线程的内存数据写入RDB文件中</li>
 <li>如果主线程需要修改一块数据，这块数据会被复制出一份副本，主线程在副本上修改，bgsave子进程读取原来的数据写入RDB文件</li>
 </ol>
@@ -8142,6 +8098,162 @@
       </categories>
       <tags>
         <tag>音视频</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MIT 6.824</title>
+    <url>/2024/07/27/Distribution/ShardKV/</url>
+    <content><![CDATA[<h2 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h2><hr>
+<p>39 针对大流量的情况下，如何优化客户端的读请求？<br>线性一致性读<br>Raft 的 read 有多种实现：</p>
+<ul>
+<li>Raft log read：每个 read 都有一个对应的 Op log，和 write 一样，都会走一遍一致性协议的流程，会在此 Read Op log 被 Apply 的时候读，那么这个 read Op log 之前的 write Op log 肯定也被 applied 了，那么一定能够被读取到，读到的也一定是最新的</li>
+<li>ReadIndex：我们知道 Raft log read，会有 raft read log 的复制和提交的开销，所以出现了 ReadIndex，read 没有 Op log，但是需要额外的机制保证读到最新的，所以 read 发送给 Leader 的时候，通过两条保证读到最新被 committed 的数据<ol>
+<li>它需要确认 read 返回的数据的那个点 ？必须返回最新 committed 的结果，但是一个节点刚当选 Leader 的时候并不知道最新的 committed index，这个时候需要提交一个 Noop log entry 来提交之前的 log entry，然后开始 Read</li>
+<li>它需要确认当前的 Leader 是不是还是 Leader，因为可能因为网络分区，这个 Leader 已经被孤立了，所以 Leader 在返回 read 之前，先和 Replica-group 的其他成员发送 heartbeat 确定自己 Leader 的身份；</li>
+</ol>
+</li>
+<li>Lease read：主要是通过 lease 机制维护 Leader 的状态，来减少了 ReadIndex 每次 read 发送 heartheat 的开销</li>
+<li>Follower read：先去 Leader 查询最新的 committed index，然后拿着 committed Index 去 Follower read，从而保证能从 Follower 中读到最新的数据，当前 etcd 就实现了 Follower read</li>
+</ul>
+<p>这里，面试的时候最好直接回答第四个优化点，因为可以大大减轻服务器的负担，第三点对分布式系统的时钟准确性要求很高，否则可能会出现不一致。</p>
+<p>39.2 readIndex+lease read机制<br>虽然 ReadIndex Read 比第一种方法快很多，但我们发现还是有一次心跳包的网络开销，raft论文里提到了一种更激进的方式，也就是leader其实都存在一个’在位期’, 也就是说leader会向follower发送心跳包，当收到大多数节点的回复后即确认了leader身份，并记录下时间戳t1,如果读过raft论文我们会知道，follower会在Election Timeout超时后，才会认为leader挂掉，并发起一次新的选举，也就是说在下一次leader选举肯定发生在t1 + Election Timeout +&#x2F;- 时钟偏移量之后，因此第二种方法的中，通过发送心跳包确认leader身份这一步就可以省略掉了，在Election Timeout内只需要确认一次即可，相对一种方式，不仅仅不需要写raft日志，连心跳包都省略掉了，可想而知，性能会大大提升，但这里存在一个潜在的问题是，服务器的时间可能会偏移，存在一定的误差，如果偏移过大的话，这种机制就不够安全。</p>
+<p>39.3 ReadIndex + Lease Read中的租期什么时候更新，比如接受了写请求？发生了leader更换？还有其他的吗？<br>39.4 要准确地实现租约，需要解决时钟漂移等问题，这在分布式系统中是非常具有挑战性的。为什么时钟漂移等问题对准确实现租约很重要？（待解决）<br>39.2 对比readIndex，Follower Read的好处？<br>Follower Read优点是可以显著减轻领导者的负载，并提高读取性能。缺点是需要额外的通信延迟，因为每个读请求都需要先去询问领导者最新的commitIndex。</p>
+<p>39.2.1 read Index对于每一个读请求也都会发送心跳给每一个从节点啊，理论上发送的rpc数都差不多，为什么Follower Read就可以减轻负载？<br>答：因为读操作涉及到读取内存数据，响应数据给各个客户端，其实从rpc数量上讲，所有参与follower read的从节点响应给客户端数据的rpc请求数等于leader节点的响应rpc数，另外leader节点还需要涉及到内存IO，这本身也是耗费时间的</p>
+<h3 id="常见QA"><a href="#常见QA" class="headerlink" title="常见QA"></a>常见QA</h3><p><strong>Raft 主要在什么场景中使用</strong></p>
+<ul>
+<li>元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。</li>
+<li>数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。</li>
+</ul>
+<p><strong>Raft 为了简洁性做了哪些牺牲</strong>（性能问题）</p>
+<ul>
+<li>每个操作都要落盘。如果想提高性能可能需要将多个操作 batch 起来。<br>主从同步数据较慢。在每个 Leader 和 Follower 之间只允许有一个已经发出 AppendEntries；只有收到确认了，Leader 才能发下一个。类似 TCP 中的“停等协议”。如果写入速度较大，可能将所有的 AppendEntries Pipeline 起来性能会好一些（即 Leader 不等收到上一个 AppendEntries 的 RPC Reply，就开始发下一个）</li>
+<li>只支持全量快照。如果状态机比较小这种方式还可以接受，如果数据量较大，就得支持增量快照。</li>
+<li>全量快照同步代价大。如果快照数据量很大，每次全量发送代价会过高。尤其是如果 Follower 本地有一些较老的快照时，我们只需要发增量部分即可。</li>
+<li>难以利用多核。因为 log 只有一个写入点，所有操作都得抢这一个写入点。</li>
+</ul>
+<p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p>
+<p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p>
+<p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p>
+<p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p>
+<p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p>
+<p><strong>Raft 对网络有什么假设</strong></p>
+<p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p>
+<p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p>
+<p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p>
+<p><strong>Raft 中的选举流程</strong></p>
+<ol>
+<li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li>
+<li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li>
+<li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li>
+</ol>
+<p><strong>Raft prevote机制</strong></p>
+<p>节点 A 和其他节点发生网络隔离后，会不断发起选举但一直无法当选，推高 Term。等网络恢复通信后，由于 A 的 Term 最高，会强迫当前的 Leader 下台，重新选主。但由于在隔离期间日志被落下很多，A 通常也无法成为 Leader，最终大概率是原来的 Leader 的 Term 被拉上来之后，重新当选为 Leader。这个过程形象的称之为“惊群效应”。</p>
+<p>PrevVote机制：每次发起选举时，不再推高 Term，但是会拿着 Term+1 去跟其他 Peer 要票，如果能要到合法的票数，再去推高 Term。</p>
+<ul>
+<li>如果能要到多数票就保证了没发生网络隔离、日志是最新的</li>
+<li>如果要不到多数票，就不能推高 Term，防止网络隔离的节点一直推高 Term。</li>
+</ul>
+<p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
+<p><strong>新任期leader为什么向从节点同步no-op</strong></p>
+<p>因为leader选举的一个依据是日志的新旧程度(lastLogIndex)，但是受限于从节点的日志复制进度，<code>commitIndex &lt;=lastLogIndex</code>。所以如果在一个新任期的开始，客户端的读<code>(commitIndex, lastLogIndex]</code>之间的日志，可能读取的是未提交的数据。</p>
+<p>因此规定在任期开始时，leader会在处理所有读请求之前写入一个”no-op”日志，主节点的lastLogIndex自增，然后将<code>(nextIndex[i], lastLogIndex]</code>区间的日志发送给响应的从节点，这样当多数从节点接收到后，leader节点可以提交这个日志项，commitIndex更新为lastLogIndex，确保读到最新数据。</p>
+<p>相反如果主节点是旧leader，则各个从节点会拒绝接收日志并且将自己的任期号和日志相关的信息告诉这个旧leader，旧leader收到响应后更新Term变为Follower, 拒绝客户端的读请求并且将leader信息返回给客户端，客户端将读请求发送给新leader</p>
+<p><strong>Raft 和 Paxos 有什么区别</strong></p>
+<ul>
+<li>Raft 和 Paxos 都是共识协议，而所有的共识协议在原理上都可以等价为 Paxos，共识协议本质上都是 Paxos。</li>
+<li>Raft 是为了解决 Paxos 理解和实现都相对复杂的问题。将共识协议拆成两个相对独立的过程：领导者选举和日志复制，以降低理解和实现的复杂度。</li>
+<li>Raft 其实是和 Multi-Paxos 等价，因为 Paxos 只解决单个值的共识问题。</li>
+<li>在 Paxos 中，一旦某个日志在多数节点存在后就可以安全的提交；但在 Raft 中，不总是这样，比如一条日志在多数节点中存在后，但不是当前 Leader 任期的日志，也不能进行直接提交；而只能通过提交当前任期的日志来间接提交。</li>
+<li>在Paxos 在选举时，Leader 可能需要借机补足日志，但 Raft 中选举过程完全不涉及日志复制（这也是 Raft 进行拆分的初衷）。这是因为 Raft 只允许具有最新日志的 Candidate 成为 Leader，而 Paxos 不限制这一点。</li>
+<li>在 Paxos 中，允许乱序 commit 日志，而 Raft 只允许顺序提交。</li>
+<li>在 Paxos 中，每个 Peer 的 term 是不一致的，全局自增的；在 Raft 中 term 是每个 Peer 独立自增的，但需要对齐。</li>
+</ul>
+<p><strong>Raft 在工程中有哪些常见的优化</strong></p>
+<p>由于领导者选举是个低频操作，主要 IO 路径优化还是集中在日志同步流程上。</p>
+<ul>
+<li>batch：Leader 每次攒一批再刷盘和对 Follower 进行同步。降低刷盘和 RPC 开销。</li>
+<li>pipeline：每次发送日志时类似 TCP 的“停-等”协议，收到 Follower 确认后才更新 nextIndex，发送后面日志。其实可以改成流水线式的，不等前面日志确认就更新 nextIndex 继续发后面的。当然，如果后面发现之前日志同步出错，就要回退 nextIndex 重发之前日志——而原始版本 nextIndex 在同步阶段是单调递增的。</li>
+<li>并行 append：Leader 在 append 日志到本地前，就先发送日志给所有 Follower。</li>
+</ul>
+<p><strong>简述基于 raft 的分布式 KV 系统的架构</strong></p>
+<p>一个基于 raft 的分布式 KV 系统，实际上是由一组使用 raft 算法进行状态复制的节点组成。客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
+<p>以上是单个 raft 集群的分布式 KV 系统架构。如果系统中数据量较大，一个 raft 集群可能无法承受大量的数据，性能也会受到影响。因此还基于此设计了可分片的分布式 shardkv 系统。shardkv 由多个 raft 集群组成，每个集群负责一部分 shard 数据。Shard 到 raft 集群的映射关系，保存在独立的配置服务中。</p>
+<p><strong>分布式系统中读数据的流程是什么样的，如何优化</strong></p>
+<p>为了保证线性一致性，目前的实现是利用了 raft 算法，将读请求传入到 raft 并进行状态复制，这样能够<strong>保证读到的数据一定是最新的</strong>。<br>但是由于读请求也进行了一次日志复制，执行效率会受到影响，业界常用的两种优化方式是 ReadIndex 和 LeaseRead。</p>
+<p><strong>如何处理客户端的重复请求</strong></p>
+<p>如果客户端的请求已经提交，但是 server 返回的过程中结果丢失，那么客户端会发起重试，导致这个请求在状态机中被执行了两次，会违背线性一致性。</p>
+<p>因此需要保证客户端的请求只能被状态机应用一次，可以维护一个去重哈希表(duplicateTable)，<code>客户端 ID + 命令 ID</code> 组成一个唯一的标识符，<br>每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
+<p>还需注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
+<blockquote>
+<p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
+</blockquote>
+<p><strong>Shardkv 的配置怎么保存</strong></p>
+<p>Shardkv 的配置是单独保存在一个服务中，客户端会向这个服务发起请求，查询 key 所属的 shard 应该在哪个 raft 集群中，并向这个集群发起请求。<br>配置服务也需要高可用特性，因为配置服务如果发生故障不可用的话，那么整个分布式 kv 服务都会无法提供服务，因此也使用 raft 算法保证高可用，构建了一个单 raft 集群来存储配置信息。</p>
+<p><strong>Shard 数据如何迁移</strong></p>
+<p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。<br>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
+<p><strong>Shard 迁移的时候，客户端的请求会受到影响吗</strong></p>
+<p>如果客户端请求的 key 所属的 shard 并没有在迁移中，那么可以正常提供服务。<br>否则，说明客户端请求的 key 在迁移中，则返回错误，让客户端进行重试。</p>
+<p><strong>如果处理并发的客户端请求和 shard 迁移请求</strong></p>
+<p>客户端请求和 shard 迁移请求的确存在并发情况，如果处理顺序不一致，会违背线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
+<hr>
+<h3 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h3><h4 id="什么是线性一致性"><a href="#什么是线性一致性" class="headerlink" title="什么是线性一致性"></a>什么是线性一致性</h4><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
+<p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
+<ul>
+<li>对于调用时间有交叠的<code>并发</code>请求，生效的顺序可以任意确定。比如并发读写请求时，读请求无论返回新值、旧值都可以。</li>
+<li>对于调用时间有<code>偏序</code>的请求，比如请求B开始在A结束之后，那么B的结果不能违背A已确定的结果。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
+<h4 id="Raft线性一致性读"><a href="#Raft线性一致性读" class="headerlink" title="Raft线性一致性读"></a>Raft线性一致性读</h4><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
+<p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p>
+<p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<div class="note "><p><strong></strong></p><p>一个分布式系统实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机（state machine）的一致性没有做详细规定，用户可以自由实现，如基础的 LogRead 和优化的 ReadIndex、LeaseRead。</p></div>
+
+<h4 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h4><p>以 TiKV 为例，Client 将请求发送到 Leader 后，Leader 将请求通过 Raft 复制到自身以及 Follower 的 Log 中，然后将其 commit。TiKV 将 commit 的 Log 应用到状态机（RocksDB）上，由于 Log 都一样，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
+<blockquote>
+<p>这也就是为什么 <strong>读操作</strong> 也要通过 raft 来 commit</p>
+</blockquote>
+<p>有一个简单的解决方法：<strong>依次应用 Log，将应用后的结果返回给 Client</strong>。</p>
+<ul>
+<li><p>这个方法简单通用，读写请求都可以这样实现。这个方法依据 commit index 对所有请求都做了排序，即 commit 决定了 R&#x2F;W 事件发生的顺序。Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
+</li>
+<li><p>这个方法的缺点是性能差，因为所有请求在 Log 那边就被序列化了，无法并发的操作状态机。</p>
+</li>
+</ul>
+<p>这样的读简称 LogRead。由于读请求不改变状态机，这个实现就显得有些“重“，不仅有 RPC 开销，还有写 Log 开销。优化的方法大致有两种：ReadIndex、LeaseRead</p>
+<h4 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h4><p>相比于 LogRead，ReadIndex 跳过了 Log，节省了磁盘开销，它能大幅提升读的吞吐。在处理读请求之前，将 commitIndex 推进到最新的位置。Leader 执行 ReadIndex 大致的流程如下：</p>
+<ol>
+<li>记录当前的 commitIndex，称为 ReadIndex</li>
+<li>向 Follower 发起一次心跳，如果大多数节点回复了，那就能确定现在仍然是 Leader</li>
+<li>等待状态机至少应用到 ReadIndex 记录的 Log</li>
+<li>执行读请求，将结果返回给 Client</li>
+</ol>
+<p>第 3 点中的 <code>至少</code> 是关键要求，它表明状态机应用到 ReadIndex 之后的状态都能使这个请求满足线性一致，不管过了多久，也不管 Leader 有没有飘走。为什么在 ReadIndex 只有就满足了线性一致性呢？之前 LogRead 的读发生点是 commit index，这个点能使 LogRead 满足线性一致，那显然发生这个点之后的 ReadIndex 也能满足。</p>
+<hr>
+<h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
+<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>客户端 Clerk 会向 KV 服务发送三种类型的请求：<code>Get/Put/Append</code>。</p>
+<p>保证线性一致性：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
+<ol>
+<li>服务端收到请求后，先存储到 raft 日志中，然后等待 raft 模块同步完成，等待 notifyCh 中的状态机操作结果<ul>
+<li>raft 集群中的 Leader 节点处理了 Start 请求之后，会将日志同步到其他的 Follower 节点。</li>
+<li>当多数的节点都正常处理之后，Leader 会更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。</li>
+</ul>
+</li>
+<li>服务端启动 applyTask 后台线程，从 applyCh 中接收来自 raft 的日志消息。取出的日志消息对应的 Operation 已在节点间中同步完成，因此将 Operation 应用到本地状态机中，把返回结果（读到的值&#x2F;写是否成功）存储到 notifyCh 中。</li>
+<li>这时 Get&#x2F;Put&#x2F;Append 方法就能从这个 notifyCh 中获取到结果，并返回给客户端。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+]]></content>
+      <categories>
+        <category>Distribution</category>
+      </categories>
+      <tags>
+        <tag>Distribution</tag>
       </tags>
   </entry>
 </search>

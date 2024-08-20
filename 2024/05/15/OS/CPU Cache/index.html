@@ -40,11 +40,11 @@
 <meta property="og:title" content="CPU Cache">
 <meta property="og:url" content="http://example.com/2024/05/15/OS/CPU%20Cache/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="CPU缓存架构  寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。  内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待">
+<meta property="og:description" content="CPU缓存架构  寄存器：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需1个时钟周期这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。  内存排序缓冲：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-05-14T17:14:36.000Z">
-<meta property="article:modified_time" content="2024-07-05T02:19:52.901Z">
+<meta property="article:modified_time" content="2024-08-20T17:58:07.845Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1721208797854),
+    lastupdate: new Date(1724177283376),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2521,19 +2521,19 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" class="lazyload" data-srcset="http://ifeve.com/wp-content/uploads/2013/02/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+    <h2 id="CPU缓存架构"><a href="#CPU缓存架构" class="headerlink" title="CPU缓存架构"></a>CPU缓存架构</h2><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/MemoryHeirarchy.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
-<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需要一个时钟周期，这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
+<li><p><strong>寄存器</strong>：在每个核心上，有160个用于整数和144个用于浮点的寄存器单元。访问这些寄存器只需<code>1个时钟周期</code>这构成了对执行核心来说最快的内存。编译器会将本地变量和函数参数分配到这些寄存器上。当使用超线程技术（ hyperthreading ）时，这些寄存器可以在超线程协同下共享。</p>
 </li>
 <li><p><strong>内存排序缓冲</strong>：MOB由一个64长度的load缓冲和36长度的store缓冲组成。这些缓冲用于记录等待缓存子系统时正在执行的操作。store缓冲是一个完全的相关性队列，可以用于搜索已经存在store操作，这些store操作在等待L1缓存的时候被队列化。在数据与缓存子系统传输时， 缓冲可以让处理器异步运转。当处理器异步读或者异步写的时候，结果可以乱序返回。为了使之与已发布的内存模型一致，MOB用于消除load和store的顺序。</p>
 </li>
-<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的32K数据缓存和32K指令缓存。访问需要3个时钟周期，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
+<li><p><strong>L1 Cache</strong>：本地核心内的缓存，被分成独立的<code>32K数据缓存</code>和<code>32K指令缓存</code>。访问需要<code>3个时钟周期</code>，并且当指令被核心流水化时， 如果数据已经在L1缓存中的话，访问时间可以忽略。</p>
 </li>
-<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。L2缓存大小为256K，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为12个时钟周期。</p>
+<li><p><strong>L2 Cache</strong>：本地核心内的缓存，被设计为L1缓存与共享的L3缓存之间的缓冲。<code>L2缓存大小为256K</code>，主要作用是作为L1和L3之间的高效内存访问队列。L2缓存同时包含数据和指令。L2缓存的延迟为<code>12个时钟周期</code>。</p>
 </li>
-<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
+<li><p><strong>L3 Cache</strong>：在同插槽的所有核心都共享L3缓存。L3缓存被分为数个2MB的段，每一个段都连接到槽上的环形网络。每一个核心也连接到这个环形网络上。地址通过hash的方式映射到段上以达到更大的吞吐量。根据缓存大小，<code>延迟有可能高达38个时钟周期。在环上每增加一个节点将消耗一个额外的时钟周期</code>。缓存大小根据段的数量最大可以达到20MB。L3缓存包括了在同一个槽上的所有L1和L2缓存中的数据。这种设计消耗了空间，但是使L3缓存可以拦截对L1和L2缓存的请求，减轻了各核心私有的L1和L2缓存的负担。</p>
 </li>
-<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的延迟平均为65ns。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
+<li><p><strong>主内存</strong>：在缓存完全没命中的情况下，DRAM通道到每个槽的<code>延迟平均为65ns</code>。具体延迟多少取决于很多因素，比如，下一次对同一缓存行中数据的访问将极大降低延迟，而当队列化效果和内存刷新周期冲突时将显著增加延迟。每个槽使用4个内存通道聚合起来增加吞吐量，并通过在独立内存通道上流水线化（ pipelining ）将隐藏这种延迟。</p>
 </li>
 <li><p><strong>NUMA</strong>：在一个多插槽的服务器上，会使用非一致性内存访问（Non-Uniform Memory Access）。所谓的非一致性是指，需要访问的内存可能在另一个插槽上。只有当CPU访问自身直接attach内存时，才会有较短的响应时间（Local Access）。而如果需要访问其他CPU attach的内存的数据时，就需要通过inter-connect通道访问，响应时间就相比之前变慢了（Remote Access）。</p>
 </li>
@@ -2801,10 +2801,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T10:19:52+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-21T01:58:07+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 5, 2024</p>
+    <p>更新于：Aug 21, 2024</p>
   </a>
 </div>
 
@@ -3318,7 +3318,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3545,7 +3545,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/OS/","name":"OS"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/05/15/OS/CPU Cache/","name":"CPU Cache"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"CPU Cache","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/05/15/OS/CPU%20Cache/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/05/15/OS/CPU%20Cache/","wordCount":0,"datePublished":"2024-05-14T17:14:36.000Z","dateModified":"2024-07-05T02:19:52.901Z","articleSection":"OS","keywords":"OS","image":{"@type":"ImageObject","url":"/img/os.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/OS/","name":"OS"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/05/15/OS/CPU Cache/","name":"CPU Cache"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"CPU Cache","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/05/15/OS/CPU%20Cache/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/05/15/OS/CPU%20Cache/","wordCount":0,"datePublished":"2024-05-14T17:14:36.000Z","dateModified":"2024-08-20T17:58:07.845Z","articleSection":"OS","keywords":"OS","image":{"@type":"ImageObject","url":"/img/os.jpeg","width":1024,"height":768}}]</script>
 
 
 

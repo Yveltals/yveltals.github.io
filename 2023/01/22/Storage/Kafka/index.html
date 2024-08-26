@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-01-22T08:07:08.000Z">
-<meta property="article:modified_time" content="2024-07-05T08:19:33.951Z">
+<meta property="article:modified_time" content="2024-08-25T11:23:48.069Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Storage">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1724559526982),
+    lastupdate: new Date(1724670913379),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2634,26 +2634,25 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>拉取数据</li>
 <li>消费者提交offset</li>
 </ol>
-<h2 id="分区策略"><a href="#分区策略" class="headerlink" title="分区策略"></a>分区策略</h2><p>##生产者分区策略<br>生产者写入消息到topic，Kafka将依据不同的策略将数据分配到不同的分区中：</p>
+<h2 id="分区策略"><a href="#分区策略" class="headerlink" title="分区策略"></a>分区策略</h2><h2 id="生产者分区策略"><a href="#生产者分区策略" class="headerlink" title="生产者分区策略"></a>生产者分区策略</h2><p>生产者写入消息到topic，Kafka将依据不同的策略将数据分配到不同的分区中：</p>
 <ol>
-<li><p>轮询分区策略<br>即按消息顺序进行分区顺序分配，是默认的策略，也是使用最多的策略，可以最大限度保证所有消息平均分配到一个分区；key为null，则使用轮询算法均衡地分配分区；</p>
-</li>
-<li><p>按key分区分配策略<br>key不为null，key.hash() % n。但是按照key决定分区有可能会造成数据倾斜</p>
-</li>
-<li><p>随机分区策略<br>随机分区，不建议使用</p>
-</li>
-<li><p>自定义分区策略<br>根据业务需要制定以分区策略。乱序问题在Kafka中生产者是有写入策略，如果topic有多个分区，就会将数据分散在不同的partition中存储当partition数量大于1的时候，数据（消息）会打散分布在不同的partition中如果只有一个分区，消息是有序的</p>
-</li>
+<li>轮询分区策略：按消息顺序进行分区顺序分配，是默认的策略，分配最平均</li>
+<li>按key分区分配策略：按 key 取模，有可能会造成数据倾斜</li>
+<li>随机分区策略</li>
+<li>自定义分区策略</li>
 </ol>
+<blockquote>
+<p>乱序问题：Partition 内部有序，跨 Partition 无序</p>
+</blockquote>
 <h3 id="消费者分区策略"><a href="#消费者分区策略" class="headerlink" title="消费者分区策略"></a>消费者分区策略</h3><p>同一时刻，一条消息只能被组中的一个消费者实例消费：</p>
 <ol>
 <li>消费者数&#x3D;分区数：一个分区对应一个消费者</li>
 <li>消费者数&lt;分区数：一个消费者对应多个分区</li>
 <li>消费者数&gt;分区数：多出来的消费者将不会消费任何消息</li>
 </ol>
-<p>分区分配策略：保障每个消费者尽量能够均衡地消费分区的数据，不能出现某个消费者消费分区的数量特别多，某个消费者消费的分区特别少</p>
+<p><img src="https://ask.qcloudimg.com/http-save/yehe-4923892/a09eccb40388a7f21bc2f42f5e2a4eb8.png" class="lazyload" data-srcset="https://ask.qcloudimg.com/http-save/yehe-4923892/a09eccb40388a7f21bc2f42f5e2a4eb8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ol>
-<li><p>Range分配策略（范围分配策略）：Kafka默认的分配策略<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>计算公式：<br>n&#x3D;分区数量&#x2F;消费者数量<br>m&#x3D;分区数量%消费者数量<br>前m个消费者消费n+1个，剩余消费者消费n个<br>以上图为例：n&#x3D;8&#x2F;3&#x3D;2m&#x3D;8%3&#x3D;2因此前2个消费者消费2+1&#x3D;3个分区，剩下1个消费者消费2个分区</p>
+<li><p>Range分配策略（范围分配策略）：Kafka默认的分配策略<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-34l0NLIHoR6YZxnAp.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>计算公式：<br>n&#x3D;分区数量&#x2F;消费者数量<br>m&#x3D;分区数量%消费者数量<br>前m个消费者消费n+1个，剩余消费者消费n个<br>以上图为例：n&#x3D;8&#x2F;3&#x3D;2 m&#x3D;8%3&#x3D;2 因此前2个消费者消费2+1&#x3D;3个分区，剩下1个消费者消费2个分区</p>
 </li>
 <li><p>RoundRobin分配策略（轮询分配策略）<br>消费者挨个分配消费的分区：<br>如下图，3个消费者共同消费8个分区<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-37UOhiopzeORskk9D.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-37UOhiopzeORskk9D.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>第一轮：Consumer0–&gt;A-Partition0；Consumer1–&gt;A-Partition1；Consumer2–&gt;A-Partition2<br>第二轮：Consumer0–&gt;A-Partition3；Consumer1–&gt;B-Partition0；Consumer2–&gt;B-Partition1<br>第三轮：Consumer0–&gt;B-Partition2；Consumer1–&gt;B-Partition3</p>
 </li>
@@ -2662,7 +2661,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ol>
 <h2 id="副本的ACK机制"><a href="#副本的ACK机制" class="headerlink" title="副本的ACK机制"></a>副本的ACK机制</h2><p>acks &#x3D; 0：生产者只管写入，不管是否写入成功，可能会数据丢失。性能是最好的<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40ZCwkIxhdQAGrmER.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40ZCwkIxhdQAGrmER.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>acks &#x3D; 1：生产者会等到leader分区写入成功后，返回成功，接着发送下一条<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40oa9SBiWlmefVkK7.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-40oa9SBiWlmefVkK7.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>acks &#x3D; -1&#x2F;all：确保消息写入到leader分区、还确保消息写入到对应副本都成功后，接着发送下一条，性能是最差的<br><img src="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-41pgmqsHkGcdCNcKD.png" class="lazyload" data-srcset="https://s3.cn-north-1.jdcloud-oss.com/shendengbucket1/2022-12-27-19-41pgmqsHkGcdCNcKD.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>分区中是有leader和follower的概念，为了确保消费者消费的数据是一致的，只能从分区leader去读写消息，follower做的事情就是同步数据。</p>
 <h2 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><h3 id="offset存在哪里？"><a href="#offset存在哪里？" class="headerlink" title="offset存在哪里？"></a>offset存在哪里？</h3><p>0.9版本前默认存在zk，但是由于频繁访问zk，zk需要一个一个节点更新offset，不能批量或分组更新，导致offset更新成了瓶颈。</p>
-<p>在新版 Kafka 以及之后的版本，Kafka 消费的offset都会默认存放在 Kafka 集群中的一个叫 __consumer_offsets 的topic中。offset以消息形式发送到该topic并保存在broker中。这样consumer提交offset时，只需连接到broker，不用访问zk，避免了zk节点更新瓶颈。</p>
+<p>新版 Kafka 消费的 offset 都会默认存放在 Kafka 集群中的一个叫 __consumer_offsets 的topic中。offset以消息形式发送到该topic并保存在broker中。这样consumer提交offset时，只需连接到broker，不用访问zk，避免了zk节点更新瓶颈。</p>
 <h3 id="leader选举策略"><a href="#leader选举策略" class="headerlink" title="leader选举策略"></a>leader选举策略</h3><p>2种leader：①broker的leader即controller leader ② partition的leader</p>
 <h4 id="Controller-leader"><a href="#Controller-leader" class="headerlink" title="Controller leader"></a>Controller leader</h4><p>当broker启动的时候，都会创建KafkaController对象，但是集群中只能有一个leader对外提供服务，这些每个节点上的KafkaController会在指定的zookeeper路径下创建临时节点，只有第一个成功创建的节点的KafkaController才可以成为leader，其余的都是follower。当leader故障后，所有的follower会收到通知，再次竞争在该路径下创建节点从而选举新的leader</p>
 <h4 id="Partition-leader"><a href="#Partition-leader" class="headerlink" title="Partition leader"></a>Partition leader</h4><p>由controller leader执行</p>
@@ -2673,33 +2672,30 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>如何处理所有Replica都不工作？在ISR中至少有一个follower时，Kafka可以确保已经commit的数据不丢失，但如果某个Partition的所有Replica都宕机了，就无法保证数据不丢失了。这种情况下有两种可行的方案：等待ISR中的任一个Replica“活”过来，并且选它作为Leader选择第一个“活”过来的Replica（不一定是ISR中的）作为Leader这就需要在可用性和一致性当中作出一个简单的折衷。如果一定要等待ISR中的Replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中的所有Replica都无法“活”过来了，或者数据都丢失了，这个Partition将永远不可用。选择第一个“活”过来的Replica作为Leader，而这个Replica不是ISR中的Replica，那即使它并不保证已经包含了所有已commit的消息，它也会成为Leader而作为consumer的数据源（前文有说明，所有读写都由Leader完成）。Kafka0.8.*使用了第二种方式。根据Kafka的文档，在以后的版本中，Kafka支持用户通过配置选择这两种方式中的一种，从而根据不同的使用场景选择高可用性还是强一致性。</p>
 <h3 id="分区越多越好吗"><a href="#分区越多越好吗" class="headerlink" title="分区越多越好吗"></a>分区越多越好吗</h3><p>分区并不是越多越好，分区过多存在着以下弊端：</p>
 <ul>
-<li>producer内存成本增大、consumer线程开销增大partition是kafka管理数据的基本逻辑组织单元，越多的partition意味着越多的数据存储文件（一个partition对应至少3个数据文件）</li>
+<li>producer内存成本增大、consumer线程开销增大</li>
+<li>partition是kafka管理数据的基本逻辑组织单元，越多的partition意味着越多的数据存储文件（一个partition对应至少3个数据文件）</li>
 <li>分区增多数据连续性下降</li>
 <li>可用性降低</li>
 </ul>
-<h3 id="与数据库相比kafka的优势"><a href="#与数据库相比kafka的优势" class="headerlink" title="与数据库相比kafka的优势"></a>与数据库相比kafka的优势</h3><p>业务场景不同，底层数据结构不同，kafka数据存储对于功能要求较少，因此读写更快kafka存储数据（消息本身）的文件的数据结构是数组，数组的特点就是：数据间位置连续，如果按照顺序读取，或者追加写入的话，其时间复杂度为O(1)，效率最高。</p>
+<h3 id="与数据库相比kafka的优势"><a href="#与数据库相比kafka的优势" class="headerlink" title="与数据库相比kafka的优势"></a>与数据库相比kafka的优势</h3><p>业务场景不同，底层数据结构不同，kafka数据存储对于功能要求较少，因此读写更快<br>kafka存储数据（消息本身）的文件的数据结构是数组，数据间位置连续，顺序读取 or 追加写入的时间复杂度为O(1)</p>
 <h3 id="消费偏移的更新方式"><a href="#消费偏移的更新方式" class="headerlink" title="消费偏移的更新方式"></a>消费偏移的更新方式</h3><p>1.自动提交（默认方式）</p>
-<p>Kafka中偏移量的自动提交是由参数enable_auto_commit和auto_commit_interval_ms控制的，当enable_auto_commit&#x3D;True时，Kafka在消费的过程中会以频率为auto_commit_interval_ms向Kafka自带的topic(__consumer_offsets)进行偏移量提交，具体提交到哪个Partation：Math.abs(groupID.hashCode()) % numPartitions。</p>
-<p>这种方式也被称为at most once，fetch到消息后就可以更新offset，无论是否消费成功。</p>
+<p>以一定频率向 Kafka 自带的 topic(<code>__consumer_offsets</code>)进行偏移量提交<br>这种方式也被称为 <code>at most once</code>，fetch到消息后就可以更新offset，无论是否消费成功。</p>
 <p>2.手动提交</p>
-<p>鉴于Kafka自动提交offset的不灵活性和不精确性(只能是按指定频率的提交)，Kafka提供了手动提交offset策略。手动提交能对偏移量更加灵活精准地控制，以保证消息不被重复消费以及消息不被丢失。</p>
+<p>手动提交能对偏移量更加灵活精准地控制，以保证消息不被重复消费以及消息不被丢失。</p>
 <p>对于手动提交offset主要有3种方式：</p>
 <ol>
-<li>同步提交：提交失败的时候一直尝试提交，直到遇到无法重试的情况下才会结束，同步方式下消费者线程在拉取消息会被阻塞，在broker对提交的请求做出响应之前，会一直阻塞直到偏移量提交操作成功或者在提交过程中发生异常，限制了消息的吞吐量。</li>
-<li>异步提交：异步手动提交offset时，消费者线程不会阻塞，提交失败的时候也不会进行重试，并且可以配合回调函数在broker做出响应的时候记录错误信息。 对于异步提交，由于不会进行失败重试，当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失。</li>
-<li>异步+同步：针对异步提交偏移量丢失的问题，通过对消费者进行异步批次提交并且在关闭时同步提交的方式，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试，直到提交成功。 通过finally在最后不管是否异常都会触发consumer.commit()来同步补救一次，确保偏移量不会丢失</li>
+<li>同步提交：提交失败的时候一直尝试提交，消费者线程会被阻塞，直到偏移量提交成功 or 提交过程中发生异常。<em>限制了消息的吞吐量</em></li>
+<li>异步提交：异步提交offset时不会阻塞，即使提交失败也不会重试，可以配合回调函数记录错误信息。<em>当消费者异常关闭或者触发了再均衡前，如果偏移量还未提交就会造成偏移量丢失</em></li>
+<li>异步+同步：对消费者进行<strong>异步批次提交</strong>并且在<strong>关闭时同步提交</strong>，这样即使上一次的异步提交失败，通过同步提交还能够进行补救，同步会一直重试直到成功。</li>
 </ol>
 <hr>
 <h4 id="一个消费者订阅数据"><a href="#一个消费者订阅数据" class="headerlink" title="一个消费者订阅数据"></a>一个消费者订阅数据</h4><ol>
 <li>生产者将数据发送到指定topic中</li>
 <li>Kafka将数据以partition的方式存储到broker上。Kafka支持数据均衡，例如生产者生成了两条消息，topic有两个partition，那么Kafka将在两个partition上分别存储一条消息</li>
-<li>消费者订阅指定topic的数据</li>
-<li>当消费者订阅topic中消息时，Kafka将当前的offset发给消费者，同时将offset存储到Zookeeper中</li>
+<li>消费者订阅指定topic的数据，Kafka将当前的offset发给消费者，同时将offset写入consumer_offset topic中</li>
 <li>消费者以特定的间隔（如100ms）向Kafka请求数据</li>
-<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者</li>
-<li>消费者受到Kafka推送的数据，并进行处理</li>
-<li>当消费者处理完该条消息后，消费者向Kafka broker发送一个该消息已被消费的反馈</li>
-<li>当Kafka接到消费者的反馈后，Kafka更新offset包括Zookeeper中的offset。</li>
+<li>当Kafka接收到生产者发送的数据时，Kafka将这些数据推送给消费者进行处理</li>
+<li>当消费者处理完该条消息后，向Kafka broker发送已被消费的反馈，Kafka更新offset。</li>
 <li>以上过程一直重复，直到消费者停止请求数据</li>
 <li>消费者可以重置offset，从而可以灵活消费存储在Kafka上的数据</li>
 </ol>
@@ -2710,7 +2706,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>假设现在有一个消费者订阅了一个topic，topic名字为“test”，消费者的Group ID为“Group1”</li>
 <li>此时Kafka的处理方式与只有一个消费者的情况一样</li>
 <li>当Kafka接收到一个同样Group ID为“Group1”、消费的topic同样为“test”的消费者的请求时，Kafka把数据操作模式切换为分享模式，此时数据将在两个消费者上共享。</li>
-<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
+<li>当消费者的数目超过topic的partition数目时，后来的消费者将消费不到Kafka中的数据。因为在Kafka给每一个消费者至少分配一个partition，一旦partition都被指派给消费者了，新来的消费者将不会再分配partition。即一个partition只能分配给一个消费者，一个消费者可以消费多个partition。</li>
 </ol>
 
   </div>
@@ -2736,10 +2732,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T16:19:33+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-25T19:23:48+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 5, 2024</p>
+    <p>更新于：Aug 25, 2024</p>
   </a>
 </div>
 
@@ -2825,7 +2821,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">kafka的使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8-Kafka-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-number">1.1.</span> <span class="toc-text">为什么要使用 Kafka 消息队列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E7%9A%84%E9%AB%98%E5%90%9E%E5%90%90%E3%80%81%E4%BD%8E%E5%BB%B6%E8%BF%9F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84"><span class="toc-number">2.</span> <span class="toc-text">kafka的高吞吐、低延迟是如何实现的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">Kafka架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">3.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">3.2.</span> <span class="toc-text">架构图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">Kafka工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E6%B5%81%E7%A8%8B"><span class="toc-number">4.1.</span> <span class="toc-text">生产流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B"><span class="toc-number">4.2.</span> <span class="toc-text">消费流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">5.</span> <span class="toc-text">分区策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">5.1.</span> <span class="toc-text">消费者分区策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E7%9A%84ACK%E6%9C%BA%E5%88%B6"><span class="toc-number">6.</span> <span class="toc-text">副本的ACK机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Q-A"><span class="toc-number">7.</span> <span class="toc-text">Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#offset%E5%AD%98%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-number">7.1.</span> <span class="toc-text">offset存在哪里？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E9%80%89%E4%B8%BE%E7%AD%96%E7%95%A5"><span class="toc-number">7.2.</span> <span class="toc-text">leader选举策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Controller-leader"><span class="toc-number">7.2.1.</span> <span class="toc-text">Controller leader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Partition-leader"><span class="toc-number">7.2.2.</span> <span class="toc-text">Partition leader</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E8%B6%8A%E5%A4%9A%E8%B6%8A%E5%A5%BD%E5%90%97"><span class="toc-number">7.3.</span> <span class="toc-text">分区越多越好吗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E6%AF%94kafka%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-number">7.4.</span> <span class="toc-text">与数据库相比kafka的优势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E5%81%8F%E7%A7%BB%E7%9A%84%E6%9B%B4%E6%96%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">7.5.</span> <span class="toc-text">消费偏移的更新方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%B6%88%E8%B4%B9%E8%80%85%E8%AE%A2%E9%98%85%E6%95%B0%E6%8D%AE"><span class="toc-number">7.5.1.</span> <span class="toc-text">一个消费者订阅数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84%E6%95%B0%E6%8D%AE%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B"><span class="toc-number">7.5.2.</span> <span class="toc-text">消费者组数据消费流程</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">kafka的使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8-Kafka-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-number">1.1.</span> <span class="toc-text">为什么要使用 Kafka 消息队列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E7%9A%84%E9%AB%98%E5%90%9E%E5%90%90%E3%80%81%E4%BD%8E%E5%BB%B6%E8%BF%9F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84"><span class="toc-number">2.</span> <span class="toc-text">kafka的高吞吐、低延迟是如何实现的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">Kafka架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">3.1.</span> <span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">3.2.</span> <span class="toc-text">架构图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kafka%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">Kafka工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E6%B5%81%E7%A8%8B"><span class="toc-number">4.1.</span> <span class="toc-text">生产流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B"><span class="toc-number">4.2.</span> <span class="toc-text">消费流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">5.</span> <span class="toc-text">分区策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">6.</span> <span class="toc-text">生产者分区策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">6.1.</span> <span class="toc-text">消费者分区策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E7%9A%84ACK%E6%9C%BA%E5%88%B6"><span class="toc-number">7.</span> <span class="toc-text">副本的ACK机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Q-A"><span class="toc-number">8.</span> <span class="toc-text">Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#offset%E5%AD%98%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-number">8.1.</span> <span class="toc-text">offset存在哪里？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E9%80%89%E4%B8%BE%E7%AD%96%E7%95%A5"><span class="toc-number">8.2.</span> <span class="toc-text">leader选举策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Controller-leader"><span class="toc-number">8.2.1.</span> <span class="toc-text">Controller leader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Partition-leader"><span class="toc-number">8.2.2.</span> <span class="toc-text">Partition leader</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E8%B6%8A%E5%A4%9A%E8%B6%8A%E5%A5%BD%E5%90%97"><span class="toc-number">8.3.</span> <span class="toc-text">分区越多越好吗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E6%AF%94kafka%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-number">8.4.</span> <span class="toc-text">与数据库相比kafka的优势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E5%81%8F%E7%A7%BB%E7%9A%84%E6%9B%B4%E6%96%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">8.5.</span> <span class="toc-text">消费偏移的更新方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%B6%88%E8%B4%B9%E8%80%85%E8%AE%A2%E9%98%85%E6%95%B0%E6%8D%AE"><span class="toc-number">8.5.1.</span> <span class="toc-text">一个消费者订阅数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84%E6%95%B0%E6%8D%AE%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B"><span class="toc-number">8.5.2.</span> <span class="toc-text">消费者组数据消费流程</span></a></li></ol></li></ol></li></ol>
     </div>
   </section>
 
@@ -3253,7 +3249,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3480,7 +3476,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Storage/","name":"Storage"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/22/Storage/Kafka/","name":"Kafka"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kafka","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/22/Storage/Kafka/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/22/Storage/Kafka/","wordCount":0,"datePublished":"2023-01-22T08:07:08.000Z","dateModified":"2024-07-05T08:19:33.951Z","articleSection":"Storage","keywords":"Storage","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Storage/","name":"Storage"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/01/22/Storage/Kafka/","name":"Kafka"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kafka","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/22/Storage/Kafka/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/01/22/Storage/Kafka/","wordCount":0,"datePublished":"2023-01-22T08:07:08.000Z","dateModified":"2024-08-25T11:23:48.069Z","articleSection":"Storage","keywords":"Storage","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

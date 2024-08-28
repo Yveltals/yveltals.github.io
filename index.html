@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1724670913379),
+    lastupdate: new Date(1724840102310),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2522,6 +2522,8 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         
           
         
+          
+        
       
     
     
@@ -2580,6 +2582,71 @@ Raft log read：每个 read 都有一个对应的 Op log，和 write 一样，�
       
         <div>
           <a class='readmore' href='/2024/07/27/Distribution/ShardKV/' itemprop="url">
+            Read More
+          </a>
+        </div>
+      
+    </div>
+  
+
+</div>
+
+          </div>
+        
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/27/Distribution/Distribution/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="">
+  </span>
+  
+  
+  
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
+  
+  
+    
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2024/07/27/Distribution/Distribution/"  itemprop="url">
+        Distribution
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
+    
+      
+        CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务
+一致性协议线性一致性一句话概括：在分布式系统上实现寄存器语义。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是保证读到最近更新的值。
+如何判断一...
+      
+    
+  </div>
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2024-07-27T19:30:00+08:00">2024-07-27</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/Distribution/">Distribution</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/Distribution/" itemprop="url"><span itemprop="name">Distribution</span></a>
+            </span>
+          
+        
+      </div>
+      
+        <div>
+          <a class='readmore' href='/2024/07/27/Distribution/Distribution/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3136,78 +3203,6 @@ cd /sys/fs/cgroup/cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write
           </div>
         
       
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/27/Other/Notes/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <div class='headimg-div'>
-      <a class='headimg-a' href="/2023/07/27/Other/Notes/">
-        <img itemprop="image" class='headimg' alt="Notes" src='/img/zekrom.jpg'/>
-      </a>
-    </div>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/07/27/Other/Notes/"  itemprop="url">
-        Notes
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        Centos开发环境
-参考链接
-
-Env &amp; Proxy
-切换默认shell chsh -s /bin/bash root
-配代理
-
-export http_proxy=http://xxxexport https_proxy=http://xxxexport HTTP_PROXY=http://xxxexport HTTPS_PROXY=http://xxxexport no_pr...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-07-27T17:39:04+08:00">2023-07-27</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Other/">Other</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Other/" itemprop="url"><span itemprop="name">Other</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/07/27/Other/Notes/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
     
   </section>
   
@@ -3334,7 +3329,7 @@ export http_proxy=http://xxxexport https_proxy=http://xxxexport HTTP_PROXY=http:
           <li><a class="flat-box"
             title="/categories/Distribution/" href="/categories/Distribution/"
             active-action="action-categoriesDistribution"
-            ><div class='name'>Distribution</div><div class='badge'>(3)</div></a></li>
+            ><div class='name'>Distribution</div><div class='badge'>(4)</div></a></li>
         
           <li><a class="flat-box"
             title="/categories/OS/" href="/categories/OS/"
@@ -3389,7 +3384,7 @@ export http_proxy=http://xxxexport https_proxy=http://xxxexport HTTP_PROXY=http:
 
 
     <div class='content'>
-      <a href="/tags/ASM/" style="font-size: 16px; color: #8b8b8b">ASM</a> <a href="/tags/CPP/" style="font-size: 22px; color: #636363">CPP</a> <a href="/tags/Database/" style="font-size: 16px; color: #8b8b8b">Database</a> <a href="/tags/Distribution/" style="font-size: 20px; color: #707070">Distribution</a> <a href="/tags/Git/" style="font-size: 16px; color: #8b8b8b">Git</a> <a href="/tags/Linux/" style="font-size: 16px; color: #8b8b8b">Linux</a> <a href="/tags/OS/" style="font-size: 22px; color: #636363">OS</a> <a href="/tags/Other/" style="font-size: 16px; color: #8b8b8b">Other</a> <a href="/tags/Storage/" style="font-size: 22px; color: #636363">Storage</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 18px; color: #7e7e7e">音视频</a>
+      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Database/" style="font-size: 16.5px; color: #888">Database</a> <a href="/tags/Distribution/" style="font-size: 21.5px; color: #666">Distribution</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 16.5px; color: #888">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
     </div>
   </section>
 
@@ -3812,7 +3807,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
   let index = 0;
   let IntervalParallax = null;
 

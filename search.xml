@@ -6298,7 +6298,7 @@
 <ul>
 <li>MemTable：一个内存结构，所有的写入操作会先写入到这里，MemTable有好几种实现方式，默认使用跳表实现；</li>
 <li>WAL日志：为了保证数据的持久性和一致性，用户写入的键值对首先被插入到WAL中。这确保了即使在发生故障时，也能从WAL中恢复数据；</li>
-<li>SSTable（Sorted String Table）：它是RocksDB中存储数据的基本单位，每个文件内部都是有序的。当MemTable写满之后会从磁盘flush到磁盘变成SSTable成为LSM树的 L0层级，当L0中的SSTable数量到达一定之后会出发 compaction 写入到下一层；</li>
+<li>SSTable（Sorted String Table）：它是RocksDB中存储数据的基本单位，每个文件内部都是有序的。当MemTable写满之后会flush到磁盘变成SSTable成为LSM树的L0层级，当L0中的SSTable数量到达一定之后会出发 compaction 写入到下一层；</li>
 </ul>
 <h3 id="Log-structured-merge-tree"><a href="#Log-structured-merge-tree" class="headerlink" title="Log-structured merge-tree"></a>Log-structured merge-tree</h3><p>RocksDB 的核心数据结构被称为日志结构合并树 （LSM-Tree）。它是一种树形的数据结构，由多个层级组成，每层的数据按 key 有序。LSM-Tree 主要设计用来应对写入密集型工作负载。</p>
 <p>LSM-Tree 的最高层保存在内存中，包含最近写入的数据。其他较低层级的数据存储在磁盘上，层数编号从 0 到 N 。第 0 层 L0 存储从内存移动到磁盘上的数据，第 1 层及以下层级则存储更老的数据。通常某层的下个层级在数据量上会比该层大一个数量级，当某层数据量变得过大时，会合并到下一层。</p>
@@ -6314,8 +6314,8 @@
 <p>WAL 是一个只允许追加的文件，包含一组更改记录序列。每个记录包含键值对、记录类型（Put &#x2F; Merge &#x2F; Delete）和校验和（checksum）。与 MemTable 不同，在 WAL 中，<strong>记录不按 key 有序，而是按照请求到来的顺序被追加到 WAL 中</strong>。</p>
 <h3 id="SST"><a href="#SST" class="headerlink" title="SST"></a>SST</h3><p>RocksDB 使用一个专门的后台线程定期地把不可变的 MemTable 从内存持久化到磁盘。一旦刷盘（flush）完成，不可变的 MemTable 和相应的 WAL 就会被丢弃。RocksDB 开始写入新的 WAL、MemTable。每次刷盘都会在 L0 层上产生一个新的 SST 文件。该文件一旦写入磁盘后，就不再会修改。</p>
 <p>RocksDB 的 MemTable 的默认基于跳表实现。该数据结构是一个具有额外采样层的链表，从而允许快速、有序地查询和插入数据。有序性使得 MemTable 刷盘时更高效，因为可以直接按顺序迭代键值对顺序写入磁盘。<strong>将随机写变为顺序写是 LSM-Tree 的核心设计之一</strong>。</p>
-<p>SST 文件包括从 MemTable 刷盘而来的简直对，并且使用一种对查询友好的数据格式来存储。 SST 是 Static Sorted Table 的缩写（其他数据库中也称为 Sorted String Table）。它是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
-<p>SST 文件由几个部分组成：首先是数据部分，包含一系列有序的键值对。key 的有序性可以让我们对 其进行增量编码，也即，对于相邻的 key ，我们可以只存其差值而非整个 key。</p>
+<p>SST 文件包括从 MemTable 刷盘而来的 kv 对，并且使用一种对查询友好的数据格式来存储。Static Sorted Table &#x2F; Sorted String Table 是一种基于块（ block） 的文件格式，会将数据切成固定大小的块（默认为 4KB）进行存储。RocksDB 支持各种压缩 SST 文件的压缩算法，例如 Zlib、BZ2、Snappy、LZ4 或 ZSTD 算法。与 WAL 的记录类似，每个数据块中都包含用于检测数据是否损坏的校验和。每次从磁盘读取数据时，RocksDB 都会使用这些校验和进行校验。</p>
+<p>SST 文件由几个部分组成：首先是数据部分，包含一系列有序的键值对。key 的有序性可以让我们对其进行增量编码，对于相邻的 key 可以只存其差值而非整个 key。</p>
 <p>尽管 SST 中的 kv 对是有序的，我们也并非总能进行二分查找，尤其是数据块在压缩过后，会使得查找很低效。RocksDB 使用索引来优化查询，存储在紧邻数据块之后的索引块。Index 会把每个 block 数据中最后一个 key 映射到它在磁盘上的对应偏移量。同样地，index 中的 key 也是有序的，因此我们可以通过二分搜索快速找到某个 key。</p>
 <div class="img-wrap"><div class="img-bg" style="background:#c8c8c8"><img class="img lazyload" src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/rocksdb_sst.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:500px;"/></div></div>
 
@@ -6339,10 +6339,10 @@
 <p>在RocskDB内每个Column Family都分配了一个ID，在SST文件有Column Family ID，默认L1层sst file的大小由参数target-file-size-base决定，L2~Lmax的sst文件大小为target-file-size-base*target_file_size_multiplier (默认为1)</p>
 <p>经过CF的逻辑划分后类似结构如下:</p>
 <p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="L0-层文件堆积后如何处理"><a href="#L0-层文件堆积后如何处理" class="headerlink" title="L0 层文件堆积后如何处理"></a>L0 层文件堆积后如何处理</h3><p>当有大量数据写入时，如果L0 到 L1 的compaction速度来不及处理会导致L0层文件逐渐累积增多，通过subcompact并行方式可提升L0层compact速度。当L0层文件数量达到一定数量后则会引起write stall，文件数量达到level0-slowdown-writes-trigger 后 会降低写入速度，当达到level0-stop-writes-trigger后则完全停止写入。</p>
-<p>当L0 向L1 层合并时，如果L1层的sst file正在往 L2层合并被锁住，将导致本次L0 -&gt; L1层的compact不能执行，因此造成L0层文件不能及时清理。基于此RocksDB引入了intra-L0 compaction，即在发生上述情况时在L0层内部进行compact,将多个sst file合并为1个大的sst file，以此减少L0层文件数量，在一定程度上能够提升L0层的读性能和减少write stall的发生</p>
+<h3 id="L0-层文件堆积后如何处理"><a href="#L0-层文件堆积后如何处理" class="headerlink" title="L0 层文件堆积后如何处理"></a>L0 层文件堆积后如何处理</h3><p>当有大量数据写入时，如果L0 到 L1 的compaction速度来不及处理会导致L0层文件逐渐累积增多，通过subcompact并行方式可提升L0层compact速度。当L0层文件数量达到一定数量后则会引起write stall，文件数量达到level0-slowdown-writes-trigger 后会降低写入速度，当达到level0-stop-writes-trigger后则完全停止写入。</p>
+<p>当 L0 向 L1 层合并时，如果 L1 层正在往 L2 合并被锁住，将阻塞本次L0 -&gt; L1层的compact。RocksDB 引入了 L0 层内部compact，将多个sst file合并为1个大的sst file，以此减少L0层文件数量，在一定程度上能够提升 L0 层的读性能和减少 write stall 的发生</p>
 <h3 id="SST文件什么时候删除"><a href="#SST文件什么时候删除" class="headerlink" title="SST文件什么时候删除"></a>SST文件什么时候删除</h3><p>RocksDB使用version来表示数据库的当前状态（即某一时刻sst文件的集合），每当增加或删除一个sst file时都会对Manifest增加一条version edit记录。当执行查询或修改时会引用当前version，同时会对该version下的sst file设置reference count。</p>
-<p>Compact完成后会在output level生成新的文件，同时需要删除旧的Input 文件，如果仍有其他操作在compact后仍未执行完成，则在compact后不能立即将需要的文件删除，等到sst file的reference count降为0后才能将文件真正的删除。</p>
+<p>Compact完成后需要删除旧文件，如果仍有其他操作在compact后仍未执行完成，则要等到sst file的reference count降为0后才能将文件真正的删除。</p>
 <h3 id="WriteStall有哪些触发场景"><a href="#WriteStall有哪些触发场景" class="headerlink" title="WriteStall有哪些触发场景"></a>WriteStall有哪些触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
 <p><strong>memtable数量过多</strong></p>
 <ul>
@@ -8210,15 +8210,7 @@
 <p><strong>如果处理并发的客户端请求和 shard 迁移请求</strong></p>
 <p>客户端请求和 shard 迁移请求的确存在并发情况，如果处理顺序不一致，会违背线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
 <hr>
-<h3 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h3><h4 id="什么是线性一致性"><a href="#什么是线性一致性" class="headerlink" title="什么是线性一致性"></a>什么是线性一致性</h4><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
-<p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
-<ul>
-<li>对于调用时间有交叠的<code>并发</code>请求，生效的顺序可以任意确定。比如并发读写请求时，读请求无论返回新值、旧值都可以。</li>
-<li>对于调用时间有<code>偏序</code>的请求，比如请求B开始在A结束之后，那么B的结果不能违背A已确定的结果。</li>
-</ul>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
-<h4 id="Raft线性一致性读"><a href="#Raft线性一致性读" class="headerlink" title="Raft线性一致性读"></a>Raft线性一致性读</h4><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
+<h3 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h3><h4 id="Raft线性一致性读"><a href="#Raft线性一致性读" class="headerlink" title="Raft线性一致性读"></a>Raft线性一致性读</h4><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
 <p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p>
 <p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
@@ -8262,6 +8254,48 @@
 <li>这时 Get&#x2F;Put&#x2F;Append 方法就能从这个 notifyCh 中获取到结果，并返回给客户端。</li>
 </ol>
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+]]></content>
+      <categories>
+        <category>Distribution</category>
+      </categories>
+      <tags>
+        <tag>Distribution</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Distribution</title>
+    <url>/2024/07/27/Distribution/Distribution/</url>
+    <content><![CDATA[<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
+<h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><h3 id="线性一致性"><a href="#线性一致性" class="headerlink" title="线性一致性"></a>线性一致性</h3><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
+<p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
+<ul>
+<li>对于调用时间有交叠的<code>并发</code>请求，生效的顺序可以任意确定。比如并发读写请求时，读请求无论返回新值、旧值都可以。</li>
+<li>对于调用时间有<code>偏序</code>的请求，比如请求B开始在A结束之后，那么B的结果不能违背A已确定的结果。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
+<h3 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h3><p>不要求操作的时序与真实物理时间一致。两个不相关的操作，如序列 <code>读A 写A 读B 写B</code>，要求读A、B能读到最新值，但不要求读B到最新值时，读A也一定是最新值。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p><strong>1. 两阶段提交</strong></p>
+<ul>
+<li>准备阶段：只在本地执行事务不提交，投票反馈给协调者</li>
+<li>提交阶段：提交</li>
+</ul>
+<blockquote>
+<p>它是一个强一致性协议，但可用性太差，存在问题：</p>
+<ul>
+<li>阻塞与单点故障：所有参与者必须收到协调者发起的指令才会提交，否则资源会被锁定，但当网络问题或协调者宕机时会阻塞</li>
+<li>一致性问题：参与者可能没收到协调者发送的指令</li>
+</ul>
+</blockquote>
+<p><strong>2. 三阶段提交</strong></p>
+<ul>
+<li>通过超时机制解决阻塞问题</li>
+<li>通过增加询问环节降低锁资源导致阻塞的概率</li>
+</ul>
+<blockquote>
+<p>改善了两阶段提交，但仍然存在单点故障和不一致问题<br><strong>3. Raft、Paxos</strong></p>
+</blockquote>
+<h2 id="最终一致性模式"><a href="#最终一致性模式" class="headerlink" title="最终一致性模式"></a>最终一致性模式</h2><p>系统保证数据最终达到完全一致的状态，但所需时间不能保证。业务系统对一致性大多数情况没那么高，更多强调高可用，因此，多数业务系统倾向于AP</p>
 ]]></content>
       <categories>
         <category>Distribution</category>

@@ -975,7 +975,7 @@
 <hr>
 <h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="字符串加法"><a href="#字符串加法" class="headerlink" title="字符串加法"></a>字符串加法</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">string <span class="title">addStr</span><span class="params">(string num1, string num2)</span> </span>&#123;</span><br><span class="line">  string ans;</span><br><span class="line">  <span class="type">int</span> add = <span class="number">0</span>,i = num1.<span class="built_in">size</span>() - <span class="number">1</span>, j = num2.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span>(add || i &gt;= <span class="number">0</span> || j &gt;= <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="type">int</span> x= i &gt;= <span class="number">0</span> ? num1[i] - <span class="string">&#x27;0&#x27;</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> y= j &gt;= <span class="number">0</span> ? num2[j] - <span class="string">&#x27;0&#x27;</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> result = x + y + add;</span><br><span class="line">    ans += <span class="built_in">char</span>(<span class="string">&#x27;0&#x27;</span> + result % <span class="number">10</span>);</span><br><span class="line">    add = result / <span class="number">10</span>;</span><br><span class="line">    i--; j--;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">reverse</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>());</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="字符串乘法"><a href="#字符串乘法" class="headerlink" title="字符串乘法"></a>字符串乘法</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">string ans;</span><br><span class="line"><span class="function">string <span class="title">multiply</span><span class="params">(string num1, string num2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (num1 == <span class="string">&quot;0&quot;</span> || num2 == <span class="string">&quot;0&quot;</span>) <span class="keyword">return</span> <span class="string">&quot;0&quot;</span>;</span><br><span class="line">  <span class="type">int</span> m = num1.<span class="built_in">size</span>(), n = num2.<span class="built_in">size</span>();</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)&#123;</span><br><span class="line">    string tmp;</span><br><span class="line">    <span class="type">int</span> add = <span class="number">0</span>, y = num2[i] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> k = n - <span class="number">1</span>; k &gt; i; --k) tmp += <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span> || add; --j)&#123;</span><br><span class="line">      <span class="type">int</span> x = j &lt; <span class="number">0</span> ? <span class="number">0</span> : num1[j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">      <span class="type">int</span> multi = x * y + add;</span><br><span class="line">      tmp += <span class="built_in">char</span>(<span class="string">&#x27;0&#x27;</span> + multi % <span class="number">10</span>);</span><br><span class="line">      add = multi / <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">reverse</span>(tmp.<span class="built_in">begin</span>(), tmp.<span class="built_in">end</span>());</span><br><span class="line">    ans = <span class="built_in">addStr</span>(tmp, ans);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="字符串乘法"><a href="#字符串乘法" class="headerlink" title="字符串乘法"></a>字符串乘法</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">string ans;</span><br><span class="line"><span class="function">string <span class="title">multiply</span><span class="params">(string num1, string num2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (num1 == <span class="string">&quot;0&quot;</span> || num2 == <span class="string">&quot;0&quot;</span>) <span class="keyword">return</span> <span class="string">&quot;0&quot;</span>;</span><br><span class="line">  <span class="type">int</span> m = num1.<span class="built_in">size</span>(), n = num2.<span class="built_in">size</span>();</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--)&#123;</span><br><span class="line">    <span class="function">string <span class="title">tmp</span><span class="params">(n - <span class="number">1</span> - i, <span class="string">&#x27;0&#x27;</span>)</span></span>;</span><br><span class="line">    <span class="type">int</span> add = <span class="number">0</span>, y = num2[i] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span> || add; --j)&#123;</span><br><span class="line">      <span class="type">int</span> x = j &lt; <span class="number">0</span> ? <span class="number">0</span> : num1[j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">      <span class="type">int</span> multi = x * y + add;</span><br><span class="line">      tmp += <span class="built_in">char</span>(<span class="string">&#x27;0&#x27;</span> + multi % <span class="number">10</span>);</span><br><span class="line">      add = multi / <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">reverse</span>(tmp.<span class="built_in">begin</span>(), tmp.<span class="built_in">end</span>());</span><br><span class="line">    ans = <span class="built_in">addStr</span>(tmp, ans);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">vector&lt;string&gt; ret;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">split</span><span class="params">(string s, <span class="type">char</span> del)</span></span>&#123;</span><br><span class="line">  <span class="function">stringstream <span class="title">ss</span><span class="params">(s)</span></span>;</span><br><span class="line">  string tmp;</span><br><span class="line">  <span class="keyword">while</span>(<span class="built_in">getline</span>(ss, tmp, del))&#123;</span><br><span class="line">    <span class="keyword">if</span>(tmp.<span class="built_in">size</span>()) ret.<span class="built_in">push_back</span>(tmp);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1089,6 +1089,11 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">longestCommonSubsequence1</span><span class="params">(string text1, string text2)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> m = text1.<span class="built_in">size</span>(), n = text2.<span class="built_in">size</span>();</span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n + <span class="number">1</span>)</span></span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">    <span class="type">int</span> leftup = dp[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j) &#123;</span><br><span class="line">      <span class="type">int</span> tmp = dp[j];</span><br><span class="line">      <span class="keyword">if</span> (text1[i - <span class="number">1</span>] == text2[j - <span class="number">1</span>]) dp[j] = leftup + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">else</span> dp[j] = <span class="built_in">max</span>(dp[j], dp[j - <span class="number">1</span>]);</span><br><span class="line">      leftup = tmp;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> dp[n];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="字符串问题"><a href="#字符串问题" class="headerlink" title="字符串问题"></a>字符串问题</h3><p><a href="https://leetcode.cn/problems/interleaving-string/description/">交错字符串</a>：问<code>s1</code>和<code>s2</code>交错拼接能否组成<code>s3</code></p>
+<p><a href="https://leetcode.cn/problems/word-break/">单词拆分</a>：字符串 s 能否由 wordDict 中的字符串列表拼接出来</p>
+<ul>
+<li>记忆化回溯：定义 <code>bool fun(i)</code> 为下标 i 之前的 s 可否被拼接出来，从 <code>fun(n)</code> 缩小问题到 <code>fun(0)</code>，同时记录 fun(i) 的结果防止重复子问题</li>
+<li>DP解法：正向求 <code>dp[i]</code> 表示前 i 能否被拼接出，从 0 ~ n 遍历求解<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">wordBreak</span><span class="params">(string s, vector&lt;string&gt;&amp; wordDict)</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n = s.<span class="built_in">size</span>(), max_len = <span class="number">0</span>;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n)</span></span>;</span><br><span class="line">  unordered_set&lt;string&gt; st;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; w : wordDict) &#123;</span><br><span class="line">    max_len = <span class="built_in">max</span>(max_len, (<span class="type">int</span>)w.<span class="built_in">size</span>());</span><br><span class="line">    st.<span class="built_in">insert</span>(w);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="built_in">max</span>(<span class="number">0</span>, i - max_len + <span class="number">1</span>); j &lt;= i; ++j) &#123;</span><br><span class="line">      string cur = s.<span class="built_in">substr</span>(j, i - j + <span class="number">1</span>);</span><br><span class="line">      <span class="keyword">if</span> (!st.<span class="built_in">count</span>(cur)) <span class="keyword">continue</span>;</span><br><span class="line">      <span class="keyword">if</span> (j == <span class="number">0</span> || dp[j - <span class="number">1</span>] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        dp[i] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> dp.<span class="built_in">back</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
 <p><a href="https://leetcode.cn/problems/distinct-subsequences/">不同的子序列</a>：返回在 s 的子序列中 t 出现的个数</p>
 <ul>
 <li><code>dp[i][j]</code> 为 s 的前 i 个字符与 t 的前 j 个匹配，初始化 <code>dp[i][0] = 1</code></li>
@@ -3098,7 +3103,14 @@
 </tr>
 </tbody></table>
 <hr>
-<h2 id="GDB"><a href="#GDB" class="headerlink" title="GDB"></a>GDB</h2><table>
+<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a><a href="https://www.cnblogs.com/gaoxingnjiagoutansuo/p/15820753.html">调试</a></h2><blockquote>
+<p>GDB断点的原理：</p>
+<ol>
+<li>断点替换：在指定的地址处，GDB 会替换原有的指令为 <code>int 3</code> 中断指令。当程序执行到该位置时，会产生一个中断信号。GDB 捕获信号后，会停止程序进入调试模式。</li>
+<li>保存原指令：GDB 会保存被替换的原始指令，以便在断点被移除时能够恢复。</li>
+</ol>
+</blockquote>
+<table>
 <thead>
 <tr>
 <th>命令</th>
@@ -3106,36 +3118,16 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>c</td>
-<td>到下个断点</td>
+<td>gdb attach <pid></td>
+<td>调试附加到进程</td>
 </tr>
 <tr>
-<td>n</td>
-<td>下一条指令</td>
+<td>gcore <pid></td>
+<td>生成core</td>
 </tr>
 <tr>
-<td>s</td>
-<td>下一条指令（进入函数）</td>
-</tr>
-<tr>
-<td>p</td>
-<td>打印信息</td>
-</tr>
-<tr>
-<td>bt</td>
-<td>打印栈信息（调用关系）</td>
-</tr>
-<tr>
-<td>info thread</td>
-<td>打印线程列表</td>
-</tr>
-<tr>
-<td>thread N</td>
-<td>切换线程</td>
-</tr>
-<tr>
-<td>thread apply all bt</td>
-<td>查看线程堆栈信息</td>
+<td>pstack <pid></td>
+<td>查看栈帧信息</td>
 </tr>
 </tbody></table>
 <hr>

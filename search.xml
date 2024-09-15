@@ -3269,7 +3269,14 @@
 </li>
 <li><p><strong>信号量</strong>：无名线程信号量、命名线程信号量</p>
 </li>
-<li><p><strong>信号</strong>：类似进程间的信号处理</p>
+<li><p><strong>信号</strong>：类似进程间的信号处理，用法：处理<code>signal(SIGINT, fun)</code>，忽略<code>signal(SIGINT, SIG_IGN)</code></p>
+<ul>
+<li>SIGINT 中断信号，Ctrl+C</li>
+<li>SIGTERM 终止信号，kill -15，可以被捕获处理</li>
+<li>SIGKILL 强制终止信号，kill -9</li>
+<li>SIGSEGV 段错误信号，访问了未分配内存</li>
+<li>SIGCHILD 子进程状态变化信号，当子进程终止或停止时发送给父进程</li>
+</ul>
 </li>
 </ol>
 <h3 id="线程的几种锁"><a href="#线程的几种锁" class="headerlink" title="线程的几种锁"></a>线程的几种锁</h3><ul>

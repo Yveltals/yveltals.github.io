@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1725992933953),
+    lastupdate: new Date(1726383150641),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2962,7 +2962,7 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/19/Software/Projects/">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/19/Software/Memo/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2980,7 +2980,7 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
   
     
     <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/05/19/Software/Projects/"  itemprop="url">
+      <a href="/2023/05/19/Software/Memo/"  itemprop="url">
         Memo
       </a>
     </h2>
@@ -2988,10 +2988,10 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
   <div class='md article-desc' itemprop="articleBody">
     
       
-        Ckpt opt背景：LoadCkpt慢原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度
+        OutcomesCkpt opt背景：LoadCkpt慢原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度
 线程数实验测得 4 线程最佳
 文件创建加速fallocate 通过只初始元数据、磁盘预留空间的方式，避免调用 write 写全 0，带宽增加了一倍
-Numa Aware Pool目前：每个 ...
+Numa Aware Po...
       
     
   </div>
@@ -3012,7 +3012,7 @@ Numa Aware Pool目前：每个 ...
       </div>
       
         <div>
-          <a class='readmore' href='/2023/05/19/Software/Projects/' itemprop="url">
+          <a class='readmore' href='/2023/05/19/Software/Memo/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3759,7 +3759,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 

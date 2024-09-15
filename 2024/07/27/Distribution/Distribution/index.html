@@ -40,11 +40,11 @@
 <meta property="og:title" content="Distribution">
 <meta property="og:url" content="http://example.com/2024/07/27/Distribution/Distribution/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务 一致性协议线性一致性一句话概括：在分布式系统上实现寄存器语义。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是保证读到最近更新的值。 如何判断一个分布">
+<meta property="og:description" content="CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据    - 强一致性、单调一致性、最终一致性可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务 BASEBasically Available（基本可用）：分布式系统在出现不可预知故障的时候，允许损失部分可用性Soft state（软状态）：软状态也称为弱">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-07-27T11:30:00.000Z">
-<meta property="article:modified_time" content="2024-08-28T03:52:24.919Z">
+<meta property="article:modified_time" content="2024-09-15T06:52:27.042Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Distribution">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1725992933953),
+    lastupdate: new Date(1726383150641),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2519,7 +2519,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
+    <h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>    - 强一致性、单调一致性、最终一致性<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
+<h2 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h2><p>Basically Available（基本可用）：分布式系统在出现不可预知故障的时候，允许损失部分可用性<br>Soft state（软状态）：软状态也称为弱状态，和硬状态相对，是指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。<br>Eventually consistent（最终一致性）：最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性</p>
+<p>BASE是对CAP中一致性和可用性权衡的结果，其基本思路就是：通过业务，牺牲强一致性而获得可用性，并允许数据在一段时间内是不一致的，但是最终达到一致性状态。</p>
 <h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><h3 id="线性一致性"><a href="#线性一致性" class="headerlink" title="线性一致性"></a>线性一致性</h3><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
 <p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
 <ul>
@@ -2530,26 +2532,71 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
 <h3 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h3><p>不要求操作的时序与真实物理时间一致。两个不相关的操作，如序列 <code>读A 写A 读B 写B</code>，要求读A、B能读到最新值，但不要求读B到最新值时，读A也一定是最新值。</p>
 <h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p><strong>1. 两阶段提交</strong></p>
-<ul>
-<li>准备阶段：只在本地执行事务不提交，投票反馈给协调者</li>
-<li>提交阶段：提交</li>
+<ol>
+<li>提交事务请求（投票阶段）<ul>
+<li><strong>协调者</strong>向<strong>参与者</strong>发送事务内容，询问是否可以执行事务提交操作，等待响应</li>
+<li>参与者执行事务操作，将undo和redo日志记录，并回复协调者执行成功Yes&#x2F;No</li>
 </ul>
-<blockquote>
+</li>
+<li>执行事务提交（执行阶段）.<ul>
+<li>如果都是参与者都回复Yes，则协调者向参与者发送提交请求，否则发送回滚请求</li>
+<li>参与者根据协调者的请求执行事务提交或回滚，并向协调者发送Ack消息</li>
+<li>协调者收到所有的Ack消息过后判断事务的完成或者中断</li>
+</ul>
+</li>
+</ol>
 <p>它是一个强一致性协议，但可用性太差，存在问题：</p>
 <ul>
 <li>阻塞与单点故障：所有参与者必须收到协调者发起的指令才会提交，否则资源会被锁定，但当网络问题或协调者宕机时会阻塞</li>
-<li>一致性问题：参与者可能没收到协调者发送的指令</li>
+<li>一致性问题：网络原因，参与者可能没收到协调者发送的指令(commit)，导致集群数据不一致</li>
 </ul>
-</blockquote>
-<p><strong>2. 三阶段提交</strong></p>
+<p>优化：</p>
 <ul>
-<li>通过超时机制解决阻塞问题</li>
-<li>通过增加询问环节降低锁资源导致阻塞的概率</li>
+<li>超时判断：长时间未收到回复可以多播取消事务</li>
+<li>互询机制：参与者回复yes后，如果迟迟收不到协调者最终的commit&#x2F;abort，可以询问其他参与者来决定自身下一步操作，避免一直阻塞</li>
 </ul>
-<blockquote>
-<p>改善了两阶段提交，但仍然存在单点故障和不一致问题<br><strong>3. Raft、Paxos</strong></p>
-</blockquote>
+<p>2PC广泛应用于关系数据库的分布式事务处理，如mysql的内部与外部XA都是基于2PC的，一般想要把多个操作打包未原子操作也可以用2PC</p>
+<p><strong>2. 三阶段提交</strong><br>把2PC的第一阶段拆成两阶段：</p>
+<ol>
+<li>事务询问（canCommit）<ul>
+<li>协调者向参与者发送一个包含事务内容的询问请求，<strong>询问是否可以执行事务</strong>并等待</li>
+</ul>
+</li>
+<li>执行事务预提交（preCommit）<ul>
+<li>若协调者收到全是yes，就发送preCommit请求，否则发布abort请求</li>
+<li>参与者若收到preCommit则执行事务操作并记录undo和redo然后发送Ack</li>
+</ul>
+</li>
+<li>执行事务提交（doCommit）<ul>
+<li>协调者收到所有的Ack则发送doCommit请求，若收到了No或者超时则发送abort请求</li>
+<li>参与者收到doCommit就执行提交并发送Ack，否则执行回滚并发送Ack</li>
+<li>协调者收到Ack判断是完成事务还是中断事务</li>
+</ul>
+</li>
+</ol>
+<p>2PC 和 3PC 是分布式事务中两种常见的协议，3PC 可以看作是 2PC 协议的改进版本，相比于 2PC 它有两点改进：</p>
+<p>引入了超时机制，同时在协调者和参与者中都引入超时机制（2PC 只有协调者有超时机制），所以发生阻塞的几率变小了<br>3PC 相比于 2PC 增加了 CanCommit 阶段，可以尽早的发现问题，从而避免了后续的阻塞和无效操作。</p>
+<p><strong>3. Raft、Paxos</strong></p>
 <h2 id="最终一致性模式"><a href="#最终一致性模式" class="headerlink" title="最终一致性模式"></a>最终一致性模式</h2><p>系统保证数据最终达到完全一致的状态，但所需时间不能保证。业务系统对一致性大多数情况没那么高，更多强调高可用，因此，多数业务系统倾向于AP</p>
+<h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><p>一致性算法的目的是保证在分布式系统中，多数据副本节点数据一致性。主要包含一致性Hash算法，Paxos算法，Raft算法，ZAB算法等。</p>
+<h3 id="ZAB"><a href="#ZAB" class="headerlink" title="ZAB"></a>ZAB</h3><p>ZAB 协议是为分布式协调服务 Zookeeper 专门设计的一种支持 <code>崩溃恢复</code> 和 <code>原子广播</code> 协议。基于该协议，Zookeeper 实现了一种 <strong>主备模式</strong> 的系统架构来保持集群中各个副本之间数据一致性。</p>
+<p>所有客户端写入数据到 <code>主进程</code>（Leader）中，由 <code>Leader</code> 复制到<code>备份进程</code>（Follower）中，从而保证数据一致性，从设计上看和 Raft 类似。<br>复制过程类似 2PC，ZAB 只需要 Follower 有一半以上返回 Ack 信息就可以执行提交，大大减小了同步阻塞，也提高了可用性。</p>
+<p>当 Leader 服务可以正常使用，就进入消息广播模式，当 Leader 不可用时，则进入崩溃恢复模式。</p>
+<p><strong>消息广播</strong>：</p>
+<ul>
+<li>使用的是一个原子广播协议，类似一个2PC过程。对于客户端发送的写请求，全部由 Leader 接收，Leader 将请求封装成一个事务 Proposal，将其发送给所有 Follwer ，然后根据所有 Follwer 的反馈，如果超过半数成功响应，则执行 commit 操作</li>
+<li>在 Leader 和 Follwer 之间还有一个消息队列，用来解耦他们之间的耦合，避免同步，实现异步解耦</li>
+</ul>
+<p><strong>崩溃恢复</strong>：<br>ZAB定义两个原则：</p>
+<ul>
+<li>ZAB 协议确保那些已经在 Leader 提交的事务最终会被所有服务器提交。</li>
+<li>ZAB 协议确保丢弃那些只在 Leader 提出&#x2F;复制，但没有提交的事务。</li>
+</ul>
+<p>Leader 崩溃后选举时，要保证新选举出来的 Leader 拥有集群总所有机器编号（即 ZXID 最大）的事务，即这个 Leader 一定具有所有已经提交的提案。<br>当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID (LeaderId + 事务ID) 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。</p>
+<p>假设1：Leader 在复制数据给所有 Follwer 之后崩溃，怎么办？<code>丢弃没有提交的数据</code><br>假设2：Leader 在收到 Ack 并提交了自己，同时发送了部分 commit 出去之后崩溃怎么办？<code>最终会同步所有服务器的数据</code></p>
+<blockquote>
+<p>zookeeper是弱一致性模型，但是也可以支持强一致性模型，用sync()方法强制读取从leader同步数据。。</p>
+</blockquote>
 
   </div>
   
@@ -2574,10 +2621,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-08-28T11:52:24+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-09-15T14:52:27+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Aug 28, 2024</p>
+    <p>更新于：Sep 15, 2024</p>
   </a>
 </div>
 
@@ -2608,9 +2655,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <a class='prev' href='/2024/07/27/Distribution/ShardKV/'>
           <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>MIT 6.824</p>
           <p class='content'>Raft
-39 针对大流量的情况下，如何优化客户端的读请求？线性一致性读Raft 的 read 有多种实现：
-
-Raft log read：每个 read 都有一个对应的 Op log，和 wr...</p>
+常见QA Folding 
+              
+              Raft 只在非拜占庭的条件下才能正常工作非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即...</p>
         </a>
       
       
@@ -2666,7 +2713,7 @@ Raft log read：每个 read 都有一个对应的 Op log，和 wr...</p>
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CAP"><span class="toc-number">1.</span> <span class="toc-text">CAP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.</span> <span class="toc-text">一致性协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">2.1.</span> <span class="toc-text">线性一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">2.2.</span> <span class="toc-text">顺序一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">2.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">最终一致性模式</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CAP"><span class="toc-number">1.</span> <span class="toc-text">CAP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BASE"><span class="toc-number">2.</span> <span class="toc-text">BASE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE"><span class="toc-number">3.</span> <span class="toc-text">一致性协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">3.1.</span> <span class="toc-text">线性一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%BA%E5%BA%8F%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">3.2.</span> <span class="toc-text">顺序一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.3.</span> <span class="toc-text">解决方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.</span> <span class="toc-text">最终一致性模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">分布式一致性算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ZAB"><span class="toc-number">5.1.</span> <span class="toc-text">ZAB</span></a></li></ol></li></ol>
     </div>
   </section>
 
@@ -3094,7 +3141,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3321,7 +3368,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Distribution/","name":"Distribution"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/27/Distribution/Distribution/","name":"Distribution"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Distribution","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/27/Distribution/Distribution/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/27/Distribution/Distribution/","wordCount":0,"datePublished":"2024-07-27T11:30:00.000Z","dateModified":"2024-08-28T03:52:24.919Z","articleSection":"Distribution","keywords":"Distribution","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Distribution/","name":"Distribution"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/27/Distribution/Distribution/","name":"Distribution"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Distribution","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/27/Distribution/Distribution/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/27/Distribution/Distribution/","wordCount":0,"datePublished":"2024-07-27T11:30:00.000Z","dateModified":"2024-09-15T06:52:27.042Z","articleSection":"Distribution","keywords":"Distribution","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

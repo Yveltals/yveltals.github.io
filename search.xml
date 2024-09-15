@@ -804,15 +804,14 @@
 <p>函数调用时，左值可以绑定到<code>T&amp;</code>，常量只能绑定到<code>const T&amp;</code></p>
 <p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
 <ul>
-<li><strong>prvalue</strong>：纯右值，不具名的临时对象，<strong>无名无地址</strong><ul>
+<li><strong>prvalue</strong>：纯右值，传统意义上的右值，不具名的临时对象，<strong>无名无地址</strong><ul>
 <li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
 <li>非字符串字面量，42、true</li>
-<li><code>smart_ptr&lt;shape&gt; p1&#123;new Circle&#125;;</code></li>
+<li>特点：不能作为赋值操作的左值</li>
 </ul>
 </li>
-<li><strong>xvalue</strong>：将亡值，<strong>有名但不能取地址</strong><ul>
-<li>通常用于移动构造或移动赋值</li>
-<li><code>smart_ptr&lt;shape&gt; p2 = std::move(p1);</code></li>
+<li><strong>xvalue</strong>：将亡值表示即将被销毁的对象，通常是通过右值引用操作产生的，表示一个可以被移动的对象，通常用于移动语义避免拷贝<ul>
+<li>如通过 <code>std::move</code> 产生</li>
 </ul>
 </li>
 </ul>
@@ -2758,14 +2757,13 @@
 <h2 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h2><h3 id="网络与进程"><a href="#网络与进程" class="headerlink" title="网络与进程"></a>网络与进程</h3><ul>
 <li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
 <li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
-<li><code>iftop</code> 显示进程级别的网络IO</li>
+<li><code>lsof</code> 查看文件被哪个进程修改<code>lsof tmp.txt</code>，查看端口占用 <code>lsof -i :8080</code></li>
 <li><code>fdisk</code> 创建和维护分区表</li>
 <li><code>tcpdump</code> 抓包</li>
 <li><code>route</code> 查看路由</li>
 <li><code>pgrep dummy</code> 查看进程号，<code>-l</code>显示进程名</li>
 <li><code>pkill dummy</code> Kill进程名，<code>-f</code>全匹配command line</li>
 <li><code>ps aux | grep -w &#39;hello&#39; | grep -v grep | awk &#39;&#123;print $2&#125;&#39; | xargs kill -9</code> Kill进程名的另一种方式</li>
-<li><code>pstree</code>  以树状图的形式现实系统中的进程</li>
 </ul>
 <h3 id="文件查找与操作"><a href="#文件查找与操作" class="headerlink" title="文件查找与操作"></a>文件查找与操作</h3><ul>
 <li><code>sed -i &quot;s/查找字段/替换字段/g&quot; src.txt</code></li>
@@ -5292,7 +5290,7 @@
 <li>系统只需要⼀个实例对象，或者考虑到资源消耗的太⼤⽽只允许创建⼀个对象。</li>
 <li>客户调⽤类的单个实例只允许使⽤⼀个公共访问点，除了该访问点之外不允许通过其它<br>⽅式访问该实例（就是共有的静态⽅法）。</li>
 </ol>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Lazy</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Single</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> Single* <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">static</span> Single ins;</span><br><span class="line">        <span class="keyword">return</span> &amp;ins;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Single</span>(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="built_in">Single</span>(Single&amp;&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="type">void</span> <span class="keyword">operator</span>= (<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eager</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Single</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> Single* <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ins;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Single</span>(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="built_in">Single</span>(Single&amp;&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="type">void</span> <span class="keyword">operator</span>= (<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="type">static</span> Single *ins;</span><br><span class="line">&#125;;</span><br><span class="line">Single* Single::ins = <span class="keyword">new</span> <span class="built_in">Single</span>();</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Lazy</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Single</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> Single* <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">static</span> Single ins;</span><br><span class="line">        <span class="keyword">return</span> &amp;ins;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Single</span>(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="built_in">Single</span>(Single&amp;&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    Single&amp; <span class="keyword">operator</span>=(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Eager</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Single</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> Single* <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ins;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Single</span>(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    <span class="built_in">Single</span>(Single&amp;&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    Single <span class="keyword">operator</span>=(<span class="type">const</span> Single&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Single</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="type">static</span> Single *ins;</span><br><span class="line">&#125;;</span><br><span class="line">Single* Single::ins = <span class="built_in">new</span>(nothrow) Single;</span><br></pre></td></tr></table></figure>
 
 
 
@@ -5522,104 +5520,6 @@
       <tags>
         <tag>Git</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Memo</title>
-    <url>/2023/05/19/Software/Projects/</url>
-    <content><![CDATA[<h2 id="Ckpt-opt"><a href="#Ckpt-opt" class="headerlink" title="Ckpt opt"></a>Ckpt opt</h2><p>背景：LoadCkpt慢<br>原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载<br>解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度</p>
-<h3 id="线程数"><a href="#线程数" class="headerlink" title="线程数"></a>线程数</h3><p>实验测得 4 线程最佳</p>
-<h3 id="文件创建加速"><a href="#文件创建加速" class="headerlink" title="文件创建加速"></a>文件创建加速</h3><p>fallocate 通过只初始元数据、磁盘预留空间的方式，避免调用 write 写全 0，带宽增加了一倍</p>
-<h3 id="Numa-Aware-Pool"><a href="#Numa-Aware-Pool" class="headerlink" title="Numa Aware Pool"></a>Numa Aware Pool</h3><p>目前：每个 partition 使用 <code>IOThreadPoolExecutor</code> 并行加载 seg_file，每次<strong>读一条</strong> record 写到对应 kv 中。例如 kv 16 个分布在两个 NUMA 上，4 个 seg_file 中的 record 是随机来自这 16 个 kv 中的</p>
-<p>导致：① put 线程可能会访问另一个 NUMA 上的 AEP；② 多个线程并发访问 kv</p>
-<p>方案：</p>
-<ol>
-<li>加载 skpt 优化<ul>
-<li>从快照每次 Batch 读多条 records</li>
-<li>每个 record 解析出 key 后，先 hash 出它在那个 kv，进而得知在那个 numa（初始 kv 时记录所属 numa_id），将 put 任务 submit 到 Pool</li>
-</ul>
-</li>
-<li>Numa aware pool：<ul>
-<li>给每个 numa 创建独立的 <code>folly::CPUThreadPoolExecutor</code>，共 2 个</li>
-<li>创建 pool 时通过传入工厂类参数设置 CPU 亲和性，绑定 cpu_id 列表</li>
-<li><code>pool-&gt;Submit(numa_id, fuction&lt;T()&gt;f)</code> -&gt; <code>pool-&gt;addFuture(f)</code></li>
-</ul>
-</li>
-<li>写 ckpt 优化<ul>
-<li>对每个 partition，用 <code>IOThreadPool</code> 异步并发调用写 seg_file，例如 16 kv 导出为 4 seg_file</li>
-<li>以往是遍历所有 kv 根据 key 取模保存到 seg_file 中，改进为让某 kv_id % 4 &#x3D;&#x3D; seg_id 的保存到一个 seg_file 中，确保单线程写 kv</li>
-<li>对 kv 的读取顺序 shuffle，防止读带宽都集中在一个盘</li>
-</ul>
-</li>
-</ol>
-<h2 id="Cold-keys"><a href="#Cold-keys" class="headerlink" title="Cold keys"></a>Cold keys</h2><p>Delta 在内存中，每个 value 分配 16KB，为了优化 DRAM 利用率，后台线程收集长期不访问的 key，合并到 SSD 的 Base，清空 Delta 仅保留 64B 的 Meta</p>
-<h2 id="SkewMerge"><a href="#SkewMerge" class="headerlink" title="SkewMerge"></a>SkewMerge</h2><p>Delta + Base 合并时，默认是归并，比较次数多且大量的小块复制。<br>由于 Base &gt;&gt; Delta，合并后为 <code>Base*n | Delta*1 | Base*m | Delta*1 | ...</code> 的形式，可遍历 Delta，在 Base 中 find 到有序插入位置，然后将 <code>一段Base + 一个Delta</code> 拷贝到 NewBase</p>
-<p>find 算法在二分基础上优化，由于 Delta 时间戳较新，一般会在 Base 尾部，故从尾部向前用指数查找确定一个范围 <code>[n - 2^k, n - 2^(k/2)]</code>，之后其间二分</p>
-<hr>
-<h2 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h2><p>gRPC是一种高性能 RPC 框架。使用Protocol Buffers作为二进制序列化，并使用HTTP&#x2F;2协议进行传输。gRPC基于服务的思想：定义一个服务，描述这个服务的方法以及入参出参，服务器端有这个服务的具体实现，客户端保有一个存根，提供与服务端相同的服务。</p>
-<ul>
-<li>基于 ProtoBuf 接口定义语言：它可以定义服务的方法和消息类型，并生成各种语言的代码桩，实现跨平台。</li>
-<li>HTTP&#x2F;2作为底层传输协议：支持二进制传输效率高、双向流、消息头压缩、单 TCP 的多路复用、服务端推送等。</li>
-<li>支持流式数据：gRPC支持流式传输，即服务可以持续发送数据，而客户端可以持续接收数据。这在传输大量数据时非常有用。</li>
-<li>gRPC同时支持同步调用和异步调用，同步RPC调用时会一直阻塞直到服务端处理完成返回结果，异步RPC是客户端调用服务端时不等待服务段处理完成返回，而是服务端处理完成后主动回调客户端告诉客户端处理完成</li>
-</ul>
-<p>gRPC与HTTP&#x2F;2的关系：HTTP&#x2F;2为长连接、实时的通信流提供了基础。gRPC建立在这个基础之上，具有连接池、健康语义、高效使用数据帧和多路复用以及KeepAlive，gRPC的通讯基石就是HTTP&#x2F;2</p>
-<p>基于http2协议的特性：gRPC允许定义如下四类服务方法          </p>
-<ol>
-<li>一元RPC：客户端发送一次请求，等待服务端响应结构，会话结束，就像一次普通的函数调用这样简单<br><img src="https://i-blog.csdnimg.cn/blog_migrate/53d6e23d0984b1c82de5cfb596484443.png#pic_center" class="lazyload" data-srcset="https://i-blog.csdnimg.cn/blog_migrate/53d6e23d0984b1c82de5cfb596484443.png#pic_center" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></li>
-<li>服务端流式RPC：客户端发起一起请求，服务端会返回一个流，客户端会从流中读取一系列消息，直到没有结果为止</li>
-<li>客户端流式RPC：客户端提供一个数据流并写入消息发给服务端，一旦客户端发送完毕，就等待服务器读取这些消息并返回应答</li>
-<li>双向流式RPC：客户端和服务端都一个数据流，都可以通过各自的流进行读写数据，这两个流是相互独立的，客户端和服务端都可以按其希望的任意顺序独写<br><img src="https://i-blog.csdnimg.cn/blog_migrate/ce153e61a01dc20f445c62f91566068b.png#pic_center" class="lazyload" data-srcset="https://i-blog.csdnimg.cn/blog_migrate/ce153e61a01dc20f445c62f91566068b.png#pic_center" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></li>
-</ol>
-<p>名称解析器和负载平衡器：解析器将名称转换为地址，然后将这些地址交给负载均衡器。负载均衡器负责从这些地址创建连接，并在连接之间对rpc进行负载均衡。</p>
-<p>当连接失败时，负载均衡器将开始使用最后已知的地址列表重新连接。同时，解析器将开始尝试重新解析主机名列表，告知负载均衡器。</p>
-<p>对于失效连接：</p>
-<ul>
-<li>对方主动关闭、超时计时器情况：TCP的 FIN 语义即可完成 HTTP2&#x2F;GRPC 连接的关闭</li>
-<li>端点死亡、挂起而不通知客户端：TCP得长时间重试，gRPC 使用 HTTP2 语义中的 PING 帧绕过流量控制，判断连接是否有效</li>
-</ul>
-<h2 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h2><h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ol>
-<li>性能好，M：N （bthread:pthread）高效轻量的线程模型</li>
-<li>自带性能监控和分析功能：bvar，一般的RPC框架没有提供热点分析、延时统计的工具，brpc通过自带的 bvar 能够监控并采集到多种性能相关的数据，便于快速确定热点、定位瓶颈。</li>
-</ol>
-<h3 id="Bthread"><a href="#Bthread" class="headerlink" title="Bthread"></a>Bthread</h3><p>线程模型：1:1，一个内核线程里只有一个用户线程。利于调度到其他核上，多核扩展性好。缺点：线程锁、线程调度到另一个CPU时，data要从L1 cache同步到其他cpu，锁住总线。</p>
-<p>协程模型：n:1，n个用户线程跑在一个CPU上。无多线程竞争，数据的locality好，但难以扩展到多核，一个线程阻塞会阻塞整个内核线程。</p>
-<p>Bthread 通过实现上层 M：N 线程绑定减小了线程间的来回调度，减小了cache buncing；通过内部的多个队列和 stealing worker 机制，保证了整体的并发度<code>QPS*latency</code>最大；</p>
-<p>Bthread的机制核心是 work stealing，即 pthread 之间可以偷bthread来执行，一个bthread被卡住不会影响其他bthread。每个bthread两种调度方式，既可以只在某一个内核线程里调度（locality不错），也可以在该bthread被卡住时，允许被偷到其他内核线程去运行，只要有空闲的worker(pthread)在，就不会有bthread被阻塞，保证了多核在任意时刻只要有bthread被创建出来就可以去跑任务。</p>
-<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>BRPC通过IOBuf（非连续零拷贝缓存）方式减少数据传递处理过程中的拷贝，提高了数据传输效率。此外，各种ThreadLocal的ResourcePool、Object Pool等优化了定长的短生命周期的申请和释放，减少了内存分配和释放的开销。</p>
-<h3 id="执行队列"><a href="#执行队列" class="headerlink" title="执行队列"></a>执行队列</h3><p>BRPC使用<strong>多生产者单消费者无锁队列</strong>作为执行队列，实现了多生产者单消费者之间的的高效通信。这种队列设计避免了锁竞争和线程同步的问题，提高了系统的吞吐量和并发性能。在实现单TCP连接复用、高效发送-接收数据等方面发挥了很重要的作用。</p>
-<h2 id="UNKNOWN"><a href="#UNKNOWN" class="headerlink" title="UNKNOWN"></a>UNKNOWN</h2><h3 id="写数据"><a href="#写数据" class="headerlink" title="写数据"></a>写数据</h3><h4 id="Threadwork-in-processor"><a href="#Threadwork-in-processor" class="headerlink" title="Threadwork in processor"></a>Threadwork in processor</h4><ol>
-<li>GetReadPath -&gt; file -&gt; Bufferfile</li>
-<li>StreamLoaderFileStart：解析HDFS path，Make&amp;OpenSstFileWriter</li>
-<li>foreach line: StreamLoaderPut:<ul>
-<li>Hive: PutBaseAndMetaSstFileWriter: rocksdb::SstFileWriter::Put() <code>字典序, 顺序写</code></li>
-<li>Kafka: LambdaKv::Put() <ul>
-<li>分段对应列族CF{Base, Delta, Meta}, 分别: rocksdb::WriteBatch::put(CF, key, CF_data)</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>StreamLoaderFileEnd：rocksdb::IngestExternalFile</li>
-</ol>
-<h4 id="CreateCkpt"><a href="#CreateCkpt" class="headerlink" title="CreateCkpt"></a>CreateCkpt</h4><ol>
-<li>rocksdb::Checkpoint::Create</li>
-<li>rocksdb::Checkpoint().CreateCheckpoint</li>
-</ol>
-<h3 id="读数据"><a href="#读数据" class="headerlink" title="读数据"></a>读数据</h3><blockquote>
-<p>从kafka和Hive的LambdaKV中读两次，取ts最新的</p>
-</blockquote>
-<h4 id="ReadKV-LambdaKV-GetBase"><a href="#ReadKV-LambdaKV-GetBase" class="headerlink" title="ReadKV -&gt; LambdaKV::GetBase()"></a>ReadKV -&gt; LambdaKV::GetBase()</h4><ol>
-<li>GetMeta() <code>optional</code></li>
-<li>GetBaseFromCache(): rocksdb::Cache::Lookup()</li>
-<li>rocksdb::Get()</li>
-<li>InsertBaseCache(): rocksdb::Cache::Insert()</li>
-</ol>
-<h4 id="LoadCkpt"><a href="#LoadCkpt" class="headerlink" title="LoadCkpt"></a>LoadCkpt</h4><ol>
-<li>CloseDB() -&gt; MoveFile() -&gt; OpenDB()</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Other</category>
-      </categories>
   </entry>
   <entry>
     <title>SVN</title>
@@ -8110,22 +8010,14 @@
     <title>MIT 6.824</title>
     <url>/2024/07/27/Distribution/ShardKV/</url>
     <content><![CDATA[<h2 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h2><hr>
-<p>39 针对大流量的情况下，如何优化客户端的读请求？<br>线性一致性读<br>Raft 的 read 有多种实现：</p>
-<ul>
-<li>Raft log read：每个 read 都有一个对应的 Op log，和 write 一样，都会走一遍一致性协议的流程，会在此 Read Op log 被 Apply 的时候读，那么这个 read Op log 之前的 write Op log 肯定也被 applied 了，那么一定能够被读取到，读到的也一定是最新的</li>
-<li>ReadIndex：我们知道 Raft log read，会有 raft read log 的复制和提交的开销，所以出现了 ReadIndex，read 没有 Op log，但是需要额外的机制保证读到最新的，所以 read 发送给 Leader 的时候，通过两条保证读到最新被 committed 的数据<ol>
-<li>它需要确认 read 返回的数据的那个点 ？必须返回最新 committed 的结果，但是一个节点刚当选 Leader 的时候并不知道最新的 committed index，这个时候需要提交一个 Noop log entry 来提交之前的 log entry，然后开始 Read</li>
-<li>它需要确认当前的 Leader 是不是还是 Leader，因为可能因为网络分区，这个 Leader 已经被孤立了，所以 Leader 在返回 read 之前，先和 Replica-group 的其他成员发送 heartbeat 确定自己 Leader 的身份；</li>
-</ol>
-</li>
-<li>Lease read：主要是通过 lease 机制维护 Leader 的状态，来减少了 ReadIndex 每次 read 发送 heartheat 的开销</li>
-<li>Follower read：先去 Leader 查询最新的 committed index，然后拿着 committed Index 去 Follower read，从而保证能从 Follower 中读到最新的数据，当前 etcd 就实现了 Follower read</li>
-</ul>
-<p>这里，面试的时候最好直接回答第四个优化点，因为可以大大减轻服务器的负担，第三点对分布式系统的时钟准确性要求很高，否则可能会出现不一致。</p>
-<p>39.2 readIndex+lease read机制<br>虽然 ReadIndex Read 比第一种方法快很多，但我们发现还是有一次心跳包的网络开销，raft论文里提到了一种更激进的方式，也就是leader其实都存在一个’在位期’, 也就是说leader会向follower发送心跳包，当收到大多数节点的回复后即确认了leader身份，并记录下时间戳t1,如果读过raft论文我们会知道，follower会在Election Timeout超时后，才会认为leader挂掉，并发起一次新的选举，也就是说在下一次leader选举肯定发生在t1 + Election Timeout +&#x2F;- 时钟偏移量之后，因此第二种方法的中，通过发送心跳包确认leader身份这一步就可以省略掉了，在Election Timeout内只需要确认一次即可，相对一种方式，不仅仅不需要写raft日志，连心跳包都省略掉了，可想而知，性能会大大提升，但这里存在一个潜在的问题是，服务器的时间可能会偏移，存在一定的误差，如果偏移过大的话，这种机制就不够安全。</p>
-<p>39.3 ReadIndex + Lease Read中的租期什么时候更新，比如接受了写请求？发生了leader更换？还有其他的吗？<br>39.4 要准确地实现租约，需要解决时钟漂移等问题，这在分布式系统中是非常具有挑战性的。为什么时钟漂移等问题对准确实现租约很重要？（待解决）<br>39.2 对比readIndex，Follower Read的好处？<br>Follower Read优点是可以显著减轻领导者的负载，并提高读取性能。缺点是需要额外的通信延迟，因为每个读请求都需要先去询问领导者最新的commitIndex。</p>
-<p>39.2.1 read Index对于每一个读请求也都会发送心跳给每一个从节点啊，理论上发送的rpc数都差不多，为什么Follower Read就可以减轻负载？<br>答：因为读操作涉及到读取内存数据，响应数据给各个客户端，其实从rpc数量上讲，所有参与follower read的从节点响应给客户端数据的rpc请求数等于leader节点的响应rpc数，另外leader节点还需要涉及到内存IO，这本身也是耗费时间的</p>
-<h3 id="常见QA"><a href="#常见QA" class="headerlink" title="常见QA"></a>常见QA</h3><p><strong>Raft 主要在什么场景中使用</strong></p>
+<h3 id="常见QA"><a href="#常见QA" class="headerlink" title="常见QA"></a>常见QA</h3><details blue><summary> Folding </summary>
+              <div class='content'>
+              <p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p><p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p><p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p><p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p><p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p><p><strong>Raft 对网络有什么假设</strong></p><p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p><p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p><p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p><p><strong>Raft 中的选举流程</strong></p><ol><li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li><li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li><li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li></ol><p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
+              </div>
+            </details>
+
+<hr>
+<p><br><strong>Raft 主要在什么场景中使用</strong></p>
 <ul>
 <li>元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。</li>
 <li>数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。</li>
@@ -8137,21 +8029,6 @@
 <li>全量快照同步代价大。如果快照数据量很大，每次全量发送代价会过高。尤其是如果 Follower 本地有一些较老的快照时，我们只需要发增量部分即可。</li>
 <li>难以利用多核。因为 log 只有一个写入点，所有操作都得抢这一个写入点。</li>
 </ul>
-<p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p>
-<p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p>
-<p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p>
-<p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p>
-<p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p>
-<p><strong>Raft 对网络有什么假设</strong></p>
-<p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p>
-<p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p>
-<p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p>
-<p><strong>Raft 中的选举流程</strong></p>
-<ol>
-<li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li>
-<li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li>
-<li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li>
-</ol>
 <p><strong>Raft prevote机制</strong></p>
 <p>节点 A 和其他节点发生网络隔离后，会不断发起选举但一直无法当选，推高 Term。等网络恢复通信后，由于 A 的 Term 最高，会强迫当前的 Leader 下台，重新选主。但由于在隔离期间日志被落下很多，A 通常也无法成为 Leader，最终大概率是原来的 Leader 的 Term 被拉上来之后，重新当选为 Leader。这个过程形象的称之为“惊群效应”。</p>
 <p>PrevVote机制：每次发起选举时，不再推高 Term，但是会拿着 Term+1 去跟其他 Peer 要票，如果能要到合法的票数，再去推高 Term。</p>
@@ -8159,11 +8036,17 @@
 <li>如果能要到多数票就保证了没发生网络隔离、日志是最新的</li>
 <li>如果要不到多数票，就不能推高 Term，防止网络隔离的节点一直推高 Term。</li>
 </ul>
-<p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
-<p><strong>新任期leader为什么向从节点同步no-op</strong></p>
+<p><strong>新任期leader为什么同步no-op日志</strong></p>
+<blockquote>
 <p>因为leader选举的一个依据是日志的新旧程度(lastLogIndex)，但是受限于从节点的日志复制进度，<code>commitIndex &lt;=lastLogIndex</code>。所以如果在一个新任期的开始，客户端的读<code>(commitIndex, lastLogIndex]</code>之间的日志，可能读取的是未提交的数据。</p>
 <p>因此规定在任期开始时，leader会在处理所有读请求之前写入一个”no-op”日志，主节点的lastLogIndex自增，然后将<code>(nextIndex[i], lastLogIndex]</code>区间的日志发送给响应的从节点，这样当多数从节点接收到后，leader节点可以提交这个日志项，commitIndex更新为lastLogIndex，确保读到最新数据。</p>
-<p>相反如果主节点是旧leader，则各个从节点会拒绝接收日志并且将自己的任期号和日志相关的信息告诉这个旧leader，旧leader收到响应后更新Term变为Follower, 拒绝客户端的读请求并且将leader信息返回给客户端，客户端将读请求发送给新leader</p>
+</blockquote>
+<p>“no-op”日志即只有 index 和 term 信息，command 信息为空，也是要写到磁盘存储的。</p>
+<p>本质原因：新Leader当选后，旧任期的日志只能通过commit自己任期的日志来捎带提交，如图 Raft-figure8 所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>(c)中S5刚写完一条日志就挂了，S1重新当选Leader，Term&#x3D;4。此时还没有新的请求写入，如果S1将此前的<code>index=2 &amp;&amp; term=2</code> 的日志append到多数节点并提交了（<strong>埋下了隐患</strong>）<br>(d)中S1又挂了，S5重新当选，并将 <code>index=2 &amp;&amp; term=3</code> 的日志复制到其他节点并提交，此时 index&#x3D;2 的日志提交了两次，已提交过的日志被覆盖了！！！ </p>
+<p>虽然加了这个约束不会重复提交了，但如果一直没新的请求进来，旧term的日志迟迟无法提交，Leader 查到日志有记录但又不能回复，线性一致性要求不能返回陈旧的数据，Leader 迫切地需要知道这条日志到底能不能提交。</p>
+<p>因此需要在 Leader 刚选举成功的时候立刻追加一条”no-op”日志，”no-op”日志一经提交，隐式地提交了之前任期未提交的日志，确认当前 commitIndex。</p>
 <p><strong>Raft 和 Paxos 有什么区别</strong></p>
 <ul>
 <li>Raft 和 Paxos 都是共识协议，而所有的共识协议在原理上都可以等价为 Paxos，共识协议本质上都是 Paxos。</li>
@@ -8184,8 +8067,6 @@
 <p><strong>简述基于 raft 的分布式 KV 系统的架构</strong></p>
 <p>一个基于 raft 的分布式 KV 系统，实际上是由一组使用 raft 算法进行状态复制的节点组成。客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
 <p>以上是单个 raft 集群的分布式 KV 系统架构。如果系统中数据量较大，一个 raft 集群可能无法承受大量的数据，性能也会受到影响。因此还基于此设计了可分片的分布式 shardkv 系统。shardkv 由多个 raft 集群组成，每个集群负责一部分 shard 数据。Shard 到 raft 集群的映射关系，保存在独立的配置服务中。</p>
-<p><strong>分布式系统中读数据的流程是什么样的，如何优化</strong></p>
-<p>为了保证线性一致性，目前的实现是利用了 raft 算法，将读请求传入到 raft 并进行状态复制，这样能够<strong>保证读到的数据一定是最新的</strong>。<br>但是由于读请求也进行了一次日志复制，执行效率会受到影响，业界常用的两种优化方式是 ReadIndex 和 LeaseRead。</p>
 <p><strong>如何处理客户端的重复请求</strong></p>
 <p>如果客户端的请求已经提交，但是 server 返回的过程中结果丢失，那么客户端会发起重试，导致这个请求在状态机中被执行了两次，会违背线性一致性。</p>
 <p>因此需要保证客户端的请求只能被状态机应用一次，可以维护一个去重哈希表(duplicateTable)，<code>客户端 ID + 命令 ID</code> 组成一个唯一的标识符，<br>每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
@@ -8193,8 +8074,6 @@
 <blockquote>
 <p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
 </blockquote>
-<p><strong>Shardkv 的配置怎么保存</strong></p>
-<p>Shardkv 的配置是单独保存在一个服务中，客户端会向这个服务发起请求，查询 key 所属的 shard 应该在哪个 raft 集群中，并向这个集群发起请求。<br>配置服务也需要高可用特性，因为配置服务如果发生故障不可用的话，那么整个分布式 kv 服务都会无法提供服务，因此也使用 raft 算法保证高可用，构建了一个单 raft 集群来存储配置信息。</p>
 <p><strong>Shard 数据如何迁移</strong></p>
 <p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。<br>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
 <p><strong>Shard 迁移的时候，客户端的请求会受到影响吗</strong></p>
@@ -8202,32 +8081,40 @@
 <p><strong>如果处理并发的客户端请求和 shard 迁移请求</strong></p>
 <p>客户端请求和 shard 迁移请求的确存在并发情况，如果处理顺序不一致，会违背线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
 <hr>
-<h3 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h3><h4 id="Raft线性一致性读"><a href="#Raft线性一致性读" class="headerlink" title="Raft线性一致性读"></a>Raft线性一致性读</h4><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
-<p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p>
-<p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<div class="note "><p><strong></strong></p><p>一个分布式系统实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机（state machine）的一致性没有做详细规定，用户可以自由实现，如基础的 LogRead 和优化的 ReadIndex、LeaseRead。</p></div>
+<h2 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h2><h3 id="什么是线性一致读"><a href="#什么是线性一致读" class="headerlink" title="什么是线性一致读"></a>什么是线性一致读</h3><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p><p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+              </div>
+            </details>
 
-<h4 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h4><p>以 TiKV 为例，Client 将请求发送到 Leader 后，Leader 将请求通过 Raft 复制到自身以及 Follower 的 Log 中，然后将其 commit。TiKV 将 commit 的 Log 应用到状态机（RocksDB）上，由于 Log 都一样，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
+<h3 id="为什么有线性一致的问题"><a href="#为什么有线性一致的问题" class="headerlink" title="为什么有线性一致的问题"></a>为什么有线性一致的问题</h3><p>实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机的一致性没有做详细规定，用户可以自由实现。例如 TiKV 在将 commit 的 Log 应用状态机（RocksDB）上时，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
+<h3 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h3><p>每个 read 都有一个对应的 Op log，和 write 一样都走一遍一致性协议的流程。这个方法依据 commit index 对所有请求都做了排序，Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
 <blockquote>
-<p>这也就是为什么 <strong>读操作</strong> 也要通过 raft 来 commit</p>
+<p>缺点：RPC 和 Log 开销、性能差（所有请求被序列化了，无法并发的操作状态机）</p>
 </blockquote>
-<p>有一个简单的解决方法：<strong>依次应用 Log，将应用后的结果返回给 Client</strong>。</p>
-<ul>
-<li><p>这个方法简单通用，读写请求都可以这样实现。这个方法依据 commit index 对所有请求都做了排序，即 commit 决定了 R&#x2F;W 事件发生的顺序。Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
-</li>
-<li><p>这个方法的缺点是性能差，因为所有请求在 Log 那边就被序列化了，无法并发的操作状态机。</p>
-</li>
-</ul>
-<p>这样的读简称 LogRead。由于读请求不改变状态机，这个实现就显得有些“重“，不仅有 RPC 开销，还有写 Log 开销。优化的方法大致有两种：ReadIndex、LeaseRead</p>
-<h4 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h4><p>相比于 LogRead，ReadIndex 跳过了 Log，节省了磁盘开销，它能大幅提升读的吞吐。在处理读请求之前，将 commitIndex 推进到最新的位置。Leader 执行 ReadIndex 大致的流程如下：</p>
+<h3 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h3><p>由于只读请求并没有需要写入的数据，因此并不需要将其写入Raft日志，而只需要关注收到请求时leader的commit index。只要在该commit index被应用到状态机后执行读操作，就能保证其线性一致性。因此使用了ReadIndex的leader在收到只读请求时，会按如下方式处理：</p>
 <ol>
-<li>记录当前的 commitIndex，称为 ReadIndex</li>
-<li>向 Follower 发起一次心跳，如果大多数节点回复了，那就能确定现在仍然是 Leader</li>
-<li>等待状态机至少应用到 ReadIndex 记录的 Log</li>
-<li>执行读请求，将结果返回给 Client</li>
+<li><strong>确认 read 返回的数据的哪个点</strong>？记录当前的commit index，作为read index; 如果新 Leader 不知道最新的 committ index，则提交一个 No-op log entry 来提交之前的 log entry</li>
+<li><strong>确认当前的 Leader 是不是还是 Leader</strong>？避免网络分区时 Leader 被孤立的情况。向集群中的所有节点广播一次心跳，是否收到了过半数量的心跳响应</li>
+<li><strong>等到 leader 本地的apply index &gt;&#x3D; read index</strong>，此时可以保证只读操作的线性一致性</li>
+<li>让状态机执行读操作，将结果返回给客户端</li>
 </ol>
-<p>第 3 点中的 <code>至少</code> 是关键要求，它表明状态机应用到 ReadIndex 之后的状态都能使这个请求满足线性一致，不管过了多久，也不管 Leader 有没有飘走。为什么在 ReadIndex 只有就满足了线性一致性呢？之前 LogRead 的读发生点是 commit index，这个点能使 LogRead 满足线性一致，那显然发生这个点之后的 ReadIndex 也能满足。</p>
+<blockquote>
+<p>缺点：每次 read 发送心跳开销太大</p>
+</blockquote>
+<h3 id="Lease-read"><a href="#Lease-read" class="headerlink" title="Lease read"></a>Lease read</h3><p>为了减少了 ReadIndex 每次 read 发送 heartheat 的开销，每次 leader 发送RPC的时候，会首先记录一个时间点 start，当系统大部分节点都回复时，就可以认为 leader 的 lease 有效期可以到 <code>start + election timeout + clock drift bound（正负未知）</code> 这个时间点。因为 follower 至少在 election timeout的时间之后才会重新发生选举，<strong>所以在Election Timeout内只需要确认一次即可</strong></p>
+<blockquote>
+<p>缺点：对分布式系统的时钟准确性要求很高，否则可能会出现不一致</p>
+</blockquote>
+<h3 id="Follower-read"><a href="#Follower-read" class="headerlink" title="Follower read"></a>Follower read</h3><p>TiKV的特性：当客户端对一个 Follower 发起读请求的时候，Follower 会请求此时 Leader 的 Commit Index，然后等本地 Apply 到 Leader 最新的 Commit Index 后，自己将这条数据返回给客户端。从而显著减轻 Leader 的负载，并提高读取性能。</p>
+<blockquote>
+<p>缺点：</p>
+<ul>
+<li>需要额外的通信延迟，因为每个读请求都需要先去询问领导者最新的commitIndex，所以减低延迟不明显，但好在优化读吞吐。</li>
+<li>破坏线性一致性：由于Apply是异步的，Follower 可能比 Leader 先 Apply 这条记录，这样在 Follower 读到这条记录时，Leader 过一会才能读取到。但是好在是永远返回最新的数据。</li>
+</ul>
+</blockquote>
 <hr>
 <h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
 <h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
@@ -8257,7 +8144,9 @@
   <entry>
     <title>Distribution</title>
     <url>/2024/07/27/Distribution/Distribution/</url>
-    <content><![CDATA[<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
+    <content><![CDATA[<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>    - 强一致性、单调一致性、最终一致性<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
+<h2 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h2><p>Basically Available（基本可用）：分布式系统在出现不可预知故障的时候，允许损失部分可用性<br>Soft state（软状态）：软状态也称为弱状态，和硬状态相对，是指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。<br>Eventually consistent（最终一致性）：最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性</p>
+<p>BASE是对CAP中一致性和可用性权衡的结果，其基本思路就是：通过业务，牺牲强一致性而获得可用性，并允许数据在一段时间内是不一致的，但是最终达到一致性状态。</p>
 <h2 id="一致性协议"><a href="#一致性协议" class="headerlink" title="一致性协议"></a>一致性协议</h2><h3 id="线性一致性"><a href="#线性一致性" class="headerlink" title="线性一致性"></a>线性一致性</h3><p><strong>一句话概括：在分布式系统上实现寄存器语义</strong>。寄存器中的变量可以被原子地被修改，且后续对该变量的读取会返回当次修改的值，直到其被再此修改，简单来说是<strong>保证读到最近更新的值</strong>。</p>
 <p>如何判断一个分布式系统是具备线性一致性？首先我们约定好线性一致性条件下请求之间的相互关系：</p>
 <ul>
@@ -8268,26 +8157,71 @@
 <p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
 <h3 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h3><p>不要求操作的时序与真实物理时间一致。两个不相关的操作，如序列 <code>读A 写A 读B 写B</code>，要求读A、B能读到最新值，但不要求读B到最新值时，读A也一定是最新值。</p>
 <h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p><strong>1. 两阶段提交</strong></p>
-<ul>
-<li>准备阶段：只在本地执行事务不提交，投票反馈给协调者</li>
-<li>提交阶段：提交</li>
+<ol>
+<li>提交事务请求（投票阶段）<ul>
+<li><strong>协调者</strong>向<strong>参与者</strong>发送事务内容，询问是否可以执行事务提交操作，等待响应</li>
+<li>参与者执行事务操作，将undo和redo日志记录，并回复协调者执行成功Yes&#x2F;No</li>
 </ul>
-<blockquote>
+</li>
+<li>执行事务提交（执行阶段）.<ul>
+<li>如果都是参与者都回复Yes，则协调者向参与者发送提交请求，否则发送回滚请求</li>
+<li>参与者根据协调者的请求执行事务提交或回滚，并向协调者发送Ack消息</li>
+<li>协调者收到所有的Ack消息过后判断事务的完成或者中断</li>
+</ul>
+</li>
+</ol>
 <p>它是一个强一致性协议，但可用性太差，存在问题：</p>
 <ul>
 <li>阻塞与单点故障：所有参与者必须收到协调者发起的指令才会提交，否则资源会被锁定，但当网络问题或协调者宕机时会阻塞</li>
-<li>一致性问题：参与者可能没收到协调者发送的指令</li>
+<li>一致性问题：网络原因，参与者可能没收到协调者发送的指令(commit)，导致集群数据不一致</li>
 </ul>
-</blockquote>
-<p><strong>2. 三阶段提交</strong></p>
+<p>优化：</p>
 <ul>
-<li>通过超时机制解决阻塞问题</li>
-<li>通过增加询问环节降低锁资源导致阻塞的概率</li>
+<li>超时判断：长时间未收到回复可以多播取消事务</li>
+<li>互询机制：参与者回复yes后，如果迟迟收不到协调者最终的commit&#x2F;abort，可以询问其他参与者来决定自身下一步操作，避免一直阻塞</li>
 </ul>
-<blockquote>
-<p>改善了两阶段提交，但仍然存在单点故障和不一致问题<br><strong>3. Raft、Paxos</strong></p>
-</blockquote>
+<p>2PC广泛应用于关系数据库的分布式事务处理，如mysql的内部与外部XA都是基于2PC的，一般想要把多个操作打包未原子操作也可以用2PC</p>
+<p><strong>2. 三阶段提交</strong><br>把2PC的第一阶段拆成两阶段：</p>
+<ol>
+<li>事务询问（canCommit）<ul>
+<li>协调者向参与者发送一个包含事务内容的询问请求，<strong>询问是否可以执行事务</strong>并等待</li>
+</ul>
+</li>
+<li>执行事务预提交（preCommit）<ul>
+<li>若协调者收到全是yes，就发送preCommit请求，否则发布abort请求</li>
+<li>参与者若收到preCommit则执行事务操作并记录undo和redo然后发送Ack</li>
+</ul>
+</li>
+<li>执行事务提交（doCommit）<ul>
+<li>协调者收到所有的Ack则发送doCommit请求，若收到了No或者超时则发送abort请求</li>
+<li>参与者收到doCommit就执行提交并发送Ack，否则执行回滚并发送Ack</li>
+<li>协调者收到Ack判断是完成事务还是中断事务</li>
+</ul>
+</li>
+</ol>
+<p>2PC 和 3PC 是分布式事务中两种常见的协议，3PC 可以看作是 2PC 协议的改进版本，相比于 2PC 它有两点改进：</p>
+<p>引入了超时机制，同时在协调者和参与者中都引入超时机制（2PC 只有协调者有超时机制），所以发生阻塞的几率变小了<br>3PC 相比于 2PC 增加了 CanCommit 阶段，可以尽早的发现问题，从而避免了后续的阻塞和无效操作。</p>
+<p><strong>3. Raft、Paxos</strong></p>
 <h2 id="最终一致性模式"><a href="#最终一致性模式" class="headerlink" title="最终一致性模式"></a>最终一致性模式</h2><p>系统保证数据最终达到完全一致的状态，但所需时间不能保证。业务系统对一致性大多数情况没那么高，更多强调高可用，因此，多数业务系统倾向于AP</p>
+<h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><p>一致性算法的目的是保证在分布式系统中，多数据副本节点数据一致性。主要包含一致性Hash算法，Paxos算法，Raft算法，ZAB算法等。</p>
+<h3 id="ZAB"><a href="#ZAB" class="headerlink" title="ZAB"></a>ZAB</h3><p>ZAB 协议是为分布式协调服务 Zookeeper 专门设计的一种支持 <code>崩溃恢复</code> 和 <code>原子广播</code> 协议。基于该协议，Zookeeper 实现了一种 <strong>主备模式</strong> 的系统架构来保持集群中各个副本之间数据一致性。</p>
+<p>所有客户端写入数据到 <code>主进程</code>（Leader）中，由 <code>Leader</code> 复制到<code>备份进程</code>（Follower）中，从而保证数据一致性，从设计上看和 Raft 类似。<br>复制过程类似 2PC，ZAB 只需要 Follower 有一半以上返回 Ack 信息就可以执行提交，大大减小了同步阻塞，也提高了可用性。</p>
+<p>当 Leader 服务可以正常使用，就进入消息广播模式，当 Leader 不可用时，则进入崩溃恢复模式。</p>
+<p><strong>消息广播</strong>：</p>
+<ul>
+<li>使用的是一个原子广播协议，类似一个2PC过程。对于客户端发送的写请求，全部由 Leader 接收，Leader 将请求封装成一个事务 Proposal，将其发送给所有 Follwer ，然后根据所有 Follwer 的反馈，如果超过半数成功响应，则执行 commit 操作</li>
+<li>在 Leader 和 Follwer 之间还有一个消息队列，用来解耦他们之间的耦合，避免同步，实现异步解耦</li>
+</ul>
+<p><strong>崩溃恢复</strong>：<br>ZAB定义两个原则：</p>
+<ul>
+<li>ZAB 协议确保那些已经在 Leader 提交的事务最终会被所有服务器提交。</li>
+<li>ZAB 协议确保丢弃那些只在 Leader 提出&#x2F;复制，但没有提交的事务。</li>
+</ul>
+<p>Leader 崩溃后选举时，要保证新选举出来的 Leader 拥有集群总所有机器编号（即 ZXID 最大）的事务，即这个 Leader 一定具有所有已经提交的提案。<br>当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID (LeaderId + 事务ID) 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。</p>
+<p>假设1：Leader 在复制数据给所有 Follwer 之后崩溃，怎么办？<code>丢弃没有提交的数据</code><br>假设2：Leader 在收到 Ack 并提交了自己，同时发送了部分 commit 出去之后崩溃怎么办？<code>最终会同步所有服务器的数据</code></p>
+<blockquote>
+<p>zookeeper是弱一致性模型，但是也可以支持强一致性模型，用sync()方法强制读取从leader同步数据。。</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>Distribution</category>
@@ -8295,5 +8229,119 @@
       <tags>
         <tag>Distribution</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Memo</title>
+    <url>/2023/05/19/Software/Memo/</url>
+    <content><![CDATA[<h2 id="Outcomes"><a href="#Outcomes" class="headerlink" title="Outcomes"></a>Outcomes</h2><h3 id="Ckpt-opt"><a href="#Ckpt-opt" class="headerlink" title="Ckpt opt"></a>Ckpt opt</h3><p>背景：LoadCkpt慢<br>原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载<br>解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度</p>
+<h4 id="线程数"><a href="#线程数" class="headerlink" title="线程数"></a>线程数</h4><p>实验测得 4 线程最佳</p>
+<h4 id="文件创建加速"><a href="#文件创建加速" class="headerlink" title="文件创建加速"></a>文件创建加速</h4><p>fallocate 通过只初始元数据、磁盘预留空间的方式，避免调用 write 写全 0，带宽增加了一倍</p>
+<h4 id="Numa-Aware-Pool"><a href="#Numa-Aware-Pool" class="headerlink" title="Numa Aware Pool"></a>Numa Aware Pool</h4><p>目前：每个 partition 使用 <code>IOThreadPoolExecutor</code> 并行加载 seg_file，每次<strong>读一条</strong> record 写到对应 kv 中。例如 kv 16 个分布在两个 NUMA 上，4 个 seg_file 中的 record 是随机来自这 16 个 kv 中的</p>
+<p>导致：① put 线程可能会访问另一个 NUMA 上的 AEP；② 多个线程并发访问 kv</p>
+<p>方案：</p>
+<ol>
+<li>加载 skpt 优化<ul>
+<li>从快照每次 Batch 读多条 records</li>
+<li>每个 record 解析出 key 后，先 hash 出它在那个 kv，进而得知在那个 numa（初始 kv 时记录所属 numa_id），将 put 任务 submit 到 Pool</li>
+</ul>
+</li>
+<li>Numa aware pool：<ul>
+<li>给每个 numa 创建独立的 <code>folly::CPUThreadPoolExecutor</code>，共 2 个</li>
+<li>创建 pool 时通过传入工厂类参数设置 CPU 亲和性，绑定 cpu_id 列表</li>
+<li><code>pool-&gt;Submit(numa_id, fuction&lt;T()&gt;f)</code> -&gt; <code>pool-&gt;addFuture(f)</code></li>
+</ul>
+</li>
+<li>写 ckpt 优化<ul>
+<li>对每个 partition，用 <code>IOThreadPool</code> 异步并发调用写 seg_file，例如 16 kv 导出为 4 seg_file</li>
+<li>以往是遍历所有 kv 根据 key 取模保存到 seg_file 中，改进为让某 kv_id % 4 &#x3D;&#x3D; seg_id 的保存到一个 seg_file 中，确保单线程写 kv</li>
+<li>对 kv 的读取顺序 shuffle，防止读带宽都集中在一个盘</li>
+</ul>
+</li>
+</ol>
+<h3 id="Cold-keys"><a href="#Cold-keys" class="headerlink" title="Cold keys"></a>Cold keys</h3><p>Delta 在内存中，每个 value 分配 16KB，为了优化 DRAM 利用率，后台线程收集长期不访问的 key，合并到 SSD 的 Base，清空 Delta 仅保留 64B 的 Meta</p>
+<h3 id="SkewMerge"><a href="#SkewMerge" class="headerlink" title="SkewMerge"></a>SkewMerge</h3><p>Delta + Base 合并时，默认是归并，比较次数多且大量的小块复制。<br>由于 Base &gt;&gt; Delta，合并后为 <code>Base*n | Delta*1 | Base*m | Delta*1 | ...</code> 的形式，可遍历 Delta，在 Base 中 find 到有序插入位置，然后将 <code>一段Base + 一个Delta</code> 拷贝到 NewBase</p>
+<p>find 算法在二分基础上优化，由于 Delta 时间戳较新，一般会在 Base 尾部，故从尾部向前用指数查找确定一个范围 <code>[n - 2^k, n - 2^(k/2)]</code>，之后其间二分</p>
+<hr>
+<h2 id="Protobuf-vs-FlatBuffers"><a href="#Protobuf-vs-FlatBuffers" class="headerlink" title="Protobuf vs FlatBuffers"></a>Protobuf vs FlatBuffers</h2><h3 id="FlatBuffers"><a href="#FlatBuffers" class="headerlink" title="FlatBuffers"></a>FlatBuffers</h3><p>FlatBuffers在序列化时计算了各字段在数据体的偏移量，并存储在数据体中。因此，反序列化时，先读取字段的偏移量再读取数据即可。因为反序列化过程没有内存拷贝、数据解码等耗时操作，所以速度非常快，但是数据量比原数据有所增加。此外，生成的代码量较少，CPU占用较低</p>
+<p>场景：延迟和性能要求高，特别是在数据不需要全部加载到内存中的场景</p>
+<h3 id="Protobuf"><a href="#Protobuf" class="headerlink" title="Protobuf"></a>Protobuf</h3><p>压缩后的数据包更小，但序列化与反序列化都比较重度，生成的代码量较大，CPU占用较高，内存占用较多。语言支持更广，解决方案更广泛、成熟</p>
+<p>场景：适用于需要高效传输大量数据的分布式应用，如网络通信和数据存储</p>
+<p>技巧：消息的字段数量不超过15、正数使用uint而非int、尽量控制int32或int64型数据在0~127</p>
+<hr>
+<h2 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h2><h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><p>gRPC是一种高性能 RPC 框架。使用Protocol Buffers作为二进制序列化，并使用HTTP&#x2F;2协议进行传输。gRPC基于服务的思想：定义一个服务，描述这个服务的方法以及入参出参，服务器端有这个服务的具体实现，客户端保有一个存根，提供与服务端相同的服务。</p>
+<ul>
+<li>基于 ProtoBuf 接口定义语言：它可以定义服务的方法和消息类型，并生成各种语言的代码桩，实现跨平台。</li>
+<li>HTTP&#x2F;2作为底层传输协议：支持二进制传输效率高、双向流、消息头压缩、单 TCP 的多路复用、服务端推送等。</li>
+<li>支持流式数据：gRPC支持流式传输，即服务可以持续发送数据，而客户端可以持续接收数据。这在传输大量数据时非常有用。</li>
+<li>gRPC同时支持同步调用和异步调用，同步RPC调用时会一直阻塞直到服务端处理完成返回结果，异步RPC是客户端调用服务端时不等待服务段处理完成返回，而是服务端处理完成后主动回调客户端告诉客户端处理完成</li>
+</ul>
+<p>gRPC与HTTP&#x2F;2的关系：HTTP&#x2F;2为长连接、实时的通信流提供了基础。gRPC建立在这个基础之上，具有连接池、健康语义、高效使用数据帧和多路复用以及KeepAlive，gRPC的通讯基石就是HTTP&#x2F;2</p>
+<p>基于http2协议的特性：gRPC允许定义如下四类服务方法          </p>
+<ol>
+<li>一元RPC：客户端发送一次请求，等待服务端响应结构，会话结束，就像一次普通的函数调用这样简单<br><img src="https://i-blog.csdnimg.cn/blog_migrate/53d6e23d0984b1c82de5cfb596484443.png#pic_center" class="lazyload" data-srcset="https://i-blog.csdnimg.cn/blog_migrate/53d6e23d0984b1c82de5cfb596484443.png#pic_center" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></li>
+<li>服务端流式RPC：客户端发起一起请求，服务端会返回一个流，客户端会从流中读取一系列消息，直到没有结果为止</li>
+<li>客户端流式RPC：客户端提供一个数据流并写入消息发给服务端，一旦客户端发送完毕，就等待服务器读取这些消息并返回应答</li>
+<li>双向流式RPC：客户端和服务端都一个数据流，都可以通过各自的流进行读写数据，这两个流是相互独立的，客户端和服务端都可以按其希望的任意顺序独写<br><img src="https://i-blog.csdnimg.cn/blog_migrate/ce153e61a01dc20f445c62f91566068b.png#pic_center" class="lazyload" data-srcset="https://i-blog.csdnimg.cn/blog_migrate/ce153e61a01dc20f445c62f91566068b.png#pic_center" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></li>
+</ol>
+<p>名称解析器和负载平衡器：解析器将名称转换为地址，然后将这些地址交给负载均衡器。负载均衡器负责从这些地址创建连接，并在连接之间对rpc进行负载均衡。</p>
+<p>当连接失败时，负载均衡器将开始使用最后已知的地址列表重新连接。同时，解析器将开始尝试重新解析主机名列表，告知负载均衡器。</p>
+<p>对于失效连接：</p>
+<ul>
+<li>对方主动关闭、超时计时器情况：TCP的 FIN 语义即可完成 HTTP2&#x2F;GRPC 连接的关闭</li>
+<li>端点死亡、挂起而不通知客户端：TCP得长时间重试，gRPC 使用 HTTP2 语义中的 PING 帧绕过流量控制，判断连接是否有效</li>
+</ul>
+<h3 id="BRPC"><a href="#BRPC" class="headerlink" title="BRPC"></a>BRPC</h3><h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ol>
+<li>性能好，M：N （bthread:pthread）高效轻量的线程模型</li>
+<li>自带性能监控和分析功能：bvar，一般的RPC框架没有提供热点分析、延时统计的工具，brpc通过自带的 bvar 能够监控并采集到多种性能相关的数据，便于快速确定热点、定位瓶颈。</li>
+</ol>
+<h4 id="Bthread"><a href="#Bthread" class="headerlink" title="Bthread"></a>Bthread</h4><p>线程模型：1:1，一个内核线程里只有一个用户线程。利于调度到其他核上，多核扩展性好。缺点：线程锁、线程调度到另一个CPU时，data要从L1 cache同步到其他cpu，锁住总线。</p>
+<p>协程模型：n:1，n个用户线程跑在一个CPU上。无多线程竞争，数据的locality好，但难以扩展到多核，一个线程阻塞会阻塞整个内核线程。</p>
+<p>Bthread 通过实现上层 M：N 线程绑定减小了线程间的来回调度，减小了cache buncing；通过内部的多个队列和 stealing worker 机制，保证了整体的并发度<code>QPS*latency</code>最大；</p>
+<p>Bthread的机制核心是 work stealing，即 pthread 之间可以偷bthread来执行，一个bthread被卡住不会影响其他bthread。每个bthread两种调度方式，既可以只在某一个内核线程里调度（locality不错），也可以在该bthread被卡住时，允许被偷到其他内核线程去运行，只要有空闲的worker(pthread)在，就不会有bthread被阻塞，保证了多核在任意时刻只要有bthread被创建出来就可以去跑任务。</p>
+<h4 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h4><p>BRPC通过IOBuf（非连续零拷贝缓存）方式减少数据传递处理过程中的拷贝，提高了数据传输效率。此外，各种ThreadLocal的ResourcePool、Object Pool等优化了定长的短生命周期的申请和释放，减少了内存分配和释放的开销。</p>
+<h4 id="执行队列"><a href="#执行队列" class="headerlink" title="执行队列"></a>执行队列</h4><p>BRPC使用<strong>多生产者单消费者无锁队列</strong>作为执行队列，实现了多生产者单消费者之间的的高效通信。这种队列设计避免了锁竞争和线程同步的问题，提高了系统的吞吐量和并发性能。在实现单TCP连接复用、高效发送-接收数据等方面发挥了很重要的作用。</p>
+<hr>
+<h2 id="StreamLoader"><a href="#StreamLoader" class="headerlink" title="StreamLoader"></a>StreamLoader</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CompoundLoader</span> : StreamLoaderBase &#123;</span><br><span class="line">  map&lt;int32, vector\&lt;PerDbData&gt;&gt; table_db_map_</span><br><span class="line">  map&lt;string, LoaderProcessor*&gt; loaders; <span class="comment">// hive, kafka, btq...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>退出方式：</p>
+<ol>
+<li>per_db-&gt;stop &#x3D; true，Processor::ThreadWork 循环中检测退出</li>
+<li>StreamLoaderBase::ThreadWorkBase 退出，此时所有 ThreadWork 线程已 join</li>
+<li>StreamLoaderBase 唤醒 CondVar，通过 BeforeUnsubscribe() 停止consumer消费</li>
+</ol>
+<p>关于offset：</p>
+<ul>
+<li>框架由db传入，若db没记录则从 info_file 获取</li>
+<li>框架定期调用 GetSubscribeInfo 将 offset 持久化到文件中</li>
+</ul>
+<h3 id="StreamLoaderBase"><a href="#StreamLoaderBase" class="headerlink" title="StreamLoaderBase"></a>StreamLoaderBase</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Subscribe</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="built_in">SetOptions</span>()</span><br><span class="line">  <span class="built_in">AfterSubscribe</span>() &#123;</span><br><span class="line">    loaders-&gt;<span class="built_in">AfterSubscribe</span>()</span><br><span class="line">  &#125;</span><br><span class="line">  work_threads.<span class="built_in">emplace_back</span>(&amp;StreamLoaderBase::ThreadWorkBase)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Unsubscribe</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  loaders-&gt;<span class="built_in">BeforeUnsubscribe</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ThreadWorkBase</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  CompoundLoader::<span class="built_in">ThreadWork</span>() &#123;</span><br><span class="line">    threads.<span class="built_in">emplace_back</span>(&amp;LoaderProcessor::ThreadWork)</span><br><span class="line">    threads.<span class="built_in">join</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  cv_.<span class="built_in">SignalAll</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PauseSubscribe</span><span class="params">()</span> </span>&#123; per_db.pause = <span class="literal">true</span>; &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ResumeSubscribe</span><span class="params">()</span> </span>&#123;per_db.pause = <span class="literal">false</span>; per_db.pause_notifier_.<span class="built_in">Notify</span>(); &#125;</span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">LagNearLatest</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> Processor::<span class="built_in">PerDbLagNearLatest</span>(); &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Kafka-Processor"><a href="#Kafka-Processor" class="headerlink" title="Kafka Processor"></a>Kafka Processor</h3><p>工具函数</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 调 Kafka client,  根据 timestamp 查找offset (-1 latest, -2 earliset)</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">QueryOffset</span><span class="params">(shared_ptr&lt;RawConsumer&gt; &amp;consumer, string &amp;kafka_cluster_id, </span></span></span><br><span class="line"><span class="params"><span class="function">                 string &amp;kafka_topic, <span class="type">int</span> partition, <span class="type">int64_t</span> timestamp, <span class="type">int64_t</span> *kafka_offset)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// last_offset 最后消费到的offset (多个取最早)， latest_offset Kafka中最新的 offset</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">GetOffset</span><span class="params">(PerDbData *per_db, <span class="type">int64_t</span> *last_offset, <span class="type">int64_t</span> *latest_offset)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否丢数据：当前 offset &lt; kafka earliset offset</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">IsOffsetGapExcessive</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<p>功能函数</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">AfterSubscribe</span><span class="params">(ExternStateDB *db, PerDbData *per_db)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 计算 offset, 获取kafka client consumer开始消费</span></span><br><span class="line">  offset = <span class="built_in">max</span>(earliset_offset, to_consume_offset);</span><br><span class="line">  consumer = <span class="built_in">GetRawConsumerByLogicalTopicId</span>();</span><br><span class="line">  consumer-&gt;<span class="built_in">Start</span>(cluster_id, topic_name, partition, offset);</span><br><span class="line">  <span class="comment">// 记录当前db消费offset</span></span><br><span class="line">  per_db-&gt;topic_last_offset = offset;</span><br><span class="line">  <span class="comment">// 过于落后则 remove DB</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// consumer-&gt;Stop() 释放kafka client</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BeforeUnsubscribe</span><span class="params">(ExternStateDB *db, PerDbData *per_db)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// max_latest_offset - last_offset &gt; FLAG ?</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">PerDbLagNearLatest</span><span class="params">(ExternStateDB *db, PerDbData *per_db, <span class="type">int</span> max_lag_offset)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// need sync (ckpt)?</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PerDbOffsetExpired</span><span class="params">(ExternStateDB *db, PerDbData *per_db,</span></span></span><br><span class="line"><span class="params"><span class="function">                        <span class="type">const</span> std::unordered_map&lt;std::string, std::string&gt; &amp;offset, <span class="type">bool</span> *need_sync)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">ThreadWork</span><span class="params">(ExternStateDB *db, PerDbData *per_db, vector&lt;PerDbData&gt; *table_dbs, <span class="type">int</span> thread_id)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (per_db-&gt;stop) <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> (per_db-&gt;pause) <span class="built_in">wait</span>(FLAGS_kafka_pause_s);</span><br><span class="line">    pre_db-&gt;topic_latest_offsets = <span class="built_in">QueryOffset</span>() <span class="comment">// kafka latest offset</span></span><br><span class="line">    msg = per_db-&gt;consumer-&gt;<span class="built_in">Consume</span>()</span><br><span class="line">    per_db-&gt;topic_last_offset = msg-&gt;<span class="built_in">offset</span>(); <span class="comment">// consume offset</span></span><br><span class="line">    per_db-&gt;db-&gt;<span class="built_in">StreamLoaderPut</span>(msg-&gt;<span class="built_in">payload</span>(), msg-&gt;<span class="built_in">len</span>(), topic, msg-&gt;<span class="built_in">timestamp</span>(), msg-&gt;<span class="built_in">offset</span>());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Hive-Processor"><a href="#Hive-Processor" class="headerlink" title="Hive Processor"></a>Hive Processor</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">ThreadWork</span><span class="params">(ExternStateDB *db, PerDbData *per_db, vector&lt;PerDbData&gt; *table_dbs, <span class="type">int</span> thread_id)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (hdfs_path : paths) &#123;</span><br><span class="line">      read_paths = <span class="built_in">GetReadPath</span>(hdfs_path)</span><br><span class="line">      <span class="keyword">for</span> (file_path : read_paths) &#123;</span><br><span class="line">        file = <span class="built_in">Open</span>(file_path)</span><br><span class="line">        buffer_file = <span class="built_in">BufferedFile</span>(file)</span><br><span class="line">        per_db-&gt;db-&gt;<span class="built_in">StreamLoaderFileStart</span>()</span><br><span class="line">        <span class="built_in">StreamLoaderPutByBlocks</span>()</span><br><span class="line">        per_db-&gt;db-&gt;<span class="built_in">StreamLoaderFileEnd</span>()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="built_in">StreamLoaderPutByBlocks</span>(BufferedFile &amp;buffer_file,) &#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    string block = buffer_file.<span class="built_in">ReadLine</span>()</span><br><span class="line">    per_db-&gt;db-&gt;<span class="built_in">StreamLoaderPut</span>(block.<span class="built_in">data</span>(), block.<span class="built_in">size</span>(), ...)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><h3 id="CreateCkpt"><a href="#CreateCkpt" class="headerlink" title="CreateCkpt"></a>CreateCkpt</h3><ol>
+<li>rocksdb::Checkpoint::Create</li>
+<li>rocksdb::Checkpoint().CreateCheckpoint</li>
+</ol>
+<h3 id="LoadCkpt"><a href="#LoadCkpt" class="headerlink" title="LoadCkpt"></a>LoadCkpt</h3><ol>
+<li>CloseDB() -&gt; MoveFile() -&gt; OpenDB()</li>
+</ol>
+<h3 id="读数据"><a href="#读数据" class="headerlink" title="读数据"></a>读数据</h3><blockquote>
+<p>从kafka和Hive的LambdaKV中读两次，取ts最新的<br><code>ReadKV -&gt; LambdaKV::GetBase()</code></p>
+</blockquote>
+<ol>
+<li>GetMeta() <code>optional</code></li>
+<li>GetBaseFromCache(): rocksdb::Cache::Lookup()</li>
+<li>rocksdb::Get()</li>
+<li>InsertBaseCache(): rocksdb::Cache::Insert()</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Other</category>
+      </categories>
   </entry>
 </search>

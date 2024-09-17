@@ -3,20 +3,7 @@
   <entry>
     <title>Cpp trivial</title>
     <url>/2022/11/01/CPP/Cpp%20trivial/</url>
-    <content><![CDATA[<h2 id="基本变量类型"><a href="#基本变量类型" class="headerlink" title="基本变量类型"></a>基本变量类型</h2><p>char在不同机器上实现为signed char或unsigned char，因此在存储小数时应特别指定un&#x2F;signed</p>
-<p>混用带&#x2F;无符号类型计算时，带符号数会转成无符号数，如unsigned(1)*signed(-1)&#x3D;4294967295（环境相关）</p>
-<h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><p><code>int i=0, *p=&amp;i</code>，其中基本数据类型<code>int</code>，类型修饰符<code>*或&amp;</code></p>
-<p>引用与指针：不能定义引用的指针，因为引用不是对象；反之可以</p>
-<h2 id="运算符优先级"><a href="#运算符优先级" class="headerlink" title="运算符优先级"></a>运算符优先级</h2><blockquote>
-<ul>
-<li><p>一元前缀、三元、赋值运算符<strong>从右向左</strong>结合</p>
-</li>
-<li><p>**后置a++**等价于三步：tmp &#x3D; a;  ++a; return tmp;</p>
-<p>因为a++返回的是右值(rvalue)，不能对<strong>右值</strong>（将结束生命周期的对象）自增，故++(a++)报错</p>
-</li>
-</ul>
-</blockquote>
-<table>
+    <content><![CDATA[<h2 id="运算符优先级"><a href="#运算符优先级" class="headerlink" title="运算符优先级"></a>运算符优先级</h2><table>
 <thead>
 <tr>
 <th>优先级</th>
@@ -75,21 +62,16 @@
 <td>,</td>
 </tr>
 </tbody></table>
-<h2 id="数组指针-指针数组"><a href="#数组指针-指针数组" class="headerlink" title="数组指针&amp;指针数组"></a>数组指针&amp;指针数组</h2><p><strong>1. 函数指针 &amp; 指针函数</strong></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*** 函数指针 ***/</span></span><br><span class="line"><span class="built_in">void</span> (*fun)(<span class="type">float</span>)</span><br><span class="line"><span class="comment">// 一个指针，指向参数float、返回值void的函数</span></span><br><span class="line"><span class="comment">//函数地址的获取，可以直接函数名，也可以加取地址符&amp;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*** 指针函数 ***/</span></span><br><span class="line"><span class="function"><span class="type">int</span>* <span class="title">fun</span><span class="params">(<span class="type">float</span>)</span> </span></span><br><span class="line"><span class="function"><span class="comment">//一个函数，参数float、返回值为int*</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">/**函数指针数组**/</span></span></span><br><span class="line"><span class="function"><span class="title">void</span> <span class="params">(*s[<span class="number">5</span>])</span><span class="params">(<span class="type">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="comment">//s[5]说明是数组，数组的内容是void (*)(int)类型的函数指针</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="数组指针-指针数组"><a href="#数组指针-指针数组" class="headerlink" title="数组指针&amp;指针数组"></a>数组指针&amp;指针数组</h2><p><strong>函数指针 &amp; 指针函数</strong></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*** 函数指针 ***/</span></span><br><span class="line"><span class="built_in">void</span> (*fun)(<span class="type">float</span>) <span class="comment">// 一个指针，指向参数float、返回值void的函数</span></span><br><span class="line"><span class="comment">/*** 指针函数 ***/</span></span><br><span class="line"><span class="function"><span class="type">int</span>* <span class="title">fun</span><span class="params">(<span class="type">float</span>)</span>    <span class="comment">// 一个函数，参数float、返回值为int*</span></span></span><br><span class="line"><span class="function"><span class="comment">/**函数指针数组**/</span></span></span><br><span class="line"><span class="function"><span class="title">void</span> <span class="params">(*s[<span class="number">5</span>])</span><span class="params">(<span class="type">int</span>)</span>  <span class="comment">// s[5]说明是数组，数组的内容是void (*)(int)类型的函数指针</span></span></span><br></pre></td></tr></table></figure>
 
-<p><strong>2. 数组指针 &amp; 指针数组</strong></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> (*a)[<span class="number">10</span>]  </span><br><span class="line"><span class="comment">//一个指针，指向int[10]数组; 对应二级指针级别  int **a、int a[][]</span></span><br><span class="line"><span class="type">int</span> *a[<span class="number">10</span>]</span><br><span class="line"><span class="comment">//一个数组，含10个int*变量</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>3. 相关计算</strong></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> c[<span class="number">4</span>][<span class="number">5</span>],(*p)[<span class="number">5</span>];</span><br><span class="line">p = c;</span><br><span class="line"></span><br><span class="line">p+<span class="number">1</span>  <span class="comment">//指向第一行地址</span></span><br><span class="line">*(p+<span class="number">1</span>), p[<span class="number">1</span>]  <span class="comment">//第1行首地址</span></span><br><span class="line">*(p+<span class="number">1</span>)+<span class="number">2</span>, p[<span class="number">1</span>]+<span class="number">2</span>  <span class="comment">//第1行第2列地址</span></span><br><span class="line">*(p[<span class="number">1</span>]+<span class="number">2</span>)  <span class="comment">//第1行第2列元素</span></span><br></pre></td></tr></table></figure>
+<p><strong>数组指针 &amp; 指针数组</strong></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span> (*a)[<span class="number">10</span>]  <span class="comment">//一个指针，指向int[10]数组; 对应二级指针级别  int **a、int a[][]</span></span><br><span class="line"><span class="type">int</span> *a[<span class="number">10</span>]    <span class="comment">//一个数组，含10个int*变量</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="This"><a href="#This" class="headerlink" title="This"></a>This</h2><ul>
 <li>指向对象的首地址，只能在非静态成员函数中使用。当类的<strong>非静态成员函数</strong>访问<strong>非静态成员</strong>的时候，编译器会自动将对象本身的地址作为一个隐含参数 this 传递给函数，对各成员的访问均通过 this 进行。this 在成员函数的开始执行前构造，在成员的执行结束后清除。所以This不占用对象空间，会因编译器的不同放置到栈、寄存器、甚至全局变量中</li>
 <li>用途：除了指向首地址，还能区分形参和成员变量名、返回类对象本身</li>
 </ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">    <span class="built_in">add</span>(<span class="type">int</span> k) &#123;&#125;;  </span><br><span class="line">    <span class="comment">// add(A* const this, int k)</span></span><br><span class="line">    <span class="built_in">get</span>(<span class="type">int</span> k) <span class="type">const</span>&#123;&#125;;  </span><br><span class="line"> 	<span class="comment">// get(const A* const this, int k)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h2 id="Define"><a href="#Define" class="headerlink" title="Define"></a>Define</h2><ul>
 <li>宏主要用于定义常量及书写复杂的内容，不同于typedef定义类型别名；</li>
 <li>宏在<strong>预处理阶段</strong>完成替换，属于文本插入替换，比函数执行更快；而const、typedef在编译阶段。</li>
@@ -124,27 +106,31 @@
 </li>
 <li><p><strong>成员变量</strong></p>
 <ul>
-<li><p>只在某个对象生命周期是常量，不同对象的const成员值可以不同</p>
-</li>
-<li><p>不能在类定义外部初始化，通过构造函数初始化列表初始化</p>
-</li>
+<li>只在某个对象生命周期是常量，不同对象的const成员值可以不同</li>
+<li>不能在类定义外部初始化，通过构造函数初始化列表初始化</li>
 </ul>
 </li>
 <li><p><strong>成员函数</strong></p>
 <ul>
-<li><p>不能和static同时使用：static不能实例化和const矛盾</p>
+<li>不能和static同时使用：static不能实例化和const矛盾</li>
+<li>常量对象只能调用常量函数</li>
+<li>想在const成员函数中修改类成员变量，可以用<code>mutable</code>修饰</li>
+</ul>
 </li>
-<li><p>常量对象只能调用常量函数</p>
+<li><p><strong>与 Constexpr 对比</strong></p>
+<ul>
+<li>const可以通过const_cast类型转换（理解为只读变量），而常量表达式中的成员都是常量，常量表达式一旦确定将无法修改</li>
+<li>const可以修饰编译期和运行期的常量，而constexpr只能修饰编译期的常量，必须在编译期就能计算出来，实现更多的编译期计算，但也会增加编译时间</li>
+<li>在修饰成员函数时（尾部加const），const只能用于非静态成员函数，因为静态成员函数没有this指针，无法保证不修改对象成员信息；而constexpr可以和成员、非成员、构造函数一起使用，constexpr修饰自定义类时，需要提供常量构造函数</li>
+</ul>
 </li>
-<li><p>想在const成员函数中修改类成员变量，可以用<code>mutable</code>修饰</p>
-</li>
+<li><p><strong>顶层与底层 const</strong></p>
+<ul>
+<li>顶层const：修饰的变量<strong>本身</strong>是一个常量，无法修改，指的是指针，<strong>顶层const不构成重载</strong></li>
+<li>底层const：修饰的变量<strong>所指向的对象</strong>是一个常量，指的是所指变量</li>
 </ul>
 </li>
 </ul>
-<blockquote>
-<p><strong>顶层</strong>const：修饰的变量<strong>本身</strong>是一个常量，无法修改，指的是指针，<strong>顶层const不构成重载</strong></p>
-<p><strong>底层</strong>const：修饰的变量<strong>所指向的对象</strong>是一个常量，指的是所指变量</p>
-</blockquote>
 <h2 id="Union"><a href="#Union" class="headerlink" title="Union"></a>Union</h2><p>联合（union）是一种节省空间的特殊的类，一个 union 可以有多个数据成员，但是在任意时刻只有一个数据成员可以有值。当某个成员被赋值后其他成员变为未定义状态。联合有如下特点：</p>
 <ul>
 <li>默认访问控制符为 public</li>
@@ -161,11 +147,13 @@
 <li>decltype(变量名)：可以获得变量精确类型</li>
 <li>decltype(表达式)：（包括decltype((变量名))的情况）可以获得表达式引用类型；除非表达式的结果是纯右值，此时结果仍为值类型</li>
 </ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> i = <span class="number">4</span>;</span><br><span class="line"><span class="type">int</span> arr[<span class="number">5</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="type">int</span> *ptr = arr;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">S</span>&#123; <span class="type">double</span> d; &#125;s ;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Overloaded</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Overloaded</span><span class="params">(<span class="type">char</span>)</span></span>;<span class="comment">//重载的函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> &amp;&amp; <span class="title">RvalRef</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">const</span> <span class="type">bool</span> <span class="title">Func</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//规则一：推导为其类型</span></span><br><span class="line"><span class="keyword">decltype</span> (arr) var1; <span class="comment">//int[] 标记符表达式</span></span><br><span class="line"><span class="keyword">decltype</span> (ptr) var2; <span class="comment">//int*  标记符表达式</span></span><br><span class="line"><span class="keyword">decltype</span>(s.d) var3; <span class="comment">//doubel 成员访问表达式</span></span><br><span class="line"><span class="keyword">decltype</span>(Overloaded) var4;<span class="comment">//重载函数 编译错误。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//规则二：将亡值，推导为类型的右值引用。</span></span><br><span class="line"><span class="keyword">decltype</span> (<span class="built_in">RvalRef</span>()) var5 = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//规则三：左值，推导为类型的引用。</span></span><br><span class="line"><span class="keyword">decltype</span> ((i)) var6 = i;    <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">decltype</span> (<span class="literal">true</span>?i:i) var7 = i;<span class="comment">//int&amp;  条件表达式返回左值。</span></span><br><span class="line"><span class="keyword">decltype</span> (++i) var8 = i;  <span class="comment">//int&amp;  ++i返回i的左值。</span></span><br><span class="line"><span class="keyword">decltype</span>(arr[<span class="number">5</span>]) var9 = i;<span class="comment">//int&amp;. []操作返回左值</span></span><br><span class="line"><span class="keyword">decltype</span>(*ptr) var10 = i; <span class="comment">//int&amp; *操作返回左值</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="string">&quot;hello&quot;</span>)var11 = <span class="string">&quot;hello&quot;</span>; <span class="comment">//const char(&amp;)[9] 字符串字面常量为左值，且为const左值。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//规则四：以上都不是，则推导为本类型</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="number">1</span>) var12;<span class="comment">//const int</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="built_in">Func</span>(<span class="number">1</span>)) var13=<span class="literal">true</span>;<span class="comment">//const bool</span></span><br><span class="line"><span class="keyword">decltype</span>(i++) var14 = i;<span class="comment">//int i++返回右值</span></span><br></pre></td></tr></table></figure>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> i = <span class="number">4</span>;</span><br><span class="line"><span class="type">int</span> arr[<span class="number">5</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="type">int</span> *ptr = arr;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">S</span>&#123; <span class="type">double</span> d; &#125;s ;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Overloaded</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Overloaded</span><span class="params">(<span class="type">char</span>)</span></span>;<span class="comment">//重载的函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> &amp;&amp; <span class="title">RvalRef</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="type">const</span> <span class="type">bool</span> <span class="title">Func</span><span class="params">(<span class="type">int</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//规则一：推导为其类型</span></span><br><span class="line"><span class="keyword">decltype</span> (arr) var1; <span class="comment">//int[] 标记符表达式</span></span><br><span class="line"><span class="keyword">decltype</span> (ptr) var2; <span class="comment">//int*  标记符表达式</span></span><br><span class="line"><span class="keyword">decltype</span>(s.d) var3; <span class="comment">//doubel 成员访问表达式</span></span><br><span class="line"><span class="keyword">decltype</span>(Overloaded) var4;<span class="comment">//重载函数 编译错误。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//规则二：将亡值，推导为类型的右值引用。</span></span><br><span class="line"><span class="keyword">decltype</span> (<span class="built_in">RvalRef</span>()) var5 = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//规则三：左值，推导为类型的引用。</span></span><br><span class="line"><span class="keyword">decltype</span> ((i)) var6 = i;    <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">decltype</span> (<span class="literal">true</span>?i:i) var7 = i;<span class="comment">//int&amp;  条件表达式返回左值。</span></span><br><span class="line"><span class="keyword">decltype</span> (++i) var8 = i;  <span class="comment">//int&amp;  ++i返回i的左值。</span></span><br><span class="line"><span class="keyword">decltype</span>(arr[<span class="number">5</span>]) var9 = i;<span class="comment">//int&amp;. []操作返回左值</span></span><br><span class="line"><span class="keyword">decltype</span>(*ptr) var10 = i; <span class="comment">//int&amp; *操作返回左值</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="string">&quot;hello&quot;</span>)var11 = <span class="string">&quot;hello&quot;</span>; <span class="comment">//const char(&amp;)[9] 字符串字面常量为左值，且为const左值。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//规则四：以上都不是，则推导为本类型</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="number">1</span>) var12;<span class="comment">//const int</span></span><br><span class="line"><span class="keyword">decltype</span>(<span class="built_in">Func</span>(<span class="number">1</span>)) var13=<span class="literal">true</span>;<span class="comment">//const bool</span></span><br><span class="line"><span class="keyword">decltype</span>(i++) var14 = i;<span class="comment">//int i++返回右值</span></span><br></pre></td></tr></table></figure>
+              </div>
+            </details>
 
-<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><blockquote>
-<p><a href="https://www.cnblogs.com/roea1/p/13839016.html">https://www.cnblogs.com/roea1/p/13839016.html</a></p>
-</blockquote>
+<hr>
 <h2 id="Bind函数"><a href="#Bind函数" class="headerlink" title="Bind函数"></a>Bind函数</h2><p><code>std::bind</code> 可以看作一个通用的函数适配器，将可调用对象与其参数一起进行绑定，生成一个新的可调用对象 <code>std::function</code> 保存</p>
 <ul>
 <li>将可调用对象和其参数绑定成一个仿函数</li>
@@ -174,17 +162,10 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span> c, <span class="type">const</span> <span class="type">int</span> &amp;d)</span> </span>&#123;</span><br><span class="line">  cout &lt;&lt; a &lt;&lt; b &lt;&lt; c &lt;&lt; d &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="type">int</span> n=<span class="number">7</span>;</span><br><span class="line">  <span class="keyword">auto</span> g = <span class="built_in">bind</span>(fun, placeholders::_2, placeholders::_1, n, <span class="built_in">cref</span>(n));</span><br><span class="line">  <span class="built_in">g</span>(<span class="number">1</span>,<span class="number">2</span>); <span class="comment">// 2177</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="访控与继承"><a href="#访控与继承" class="headerlink" title="访控与继承"></a>访控与继承</h2><ul>
-<li><code>public</code>成员对<strong>任何访问者可见</strong>(类内、类外和子类)</li>
+<li><code>public</code>成员对<strong>任何访问者可见</strong></li>
 <li><code>private</code>成员只对<strong>类内可见</strong></li>
-<li><code>protected</code>介于<code>public</code>和<code>private</code>之间，它对于<strong>类内与派生类可见</strong>。这为继承提供了便利，子类可以访问父类的<code>protected</code>成员。</li>
-<li>但是子类友元不能访问父类<code>protected</code>成员</li>
+<li><code>protected</code>介于<code>public</code>和<code>private</code>之间，它对于<strong>类内与派生类可见</strong>。这为继承提供了便利，子类可以访问父类的<code>protected</code>成员。但是子类友元不能访问父类<code>protected</code>成员</li>
 </ul>
-<h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><ol>
-<li>将 <code>main()</code> 函数的运行状态进行压栈</li>
-<li>将 <code>func()</code> 函数的返回地址压栈</li>
-<li>将 <code>func()</code> 函数的参数从右到左压栈（形参在函数调用前不分配存储空间，调用结束后弹出栈空间）</li>
-<li>将 <code>func()</code> 定义变量依次压栈</li>
-</ol>
 <h2 id="堆和栈"><a href="#堆和栈" class="headerlink" title="堆和栈"></a>堆和栈</h2><table>
 <thead>
 <tr>
@@ -229,24 +210,11 @@
 <li><strong>指针参数传递本质是值传递，传递的是地址值</strong>。被调函数栈中存放的是<strong>传入实参变量的副本</strong>。形参指针变了，实参指针不会变。</li>
 <li><strong>传引⽤的实质是传地址，传递的是变量的地址。</strong>被调函数栈中存放的是<strong>传入实参变量的地址</strong>。对形参的任何操作都被处理成<strong>间接寻址</strong>，即通过别名（栈中存放的地址）访问主调函数中的本体，因此对形参的操作会影响实参变量。</li>
 </ul>
-<h2 id="封装、继承、多态"><a href="#封装、继承、多态" class="headerlink" title="封装、继承、多态"></a>封装、继承、多态</h2><ul>
-<li><strong>封装</strong>：把客观事物封装成抽象的类，将代码和数据封装到一起，使用private等修饰符实现信息隐藏</li>
-<li><strong>继承</strong>：可以使用现有类的所有功能，并在无需重新编写原来的类的情况下对这些功能进行扩展。三种继承方式private、protected、public</li>
-<li><strong>多态</strong>：不同对象对同一行为会有不同的状态，分为静态多态（重载）和动态多态（虚函数）。实现动态多态需要子类重写父类的虚函数，通过父类指针调用子类成员函数，运行时根据对象的实际类型调用相应的函数</li>
-</ul>
-<h2 id="继承、组合"><a href="#继承、组合" class="headerlink" title="继承、组合"></a>继承、组合</h2><ul>
-<li><strong>继承</strong>：是 is a 的关系，子类重写父类方法方便实现扩展<ul>
-<li>父类内部细节对子类可见</li>
-<li>子类父类高耦合（父类改子类也要改），违背面向对象思想</li>
-</ul>
-</li>
-<li><strong>组合</strong>：将要组合的类的对象加入，成为自己的成员变量<ul>
-<li>内部细节不可见，只能通过包含的对象自己调用其方法</li>
-<li>低耦合关系，不会触发关联修改</li>
-<li>但容易产生过多对象，为了能组合多个对象，接口定义复杂</li>
-</ul>
-</li>
-</ul>
+<h2 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h2><p>用统一的接口处理不同类型的对象，使程序灵活可扩展、易维护。</p>
+<ol>
+<li>静态多态：通过函数重载和模板，在编译期决定调用哪个函数</li>
+<li>动态多态：子类重写父类的虚函数，通过父类指针调用子类成员函数，运行时根据对象的实际类型调用相应的函数</li>
+</ol>
 <h2 id="重载、覆盖、隐藏"><a href="#重载、覆盖、隐藏" class="headerlink" title="重载、覆盖、隐藏"></a>重载、覆盖、隐藏</h2><ul>
 <li><p><strong>重载</strong></p>
 <p>同一范围内定义了若干的函数名相同，但参数类型、个数、顺序的不同的函数。根据参数列表决定调⽤哪个函数，不关⼼函数的返回类型。</p>
@@ -259,22 +227,16 @@
 </li>
 </ul>
 <h2 id="声明、定义、初始化"><a href="#声明、定义、初始化" class="headerlink" title="声明、定义、初始化"></a>声明、定义、初始化</h2><ul>
-<li><p><strong>声明</strong>分为引用型声明与定义型声明。</p>
-<ul>
+<li><strong>声明</strong>分为引用型声明与定义型声明。<ul>
 <li>引用型声明：声明外部变量，如 <code>extern int a</code>，不会分配内存</li>
 <li><strong>定义型声明</strong>：声明一个新变量并分配内存，全局变量默认初始化0，局部变量仍然是垃圾值</li>
 </ul>
 </li>
-<li><p><strong>定义</strong>为变量分配内存空间，等价于<strong>定义型声明</strong>。</p>
-</li>
-<li><p>初始化是在给变量分配内存时赋予初值，而赋值则是定义以后用到该变量时赋予新值。</p>
-</li>
-<li><p><strong>类成员变量在进入构造函数之前进行初始化</strong>，所以类成员会在进入构造函数之前先<strong>调用一次默认构造</strong>函数，进入后再做<strong>一次赋值</strong>操作(对象已存在)，而初始化列表只做<strong>一次赋值</strong>操作会更快。</p>
-</li>
+<li><strong>定义</strong>为变量分配内存空间，等价于<strong>定义型声明</strong>。</li>
 </ul>
 <h2 id="静态绑定、动态绑定"><a href="#静态绑定、动态绑定" class="headerlink" title="静态绑定、动态绑定"></a>静态绑定、动态绑定</h2><p>静态绑定，绑定的是在程序中声明的类型，发⽣在编译期间。如非虚函数。</p>
 <p>动态绑定，绑定的是所指对象的实际类型，发⽣在运⾏期间，如虚函数。但是，<strong>缺省参数值也是静态绑定的</strong>，所以不能重新定义继承来的缺省参数，否则可能调用派生类的虚函数时，使用的是基类的缺省参数值。</p>
-<h2 id="四种强制转换"><a href="#四种强制转换" class="headerlink" title="四种强制转换"></a>四种强制转换</h2><ul>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><ul>
 <li><strong>static_cast</strong>：主要执⾏⾮多态的基本类型互转。基类子类间上⾏转换安全，下⾏转换不安全，得到错误指针；不能转换掉const、volitale属性</li>
 <li><strong>dynamic_cast</strong>：主要用于安全的下行转换，支持运行时识别指针、引用<ul>
 <li>（下行转换）须用于<strong>含虚函数</strong>的类，因为运行时转换须要知道类对象的信息，通过虚函数表得到继承关系</li>
@@ -283,9 +245,9 @@
 </ul>
 </li>
 <li><strong>const_cast</strong>：移除const或volatile属性</li>
-<li><strong>reinterpret_cast</strong>：从底层对数据进⾏重新解释，危险性高，依赖具体的平台，可移植性差。可以将整形转指针、指针转数组、指针转引⽤</li>
+<li><strong>reinterpret_cast</strong>：从底层对数据进⾏重新解释，危险性高，依赖具体的平台，可移植性差</li>
 </ul>
-<h2 id="C-从代码到可执行程序"><a href="#C-从代码到可执行程序" class="headerlink" title="C++从代码到可执行程序"></a>C++从代码到可执行程序</h2><p><strong>1. 预编译</strong></p>
+<h2 id="代码编译链接"><a href="#代码编译链接" class="headerlink" title="代码编译链接"></a>代码编译链接</h2><p><strong>1. 预编译</strong></p>
 <ul>
 <li>处理 <code>#</code> 开头的预编译指令，#define、#include、#ifdef</li>
 <li>删除注释，添加行号和文件标识，生成 <code>.i</code> 文件</li>
@@ -332,9 +294,7 @@
 <li>new 封装了malloc，直接free不会报错，但是这只是释放内存，而不会析构对象</li>
 </ul>
 <h3 id="malloc和free的原理"><a href="#malloc和free的原理" class="headerlink" title="malloc和free的原理"></a><a href="https://blog.csdn.net/AngelDg/article/details/111825900">malloc和free的原理</a></h3><p>malloc() 分配的是虚拟内存。如果分配后的虚拟内存没有被访问的话，虚拟内存是不会映射到物理内存的，这样就不会占用物理内存了。只有在访问已分配的虚拟地址空间的时候，操作系统通过查找页表，发现页没有在物理内存中，就会触发缺页中断，然后操作系统会建立虚拟内存和物理内存之间的映射关系。</p>
-<blockquote>
 <p>malloc分配的空间包括：cookie、debugger header、(对象数量)、对象(数组)、padding、cookie</p>
-</blockquote>
 <h4 id="brk"><a href="#brk" class="headerlink" title="brk()"></a>brk()</h4><p>分配的内存小于 128 KB 时：通过 <code>brk()</code> 系统调用将<strong>堆顶指针向高地址移动，申请一块较大的内存块，然后划分成多个小块的内存，用一个空闲内存块的链表维护</strong>，每次申请内存时会从链表中分配一个合适大小的内存块。</p>
 <p>调用 free 时不会立即还给操作系统，而是将内存块放回到空闲内存块链表中，等待下次复用，可能彼时这个内存块的虚拟&#x2F;物理地址的映射关系还在，这样不仅减少了系统调用的次数，也减少了缺页中断的次数。</p>
 <p>缺点：系统频繁地 malloc 和 free ，尤其对于小块内存，堆内将产生越来越多不可用的碎片，导致“内存泄露”。而这种“泄露”现象使用 valgrind 是无法检测出来的。</p>
@@ -344,7 +304,7 @@
 <ul>
 <li><strong>栈</strong>：由编译器管理分配和回收，存放局部变量和函数参数。效率很高，但是分配的内存容量有限。</li>
 <li><strong>堆</strong>：由<code>new</code>、<code>malloc</code>分配的内存块，由应用程序去控制释放。空间很大，但可能内存泄漏和空闲碎片。</li>
-<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：存放静态变量、全局变量和常量(<code>static const</code>)，在编译的时就已经分配好，初始化 0，整个运行期间都存在。static 可以控制变量的可见范围，全局变量不行。</li>
+<li><strong>全局&#x2F;静态存储区</strong> (bss和data)：存放静态变量、全局变量和常量(<code>static const</code>)，在编译的时分配初始化为 0，整个运行期间都存在。static 可以控制变量的可见范围，全局变量不行。</li>
 <li><strong>常量存储区</strong> (rodata)：存放的是字面常量和const变量，不允许修改。</li>
 <li><strong>代码区</strong> (text)：存放程序的二进制代码。</li>
 </ul>
@@ -357,12 +317,12 @@
 <p>计算机系统要求数据的首地址值是某个数 k（通常它为4或8）的倍数</p>
 <p><strong>内存对齐的原因</strong></p>
 <ul>
-<li>平台原因：不是所有的硬件平台都能访问任意地址上的任意数据的，会抛出硬件异常。      </li>
+<li>平台原因：有的硬件平台不支持访问任意地址上的数据，会抛出硬件异常。      </li>
 <li>性能原因：CPU是按块读取的，访问未对齐的内存需要仿存两次，而对齐的内存仅需要访问一次。</li>
 </ul>
 <p><strong>内存对齐的规则</strong></p>
 <ol>
-<li>确定对齐系数：和编译器有关，可以通过预编译命令 #pragma pack(n)，n &#x3D; 1,2,4,8 设置。</li>
+<li>确定对齐系数：和编译器有关，可以通过预编译命令 <code>#pragma pack(n)，n = 1,2,4</code> 设置。</li>
 <li>确定对齐单位：<code>min(对齐系数，结构体中最长数据类型长度)</code>      </li>
 <li>确定数据的偏移量：<code>min(成员大小，对齐单位)</code>的整数倍，（可选）在成员之间加上填充字节。      </li>
 <li>结构体尾部填充：保证总大小为对齐单位的整数倍</li>
@@ -552,6 +512,32 @@
 
 <p><strong>5.使用std::move()返回</strong><br>在返回值上调用 <code>std::move()</code> 进行返回是一种错误的方式。它会尝试强制调用移动构造函数，但这样会导致 (N)RVO 失效。因为即使没有显示调用 std::move()，编译器优化中也会执行 move 操作。</p>
 <hr>
+<h2 id="C-17新特性"><a href="#C-17新特性" class="headerlink" title="C++17新特性"></a>C++17新特性</h2><ul>
+<li><code>std::string_view</code></li>
+<li><code>std::optional</code></li>
+<li>Lambda 表达式捕获 <code>*this</code></li>
+<li>结构化绑定 <code>auto&amp; [k,v] : mp</code></li>
+</ul>
+<hr>
+<h2 id="Auto-模板类型推导"><a href="#Auto-模板类型推导" class="headerlink" title="Auto &amp;&amp; 模板类型推导"></a>Auto &amp;&amp; 模板类型推导</h2><blockquote>
+<p><a href="https://cntransgroup.github.io/EffectiveModernCppChinese/1.DeducingTypes/item1.html">参考链接</a></p>
+</blockquote>
+<p>变量类型的占位符，编译器确定。用于定义 STL 迭代器、泛型编程中不知道变量具体类型或不想指定类型时</p>
+<p><strong>推导规则</strong>：</p>
+<ul>
+<li>数组名或者函数名实参会退化为指针（除非被用于初始化引用）</li>
+<li>有引用的实参会被视为无引用，在<code>int &amp;a_ref = a; auto b = a_ref</code>中 auto 推导为 int 而非 int&amp; </li>
+<li>对于传值类型推导，const 和 volatile 属性会被忽略，在<code>const int a = 1; auto b = a</code> 中 auto 推导为 int 而非 const int</li>
+<li>在万能引用中，<code>T&amp;&amp;</code>接收左值实参会被推导为<code>T&amp;</code>，发生了引用折叠</li>
+</ul>
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>用auto声明的变量必须初始化，根据后面的值来推测这个变量的类型</li>
+<li>函数和模板参数不能被声明为auto</li>
+<li>不能用于类型转换等操作，如sizeof、typeid</li>
+<li>初始化auto用 <code>=</code> ，圆括号会得到函数声明，返回值自动推断；大括号会推断成 <code>initializer_list&lt;SomeType&gt;</code></li>
+</ul>
+<hr>
 <h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><p>智能指针是一个类，用来存储指向动态分配对象的指针，负责自动释放动态分配的对象，防止堆内存泄漏。动态分配的资源，交给一个类对象去管理，当类对象声明周期结束时，自动调用析构函数释放资源</p>
 <h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><p>保证同⼀时间内只有⼀个智能指针可以指向该对象。转移一个unique_ptr将会把所有权从源指针转移给目标指针，源指针被置空。</p>
 <p>unique_ptr不支持拷贝构造和赋值操作，但可以配合 <code>move()</code> 支持移动构造和移动赋值。拷贝操作有一个例外，可以从函数中返回unique_ptr。</p>
@@ -611,18 +597,6 @@
 </ol>
 <p>解决：用 <code>make_unique/shared</code> 确保对象 T 的创建和 unique_ptr 一起 </p>
 <hr>
-<h2 id="Auto"><a href="#Auto" class="headerlink" title="Auto"></a>Auto</h2><p>自动类型推断，auto仅仅是一个占位符，在编译期间它会被真正的类型所替代</p>
-<ul>
-<li>用auto声明的变量必须初始化，根据后面的值来推测这个变量的类型</li>
-<li>函数和模板参数不能被声明为auto</li>
-<li>不能用于类型转换等操作，如sizeof、typeid</li>
-<li>初始化auto用 <code>=</code> ，圆括号会得到函数声明，返回值自动推断；大括号会推断成 <code>initializer_list&lt;SomeType&gt;</code></li>
-</ul>
-<p>用途：</p>
-<ul>
-<li>定义 stl 的迭代器</li>
-<li>泛型编程中不知道变量具体类型、或不想指定类型时</li>
-</ul>
 <h2 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h2><p>利用lambda表达式可以编写内嵌的匿名函数，用以替换独立函数或者函数对象；</p>
 <p>定义一个lambda表达式后，编译器会自动生成一个匿名类（重载了()运算符），称为闭包类型，并把 capture 的变量作为该类的属性。闭包的一个强大之处是可以捕捉其作用域内的变量，比如在方括号中通过传值或引用方式捕获</p>
 <p><strong>Tip1</strong>：lambda必须使用尾置返回来指定返回类型，可以忽略参数列表和返回值，但必须永远包含捕获列表和函数体</p>
@@ -631,14 +605,43 @@
 <p><strong>Tip3</strong>：用显式的按引用捕获，默认捕获可能会导致悬空引用，如局部变量生命周期结束</p>
 <p><strong>Tip4</strong>：用显式的按值捕获，默认的按值捕获对于悬空指针很敏感（尤其是this指针），并且它会误导人产生lambda是独立的想法。注意，通过<code>[=] [&amp;] [this]</code> 显式捕获 this 都是 by-reference 的，只有 <code>[*this]</code> 是 by-copy 的</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function">function&lt;<span class="title">void</span><span class="params">()</span>&gt; <span class="title">CreateCB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> cb = [=] &#123; cout &lt;&lt; id_ &lt;&lt; endl; &#125;;</span><br><span class="line">    <span class="comment">// 实际捕获了 this 指针，并非值拷贝</span></span><br><span class="line">    <span class="comment">// cb = [curObjPtr] &#123; cout &lt;&lt; curObjPtr-&gt;id_ &lt;&lt; endl; &#125;</span></span><br><span class="line">    <span class="keyword">return</span> cb;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> id_&#123;<span class="number">1</span>&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Widget w;</span><br><span class="line">  function&lt;<span class="type">void</span>()&gt; cb = w.<span class="built_in">CreateCB</span>();</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 1</span></span><br><span class="line">  w.id_ = <span class="number">2</span>;</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Constexpr"><a href="#Constexpr" class="headerlink" title="Constexpr"></a>Constexpr</h2><p>常量表达式中的成员都是常量，常量表达式一旦确定，其值将无法修改。</p>
+<hr>
+<h2 id="左值与右值"><a href="#左值与右值" class="headerlink" title="左值与右值"></a>左值与右值</h2><p>C++11通过引入右值引用来优化性能，配合移动语义来避免拷贝。通过<code>std::move()</code>语义来将临时生成的左值中的资源无代价的转移到另外一个对象中去。<code>std::move()</code> 的实现原理就是的强转右值引用类型并返还之，由于函数返还值类型是临时值，且返还的还是右值引用类型，因此该返还值会被判断为右值。</p>
+<h3 id="左值右值分类"><a href="#左值右值分类" class="headerlink" title="左值右值分类"></a>左值右值分类</h3><p><strong>lvalue</strong>：左值，有标识符、可以取地址的表达式</p>
 <ul>
-<li><code>const</code>可以修饰编译期和运行期的常量，而<code>constexpr</code>只能修饰编译期的常量，必须在编译期就能计算出来，因为其目的是实现更多的编译期计算，但也会增加编译时间</li>
-<li><code>const</code>可以通过<code>const_cast</code>类型转换（理解为只读变量），而<code>constexpr</code>不可以修改</li>
-<li><code>const</code>只能用于非静态成员函数，而<code>constexpr</code>可以和成员、非成员、构造函数一起使用，<code>constexpr</code>修饰自定义类时，需要提供常量构造函数</li>
+<li>变量、函数</li>
+<li>返回左值引用的表达式，++x、x&#x3D;1</li>
+<li>字符串字面量 “hello world”</li>
 </ul>
+<p>函数调用时，左值可以绑定到<code>T&amp;</code>，常量只能绑定到<code>const T&amp;</code></p>
+<p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
+<ul>
+<li><strong>prvalue</strong>：纯右值，传统意义上的右值，不具名的临时对象，<strong>无名无地址</strong><ul>
+<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
+<li>非字符串字面量，42、true</li>
+<li>特点：不能作为赋值操作的左值</li>
+</ul>
+</li>
+<li><strong>xvalue</strong>：将亡值表示即将被销毁的对象，通常是通过右值引用操作产生的，表示一个可以被移动的对象，通常用于移动语义避免拷贝<ul>
+<li>如通过 <code>std::move</code> 产生</li>
+</ul>
+</li>
+</ul>
+<h3 id="左值右值引用"><a href="#左值右值引用" class="headerlink" title="左值右值引用"></a>左值右值引用</h3><p>右值引用和左值引用都是属于引用类型，都必须立即进行初始化，因为引用类型只是一个别名，并不拥有绑定对象的内存。</p>
+<p><strong>左值引用</strong>：具名变量的别名。左值引用通常不能绑定到右值，但常量左值引用可以接受非常量左值、常量左值、右值，不过常量左值所引用的右值在它的“余生”中只能是只读的。<br><strong>右值引用</strong>：用于绑定右值或即将销毁的变量，允许移动而非复制操作，减少深拷贝，提高程序效率。</p>
+<p><strong>用途</strong>：</p>
+<ul>
+<li>移动语义：通过移动构造函数和移动赋值运算符，可以将资源从一个对象“移动”到另一个对象，而不是复制资源</li>
+<li>完美转发：右值引用与模板结合使用，可以实现完美转发，即将参数原封不动地传递给另一个函数。这在编写泛型代码时非常有用。</li>
+</ul>
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>右值引用变量是左值：尽管右值引用可以绑定到右值，但右值引用本身是一个左值。需要使用 <code>move</code> 或 <code>forward</code> 来显式地将其转换为右值</li>
+<li>避免使用已移动的对象：移动操作后，源对象进入一种有效但未指定的状态，应该避免使用</li>
+</ul>
+<blockquote>
+<p>临时对象在对应表达式估值完成后、按生成顺序逆序销毁。若<strong>纯右值</strong>被绑定到引用上，其生命周期会延长至与引用变量相同</p>
+</blockquote>
 <hr>
 <h2 id="特殊成员函数生成机制"><a href="#特殊成员函数生成机制" class="headerlink" title="特殊成员函数生成机制"></a>特殊成员函数生成机制</h2><blockquote>
 <ul>
@@ -678,29 +681,19 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Widget</span>() &#123; cout &lt;&lt; <span class="string">&quot;construct&quot;</span> &lt;&lt; endl; &#125;</span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">Widget</span>() &#123; cout &lt;&lt; <span class="string">&quot;destruct&quot;</span> &lt;&lt; endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Widget w;</span><br><span class="line">  Widget y = std::<span class="built_in">move</span>(w);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="模板类型推导"><a href="#模板类型推导" class="headerlink" title="模板类型推导"></a>模板类型推导</h2><blockquote>
-<p><a href="https://cntransgroup.github.io/EffectiveModernCppChinese/1.DeducingTypes/item1.html">参考链接</a></p>
-</blockquote>
+<h2 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h2><p>在模板函数内给另一个函数传递参数时，无论对象是左值&#x2F;右值引用类型，都会被视为左值。因为，完美转发用于保证不丢失其左值&#x2F;右值属性：如果形参推导出是右值引用则作为右值传入，如果是左值引用则作为左值传入</p>
+<p>完美转发依赖于三个概念：</p>
+<p><strong>1. 万能引用</strong>：发生类型推导（模板、auto）的时候，使用 <code>T&amp;&amp;</code> 类型表示为万能引用。它可以绑定到（接收）左值和右值，从而使得模板函数能处理不同类型参数。T&amp;&amp; 推导后的类型：</p>
 <ul>
-<li>在模板类型推导时，有引用的实参会被视为无引用，他们的引用会被忽略</li>
-<li>对于通用引用的推导，左值实参会被特殊对待（虽然形参右值引用类型，但最后推导的结果是左值引用）</li>
-<li>对于传值类型推导，const 和 volatile 实参会被认为是 non-const 的和 non-volatile 的</li>
-<li>在模板类型推导时，数组名或者函数名实参会退化为指针，除非它们被用于初始化引用</li>
+<li>如果传入左值，T 会被推导为左值引用类型。</li>
+<li>如果传入右值，T 会被推导为普通类型。</li>
 </ul>
-<h3 id="通用-万能引用-TODO"><a href="#通用-万能引用-TODO" class="headerlink" title="通用&#x2F;万能引用[TODO]"></a>通用&#x2F;万能引用[TODO]</h3><p>发生类型推导（模板、auto）的时候，使用 <code>T&amp;&amp;</code> 类型表示为万能引用，否则表示右值引用。万能引用能匹配任意引用类型的左值、右值。所以编写模板函数时，只提供万能引用形参一个版本就可以匹配多种情况，不必编写多个重载版本。</p>
-<h3 id="引用折叠"><a href="#引用折叠" class="headerlink" title="引用折叠"></a>引用折叠</h3><p>当万能引用作为参数时，有可能被一个左值引用或右值引用的参数初始化，这时经过类型推导出来T&amp;&amp;类型，相比右值引用会发生类型的变化，这种变化就称为引用折叠</p>
+<p><strong>2. 引用折叠</strong>：当万能引用作为参数时，有可能被一个左值引用或右值引用的参数初始化，这时经过类型推导出来T&amp;&amp;类型，相比右值引用会发生类型的变化，这种变化就称为引用折叠</p>
 <ol>
 <li>所有右值引用折叠到右值引用上仍然是一个右值引用</li>
 <li>所有的其他引用类型之间的折叠都将变成左值引用</li>
 </ol>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">42</span>;</span><br><span class="line"><span class="type">int</span>&amp; a = x;</span><br><span class="line"><span class="type">int</span>&amp;&amp; b = <span class="number">42</span>;</span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; c = a; <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; d = b; <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; e = std::<span class="built_in">move</span>(b); <span class="comment">//int&amp;&amp;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;foo &amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;foo &amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;bar &amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">foo</span>(f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;bar &amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">foo</span>(f);  <span class="comment">//② 被视作左值，输出 foo &amp;</span></span><br><span class="line">    <span class="built_in">foo</span>(<span class="built_in">move</span>(f));<span class="comment">//③ 输出 foo &amp;&amp;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">bar</span>(<span class="built_in">A</span>()); <span class="comment">//① 调用bar(A&amp;&amp; f)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h3><p>C++11提供了完美转发函数 <code>std:forward</code> 。它可以在模板函数内给另一个函数传递参数时，将参数类型保持原本状态传入（如果形参推导出是右值引用则作为右值传入，如果是左值引用则作为左值传入）。否则无论对象是左值引用类型，还是右值引用类型，都会被视为左值</p>
-<p>原理：<code>std::forward()</code> 的实现主要就一句 <code>return static_cast(形参)</code>，实际上也是利用了折叠规则。从而接受右值引用类型时，返还值为右值；接受左值引用类型时，返还值为左值</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//用forward实现完美转发</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(T&amp;&amp; s)</span></span>&#123;</span><br><span class="line">    <span class="built_in">foo</span>(forward&lt;T&gt;(s));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    <span class="built_in">bar</span>(a); <span class="comment">// 输出 &amp;</span></span><br><span class="line">    <span class="built_in">bar</span>(<span class="built_in">A</span>());<span class="comment">//输出 &amp;&amp;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p>**3. <code>std::forward()</code>**：原理为 <code>return static_cast(形参)</code>，利用了折叠规则。从而接受右值引用类型时，返还值为右值；接受左值引用类型时，返还值为左值</p>
 <hr>
 <h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C++ 通过虚表解决了后期绑定时查找调用函数的问题。每个含有虚函数的类都有虚表，它是编译时期初始化的静态数组，数组中每个条目是一个函数指针。虚表全局共享，存储在常量区。</p>
 <p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，先在父类构造函数中指向父类的虚表，之后在子类构造函数中改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
@@ -729,33 +722,13 @@
 <li>需要调整地址，指向一个相关的Thunk偏移量，从而将 this 指针调整到正确的位置，即减少若干字节的偏移量，然后再去调用虚函数</li>
 </ol>
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E8%A1%A8_%E5%A4%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E8%A1%A8_%E5%A4%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h4 id="指向成员函数的指针"><a href="#指向成员函数的指针" class="headerlink" title="指向成员函数的指针"></a>指向成员函数的指针</h4><p><strong>“指向Nonstatic Member Functions”的指针</strong></p>
-<ul>
-<li><p>定义并初始化: <code>double (Point::*coord)() = &amp;Point::x;</code></p>
-</li>
-<li><p>调用: <code>(origin.*coord)()</code> 或 <code>(ptr-&gt;*coord)()</code></p>
-<p>被编译器转化为: <code>(coord)(&amp;origin);</code>和<code>(coord)(ptr);</code></p>
-</li>
-</ul>
-<p><strong>“指向Virtual Member Functions”的指针</strong></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span> &#123;</span><br><span class="line">	<span class="function"><span class="type">float</span> <span class="title">x</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">y</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <h4 id="指向成员函数的指针"><a href="#指向成员函数的指针" class="headerlink" title="指向成员函数的指针"></a>指向成员函数的指针</h4><p><strong>“指向Nonstatic Member Functions”的指针</strong></p><ul><li><p>定义并初始化: <code>double (Point::*coord)() = &amp;Point::x;</code></p></li><li><p>调用: <code>(origin.*coord)()</code> 或 <code>(ptr-&gt;*coord)()</code></p><p>被编译器转化为: <code>(coord)(&amp;origin);</code>和<code>(coord)(ptr);</code></p></li></ul><p><strong>“指向Virtual Member Functions”的指针</strong></p><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span> &#123;</span><br><span class="line">	<span class="function"><span class="type">float</span> <span class="title">x</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">y</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><p>对nonstatic函数取地址:</p><ul><li>取x()的地址: <code>&amp;Point::x()</code> 得到的是<strong>函数在内存中的地址</strong></li></ul><p>对virtual函数取地址:</p><ul><li>取y()的地址:<code>&amp;Point::y();</code> 得到的结果是2(<strong>索引值.</strong>)</li></ul><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">float</span> (Point::*pmf)() = &amp;Point::y;</span><br></pre></td></tr></table></figure><p>对指向虚函数的指针调用:</p><ul><li>通过pmf来调用y()仍能实现虚函数机制，会被编译转化为 <code>(*ptr-&gt;vptr[(int)pmf])(ptr);</code></li><li>对一个”指向member function的指针”求值，由于该值有两种意义，其调用也将有别于常规操作</li><li>pmf的内部定义为 <code>float (Point::*pmf)()</code>，可以指向 <code>nonvirtual x()</code>和 <code>virtual z()</code>。前者代表内存地址，后者代表 virtual table中的索引值。因此编译器必须定义pmf，使它含有这两种值并区分代表哪种</li></ul>
+              </div>
+            </details>
 
-<p>对nonstatic函数取地址:</p>
-<ul>
-<li>取x()的地址: <code>&amp;Point::x()</code> 得到的是<strong>函数在内存中的地址</strong></li>
-</ul>
-<p>对virtual函数取地址:</p>
-<ul>
-<li>取y()的地址:<code>&amp;Point::y();</code> 得到的结果是2(<strong>索引值.</strong>)</li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">float</span> (Point::*pmf)() = &amp;Point::y;</span><br></pre></td></tr></table></figure>
-
-<p>对指向虚函数的指针调用:</p>
-<ul>
-<li>通过pmf来调用y()仍能实现虚函数机制，会被编译转化为 <code>(*ptr-&gt;vptr[(int)pmf])(ptr);</code></li>
-<li>对一个”指向member function的指针”求值，由于该值有两种意义，其调用也将有别于常规操作</li>
-<li>pmf的内部定义为 <code>float (Point::*pmf)()</code>，可以指向 <code>nonvirtual x()</code>和 <code>virtual z()</code>。前者代表内存地址，后者代表 virtual table中的索引值。因此编译器必须定义pmf，使它含有这两种值并区分代表哪种</li>
-</ul>
+<hr>
 <h3 id="能否使用虚函数"><a href="#能否使用虚函数" class="headerlink" title="能否使用虚函数"></a>能否使用虚函数</h3><ol>
 <li>模板类中可以使用虚函数吗？模板成员函数可以是虚函数吗？<ul>
 <li>前者可以，后者不行：编译阶段不知道程序中对虚成员模板函数的调用，就无法确定virtual table大小</li>
@@ -793,36 +766,6 @@
 <li>vbptr 相对于虚函数表指针(vfptr)的偏移量（若没有定义虚函数，偏移量为0）</li>
 <li>vbptr 相对于虚基类(A)部分的偏移量</li>
 </ol>
-<hr>
-<h2 id="左值与右值"><a href="#左值与右值" class="headerlink" title="左值与右值"></a>左值与右值</h2><p>C++11通过引入右值引用来优化性能，配合移动语义来避免拷贝。通过<code>std::move()</code>语义来将临时生成的左值中的资源无代价的转移到另外一个对象中去。<code>std::move()</code> 的实现原理就是的强转右值引用类型并返还之，由于函数返还值类型是临时值，且返还的还是右值引用类型，因此该返还值会被判断为右值。</p>
-<h3 id="左值右值分类"><a href="#左值右值分类" class="headerlink" title="左值右值分类"></a>左值右值分类</h3><p><strong>lvalue</strong>：左值，有标识符、可以取地址的表达式</p>
-<ul>
-<li>变量、函数</li>
-<li>返回左值引用的表达式，++x、x&#x3D;1、cout&lt;&lt;’ ‘</li>
-<li>字符串字面量 “hello world”</li>
-</ul>
-<p>函数调用时，左值可以绑定到<code>T&amp;</code>，常量只能绑定到<code>const T&amp;</code></p>
-<p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
-<ul>
-<li><strong>prvalue</strong>：纯右值，传统意义上的右值，不具名的临时对象，<strong>无名无地址</strong><ul>
-<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
-<li>非字符串字面量，42、true</li>
-<li>特点：不能作为赋值操作的左值</li>
-</ul>
-</li>
-<li><strong>xvalue</strong>：将亡值表示即将被销毁的对象，通常是通过右值引用操作产生的，表示一个可以被移动的对象，通常用于移动语义避免拷贝<ul>
-<li>如通过 <code>std::move</code> 产生</li>
-</ul>
-</li>
-</ul>
-<h3 id="左值右值引用"><a href="#左值右值引用" class="headerlink" title="左值右值引用"></a>左值右值引用</h3><p>右值引用和左值引用都是属于引用类型，都必须立即进行初始化，因为引用类型只是一个别名，并不拥有绑定对象的内存。</p>
-<ul>
-<li><strong>左值引用</strong>：具名变量的别名。左值引用通常不能绑定到右值，但常量左值引用可以接受非常量左值、常量左值、右值，不过常量左值所引用的右值在它的“余生”中只能是只读的。</li>
-<li><strong>右值引用</strong>：匿名变量的别名。右值引用通常不能绑定到左值，通常需要 <code>std::move()</code> 将左值强制转换为右值。右值引用类型只是用于<strong>匹配右值</strong>，但它本身是左值，可以获取到地址</li>
-</ul>
-<blockquote>
-<p>临时对象在对应表达式估值完成后、按生成顺序逆序销毁。若<strong>纯右值</strong>被绑定到引用上，其生命周期会延长至与引用变量相同</p>
-</blockquote>
 <hr>
 <h2 id="多线程简例"><a href="#多线程简例" class="headerlink" title="多线程简例"></a>多线程简例</h2><p><strong>1. 线程池</strong></p>
 <details blue><summary> Folding </summary>
@@ -2756,6 +2699,7 @@
 </tbody></table>
 <h2 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h2><h3 id="网络与进程"><a href="#网络与进程" class="headerlink" title="网络与进程"></a>网络与进程</h3><ul>
 <li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
+<li><code>ipcs</code> 显示共享内存段、消息队列和信号量的信息</li>
 <li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
 <li><code>lsof</code> 查看文件被哪个进程修改<code>lsof tmp.txt</code>，查看端口占用 <code>lsof -i :8080</code></li>
 <li><code>fdisk</code> 创建和维护分区表</li>
@@ -3127,6 +3071,10 @@
 <td>pstack <pid></td>
 <td>查看栈帧信息</td>
 </tr>
+<tr>
+<td>info registers &#x2F; print $eax</td>
+<td>查看寄存器值</td>
+</tr>
 </tbody></table>
 <hr>
 <h2 id="C-C-编译"><a href="#C-C-编译" class="headerlink" title="C&#x2F;C++编译"></a>C&#x2F;C++编译</h2><h3 id="g-编译参数"><a href="#g-编译参数" class="headerlink" title="g++编译参数"></a>g++编译参数</h3><ul>
@@ -3199,7 +3147,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="进程-线程间同步方式"><a href="#进程-线程间同步方式" class="headerlink" title="进程&#x2F;线程间同步方式"></a>进程&#x2F;线程间同步方式</h3><ol>
+<h3 id="进-线程间同步方式"><a href="#进-线程间同步方式" class="headerlink" title="进&#x2F;线程间同步方式"></a>进&#x2F;线程间同步方式</h3><ol>
 <li><strong>临界区</strong>：让多个线程串行化访问公共资源或代码，在有一个线程进入后其他访问临界区的线程将被挂起，以CRITICAL_SECTION结构对象保护共享资源<ul>
 <li>优点：方法简便，速度快</li>
 <li>缺点：不能同步多个进程中的线程</li>
@@ -3220,20 +3168,6 @@
 </ul>
 </li>
 </ol>
-<h3 id="多进程和多线程用哪个"><a href="#多进程和多线程用哪个" class="headerlink" title="多进程和多线程用哪个"></a>多进程和多线程用哪个</h3><p>实际中更常见的是进程加线程的结合方式，并不是非此即彼的</p>
-<ul>
-<li>频繁修改：需要频繁创建和销毁的优先使用<strong>多线程</strong></li>
-<li>计算量：需要大量计算的优先使用<strong>多线程</strong>，因为需要消耗大量CPU资源且切换频繁</li>
-<li>相关性：任务间相关性比较强的用<strong>多线程</strong>，因为线程之间的数据共享和同步比较简单。</li>
-<li>多分布：可能要扩展到多机分布的用<strong>多进程</strong>，多核分布的用<strong>多线程</strong>。</li>
-</ul>
-<h3 id="进程的几种状态"><a href="#进程的几种状态" class="headerlink" title="进程的几种状态"></a>进程的几种状态</h3><ul>
-<li><strong>创建状态</strong>：进程正在创建过程中，还不能运行。包括建立进程控制块表项、建立资源表格(如打开文件表)并分配资源、加载程序等。  </li>
-<li><strong>就绪状态</strong>：进程已获得除处理器外的所需资源，只要分配了处理器就可以执行。可以按优先级来划分就绪队列，当时间片用完时排入低优先级队列，当 I&#x2F;O 操作完成时排入高优先级队列。</li>
-<li><strong>执行状态</strong>：进程已获得CPU，其程序正在执行。单核CPU中只有一个进程处于执行状态，多核CPU中可以有多个。</li>
-<li><strong>阻塞状态</strong>：正在执行的进程由于发生某事件而暂时无法继续执行时，便放弃处理机而处于暂停状态。致使阻塞的典型事件有：请求I&#x2F;O，申请缓冲空间等。通常将阻塞状态的进程也排成队列。</li>
-<li><strong>退出状态</strong>：进程已结束运行，回收除 PCB 之外的其他资源，并让其他进程从 PCB 中收集有关信息（如记帐和将退出代码传递给父进程）。</li>
-</ul>
 <h3 id="进程间的通信方式"><a href="#进程间的通信方式" class="headerlink" title="进程间的通信方式"></a>进程间的通信方式</h3><ol>
 <li><strong>匿名管道</strong>：一种半双工的通信方式，数据单向流动，简单但是只能在有亲缘关系的进程间使用（父子、兄弟）</li>
 <li><strong>命名管道</strong>：一种半双工的通信方式，它允许无亲缘关系进程间的通信<ul>
@@ -3454,15 +3388,9 @@
 
 <hr>
 <h2 id="用户态和内核态"><a href="#用户态和内核态" class="headerlink" title="用户态和内核态"></a>用户态和内核态</h2><h3 id="⽤户态转化内核态"><a href="#⽤户态转化内核态" class="headerlink" title="⽤户态转化内核态"></a>⽤户态转化内核态</h3><ul>
-<li><p><strong>系统调⽤</strong><br>⽤户态进程主动切换到内核态的⼀种⽅式，是操作系统提供给⽤户程序的⼀组特殊接⼝，从而让⽤户程序获得操作系统内核提供的服务，⽐如 <code>fork()</code> 实际上就是执⾏了⼀个创建新进程的系统调⽤。系统调⽤的核心机制是使⽤了操作系统为⽤户开放的⼀个中断来实现，例如 Linux 的 <code>int 80h</code> 中断。</p>
-<blockquote>
-<p>函数调用发生在用户空间，通过压栈操作完成</p>
-</blockquote>
-</li>
-<li><p><strong>异常</strong><br>由 CPU 执行指令的内部事件引起异常，如非法操作码、地址越界、算术溢出等。这时会触发当前进程切换到内核态的异常处理程序中。</p>
-</li>
-<li><p><strong>外中断</strong><br>当外围设备完成⽤户请求的操作后，会向 CPU 发出相应的中断信号，这时 CPU 会暂停执⾏下⼀条要执⾏的指令，转⽽去执⾏相应的中断处理程序，如果先前执⾏的指令是⽤户态下的程序，就发⽣了由⽤户态到内核态的切换。如 I&#x2F;O 完成中断、时钟中断、控制台中断等</p>
-</li>
+<li><strong>系统调⽤</strong><br>⽤户态进程主动切换到内核态的⼀种⽅式，是操作系统提供给⽤户程序的⼀组特殊接⼝，从而让⽤户程序获得操作系统内核提供的服务，⽐如 <code>fork()</code> 实际上就是执⾏了⼀个创建新进程的系统调⽤。系统调⽤的核心机制是使⽤了操作系统为⽤户开放的⼀个中断来实现，例如 Linux 的 <code>int 80h</code> 中断。</li>
+<li><strong>异常</strong><br>由 CPU 执行指令的内部事件引起异常，如非法操作码、地址越界、算术溢出等。这时会触发当前进程切换到内核态的异常处理程序中。</li>
+<li><strong>外中断</strong><br>当外围设备完成⽤户请求的操作后，会向 CPU 发出相应的中断信号，这时 CPU 会暂停执⾏下⼀条要执⾏的指令，转⽽去执⾏相应的中断处理程序，如果先前执⾏的指令是⽤户态下的程序，就发⽣了由⽤户态到内核态的切换。如 I&#x2F;O 完成中断、时钟中断、控制台中断等</li>
 </ul>
 <details blue><summary> Folding </summary>
               <div class='content'>
@@ -3502,7 +3430,7 @@
 <p>以上四种模型在真正IO操作时都需要用户进程参与，均称为<strong>同步IO模型</strong>。</p>
 </blockquote>
 </li>
-<li><p><strong>异步 I&#x2F;O</strong><br>Linux中提供了异步IO的接口<code>aio_read</code> 和 <code>aio_write</code>，用户进程调用 <code>aio_read</code> 之后会立即返回不阻塞，<code>aio_read</code> 会给内核传递文件描述符，缓冲区指针，缓冲区大小等；数据准备好时，内核直接将数据copy到用户空间，copy完后给用户进程发送一个信号，进行用户数据异步处理。因此用户进程不需要将数据从内核空间copy到用户空间。<strong>两阶段均不阻塞</strong>。</p>
+<li><p><strong>异步 I&#x2F;O</strong><br>如 libaio 库、POSIX 标准定义的异步IO的 <code>aio</code> 接口。用户进程调用 <code>aio_read</code> 之后会立即返回不阻塞，<code>aio_read</code> 会给内核传递文件描述符，缓冲区指针，缓冲区大小等；数据准备好时，内核直接将数据copy到用户空间，copy完后给用户进程发送一个信号，进行用户数据异步处理。因此用户进程不需要将数据从内核空间copy到用户空间。<strong>两阶段均不阻塞</strong>。</p>
 </li>
 </ol>
 <h3 id="I-O复用的原理"><a href="#I-O复用的原理" class="headerlink" title="I&#x2F;O复用的原理"></a>I&#x2F;O复用的原理</h3><p>进程预先告诉内核需要监视的IO条件，内核⼀旦发现进程指定的⼀个或多个IO条件就绪，就通过进程处理，从⽽不会在单个IO上阻塞了。Linux中提供了<code>select</code>、<code>poll</code>、<code>Epoll</code>三种接⼝函数来实现IO复⽤。</p>
@@ -3563,11 +3491,19 @@
 <h3 id="mmap原理"><a href="#mmap原理" class="headerlink" title="mmap原理"></a><a href="https://www.cnblogs.com/huxiao-tee/p/4660352.html#4008787">mmap原理</a></h3><p><strong>1. 基本概念</strong><br>mmap 可以将一个文件映射到进程的地址空间，实现文件<strong>磁盘地址</strong>和进程虚拟地址空间中一段<strong>虚拟地址</strong>的对映关系。这样进程就可以采用指针的方式读写操作这一段内存：读操作时可能引发缺页异常，会把文件内容拷贝到主存，写操作后系统会自动回写脏页面到对应的文件磁盘上，不必再调用read,write等系统调用函数。<br><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/mmap.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2. 优点</strong></p>
 <ol>
-<li>(<code>优化读写</code>)相比常规文件操作 <code>磁盘-&gt;页缓存-&gt;用户主存</code> 的两次数据拷贝，只需要 <code>磁盘-&gt;页缓存</code> 一次拷贝，用内存读写取代 I&#x2F;O 读写，提高了文件读取效率。</li>
-<li>(<code>通过page cache实现内核用户空间交互</code>)实现了用户空间和内核空间的高效交互。两空间的各自修改操作可以直接反映在映射区域的对方空间。</li>
-<li>(<code>共享内存，进程间通信</code>)一种IPC方式。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
+<li>减少显式调用<code>read/write</code>的系统调用，且<code>mmap</code>直接返回指向page cache的指针，避免OS到用户空间的一次拷贝</li>
+<li>共享内存进程间通信。不管是父子进程还是无亲缘关系的进程，都可以将自身用户空间映射到同一个文件或匿名映射到同一片区域，从而达到进程间通信和进程间共享的目的。</li>
 </ol>
-<p><strong>3. 细节</strong></p>
+<p><strong>3. 瓶颈</strong></p>
+<ol>
+<li>当SSD带宽高，DBMS 管理的数据量大于内存空间时，OS的页驱逐机制多线程扩展性比较差（因为 SSD I&#x2F;O 带宽大、访问速度快，页驱逐机制成了瓶颈）</li>
+<li>mmap的cache命中率不如read，因为OS会自动剔除一些内存页，这样可能导致频繁的缺页中断。在命中cache时，mmap没有用户态到内核态切换，LRU的内核页面无法+1，热点数据更新掉了<ul>
+<li>使用 mlock 锁hashtable，但一个进程能锁住的内存页数量有限制</li>
+<li>使用 madvise 的 MADV_SEQUENTIAL 标记，积极顺序预取</li>
+</ul>
+</li>
+</ol>
+<p><strong>4. 细节</strong></p>
 <ol>
 <li>mmap映射区域大小必须是 4K 大小的整倍数，否则实际映射区域向上取整，padding 部分填充为0且无法写入</li>
 <li>映射的是磁盘地址和文件无关，只要映射范围的数据合法即可，和文件扩张&#x2F;关闭没有直接联系</li>
@@ -4293,6 +4229,7 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/copy_process_.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/copy_process_.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>因为在内核中线程和进程都是用 task_struct 来表示，只不过<strong>线程和进程的区别是会和创建它的父进程共享打开文件列表、目录信息、虚拟地址空间等数据结构，会更轻量一些</strong>，所以在 Linux 下的线程也叫轻量级进程。</p>
 <p>对于内核任务来说，无论有多少个任务，其使用地址空间都是同一个。所以一般都叫内核线程，而不是内核进程。</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>fork的父子进程间：<br>共享：内存映射区（mmap）、文件描述符（文件偏移量共享）、信号处理方式<br>不共享：进程ID、内存空间（写时复制）</p>
 <hr>
 <h2 id="CPU核心、线程数概念"><a href="#CPU核心、线程数概念" class="headerlink" title="CPU核心、线程数概念"></a>CPU核心、线程数概念</h2><h3 id="CPU物理数"><a href="#CPU物理数" class="headerlink" title="CPU物理数"></a>CPU物理数</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;physical id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
 <p>物理CPU数量，普通电脑一般只有一个CPU插槽，也就是只有一个物理CPU</p>
@@ -8016,15 +7953,14 @@
   <entry>
     <title>MIT 6.824</title>
     <url>/2024/07/27/Distribution/ShardKV/</url>
-    <content><![CDATA[<h2 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h2><hr>
-<h3 id="常见QA"><a href="#常见QA" class="headerlink" title="常见QA"></a>常见QA</h3><details blue><summary> Folding </summary>
+    <content><![CDATA[<h2 id="Raft-QA"><a href="#Raft-QA" class="headerlink" title="Raft QA"></a>Raft QA</h2><details blue><summary> Folding </summary>
               <div class='content'>
               <p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p><p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p><p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p><p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p><p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p><p><strong>Raft 对网络有什么假设</strong></p><p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p><p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p><p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p><p><strong>Raft 中的选举流程</strong></p><ol><li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li><li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li><li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li></ol><p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
               </div>
             </details>
 
 <hr>
-<p><br><strong>Raft 主要在什么场景中使用</strong></p>
+<p><strong>Raft 主要在什么场景中使用</strong></p>
 <ul>
 <li>元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。</li>
 <li>数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。</li>
@@ -8059,10 +7995,10 @@
 <li>Raft 和 Paxos 都是共识协议，而所有的共识协议在原理上都可以等价为 Paxos，共识协议本质上都是 Paxos。</li>
 <li>Raft 是为了解决 Paxos 理解和实现都相对复杂的问题。将共识协议拆成两个相对独立的过程：领导者选举和日志复制，以降低理解和实现的复杂度。</li>
 <li>Raft 其实是和 Multi-Paxos 等价，因为 Paxos 只解决单个值的共识问题。</li>
-<li>在 Paxos 中，一旦某个日志在多数节点存在后就可以安全的提交；但在 Raft 中，不总是这样，比如一条日志在多数节点中存在后，但不是当前 Leader 任期的日志，也不能进行直接提交；而只能通过提交当前任期的日志来间接提交。</li>
-<li>在Paxos 在选举时，Leader 可能需要借机补足日志，但 Raft 中选举过程完全不涉及日志复制（这也是 Raft 进行拆分的初衷）。这是因为 Raft 只允许具有最新日志的 Candidate 成为 Leader，而 Paxos 不限制这一点。</li>
-<li>在 Paxos 中，允许乱序 commit 日志，而 Raft 只允许顺序提交。</li>
-<li>在 Paxos 中，每个 Peer 的 term 是不一致的，全局自增的；在 Raft 中 term 是每个 Peer 独立自增的，但需要对齐。</li>
+<li>Paxos 只要某个日志在多数节点存在后就可以安全提交；但在 Raft 中如果不是当前任期的日志，即使超过半数也不能直接提交，只能通过提交当前任期的日志来间接提交。</li>
+<li>在Paxos 在选举时，Leader 可能需要借机补足日志，但 Raft 中选举过程完全不涉及日志复制，因为只有具有最新日志的 Candidate 才能成为 Leader，而 Paxos 不限制这一点。</li>
+<li>Paxos 允许乱序 commit 日志，而 Raft 只允许顺序提交。</li>
+<li>Paxos 每个节点的 term 是不一致的，全局自增；在 Raft 中 term 每个节点独立自增，但需要对齐。</li>
 </ul>
 <p><strong>Raft 在工程中有哪些常见的优化</strong></p>
 <p>由于领导者选举是个低频操作，主要 IO 路径优化还是集中在日志同步流程上。</p>
@@ -8082,11 +8018,11 @@
 <p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
 </blockquote>
 <p><strong>Shard 数据如何迁移</strong></p>
-<p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。<br>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
-<p><strong>Shard 迁移的时候，客户端的请求会受到影响吗</strong></p>
-<p>如果客户端请求的 key 所属的 shard 并没有在迁移中，那么可以正常提供服务。<br>否则，说明客户端请求的 key 在迁移中，则返回错误，让客户端进行重试。</p>
-<p><strong>如果处理并发的客户端请求和 shard 迁移请求</strong></p>
-<p>客户端请求和 shard 迁移请求的确存在并发情况，如果处理顺序不一致，会违背线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
+<p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。</p>
+<p>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
+<p><strong>如何处理 Shard 迁移与客户端请求的关系</strong></p>
+<p>如果客户端请求的 key 所属的 shard 并没有在迁移中，那么可以正常提供服务。否则则返回错误，让客户端进行重试。</p>
+<p>此外，客户端请求和 shard 迁移请求存在并发情况，需要保证线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
 <hr>
 <h2 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h2><h3 id="什么是线性一致读"><a href="#什么是线性一致读" class="headerlink" title="什么是线性一致读"></a>什么是线性一致读</h3><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
 <details blue><summary> Folding </summary>
@@ -8104,8 +8040,7 @@
 <ol>
 <li><strong>确认 read 返回的数据的哪个点</strong>？记录当前的commit index，作为read index; 如果新 Leader 不知道最新的 committ index，则提交一个 No-op log entry 来提交之前的 log entry</li>
 <li><strong>确认当前的 Leader 是不是还是 Leader</strong>？避免网络分区时 Leader 被孤立的情况。向集群中的所有节点广播一次心跳，是否收到了过半数量的心跳响应</li>
-<li><strong>等到 leader 本地的apply index &gt;&#x3D; read index</strong>，此时可以保证只读操作的线性一致性</li>
-<li>让状态机执行读操作，将结果返回给客户端</li>
+<li><strong>等到 leader 本地的apply index &gt;&#x3D; read index</strong>，此时可以保证只读操作的线性一致性，让状态机执行读操作并返回结果</li>
 </ol>
 <blockquote>
 <p>缺点：每次 read 发送心跳开销太大</p>
@@ -8149,8 +8084,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Distribution</title>
-    <url>/2024/07/27/Distribution/Distribution/</url>
+    <title>分布式理论</title>
+    <url>/2024/09/17/Distribution/Distribution/</url>
     <content><![CDATA[<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><p>一致性：在同一时刻副本一致，所有节点读到修改后的最新数据<br>    - 强一致性、单调一致性、最终一致性<br>可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新<br>分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务</p>
 <h2 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h2><p>Basically Available（基本可用）：分布式系统在出现不可预知故障的时候，允许损失部分可用性<br>Soft state（软状态）：软状态也称为弱状态，和硬状态相对，是指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。<br>Eventually consistent（最终一致性）：最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性</p>
 <p>BASE是对CAP中一致性和可用性权衡的结果，其基本思路就是：通过业务，牺牲强一致性而获得可用性，并允许数据在一段时间内是不一致的，但是最终达到一致性状态。</p>
@@ -8163,8 +8098,7 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/linearizability.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>按照上述给定的请求关系，结合实际调用结果来判断有否出现结果与约定相违背的情况，没有的话整个系统就符合线性一致性。如上图所示，我们可以认为线性一致性系统仿佛有一条隐藏的全局时间轴，每个请求调用的过程中都有一个生效瞬间（如“|”竖线所示）、在全局时间轴上有具体的时间戳，如果将调用生效瞬间按顺序连接起来，所有连线都会呈现从左到右、顺序发生的关系。看图中最后3个请求，cas(x,2,4)与两个read(x)分别都是并发关系，然而两个read(x)是有偏序的，说明后一个read(x)应该能读到前一个read(x)的结果。cas(x,2,4)虽然是与最后的read(x)是并发关系，但由于它的修改结果是成功的，说明其必须发生在前一个read(x)之前，所以到最后我们没法从最后3个请求中发现合理的调用顺序，所以系统不是线性一致性的。</p>
 <h3 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h3><p>不要求操作的时序与真实物理时间一致。两个不相关的操作，如序列 <code>读A 写A 读B 写B</code>，要求读A、B能读到最新值，但不要求读B到最新值时，读A也一定是最新值。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p><strong>1. 两阶段提交</strong></p>
-<ol>
+<h2 id="一致性解决方案"><a href="#一致性解决方案" class="headerlink" title="一致性解决方案"></a>一致性解决方案</h2><h3 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h3><ol>
 <li>提交事务请求（投票阶段）<ul>
 <li><strong>协调者</strong>向<strong>参与者</strong>发送事务内容，询问是否可以执行事务提交操作，等待响应</li>
 <li>参与者执行事务操作，将undo和redo日志记录，并回复协调者执行成功Yes&#x2F;No</li>
@@ -8188,7 +8122,7 @@
 <li>互询机制：参与者回复yes后，如果迟迟收不到协调者最终的commit&#x2F;abort，可以询问其他参与者来决定自身下一步操作，避免一直阻塞</li>
 </ul>
 <p>2PC广泛应用于关系数据库的分布式事务处理，如mysql的内部与外部XA都是基于2PC的，一般想要把多个操作打包未原子操作也可以用2PC</p>
-<p><strong>2. 三阶段提交</strong><br>把2PC的第一阶段拆成两阶段：</p>
+<h3 id="三阶段提交"><a href="#三阶段提交" class="headerlink" title="三阶段提交"></a>三阶段提交</h3><p>把2PC的第一阶段拆成两阶段：</p>
 <ol>
 <li>事务询问（canCommit）<ul>
 <li>协调者向参与者发送一个包含事务内容的询问请求，<strong>询问是否可以执行事务</strong>并等待</li>
@@ -8208,24 +8142,20 @@
 </ol>
 <p>2PC 和 3PC 是分布式事务中两种常见的协议，3PC 可以看作是 2PC 协议的改进版本，相比于 2PC 它有两点改进：</p>
 <p>引入了超时机制，同时在协调者和参与者中都引入超时机制（2PC 只有协调者有超时机制），所以发生阻塞的几率变小了<br>3PC 相比于 2PC 增加了 CanCommit 阶段，可以尽早的发现问题，从而避免了后续的阻塞和无效操作。</p>
-<p><strong>3. Raft、Paxos</strong></p>
-<h2 id="最终一致性模式"><a href="#最终一致性模式" class="headerlink" title="最终一致性模式"></a>最终一致性模式</h2><p>系统保证数据最终达到完全一致的状态，但所需时间不能保证。业务系统对一致性大多数情况没那么高，更多强调高可用，因此，多数业务系统倾向于AP</p>
-<h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><p>一致性算法的目的是保证在分布式系统中，多数据副本节点数据一致性。主要包含一致性Hash算法，Paxos算法，Raft算法，ZAB算法等。</p>
-<h3 id="ZAB"><a href="#ZAB" class="headerlink" title="ZAB"></a>ZAB</h3><p>ZAB 协议是为分布式协调服务 Zookeeper 专门设计的一种支持 <code>崩溃恢复</code> 和 <code>原子广播</code> 协议。基于该协议，Zookeeper 实现了一种 <strong>主备模式</strong> 的系统架构来保持集群中各个副本之间数据一致性。</p>
-<p>所有客户端写入数据到 <code>主进程</code>（Leader）中，由 <code>Leader</code> 复制到<code>备份进程</code>（Follower）中，从而保证数据一致性，从设计上看和 Raft 类似。<br>复制过程类似 2PC，ZAB 只需要 Follower 有一半以上返回 Ack 信息就可以执行提交，大大减小了同步阻塞，也提高了可用性。</p>
+<h3 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h3><p>一致性算法的目的是保证在分布式系统中，多数据副本节点数据一致性。主要包含一致性Hash算法，Paxos算法，Raft算法，ZAB算法等。</p>
+<h4 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h4><h4 id="Paxos"><a href="#Paxos" class="headerlink" title="Paxos"></a>Paxos</h4><h4 id="ZAB"><a href="#ZAB" class="headerlink" title="ZAB"></a>ZAB</h4><p>ZAB 协议是为分布式协调服务 Zookeeper 专门设计的一种支持 <code>崩溃恢复</code> 和 <code>原子广播</code> 协议。基于该协议，Zookeeper 实现了一种 <strong>主备模式</strong> 的系统架构来保持集群中各个副本之间数据一致性。</p>
 <p>当 Leader 服务可以正常使用，就进入消息广播模式，当 Leader 不可用时，则进入崩溃恢复模式。</p>
 <p><strong>消息广播</strong>：</p>
 <ul>
-<li>使用的是一个原子广播协议，类似一个2PC过程。对于客户端发送的写请求，全部由 Leader 接收，Leader 将请求封装成一个事务 Proposal，将其发送给所有 Follwer ，然后根据所有 Follwer 的反馈，如果超过半数成功响应，则执行 commit 操作</li>
+<li>使用的是一个原子广播协议，类似一个2PC过程。对于客户端发送的写请求，全部由 Leader 接收，Leader 将请求封装成一个事务，将其发送给所有 Follwer ，如果超过半数成功响应，则执行 commit 操作。减小了同步阻塞，也提高了可用性</li>
 <li>在 Leader 和 Follwer 之间还有一个消息队列，用来解耦他们之间的耦合，避免同步，实现异步解耦</li>
 </ul>
 <p><strong>崩溃恢复</strong>：<br>ZAB定义两个原则：</p>
 <ul>
-<li>ZAB 协议确保那些已经在 Leader 提交的事务最终会被所有服务器提交。</li>
-<li>ZAB 协议确保丢弃那些只在 Leader 提出&#x2F;复制，但没有提交的事务。</li>
+<li>Leader 事务只要commit了，最终就会被所有服务器提交。</li>
+<li>Leader 提出&#x2F;复制了事务但没提交，则丢弃事务。</li>
 </ul>
 <p>Leader 崩溃后选举时，要保证新选举出来的 Leader 拥有集群总所有机器编号（即 ZXID 最大）的事务，即这个 Leader 一定具有所有已经提交的提案。<br>当 Follower 链接上 Leader 之后，Leader 服务器会根据自己服务器上最后被提交的 ZXID (LeaderId + 事务ID) 和 Follower 上的 ZXID 进行比对，比对结果要么回滚，要么和 Leader 同步。</p>
-<p>假设1：Leader 在复制数据给所有 Follwer 之后崩溃，怎么办？<code>丢弃没有提交的数据</code><br>假设2：Leader 在收到 Ack 并提交了自己，同时发送了部分 commit 出去之后崩溃怎么办？<code>最终会同步所有服务器的数据</code></p>
 <blockquote>
 <p>zookeeper是弱一致性模型，但是也可以支持强一致性模型，用sync()方法强制读取从leader同步数据。。</p>
 </blockquote>

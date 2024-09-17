@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2024-07-04T15:46:04.000Z">
-<meta property="article:modified_time" content="2024-09-12T15:43:05.947Z">
+<meta property="article:modified_time" content="2024-09-17T17:02:56.632Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CPP">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1726404743677),
+    lastupdate: new Date(1726592614849),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2695,6 +2695,32 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 <p><strong>5.使用std::move()返回</strong><br>在返回值上调用 <code>std::move()</code> 进行返回是一种错误的方式。它会尝试强制调用移动构造函数，但这样会导致 (N)RVO 失效。因为即使没有显示调用 std::move()，编译器优化中也会执行 move 操作。</p>
 <hr>
+<h2 id="C-17新特性"><a href="#C-17新特性" class="headerlink" title="C++17新特性"></a>C++17新特性</h2><ul>
+<li><code>std::string_view</code></li>
+<li><code>std::optional</code></li>
+<li>Lambda 表达式捕获 <code>*this</code></li>
+<li>结构化绑定 <code>auto&amp; [k,v] : mp</code></li>
+</ul>
+<hr>
+<h2 id="Auto-模板类型推导"><a href="#Auto-模板类型推导" class="headerlink" title="Auto &amp;&amp; 模板类型推导"></a>Auto &amp;&amp; 模板类型推导</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://cntransgroup.github.io/EffectiveModernCppChinese/1.DeducingTypes/item1.html">参考链接</a></p>
+</blockquote>
+<p>变量类型的占位符，编译器确定。用于定义 STL 迭代器、泛型编程中不知道变量具体类型或不想指定类型时</p>
+<p><strong>推导规则</strong>：</p>
+<ul>
+<li>数组名或者函数名实参会退化为指针（除非被用于初始化引用）</li>
+<li>有引用的实参会被视为无引用，在<code>int &amp;a_ref = a; auto b = a_ref</code>中 auto 推导为 int 而非 int&amp; </li>
+<li>对于传值类型推导，const 和 volatile 属性会被忽略，在<code>const int a = 1; auto b = a</code> 中 auto 推导为 int 而非 const int</li>
+<li>在万能引用中，<code>T&amp;&amp;</code>接收左值实参会被推导为<code>T&amp;</code>，发生了引用折叠</li>
+</ul>
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>用auto声明的变量必须初始化，根据后面的值来推测这个变量的类型</li>
+<li>函数和模板参数不能被声明为auto</li>
+<li>不能用于类型转换等操作，如sizeof、typeid</li>
+<li>初始化auto用 <code>=</code> ，圆括号会得到函数声明，返回值自动推断；大括号会推断成 <code>initializer_list&lt;SomeType&gt;</code></li>
+</ul>
+<hr>
 <h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><p>智能指针是一个类，用来存储指向动态分配对象的指针，负责自动释放动态分配的对象，防止堆内存泄漏。动态分配的资源，交给一个类对象去管理，当类对象声明周期结束时，自动调用析构函数释放资源</p>
 <h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><p>保证同⼀时间内只有⼀个智能指针可以指向该对象。转移一个unique_ptr将会把所有权从源指针转移给目标指针，源指针被置空。</p>
 <p>unique_ptr不支持拷贝构造和赋值操作，但可以配合 <code>move()</code> 支持移动构造和移动赋值。拷贝操作有一个例外，可以从函数中返回unique_ptr。</p>
@@ -2754,18 +2780,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ol>
 <p>解决：用 <code>make_unique/shared</code> 确保对象 T 的创建和 unique_ptr 一起 </p>
 <hr>
-<h2 id="Auto"><a href="#Auto" class="headerlink" title="Auto"></a>Auto</h2><p>自动类型推断，auto仅仅是一个占位符，在编译期间它会被真正的类型所替代</p>
-<ul>
-<li>用auto声明的变量必须初始化，根据后面的值来推测这个变量的类型</li>
-<li>函数和模板参数不能被声明为auto</li>
-<li>不能用于类型转换等操作，如sizeof、typeid</li>
-<li>初始化auto用 <code>=</code> ，圆括号会得到函数声明，返回值自动推断；大括号会推断成 <code>initializer_list&lt;SomeType&gt;</code></li>
-</ul>
-<p>用途：</p>
-<ul>
-<li>定义 stl 的迭代器</li>
-<li>泛型编程中不知道变量具体类型、或不想指定类型时</li>
-</ul>
 <h2 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h2><p>利用lambda表达式可以编写内嵌的匿名函数，用以替换独立函数或者函数对象；</p>
 <p>定义一个lambda表达式后，编译器会自动生成一个匿名类（重载了()运算符），称为闭包类型，并把 capture 的变量作为该类的属性。闭包的一个强大之处是可以捕捉其作用域内的变量，比如在方括号中通过传值或引用方式捕获</p>
 <p><strong>Tip1</strong>：lambda必须使用尾置返回来指定返回类型，可以忽略参数列表和返回值，但必须永远包含捕获列表和函数体</p>
@@ -2774,14 +2788,43 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p><strong>Tip3</strong>：用显式的按引用捕获，默认捕获可能会导致悬空引用，如局部变量生命周期结束</p>
 <p><strong>Tip4</strong>：用显式的按值捕获，默认的按值捕获对于悬空指针很敏感（尤其是this指针），并且它会误导人产生lambda是独立的想法。注意，通过<code>[=] [&amp;] [this]</code> 显式捕获 this 都是 by-reference 的，只有 <code>[*this]</code> 是 by-copy 的</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function">function&lt;<span class="title">void</span><span class="params">()</span>&gt; <span class="title">CreateCB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> cb = [=] &#123; cout &lt;&lt; id_ &lt;&lt; endl; &#125;;</span><br><span class="line">    <span class="comment">// 实际捕获了 this 指针，并非值拷贝</span></span><br><span class="line">    <span class="comment">// cb = [curObjPtr] &#123; cout &lt;&lt; curObjPtr-&gt;id_ &lt;&lt; endl; &#125;</span></span><br><span class="line">    <span class="keyword">return</span> cb;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">int</span> id_&#123;<span class="number">1</span>&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Widget w;</span><br><span class="line">  function&lt;<span class="type">void</span>()&gt; cb = w.<span class="built_in">CreateCB</span>();</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 1</span></span><br><span class="line">  w.id_ = <span class="number">2</span>;</span><br><span class="line">  <span class="built_in">cb</span>();  <span class="comment">// 2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Constexpr"><a href="#Constexpr" class="headerlink" title="Constexpr"></a>Constexpr</h2><p>常量表达式中的成员都是常量，常量表达式一旦确定，其值将无法修改。</p>
+<hr>
+<h2 id="左值与右值"><a href="#左值与右值" class="headerlink" title="左值与右值"></a>左值与右值</h2><p>C++11通过引入右值引用来优化性能，配合移动语义来避免拷贝。通过<code>std::move()</code>语义来将临时生成的左值中的资源无代价的转移到另外一个对象中去。<code>std::move()</code> 的实现原理就是的强转右值引用类型并返还之，由于函数返还值类型是临时值，且返还的还是右值引用类型，因此该返还值会被判断为右值。</p>
+<h3 id="左值右值分类"><a href="#左值右值分类" class="headerlink" title="左值右值分类"></a>左值右值分类</h3><p><strong>lvalue</strong>：左值，有标识符、可以取地址的表达式</p>
 <ul>
-<li><code>const</code>可以修饰编译期和运行期的常量，而<code>constexpr</code>只能修饰编译期的常量，必须在编译期就能计算出来，因为其目的是实现更多的编译期计算，但也会增加编译时间</li>
-<li><code>const</code>可以通过<code>const_cast</code>类型转换（理解为只读变量），而<code>constexpr</code>不可以修改</li>
-<li><code>const</code>只能用于非静态成员函数，而<code>constexpr</code>可以和成员、非成员、构造函数一起使用，<code>constexpr</code>修饰自定义类时，需要提供常量构造函数</li>
+<li>变量、函数</li>
+<li>返回左值引用的表达式，++x、x&#x3D;1</li>
+<li>字符串字面量 “hello world”</li>
 </ul>
+<p>函数调用时，左值可以绑定到<code>T&amp;</code>，常量只能绑定到<code>const T&amp;</code></p>
+<p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
+<ul>
+<li><strong>prvalue</strong>：纯右值，传统意义上的右值，不具名的临时对象，<strong>无名无地址</strong><ul>
+<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
+<li>非字符串字面量，42、true</li>
+<li>特点：不能作为赋值操作的左值</li>
+</ul>
+</li>
+<li><strong>xvalue</strong>：将亡值表示即将被销毁的对象，通常是通过右值引用操作产生的，表示一个可以被移动的对象，通常用于移动语义避免拷贝<ul>
+<li>如通过 <code>std::move</code> 产生</li>
+</ul>
+</li>
+</ul>
+<h3 id="左值右值引用"><a href="#左值右值引用" class="headerlink" title="左值右值引用"></a>左值右值引用</h3><p>右值引用和左值引用都是属于引用类型，都必须立即进行初始化，因为引用类型只是一个别名，并不拥有绑定对象的内存。</p>
+<p><strong>左值引用</strong>：具名变量的别名。左值引用通常不能绑定到右值，但常量左值引用可以接受非常量左值、常量左值、右值，不过常量左值所引用的右值在它的“余生”中只能是只读的。<br><strong>右值引用</strong>：用于绑定右值或即将销毁的变量，允许移动而非复制操作，减少深拷贝，提高程序效率。</p>
+<p><strong>用途</strong>：</p>
+<ul>
+<li>移动语义：通过移动构造函数和移动赋值运算符，可以将资源从一个对象“移动”到另一个对象，而不是复制资源</li>
+<li>完美转发：右值引用与模板结合使用，可以实现完美转发，即将参数原封不动地传递给另一个函数。这在编写泛型代码时非常有用。</li>
+</ul>
+<p><strong>注意事项</strong>：</p>
+<ul>
+<li>右值引用变量是左值：尽管右值引用可以绑定到右值，但右值引用本身是一个左值。需要使用 <code>move</code> 或 <code>forward</code> 来显式地将其转换为右值</li>
+<li>避免使用已移动的对象：移动操作后，源对象进入一种有效但未指定的状态，应该避免使用</li>
+</ul>
+<blockquote>
+<p>临时对象在对应表达式估值完成后、按生成顺序逆序销毁。若<strong>纯右值</strong>被绑定到引用上，其生命周期会延长至与引用变量相同</p>
+</blockquote>
 <hr>
 <h2 id="特殊成员函数生成机制"><a href="#特殊成员函数生成机制" class="headerlink" title="特殊成员函数生成机制"></a>特殊成员函数生成机制</h2><blockquote>
 <ul>
@@ -2821,29 +2864,19 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Widget</span>() &#123; cout &lt;&lt; <span class="string">&quot;construct&quot;</span> &lt;&lt; endl; &#125;</span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">Widget</span>() &#123; cout &lt;&lt; <span class="string">&quot;destruct&quot;</span> &lt;&lt; endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Widget w;</span><br><span class="line">  Widget y = std::<span class="built_in">move</span>(w);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="模板类型推导"><a href="#模板类型推导" class="headerlink" title="模板类型推导"></a>模板类型推导</h2><blockquote>
-<p><a target="_blank" rel="noopener" href="https://cntransgroup.github.io/EffectiveModernCppChinese/1.DeducingTypes/item1.html">参考链接</a></p>
-</blockquote>
+<h2 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h2><p>在模板函数内给另一个函数传递参数时，无论对象是左值&#x2F;右值引用类型，都会被视为左值。因为，完美转发用于保证不丢失其左值&#x2F;右值属性：如果形参推导出是右值引用则作为右值传入，如果是左值引用则作为左值传入</p>
+<p>完美转发依赖于三个概念：</p>
+<p><strong>1. 万能引用</strong>：发生类型推导（模板、auto）的时候，使用 <code>T&amp;&amp;</code> 类型表示为万能引用。它可以绑定到（接收）左值和右值，从而使得模板函数能处理不同类型参数。T&amp;&amp; 推导后的类型：</p>
 <ul>
-<li>在模板类型推导时，有引用的实参会被视为无引用，他们的引用会被忽略</li>
-<li>对于通用引用的推导，左值实参会被特殊对待（虽然形参右值引用类型，但最后推导的结果是左值引用）</li>
-<li>对于传值类型推导，const 和 volatile 实参会被认为是 non-const 的和 non-volatile 的</li>
-<li>在模板类型推导时，数组名或者函数名实参会退化为指针，除非它们被用于初始化引用</li>
+<li>如果传入左值，T 会被推导为左值引用类型。</li>
+<li>如果传入右值，T 会被推导为普通类型。</li>
 </ul>
-<h3 id="通用-万能引用-TODO"><a href="#通用-万能引用-TODO" class="headerlink" title="通用&#x2F;万能引用[TODO]"></a>通用&#x2F;万能引用[TODO]</h3><p>发生类型推导（模板、auto）的时候，使用 <code>T&amp;&amp;</code> 类型表示为万能引用，否则表示右值引用。万能引用能匹配任意引用类型的左值、右值。所以编写模板函数时，只提供万能引用形参一个版本就可以匹配多种情况，不必编写多个重载版本。</p>
-<h3 id="引用折叠"><a href="#引用折叠" class="headerlink" title="引用折叠"></a>引用折叠</h3><p>当万能引用作为参数时，有可能被一个左值引用或右值引用的参数初始化，这时经过类型推导出来T&amp;&amp;类型，相比右值引用会发生类型的变化，这种变化就称为引用折叠</p>
+<p><strong>2. 引用折叠</strong>：当万能引用作为参数时，有可能被一个左值引用或右值引用的参数初始化，这时经过类型推导出来T&amp;&amp;类型，相比右值引用会发生类型的变化，这种变化就称为引用折叠</p>
 <ol>
 <li>所有右值引用折叠到右值引用上仍然是一个右值引用</li>
 <li>所有的其他引用类型之间的折叠都将变成左值引用</li>
 </ol>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">42</span>;</span><br><span class="line"><span class="type">int</span>&amp; a = x;</span><br><span class="line"><span class="type">int</span>&amp;&amp; b = <span class="number">42</span>;</span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; c = a; <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; d = b; <span class="comment">//int&amp;</span></span><br><span class="line"><span class="keyword">auto</span>&amp;&amp; e = std::<span class="built_in">move</span>(b); <span class="comment">//int&amp;&amp;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;foo &amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;foo &amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;bar &amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">foo</span>(f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;bar &amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">    <span class="built_in">foo</span>(f);  <span class="comment">//② 被视作左值，输出 foo &amp;</span></span><br><span class="line">    <span class="built_in">foo</span>(<span class="built_in">move</span>(f));<span class="comment">//③ 输出 foo &amp;&amp;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">bar</span>(<span class="built_in">A</span>()); <span class="comment">//① 调用bar(A&amp;&amp; f)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h3><p>C++11提供了完美转发函数 <code>std:forward</code> 。它可以在模板函数内给另一个函数传递参数时，将参数类型保持原本状态传入（如果形参推导出是右值引用则作为右值传入，如果是左值引用则作为左值传入）。否则无论对象是左值引用类型，还是右值引用类型，都会被视为左值</p>
-<p>原理：<code>std::forward()</code> 的实现主要就一句 <code>return static_cast(形参)</code>，实际上也是利用了折叠规则。从而接受右值引用类型时，返还值为右值；接受左值引用类型时，返还值为左值</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">//用forward实现完美转发</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(A&amp;&amp; f)</span></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;&amp;&amp;&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">(T&amp;&amp; s)</span></span>&#123;</span><br><span class="line">    <span class="built_in">foo</span>(forward&lt;T&gt;(s));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    <span class="built_in">bar</span>(a); <span class="comment">// 输出 &amp;</span></span><br><span class="line">    <span class="built_in">bar</span>(<span class="built_in">A</span>());<span class="comment">//输出 &amp;&amp;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p>**3. <code>std::forward()</code>**：原理为 <code>return static_cast(形参)</code>，利用了折叠规则。从而接受右值引用类型时，返还值为右值；接受左值引用类型时，返还值为左值</p>
 <hr>
 <h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="Vptr与Vtable"><a href="#Vptr与Vtable" class="headerlink" title="Vptr与Vtable"></a>Vptr与Vtable</h3><p><strong>虚函数表</strong>：为了实现虚函数，C++ 通过虚表解决了后期绑定时查找调用函数的问题。每个含有虚函数的类都有虚表，它是编译时期初始化的静态数组，数组中每个条目是一个函数指针。虚表全局共享，存储在常量区。</p>
 <p><strong>虚指针</strong>：编译器还会添加一个隐藏的 vptr 指向虚表。vptr在构造函数中初始化，先在父类构造函数中指向父类的虚表，之后在子类构造函数中改为指向子类虚表。与this指针不同，this指针实际上是编译器用来解析自引用的<strong>函数参数</strong>，vptr 是一个真正的指针，占用4B&#x2F;8B大小，也会被派生类继承。</p>
@@ -2872,33 +2905,13 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>需要调整地址，指向一个相关的Thunk偏移量，从而将 this 指针调整到正确的位置，即减少若干字节的偏移量，然后再去调用虚函数</li>
 </ol>
 <p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E8%A1%A8_%E5%A4%9A%E7%BB%A7%E6%89%BF.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E8%99%9A%E8%A1%A8_%E5%A4%9A%E7%BB%A7%E6%89%BF.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h4 id="指向成员函数的指针"><a href="#指向成员函数的指针" class="headerlink" title="指向成员函数的指针"></a>指向成员函数的指针</h4><p><strong>“指向Nonstatic Member Functions”的指针</strong></p>
-<ul>
-<li><p>定义并初始化: <code>double (Point::*coord)() = &amp;Point::x;</code></p>
-</li>
-<li><p>调用: <code>(origin.*coord)()</code> 或 <code>(ptr-&gt;*coord)()</code></p>
-<p>被编译器转化为: <code>(coord)(&amp;origin);</code>和<code>(coord)(ptr);</code></p>
-</li>
-</ul>
-<p><strong>“指向Virtual Member Functions”的指针</strong></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span> &#123;</span><br><span class="line">	<span class="function"><span class="type">float</span> <span class="title">x</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">y</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <h4 id="指向成员函数的指针"><a href="#指向成员函数的指针" class="headerlink" title="指向成员函数的指针"></a>指向成员函数的指针</h4><p><strong>“指向Nonstatic Member Functions”的指针</strong></p><ul><li><p>定义并初始化: <code>double (Point::*coord)() = &amp;Point::x;</code></p></li><li><p>调用: <code>(origin.*coord)()</code> 或 <code>(ptr-&gt;*coord)()</code></p><p>被编译器转化为: <code>(coord)(&amp;origin);</code>和<code>(coord)(ptr);</code></p></li></ul><p><strong>“指向Virtual Member Functions”的指针</strong></p><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span> &#123;</span><br><span class="line">	<span class="function"><span class="type">float</span> <span class="title">x</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">float</span> <span class="title">y</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><p>对nonstatic函数取地址:</p><ul><li>取x()的地址: <code>&amp;Point::x()</code> 得到的是<strong>函数在内存中的地址</strong></li></ul><p>对virtual函数取地址:</p><ul><li>取y()的地址:<code>&amp;Point::y();</code> 得到的结果是2(<strong>索引值.</strong>)</li></ul><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">float</span> (Point::*pmf)() = &amp;Point::y;</span><br></pre></td></tr></table></figure><p>对指向虚函数的指针调用:</p><ul><li>通过pmf来调用y()仍能实现虚函数机制，会被编译转化为 <code>(*ptr-&gt;vptr[(int)pmf])(ptr);</code></li><li>对一个”指向member function的指针”求值，由于该值有两种意义，其调用也将有别于常规操作</li><li>pmf的内部定义为 <code>float (Point::*pmf)()</code>，可以指向 <code>nonvirtual x()</code>和 <code>virtual z()</code>。前者代表内存地址，后者代表 virtual table中的索引值。因此编译器必须定义pmf，使它含有这两种值并区分代表哪种</li></ul>
+              </div>
+            </details>
 
-<p>对nonstatic函数取地址:</p>
-<ul>
-<li>取x()的地址: <code>&amp;Point::x()</code> 得到的是<strong>函数在内存中的地址</strong></li>
-</ul>
-<p>对virtual函数取地址:</p>
-<ul>
-<li>取y()的地址:<code>&amp;Point::y();</code> 得到的结果是2(<strong>索引值.</strong>)</li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">float</span> (Point::*pmf)() = &amp;Point::y;</span><br></pre></td></tr></table></figure>
-
-<p>对指向虚函数的指针调用:</p>
-<ul>
-<li>通过pmf来调用y()仍能实现虚函数机制，会被编译转化为 <code>(*ptr-&gt;vptr[(int)pmf])(ptr);</code></li>
-<li>对一个”指向member function的指针”求值，由于该值有两种意义，其调用也将有别于常规操作</li>
-<li>pmf的内部定义为 <code>float (Point::*pmf)()</code>，可以指向 <code>nonvirtual x()</code>和 <code>virtual z()</code>。前者代表内存地址，后者代表 virtual table中的索引值。因此编译器必须定义pmf，使它含有这两种值并区分代表哪种</li>
-</ul>
+<hr>
 <h3 id="能否使用虚函数"><a href="#能否使用虚函数" class="headerlink" title="能否使用虚函数"></a>能否使用虚函数</h3><ol>
 <li>模板类中可以使用虚函数吗？模板成员函数可以是虚函数吗？<ul>
 <li>前者可以，后者不行：编译阶段不知道程序中对虚成员模板函数的调用，就无法确定virtual table大小</li>
@@ -2936,36 +2949,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>vbptr 相对于虚函数表指针(vfptr)的偏移量（若没有定义虚函数，偏移量为0）</li>
 <li>vbptr 相对于虚基类(A)部分的偏移量</li>
 </ol>
-<hr>
-<h2 id="左值与右值"><a href="#左值与右值" class="headerlink" title="左值与右值"></a>左值与右值</h2><p>C++11通过引入右值引用来优化性能，配合移动语义来避免拷贝。通过<code>std::move()</code>语义来将临时生成的左值中的资源无代价的转移到另外一个对象中去。<code>std::move()</code> 的实现原理就是的强转右值引用类型并返还之，由于函数返还值类型是临时值，且返还的还是右值引用类型，因此该返还值会被判断为右值。</p>
-<h3 id="左值右值分类"><a href="#左值右值分类" class="headerlink" title="左值右值分类"></a>左值右值分类</h3><p><strong>lvalue</strong>：左值，有标识符、可以取地址的表达式</p>
-<ul>
-<li>变量、函数</li>
-<li>返回左值引用的表达式，++x、x&#x3D;1、cout&lt;&lt;’ ‘</li>
-<li>字符串字面量 “hello world”</li>
-</ul>
-<p>函数调用时，左值可以绑定到<code>T&amp;</code>，常量只能绑定到<code>const T&amp;</code></p>
-<p><strong>rvalue</strong>：右值，如常量值、函数返回值、lambda表达式</p>
-<ul>
-<li><strong>prvalue</strong>：纯右值，传统意义上的右值，不具名的临时对象，<strong>无名无地址</strong><ul>
-<li>返回非引用类型表达式，x++、x+1、make_shared<int>(32)</li>
-<li>非字符串字面量，42、true</li>
-<li>特点：不能作为赋值操作的左值</li>
-</ul>
-</li>
-<li><strong>xvalue</strong>：将亡值表示即将被销毁的对象，通常是通过右值引用操作产生的，表示一个可以被移动的对象，通常用于移动语义避免拷贝<ul>
-<li>如通过 <code>std::move</code> 产生</li>
-</ul>
-</li>
-</ul>
-<h3 id="左值右值引用"><a href="#左值右值引用" class="headerlink" title="左值右值引用"></a>左值右值引用</h3><p>右值引用和左值引用都是属于引用类型，都必须立即进行初始化，因为引用类型只是一个别名，并不拥有绑定对象的内存。</p>
-<ul>
-<li><strong>左值引用</strong>：具名变量的别名。左值引用通常不能绑定到右值，但常量左值引用可以接受非常量左值、常量左值、右值，不过常量左值所引用的右值在它的“余生”中只能是只读的。</li>
-<li><strong>右值引用</strong>：匿名变量的别名。右值引用通常不能绑定到左值，通常需要 <code>std::move()</code> 将左值强制转换为右值。右值引用类型只是用于<strong>匹配右值</strong>，但它本身是左值，可以获取到地址</li>
-</ul>
-<blockquote>
-<p>临时对象在对应表达式估值完成后、按生成顺序逆序销毁。若<strong>纯右值</strong>被绑定到引用上，其生命周期会延长至与引用变量相同</p>
-</blockquote>
 <hr>
 <h2 id="多线程简例"><a href="#多线程简例" class="headerlink" title="多线程简例"></a>多线程简例</h2><p><strong>1. 线程池</strong></p>
 <details blue><summary> Folding </summary>
@@ -3100,10 +3083,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-09-12T23:43:05+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-09-18T01:02:56+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Sep 12, 2024</p>
+    <p>更新于：Sep 18, 2024</p>
   </a>
 </div>
 
@@ -3131,9 +3114,11 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     <div class="prev-next">
       
-        <a class='prev' href='/2024/07/27/Distribution/Distribution/'>
-          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Distribution</p>
-          <p class='content'>CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据    - 强一致性、单调一致性、最终一致性可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分...</p>
+        <a class='prev' href='/2024/07/27/Distribution/ShardKV/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>MIT 6.824</p>
+          <p class='content'>Raft QA Folding 
+              
+              Raft 只在非拜占庭的条件下才能正常工作非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个...</p>
         </a>
       
       
@@ -3189,7 +3174,7 @@ RocksDB 是什么RocksDB 是一种可持久化的、内嵌...</p>
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Volatile-Atomic%E4%B8%8EMemory-barrier"><span class="toc-number">1.</span> <span class="toc-text">Volatile,Atomic与Memory barrier</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E8%80%85%E7%9A%84%E5%85%B3%E8%81%94"><span class="toc-number">1.1.</span> <span class="toc-text">三者的关联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E9%87%8D%E6%8E%92"><span class="toc-number">1.2.</span> <span class="toc-text">编译器重排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.</span> <span class="toc-text">编译器优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-%E4%B9%B1%E5%BA%8F"><span class="toc-number">1.4.</span> <span class="toc-text">CPU 乱序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">访问原子性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Memory-order"><span class="toc-number">2.</span> <span class="toc-text">Memory order</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AB%E4%B9%89%E8%A7%A3%E9%87%8A"><span class="toc-number">2.1.</span> <span class="toc-text">含义解释</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-seq-cst"><span class="toc-number">2.1.1.</span> <span class="toc-text">memory_order_seq_cst</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-release-acquire-consume"><span class="toc-number">2.1.2.</span> <span class="toc-text">memory_order_release&#x2F;acquire&#x2F;consume</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-relaxed"><span class="toc-number">2.1.3.</span> <span class="toc-text">memory_order_relaxed</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E4%BE%8B"><span class="toc-number">2.2.</span> <span class="toc-text">使用例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E9%A1%BA%E5%BA%8F%E4%BF%9D%E8%AF%81"><span class="toc-number">2.2.1.</span> <span class="toc-text">写顺序保证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E9%A1%BA%E5%BA%8F%E7%9A%84%E4%BF%9D%E8%AF%81"><span class="toc-number">2.2.2.</span> <span class="toc-text">读顺序的保证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E9%A1%BA%E5%BA%8F%E7%9A%84%E6%B6%88%E5%BC%B1"><span class="toc-number">2.2.3.</span> <span class="toc-text">读顺序的消弱</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%80%E5%BC%BA%E7%BA%A6%E6%9D%9F"><span class="toc-number">2.2.4.</span> <span class="toc-text">最强约束</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAS"><span class="toc-number">3.</span> <span class="toc-text">CAS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volatile"><span class="toc-number">4.</span> <span class="toc-text">Volatile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Copy-elision"><span class="toc-number">5.</span> <span class="toc-text">Copy elision</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RVO"><span class="toc-number">5.1.</span> <span class="toc-text">RVO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NRVO"><span class="toc-number">5.2.</span> <span class="toc-text">NRVO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%A4%B1%E6%95%88"><span class="toc-number">5.3.</span> <span class="toc-text">优化失效</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="toc-number">6.</span> <span class="toc-text">智能指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#unique-ptr"><span class="toc-number">6.1.</span> <span class="toc-text">unique_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shared-ptr"><span class="toc-number">6.2.</span> <span class="toc-text">shared_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#weak-ptr"><span class="toc-number">6.3.</span> <span class="toc-text">weak_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="toc-number">6.4.</span> <span class="toc-text">异常安全问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Auto"><span class="toc-number">7.</span> <span class="toc-text">Auto</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lambda"><span class="toc-number">8.</span> <span class="toc-text">Lambda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Constexpr"><span class="toc-number">9.</span> <span class="toc-text">Constexpr</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%94%9F%E6%88%90%E6%9C%BA%E5%88%B6"><span class="toc-number">10.</span> <span class="toc-text">特殊成员函数生成机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC"><span class="toc-number">11.</span> <span class="toc-text">模板类型推导</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E7%94%A8-%E4%B8%87%E8%83%BD%E5%BC%95%E7%94%A8-TODO"><span class="toc-number">11.1.</span> <span class="toc-text">通用&#x2F;万能引用[TODO]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E6%8A%98%E5%8F%A0"><span class="toc-number">11.2.</span> <span class="toc-text">引用折叠</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91"><span class="toc-number">11.3.</span> <span class="toc-text">完美转发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">12.</span> <span class="toc-text">虚函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Vptr%E4%B8%8EVtable"><span class="toc-number">12.1.</span> <span class="toc-text">Vptr与Vtable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%9E%84%E9%80%A0Vtable"><span class="toc-number">12.2.</span> <span class="toc-text">如何构造Vtable</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E7%BB%A7%E6%89%BF-A-B"><span class="toc-number">12.2.1.</span> <span class="toc-text">单继承(A-&gt;B)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF-A1-A2-B"><span class="toc-number">12.2.2.</span> <span class="toc-text">多继承(A1,A2-&gt;B)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%90%91%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%9A%84%E6%8C%87%E9%92%88"><span class="toc-number">12.2.3.</span> <span class="toc-text">指向成员函数的指针</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%BD%E5%90%A6%E4%BD%BF%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">12.3.</span> <span class="toc-text">能否使用虚函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%87%8D%E7%BB%A7%E6%89%BF"><span class="toc-number">13.</span> <span class="toc-text">多重继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF"><span class="toc-number">13.1.</span> <span class="toc-text">菱形继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">13.2.</span> <span class="toc-text">虚继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E4%B8%8E%E5%8F%B3%E5%80%BC"><span class="toc-number">14.</span> <span class="toc-text">左值与右值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E5%88%86%E7%B1%BB"><span class="toc-number">14.1.</span> <span class="toc-text">左值右值分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8"><span class="toc-number">14.2.</span> <span class="toc-text">左值右值引用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AE%80%E4%BE%8B"><span class="toc-number">15.</span> <span class="toc-text">多线程简例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B"><span class="toc-number">16.</span> <span class="toc-text">异步编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#future-promise"><span class="toc-number">16.1.</span> <span class="toc-text">future\promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%BE%97%E7%BB%93%E6%9E%9C%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">16.2.</span> <span class="toc-text">获得结果返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-future"><span class="toc-number">16.3.</span> <span class="toc-text">std::future</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-promise"><span class="toc-number">16.4.</span> <span class="toc-text">std::promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-async"><span class="toc-number">16.5.</span> <span class="toc-text">std::async</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Emplace"><span class="toc-number">17.</span> <span class="toc-text">Emplace</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vector"><span class="toc-number">17.1.</span> <span class="toc-text">vector</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#map"><span class="toc-number">17.2.</span> <span class="toc-text">map</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STL%E5%AE%B9%E5%99%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">18.</span> <span class="toc-text">STL容器的线程安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vector-1"><span class="toc-number">18.1.</span> <span class="toc-text">vector</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Volatile-Atomic%E4%B8%8EMemory-barrier"><span class="toc-number">1.</span> <span class="toc-text">Volatile,Atomic与Memory barrier</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E8%80%85%E7%9A%84%E5%85%B3%E8%81%94"><span class="toc-number">1.1.</span> <span class="toc-text">三者的关联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E9%87%8D%E6%8E%92"><span class="toc-number">1.2.</span> <span class="toc-text">编译器重排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.</span> <span class="toc-text">编译器优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-%E4%B9%B1%E5%BA%8F"><span class="toc-number">1.4.</span> <span class="toc-text">CPU 乱序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%8E%9F%E5%AD%90%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">访问原子性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Memory-order"><span class="toc-number">2.</span> <span class="toc-text">Memory order</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AB%E4%B9%89%E8%A7%A3%E9%87%8A"><span class="toc-number">2.1.</span> <span class="toc-text">含义解释</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-seq-cst"><span class="toc-number">2.1.1.</span> <span class="toc-text">memory_order_seq_cst</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-release-acquire-consume"><span class="toc-number">2.1.2.</span> <span class="toc-text">memory_order_release&#x2F;acquire&#x2F;consume</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#memory-order-relaxed"><span class="toc-number">2.1.3.</span> <span class="toc-text">memory_order_relaxed</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E4%BE%8B"><span class="toc-number">2.2.</span> <span class="toc-text">使用例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E9%A1%BA%E5%BA%8F%E4%BF%9D%E8%AF%81"><span class="toc-number">2.2.1.</span> <span class="toc-text">写顺序保证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E9%A1%BA%E5%BA%8F%E7%9A%84%E4%BF%9D%E8%AF%81"><span class="toc-number">2.2.2.</span> <span class="toc-text">读顺序的保证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E9%A1%BA%E5%BA%8F%E7%9A%84%E6%B6%88%E5%BC%B1"><span class="toc-number">2.2.3.</span> <span class="toc-text">读顺序的消弱</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%80%E5%BC%BA%E7%BA%A6%E6%9D%9F"><span class="toc-number">2.2.4.</span> <span class="toc-text">最强约束</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAS"><span class="toc-number">3.</span> <span class="toc-text">CAS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Volatile"><span class="toc-number">4.</span> <span class="toc-text">Volatile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Copy-elision"><span class="toc-number">5.</span> <span class="toc-text">Copy elision</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RVO"><span class="toc-number">5.1.</span> <span class="toc-text">RVO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NRVO"><span class="toc-number">5.2.</span> <span class="toc-text">NRVO</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%A4%B1%E6%95%88"><span class="toc-number">5.3.</span> <span class="toc-text">优化失效</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-17%E6%96%B0%E7%89%B9%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">C++17新特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Auto-%E6%A8%A1%E6%9D%BF%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC"><span class="toc-number">7.</span> <span class="toc-text">Auto &amp;&amp; 模板类型推导</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="toc-number">8.</span> <span class="toc-text">智能指针</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#unique-ptr"><span class="toc-number">8.1.</span> <span class="toc-text">unique_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shared-ptr"><span class="toc-number">8.2.</span> <span class="toc-text">shared_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#weak-ptr"><span class="toc-number">8.3.</span> <span class="toc-text">weak_ptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="toc-number">8.4.</span> <span class="toc-text">异常安全问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lambda"><span class="toc-number">9.</span> <span class="toc-text">Lambda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E4%B8%8E%E5%8F%B3%E5%80%BC"><span class="toc-number">10.</span> <span class="toc-text">左值与右值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E5%88%86%E7%B1%BB"><span class="toc-number">10.1.</span> <span class="toc-text">左值右值分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8"><span class="toc-number">10.2.</span> <span class="toc-text">左值右值引用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%94%9F%E6%88%90%E6%9C%BA%E5%88%B6"><span class="toc-number">11.</span> <span class="toc-text">特殊成员函数生成机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91"><span class="toc-number">12.</span> <span class="toc-text">完美转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">13.</span> <span class="toc-text">虚函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Vptr%E4%B8%8EVtable"><span class="toc-number">13.1.</span> <span class="toc-text">Vptr与Vtable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%9E%84%E9%80%A0Vtable"><span class="toc-number">13.2.</span> <span class="toc-text">如何构造Vtable</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E7%BB%A7%E6%89%BF-A-B"><span class="toc-number">13.2.1.</span> <span class="toc-text">单继承(A-&gt;B)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF-A1-A2-B"><span class="toc-number">13.2.2.</span> <span class="toc-text">多继承(A1,A2-&gt;B)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%90%91%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%9A%84%E6%8C%87%E9%92%88"><span class="toc-number">13.2.3.</span> <span class="toc-text">指向成员函数的指针</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%BD%E5%90%A6%E4%BD%BF%E7%94%A8%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">13.3.</span> <span class="toc-text">能否使用虚函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%87%8D%E7%BB%A7%E6%89%BF"><span class="toc-number">14.</span> <span class="toc-text">多重继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF"><span class="toc-number">14.1.</span> <span class="toc-text">菱形继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="toc-number">14.2.</span> <span class="toc-text">虚继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AE%80%E4%BE%8B"><span class="toc-number">15.</span> <span class="toc-text">多线程简例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B"><span class="toc-number">16.</span> <span class="toc-text">异步编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#future-promise"><span class="toc-number">16.1.</span> <span class="toc-text">future\promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%BE%97%E7%BB%93%E6%9E%9C%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">16.2.</span> <span class="toc-text">获得结果返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-future"><span class="toc-number">16.3.</span> <span class="toc-text">std::future</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-promise"><span class="toc-number">16.4.</span> <span class="toc-text">std::promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#std-async"><span class="toc-number">16.5.</span> <span class="toc-text">std::async</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Emplace"><span class="toc-number">17.</span> <span class="toc-text">Emplace</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vector"><span class="toc-number">17.1.</span> <span class="toc-text">vector</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#map"><span class="toc-number">17.2.</span> <span class="toc-text">map</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STL%E5%AE%B9%E5%99%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">18.</span> <span class="toc-text">STL容器的线程安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vector-1"><span class="toc-number">18.1.</span> <span class="toc-text">vector</span></a></li></ol></li></ol>
     </div>
   </section>
 
@@ -3617,7 +3602,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3844,7 +3829,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/CPP/","name":"CPP"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/04/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/04/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/04/CPP/Cpp/","wordCount":0,"datePublished":"2024-07-04T15:46:04.000Z","dateModified":"2024-09-12T15:43:05.947Z","articleSection":"CPP","keywords":"CPP","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/CPP/","name":"CPP"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/04/CPP/Cpp/","name":"Cpp"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Cpp","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/04/CPP/Cpp/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/04/CPP/Cpp/","wordCount":0,"datePublished":"2024-07-04T15:46:04.000Z","dateModified":"2024-09-17T17:02:56.632Z","articleSection":"CPP","keywords":"CPP","image":{"@type":"ImageObject","url":"/img/C.jpeg","width":1024,"height":768}}]</script>
 
 
 

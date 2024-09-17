@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <!-- SEO相关 -->
   
-  <link rel="canonical" href="http://example.com/2024/07/27/distribution/shardkv/"/>
+  <link rel="canonical" href="http://example.com/archives/2024/09/"/>
   <!-- 渲染优化 -->
     <meta http-equiv='x-dns-prefetch-control' content='on' />
       <link rel='dns-prefetch' href='https://unpkg.com'>
@@ -32,21 +32,16 @@
 
   <!-- feed -->
   <!-- 页面元数据 -->
-  <title>MIT 6.824 - Hexo</title>
+  <title>Archive: 2024/9 - Hexo</title>
   <meta name="keywords" content="null">
   <meta desc name="description" content="Hexo - John Doe - Hexo">
-  
-<meta property="og:type" content="article">
-<meta property="og:title" content="MIT 6.824">
-<meta property="og:url" content="http://example.com/2024/07/27/Distribution/ShardKV/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/archives/2024/09/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Raft QA Folding                               Raft 只在非拜占庭的条件下才能正常工作非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且不会发送错误结果给客户端。拜占庭故障是指有些服务器不好好干活了">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-<meta property="article:published_time" content="2024-07-27T11:30:00.000Z">
-<meta property="article:modified_time" content="2024-09-17T17:02:56.632Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="Distribution">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
   <style>
@@ -2408,7 +2403,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     
       <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
-      <div id="half" class='cover-wrapper post search' style="display: ;">
+      <div id="half" class='cover-wrapper  search' style="display: ;">
         
   <div id="parallax-window"></div>
 
@@ -2447,8 +2442,22 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
         <div class="body-wrapper">
           
 <div id="l_main" class=''>
-  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
-  <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/27/Distribution/ShardKV/">
+	
+		
+  <section class="post-list">
+    
+      
+        
+          
+        
+      
+    
+    
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/17/Distribution/Distribution/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
   </span>
@@ -2457,275 +2466,66 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <meta itemprop="description" content="">
   </span>
   
-
-
+  
   
     <span hidden>
       <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
     </span>
   
-  <div class="article-meta" id="top">
+  
     
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2024/09/17/Distribution/Distribution/"  itemprop="url">
+        分布式理论
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
     
-    
-      <h1 class="title" itemprop="name headline">
-        MIT 6.824
-      </h1>
-      <div class='new-meta-box'>
-        
-          
-            
-<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <a itemprop="url" class='author' href="/" rel="nofollow">
-    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-    <p itemprop="name">Yveltal</p>
-  </a>
-</div>
-
-          
-        
-          
-            
-  <div class='new-meta-item category'>
-    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
-    <a class="category-link" href="/categories/Distribution/">Distribution</a>
-    
-      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-        <a href="/categories/Distribution/" itemprop="url"><span itemprop="name">Distribution</span></a>
-      </span>
+      
+        CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据    - 强一致性、单调一致性、最终一致性可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分区时（节点间通信中断），系统仍能对外提供服务
+BASEBasically Available（基本可用）：分布式系统在出现不可预知故障的时候，允许损失部分可用性Soft state（软状态）：软状态也...
+      
     
   </div>
-
-
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2024-09-17T20:53:00+08:00">2024-09-17</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/Distribution/">Distribution</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/Distribution/" itemprop="url"><span itemprop="name">Distribution</span></a>
+            </span>
           
         
-          
-            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2024-07-27T19:30:00+08:00">
-  <a class='notlink'>
-    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
-    <p>发布于：Jul 27, 2024</p>
-  </a>
-</div>
-
-          
-        
-        <!-- Custom Files topMeta begin-->
-        
-        <!-- Custom Files topMeta end-->
       </div>
-    
-  </div>
-
-
-  <div id="layoutHelper-page-plugins"></div>
-  <div id="post-body" itemprop="articleBody">
-    <h2 id="Raft-QA"><a href="#Raft-QA" class="headerlink" title="Raft QA"></a>Raft QA</h2><details blue><summary> Folding </summary>
-              <div class='content'>
-              <p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p><p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p><p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p><p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p><p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p><p><strong>Raft 对网络有什么假设</strong></p><p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p><p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p><p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p><p><strong>Raft 中的选举流程</strong></p><ol><li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li><li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li><li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li></ol><p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
-              </div>
-            </details>
-
-<hr>
-<p><strong>Raft 主要在什么场景中使用</strong></p>
-<ul>
-<li>元信息服务，也称为配置服务、分布式协调服务等。用以追踪集群中元信息（如哪些机器、副本位置）、多副本选主等。</li>
-<li>数据复制（系统中存储的数据），使用 Raft 作为数据复制和冗余的一种手段。与之相对，GFS 使用简单的主从复制的方法来冗余数据，可用性和一致性都比 Raft 要差。</li>
-</ul>
-<p><strong>Raft 为了简洁性做了哪些牺牲</strong>（性能问题）</p>
-<ul>
-<li>每个操作都要落盘。如果想提高性能可能需要将多个操作 batch 起来。<br>主从同步数据较慢。在每个 Leader 和 Follower 之间只允许有一个已经发出 AppendEntries；只有收到确认了，Leader 才能发下一个。类似 TCP 中的“停等协议”。如果写入速度较大，可能将所有的 AppendEntries Pipeline 起来性能会好一些（即 Leader 不等收到上一个 AppendEntries 的 RPC Reply，就开始发下一个）</li>
-<li>只支持全量快照。如果状态机比较小这种方式还可以接受，如果数据量较大，就得支持增量快照。</li>
-<li>全量快照同步代价大。如果快照数据量很大，每次全量发送代价会过高。尤其是如果 Follower 本地有一些较老的快照时，我们只需要发增量部分即可。</li>
-<li>难以利用多核。因为 log 只有一个写入点，所有操作都得抢这一个写入点。</li>
-</ul>
-<p><strong>Raft prevote机制</strong></p>
-<p>节点 A 和其他节点发生网络隔离后，会不断发起选举但一直无法当选，推高 Term。等网络恢复通信后，由于 A 的 Term 最高，会强迫当前的 Leader 下台，重新选主。但由于在隔离期间日志被落下很多，A 通常也无法成为 Leader，最终大概率是原来的 Leader 的 Term 被拉上来之后，重新当选为 Leader。这个过程形象的称之为“惊群效应”。</p>
-<p>PrevVote机制：每次发起选举时，不再推高 Term，但是会拿着 Term+1 去跟其他 Peer 要票，如果能要到合法的票数，再去推高 Term。</p>
-<ul>
-<li>如果能要到多数票就保证了没发生网络隔离、日志是最新的</li>
-<li>如果要不到多数票，就不能推高 Term，防止网络隔离的节点一直推高 Term。</li>
-</ul>
-<p><strong>新任期leader为什么同步no-op日志</strong></p>
-<blockquote>
-<p>因为leader选举的一个依据是日志的新旧程度(lastLogIndex)，但是受限于从节点的日志复制进度，<code>commitIndex &lt;=lastLogIndex</code>。所以如果在一个新任期的开始，客户端的读<code>(commitIndex, lastLogIndex]</code>之间的日志，可能读取的是未提交的数据。</p>
-<p>因此规定在任期开始时，leader会在处理所有读请求之前写入一个”no-op”日志，主节点的lastLogIndex自增，然后将<code>(nextIndex[i], lastLogIndex]</code>区间的日志发送给响应的从节点，这样当多数从节点接收到后，leader节点可以提交这个日志项，commitIndex更新为lastLogIndex，确保读到最新数据。</p>
-</blockquote>
-<p>“no-op”日志即只有 index 和 term 信息，command 信息为空，也是要写到磁盘存储的。</p>
-<p>本质原因：新Leader当选后，旧任期的日志只能通过commit自己任期的日志来捎带提交，如图 Raft-figure8 所示：</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>(c)中S5刚写完一条日志就挂了，S1重新当选Leader，Term&#x3D;4。此时还没有新的请求写入，如果S1将此前的<code>index=2 &amp;&amp; term=2</code> 的日志append到多数节点并提交了（<strong>埋下了隐患</strong>）<br>(d)中S1又挂了，S5重新当选，并将 <code>index=2 &amp;&amp; term=3</code> 的日志复制到其他节点并提交，此时 index&#x3D;2 的日志提交了两次，已提交过的日志被覆盖了！！！ </p>
-<p>虽然加了这个约束不会重复提交了，但如果一直没新的请求进来，旧term的日志迟迟无法提交，Leader 查到日志有记录但又不能回复，线性一致性要求不能返回陈旧的数据，Leader 迫切地需要知道这条日志到底能不能提交。</p>
-<p>因此需要在 Leader 刚选举成功的时候立刻追加一条”no-op”日志，”no-op”日志一经提交，隐式地提交了之前任期未提交的日志，确认当前 commitIndex。</p>
-<p><strong>Raft 和 Paxos 有什么区别</strong></p>
-<ul>
-<li>Raft 和 Paxos 都是共识协议，而所有的共识协议在原理上都可以等价为 Paxos，共识协议本质上都是 Paxos。</li>
-<li>Raft 是为了解决 Paxos 理解和实现都相对复杂的问题。将共识协议拆成两个相对独立的过程：领导者选举和日志复制，以降低理解和实现的复杂度。</li>
-<li>Raft 其实是和 Multi-Paxos 等价，因为 Paxos 只解决单个值的共识问题。</li>
-<li>Paxos 只要某个日志在多数节点存在后就可以安全提交；但在 Raft 中如果不是当前任期的日志，即使超过半数也不能直接提交，只能通过提交当前任期的日志来间接提交。</li>
-<li>在Paxos 在选举时，Leader 可能需要借机补足日志，但 Raft 中选举过程完全不涉及日志复制，因为只有具有最新日志的 Candidate 才能成为 Leader，而 Paxos 不限制这一点。</li>
-<li>Paxos 允许乱序 commit 日志，而 Raft 只允许顺序提交。</li>
-<li>Paxos 每个节点的 term 是不一致的，全局自增；在 Raft 中 term 每个节点独立自增，但需要对齐。</li>
-</ul>
-<p><strong>Raft 在工程中有哪些常见的优化</strong></p>
-<p>由于领导者选举是个低频操作，主要 IO 路径优化还是集中在日志同步流程上。</p>
-<ul>
-<li>batch：Leader 每次攒一批再刷盘和对 Follower 进行同步。降低刷盘和 RPC 开销。</li>
-<li>pipeline：每次发送日志时类似 TCP 的“停-等”协议，收到 Follower 确认后才更新 nextIndex，发送后面日志。其实可以改成流水线式的，不等前面日志确认就更新 nextIndex 继续发后面的。当然，如果后面发现之前日志同步出错，就要回退 nextIndex 重发之前日志——而原始版本 nextIndex 在同步阶段是单调递增的。</li>
-<li>并行 append：Leader 在 append 日志到本地前，就先发送日志给所有 Follower。</li>
-</ul>
-<p><strong>简述基于 raft 的分布式 KV 系统的架构</strong></p>
-<p>一个基于 raft 的分布式 KV 系统，实际上是由一组使用 raft 算法进行状态复制的节点组成。客户端会选择将请求发送到 Leader 节点，然后由 Leader 节点进行状态复制，即发送日志，当收到多数的节点成功提交日志的响应之后，Leader 会更新自己的 commitIndex，表示这条日志提交成功，并且 apply 到状态机中，然后返回结果给客户端。</p>
-<p>以上是单个 raft 集群的分布式 KV 系统架构。如果系统中数据量较大，一个 raft 集群可能无法承受大量的数据，性能也会受到影响。因此还基于此设计了可分片的分布式 shardkv 系统。shardkv 由多个 raft 集群组成，每个集群负责一部分 shard 数据。Shard 到 raft 集群的映射关系，保存在独立的配置服务中。</p>
-<p><strong>如何处理客户端的重复请求</strong></p>
-<p>如果客户端的请求已经提交，但是 server 返回的过程中结果丢失，那么客户端会发起重试，导致这个请求在状态机中被执行了两次，会违背线性一致性。</p>
-<p>因此需要保证客户端的请求只能被状态机应用一次，可以维护一个去重哈希表(duplicateTable)，<code>客户端 ID + 命令 ID</code> 组成一个唯一的标识符，<br>每次请求的时候，判断 map 中是否存在这个命令，有就则直接返回结果，而不用再发送到 raft 模块进行同步。</p>
-<p>还需注意的一个细节：一个客户端只会重试当前最新的这个命令，对于已经成功执行的命令就没必要重试了，因此去重 map 只需要为每一个客户端存储一个当前最新的命令即可。</p>
-<blockquote>
-<p>这样做有一个前提：客户端默认在同一个时刻只会有一个命令，即一个 Clerk 内部是不会有并发的请求的</p>
-</blockquote>
-<p><strong>Shard 数据如何迁移</strong></p>
-<p>启动一个后台定时任务，定期从配置服务中获取最新的配置，如果检测到配置发生变更，则变更对应 shard 的状态，标记为需要进行迁移。</p>
-<p>同时启动另一个后台定时任务，定期扫描 shard 的状态，如果检测到需要进行迁移的 shard，则发送消息，通过 raft 模块进行同步。然后在 Leader 节点中处理 shard 迁移的请求，将 shard 数据从原所属的 raft 集群中迁移到新的集群中。</p>
-<p><strong>如何处理 Shard 迁移与客户端请求的关系</strong></p>
-<p>如果客户端请求的 key 所属的 shard 并没有在迁移中，那么可以正常提供服务。否则则返回错误，让客户端进行重试。</p>
-<p>此外，客户端请求和 shard 迁移请求存在并发情况，需要保证线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
-<hr>
-<h2 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h2><h3 id="什么是线性一致读"><a href="#什么是线性一致读" class="headerlink" title="什么是线性一致读"></a>什么是线性一致读</h3><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
-<details blue><summary> Folding </summary>
-              <div class='content'>
-              <p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p><p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-              </div>
-            </details>
-
-<h3 id="为什么有线性一致的问题"><a href="#为什么有线性一致的问题" class="headerlink" title="为什么有线性一致的问题"></a>为什么有线性一致的问题</h3><p>实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机的一致性没有做详细规定，用户可以自由实现。例如 TiKV 在将 commit 的 Log 应用状态机（RocksDB）上时，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
-<h3 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h3><p>每个 read 都有一个对应的 Op log，和 write 一样都走一遍一致性协议的流程。这个方法依据 commit index 对所有请求都做了排序，Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
-<blockquote>
-<p>缺点：RPC 和 Log 开销、性能差（所有请求被序列化了，无法并发的操作状态机）</p>
-</blockquote>
-<h3 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h3><p>由于只读请求并没有需要写入的数据，因此并不需要将其写入Raft日志，而只需要关注收到请求时leader的commit index。只要在该commit index被应用到状态机后执行读操作，就能保证其线性一致性。因此使用了ReadIndex的leader在收到只读请求时，会按如下方式处理：</p>
-<ol>
-<li><strong>确认 read 返回的数据的哪个点</strong>？记录当前的commit index，作为read index; 如果新 Leader 不知道最新的 committ index，则提交一个 No-op log entry 来提交之前的 log entry</li>
-<li><strong>确认当前的 Leader 是不是还是 Leader</strong>？避免网络分区时 Leader 被孤立的情况。向集群中的所有节点广播一次心跳，是否收到了过半数量的心跳响应</li>
-<li><strong>等到 leader 本地的apply index &gt;&#x3D; read index</strong>，此时可以保证只读操作的线性一致性，让状态机执行读操作并返回结果</li>
-</ol>
-<blockquote>
-<p>缺点：每次 read 发送心跳开销太大</p>
-</blockquote>
-<h3 id="Lease-read"><a href="#Lease-read" class="headerlink" title="Lease read"></a>Lease read</h3><p>为了减少了 ReadIndex 每次 read 发送 heartheat 的开销，每次 leader 发送RPC的时候，会首先记录一个时间点 start，当系统大部分节点都回复时，就可以认为 leader 的 lease 有效期可以到 <code>start + election timeout + clock drift bound（正负未知）</code> 这个时间点。因为 follower 至少在 election timeout的时间之后才会重新发生选举，<strong>所以在Election Timeout内只需要确认一次即可</strong></p>
-<blockquote>
-<p>缺点：对分布式系统的时钟准确性要求很高，否则可能会出现不一致</p>
-</blockquote>
-<h3 id="Follower-read"><a href="#Follower-read" class="headerlink" title="Follower read"></a>Follower read</h3><p>TiKV的特性：当客户端对一个 Follower 发起读请求的时候，Follower 会请求此时 Leader 的 Commit Index，然后等本地 Apply 到 Leader 最新的 Commit Index 后，自己将这条数据返回给客户端。从而显著减轻 Leader 的负载，并提高读取性能。</p>
-<blockquote>
-<p>缺点：</p>
-<ul>
-<li>需要额外的通信延迟，因为每个读请求都需要先去询问领导者最新的commitIndex，所以减低延迟不明显，但好在优化读吞吐。</li>
-<li>破坏线性一致性：由于Apply是异步的，Follower 可能比 Leader 先 Apply 这条记录，这样在 Follower 读到这条记录时，Leader 过一会才能读取到。但是好在是永远返回最新的数据。</li>
-</ul>
-</blockquote>
-<hr>
-<h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
-<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>客户端 Clerk 会向 KV 服务发送三种类型的请求：<code>Get/Put/Append</code>。</p>
-<p>保证线性一致性：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
-<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
-<ol>
-<li>服务端收到请求后，先存储到 raft 日志中，然后等待 raft 模块同步完成，等待 notifyCh 中的状态机操作结果<ul>
-<li>raft 集群中的 Leader 节点处理了 Start 请求之后，会将日志同步到其他的 Follower 节点。</li>
-<li>当多数的节点都正常处理之后，Leader 会更新自己的 <code>commitIndex</code>，然后将日志通过 applyCh 这个通道发送过去。</li>
-</ul>
-</li>
-<li>服务端启动 applyTask 后台线程，从 applyCh 中接收来自 raft 的日志消息。取出的日志消息对应的 Operation 已在节点间中同步完成，因此将 Operation 应用到本地状态机中，把返回结果（读到的值&#x2F;写是否成功）存储到 notifyCh 中。</li>
-<li>这时 Get&#x2F;Put&#x2F;Append 方法就能从这个 notifyCh 中获取到结果，并返回给客户端。</li>
-</ol>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-
-  </div>
-  
-  
-    
-    <div class='footer'>
-       <!-- 参考资料、相关资料等 -->
       
-       <!-- 相关文章 -->
-      
-      <!-- 版权声明组件 -->
-      
-      <!-- 打赏组件 -->
+        <div>
+          <a class='readmore' href='/2024/09/17/Distribution/Distribution/' itemprop="url">
+            Read More
+          </a>
+        </div>
       
     </div>
   
-  
-    
 
-
-  <div class='article-meta' id="bottom">
-    <div class='new-meta-box'>
-      
-        
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-09-18T01:02:56+08:00">
-  <a class='notlink'>
-    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Sep 18, 2024</p>
-  </a>
 </div>
 
+          </div>
         
       
-        
-          
-  
-  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Distribution/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Distribution</p></a></div>
-  <span hidden itemprop="keywords">Distribution</span>
-
-
-        
-      
-    </div>
-    <!-- Custom Files bottomMeta begin -->
     
-    <!-- Custom Files bottomMeta end -->
-  </div>
-
-
+  </section>
   
-  
-
-  
-    <div class="prev-next">
-      
-        <a class='prev' href='/2024/09/17/Distribution/Distribution/'>
-          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>分布式理论</p>
-          <p class='content'>CAP一致性：在同一时刻副本一致，所有节点读到修改后的最新数据    - 强一致性、单调一致性、最终一致性可用性：每次请求都能获取非错的响应，尽量低延迟，不保证节点数据最新分区容忍性：出现网络分...</p>
-        </a>
-      
-      
-        <a class='next' href='/2024/07/04/CPP/Cpp/'>
-          <p class='title'>Cpp<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
-          <p class='content'>Volatile,Atomic与Memory barrier
-参考链接
-
-三者的关联C++ 中的 volatile 关键字，std::atomic 变量及手动插入内存屏障指令（Memory Ba...</p>
-        </a>
-      
-    </div>
-  
-  <!-- Custom Files postEnd begin-->
-  
-  <!-- Custom Files postEnd end-->
-</article>
-
-
-  
-
+    
   
 
 
-
-
-
+	
 </div>
 <aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
   
@@ -2734,48 +2534,174 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     
     
       
+<section class="widget blogger desktop mobile pjax">
+  <div class='content'>
+    
+      
+        <a class='avatar flat-box rectangle' href='/about/'>
+          <img no-lazy src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
+        </a>
+      
+    
+    
+      <div class='text'>
+        
+        
+        
+          <p><span id="jinrishici-sentence">Hexo</span></p>
+          <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+        
+      </div>
+    
+    
+      <div class="social-wrapper">
+        
+          
+            <a href="/atom.xml"
+              class="social fa-solid fa-rss flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+              
+            </a>
+          
+        
+          
+            <a href="mailto:me@xxx.com"
+              class="social fa-solid fa-envelope flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+              
+            </a>
+          
+        
+          
+            <a href="https://github.com/volantis-x/"
+              class="social fab fa-github flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+              
+            </a>
+          
+        
+          
+            <a href="/"
+              class="social fa-solid fa-headphones-alt flat-btn"
+              target="_blank"
+              rel="external nofollow noopener noreferrer">
+              
+            </a>
+          
+        
+      </div>
+    
+  </div>
+</section>
+
     
   
 
-
-<div class="widget-sticky pjax">
-
   
+    
+    
+      
   
-
-
-  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+  <section class="widget category desktop pjax">
     
   <header>
     
-      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+      <a href='/blog/categories/'><i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i><span class='name'>文章分类</span></a>
     
   </header>
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Raft-QA"><span class="toc-number">1.</span> <span class="toc-text">Raft QA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E8%AF%BB"><span class="toc-number">2.</span> <span class="toc-text">线性一致读</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E8%AF%BB"><span class="toc-number">2.1.</span> <span class="toc-text">什么是线性一致读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">为什么有线性一致的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Raft-LogRead"><span class="toc-number">2.3.</span> <span class="toc-text">Raft LogRead</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReadIndex"><span class="toc-number">2.4.</span> <span class="toc-text">ReadIndex</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lease-read"><span class="toc-number">2.5.</span> <span class="toc-text">Lease read</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Follower-read"><span class="toc-number">2.6.</span> <span class="toc-text">Follower read</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ShardKV"><span class="toc-number">3.</span> <span class="toc-text">ShardKV</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-number">3.1.</span> <span class="toc-text">架构图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">主要流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">3.2.1.</span> <span class="toc-text">客户端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">3.2.2.</span> <span class="toc-text">服务端</span></a></li></ol></li></ol></li></ol>
+      <ul class="entry navigation">
+        
+          <li><a class="flat-box"
+            title="/categories/CPP/" href="/categories/CPP/"
+            active-action="action-categoriesCPP"
+            ><div class='name'>CPP</div><div class='badge'>(4)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Database/" href="/categories/Database/"
+            active-action="action-categoriesDatabase"
+            ><div class='name'>Database</div><div class='badge'>(2)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Distribution/" href="/categories/Distribution/"
+            active-action="action-categoriesDistribution"
+            ><div class='name'>Distribution</div><div class='badge'>(4)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/OS/" href="/categories/OS/"
+            active-action="action-categoriesOS"
+            ><div class='name'>OS</div><div class='badge'>(5)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Other/" href="/categories/Other/"
+            active-action="action-categoriesOther"
+            ><div class='name'>Other</div><div class='badge'>(5)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Software/" href="/categories/Software/"
+            active-action="action-categoriesSoftware"
+            ><div class='name'>Software</div><div class='badge'>(3)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/Storage/" href="/categories/Storage/"
+            active-action="action-categoriesStorage"
+            ><div class='name'>Storage</div><div class='badge'>(5)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/%E8%80%83%E7%A0%94/" href="/categories/%E8%80%83%E7%A0%94/"
+            active-action="action-categoriesE88083E7A094"
+            ><div class='name'>考研</div><div class='badge'>(5)</div></a></li>
+        
+          <li><a class="flat-box"
+            title="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/"
+            active-action="action-categoriesE99FB3E8A786E9A291"
+            ><div class='name'>音视频</div><div class='badge'>(2)</div></a></li>
+        
+      </ul>
     </div>
   </section>
 
+
+    
   
+
+  
+    
+    
+      
+  
+  <section class="widget tagcloud desktop mobile pjax">
+    
+  <header>
+    
+      <a href='/blog/tags/'><i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i><span class='name'>热门标签</span></a>
+    
+  </header>
+
+
+    <div class='content'>
+      <a href="/tags/ASM/" style="font-size: 16.5px; color: #888">ASM</a> <a href="/tags/CPP/" style="font-size: 21.5px; color: #666">CPP</a> <a href="/tags/Database/" style="font-size: 16.5px; color: #888">Database</a> <a href="/tags/Distribution/" style="font-size: 21.5px; color: #666">Distribution</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #888">Git</a> <a href="/tags/Linux/" style="font-size: 16.5px; color: #888">Linux</a> <a href="/tags/OS/" style="font-size: 21.5px; color: #666">OS</a> <a href="/tags/Other/" style="font-size: 16.5px; color: #888">Other</a> <a href="/tags/Storage/" style="font-size: 21.5px; color: #666">Storage</a> <a href="/tags/UML/" style="font-size: 14px; color: #999">UML</a> <a href="/tags/%E8%80%83%E7%A0%94/" style="font-size: 24px; color: #555">考研</a> <a href="/tags/%E9%9F%B3%E8%A7%86%E9%A2%91/" style="font-size: 19px; color: #777">音视频</a>
+    </div>
+  </section>
+
+
+    
+  
+
+  
+
+
+<div class="widget-sticky pjax">
 
 </div>
 
 
 <!-- 没有 pjax 占位会报错 万恶的 pjax -->
-
-  <div class="pjax">
-    <!-- pjax占位 -->
-  </div>
-
-  <div class="pjax">
-    <!-- pjax占位 -->
-  </div>
-
-  <div class="pjax">
-    <!-- pjax占位 -->
-  </div>
 
   <div class="pjax">
     <!-- pjax占位 -->
@@ -2803,14 +2729,13 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </aside>
 
 
-
           <!--此文件用来存放一些不方便取值的变量-->
 <!--思路大概是将值藏到重加载的区域内-->
 
 <pjax>
 <script>
   window.pdata={}
-  pdata.ispage=true;
+  pdata.ispage=false;
   pdata.commentPath="";
   pdata.commentPlaceholder="";
   pdata.commentConfig={};
@@ -3409,7 +3334,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Distribution/","name":"Distribution"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2024/07/27/Distribution/ShardKV/","name":"MIT 6.824"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"MIT 6.824","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2024/07/27/Distribution/ShardKV/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2024/07/27/Distribution/ShardKV/","wordCount":0,"datePublished":"2024-07-27T11:30:00.000Z","dateModified":"2024-09-17T17:02:56.632Z","articleSection":"Distribution","keywords":"Distribution","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/archives/","name":"Archive"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/archives/2024/","name":"2024"}},{"@type":"ListItem","position":4,"item":{"@id":"http://example.com/archives/2024/9/","name":"9"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"wordCount":0,"image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

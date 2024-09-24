@@ -1754,7 +1754,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1726592614849),
+    lastupdate: new Date(1727201977297),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2541,71 +2541,6 @@ cd /sys/fs/cgroup/cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write
         
           <div class='post-wrapper'>
             <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
-  <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/18/Storage/Linux内存与存储/">
-  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-  </span>
-  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
-    <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
-  </span>
-  
-  
-  
-    <span hidden>
-      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
-    </span>
-  
-  
-    
-    <h2 class="article-title"  itemprop="name headline">
-      <a href="/2023/10/18/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"  itemprop="url">
-        Linux内存与存储
-      </a>
-    </h2>
-  
-  <div class='md article-desc' itemprop="articleBody">
-    
-      
-        从内核文件系统看文件读写过程 
-内存资源管理Buffers／Cached在内存管理中的buffer指Linux内存的：Buffer cache，cache指Linux内存中的：Page cache。
-如果有内存是以page进行分配管理的，都可以使用page cache来缓存。以 block 进行管理的内存可以通过buffer cache来缓存。 Page Cache 用于缓存文件的页数据，b...
-      
-    
-  </div>
-  
-    <div class='meta-v3' line_style='dashed'>
-      <div>
-        
-        <time itemprop="dateCreated datePublished" datetime="2023-10-18T01:43:08+08:00">2023-10-18</time>
-        
-          <span class="dot"></span>
-          <a class="category-link" href="/categories/Storage/">Storage</a>
-          
-            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
-              <a href="/categories/Storage/" itemprop="url"><span itemprop="name">Storage</span></a>
-            </span>
-          
-        
-      </div>
-      
-        <div>
-          <a class='readmore' href='/2023/10/18/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/' itemprop="url">
-            Read More
-          </a>
-        </div>
-      
-    </div>
-  
-
-</div>
-
-          </div>
-        
-      
-        
-          <div class='post-wrapper'>
-            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
   <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/15/OS/进程与中断/">
   <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="Hexo">
@@ -2988,10 +2923,7 @@ svn checkout svn://svnbucket.com/xxx/xxx## 指定存储目录svn checkout svn://
   <div class='md article-desc' itemprop="articleBody">
     
       
-        OutcomesCkpt opt背景：LoadCkpt慢原因：AEP 跨 numa 带宽 8.5 -&gt; 3.5GB、多线程带宽下降、无批量加载解决思路：避免线程跨numa访问aep、控制线程数、加速底层写文件速度
-线程数实验测得 4 线程最佳
-文件创建加速fallocate 通过只初始元数据、磁盘预留空间的方式，避免调用 write 写全 0，带宽增加了一倍
-Numa Aware Po...
+        User BehavierIntroKey是Uid，Value是用户行为序列，序列中每个Item记录了某个时刻的行为（点赞、观看、收藏）。特点是Value的序列长度w级别且要保持有序，查询为点查，返回完整有序、去重的序列。挑战是百万QPS下实时更新，每次从Kafka更新一个Item行为到序列中，要尽量有序，且延迟秒级别。在大数据量下一般部署在SSD&#x2F;AEP机型上，所以有写放大问题。...
       
     
   </div>
@@ -3143,6 +3075,72 @@ Numa Aware Po...
       
         <div>
           <a class='readmore' href='/2023/04/26/Database/CMU%2015445/' itemprop="url">
+            Read More
+          </a>
+        </div>
+      
+    </div>
+  
+
+</div>
+
+          </div>
+        
+      
+        
+          <div class='post-wrapper'>
+            <div class="post post-v3 white-box reveal shadow floatable blur"  itemscope itemtype="http://schema.org/Article" >
+  <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/20/OS/操作系统/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="">
+  </span>
+  
+  
+  
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
+  
+  
+    
+    <h2 class="article-title"  itemprop="name headline">
+      <a href="/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"  itemprop="url">
+        操作系统
+      </a>
+    </h2>
+  
+  <div class='md article-desc' itemprop="articleBody">
+    
+      
+        进程和线程线程与进程区别线程与协程区别
+协程是一种用户态的轻量级线程，一个线程可以有多个协程，其特性在于CPU的执行权是由协程主动让出的，相比内核态线程而言，调度协程的时机开发者是比较清楚的
+创建开销：协程的栈空间占用只有 2k~4k，在一个地址空间中可以运行 10w 级别的协程
+切换开销：进程和线程切换时都涉及内核切换（陷入内核态运行调度程序）；而协程调度由用户程序控制，只需要保存寄存器上...
+      
+    
+  </div>
+  
+    <div class='meta-v3' line_style='dashed'>
+      <div>
+        
+        <time itemprop="dateCreated datePublished" datetime="2023-04-20T12:59:04+08:00">2023-04-20</time>
+        
+          <span class="dot"></span>
+          <a class="category-link" href="/categories/OS/">OS</a>
+          
+            <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+              <a href="/categories/OS/" itemprop="url"><span itemprop="name">OS</span></a>
+            </span>
+          
+        
+      </div>
+      
+        <div>
+          <a class='readmore' href='/2023/04/20/OS/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/' itemprop="url">
             Read More
           </a>
         </div>
@@ -3759,7 +3757,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
   let index = 0;
   let IntervalParallax = null;
 

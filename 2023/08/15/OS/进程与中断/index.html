@@ -34,7 +34,7 @@
   <!-- 页面元数据 -->
   <title>进程线程与中断 - Hexo</title>
   <meta name="keywords" content="null">
-  <meta desc name="description" content="Hexo - John Doe - Hexo">
+  <meta desc name="description" content="N/A - John Doe - Hexo">
   
 <meta property="og:type" content="article">
 <meta property="og:title" content="进程线程与中断">
@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-08-14T18:09:04.000Z">
-<meta property="article:modified_time" content="2024-09-17T17:02:56.632Z">
+<meta property="article:modified_time" content="2025-02-14T15:59:20.958Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1738412122700),
+    lastupdate: new Date(1739723791672),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2454,7 +2454,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   </span>
   <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
     <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
+    <meta itemprop="description" content="N/A">
   </span>
   
 
@@ -2556,11 +2556,11 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>对于内核任务来说，无论有多少个任务，其使用地址空间都是同一个。所以一般都叫内核线程，而不是内核进程。</p>
 <h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>fork的父子进程间：<br>共享：内存映射区（mmap）、文件描述符（文件偏移量共享）、信号处理方式<br>不共享：进程ID、内存空间（写时复制）</p>
 <hr>
-<h2 id="CPU核心、线程数概念"><a href="#CPU核心、线程数概念" class="headerlink" title="CPU核心、线程数概念"></a>CPU核心、线程数概念</h2><h3 id="CPU物理数"><a href="#CPU物理数" class="headerlink" title="CPU物理数"></a>CPU物理数</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;physical id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
+<h2 id="CPU核心、线程数概念"><a href="#CPU核心、线程数概念" class="headerlink" title="CPU核心、线程数概念"></a>CPU核心、线程数概念</h2><h3 id="CPU物理数"><a href="#CPU物理数" class="headerlink" title="CPU物理数"></a>CPU物理数</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;physical id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
 <p>物理CPU数量，普通电脑一般只有一个CPU插槽，也就是只有一个物理CPU</p>
-<h3 id="CORE核心数-物理核心数"><a href="#CORE核心数-物理核心数" class="headerlink" title="CORE核心数(物理核心数)"></a>CORE核心数(物理核心数)</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;core id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
+<h3 id="CORE核心数-物理核心数"><a href="#CORE核心数-物理核心数" class="headerlink" title="CORE核心数(物理核心数)"></a>CORE核心数(物理核心数)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;core id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
 <p>一个物理CPU拥有的运算单元个数，每个运算单元有一套寄存器、L1、L2私有缓存。一个核心同一时刻只能运行一个线程，不论这个线程是哪个进程的。每隔一定时间就会切换线程，如果切换到其它进程的线程，会切换CR3（进程切换时，会将该进程页表的指针加载到CR3寄存器）。</p>
-<h3 id="THREAD线程数-逻辑核心数"><a href="#THREAD线程数-逻辑核心数" class="headerlink" title="THREAD线程数(逻辑核心数)"></a>THREAD线程数(逻辑核心数)</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;processor id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
+<h3 id="THREAD线程数-逻辑核心数"><a href="#THREAD线程数-逻辑核心数" class="headerlink" title="THREAD线程数(逻辑核心数)"></a>THREAD线程数(逻辑核心数)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cpuinfo | grep <span class="string">&#x27;processor id&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
 <p>英特尔的<strong>超线程</strong>技术，可以实现一个核心同时执行多个线程，即逻辑核心数的说法：8核16线程，一个核心能跑二个线程，</p>
 <p>CPU在执行一条机器指令时，并不会完全地利用所有的CPU资源，是有大量资源被闲置着的。超线程技术允许两个线程同时不冲突地使用CPU中的资源。比如一条整数运算指令只会用到整数运算单元，此时浮点运算单元就空闲了，若使用了超线程技术，且另一个线程刚好此时要执行一个浮点运算指令，CPU就允许属于两个不同线程的整数运算指令和浮点运算指令同时执行，这是真的并行。</p>
 <p>超线程”可能”是并行的,也可能不是并行的，但这也并不意味着两个线程在同一个CPU(也就是同一个核心)中一直都可以并行执行，只是恰好碰到两个线程当前要执行的指令不使用相同的CPU资源时才可以真正地并行执行。</p>
@@ -2575,57 +2575,6 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>缺点：没有办法使用多核心并行执行</li>
 </ul>
 <hr>
-<h2 id="内中断"><a href="#内中断" class="headerlink" title="内中断"></a>内中断</h2><h3 id="内中断的产生"><a href="#内中断的产生" class="headerlink" title="内中断的产生"></a>内中断的产生</h3><blockquote>
-<ol>
-<li>除法错误:0</li>
-<li>单步执行:1</li>
-<li>执行 into 指令:4</li>
-<li>执行 int 指令,格式为<code>int n</code> ,n为字节型立即数,是中断类型码</li>
-</ol>
-</blockquote>
-<h3 id="中断过程"><a href="#中断过程" class="headerlink" title="中断过程"></a>中断过程</h3><blockquote>
-<p>由中断类型码找到中断向量,并自动用它设置 CS和IP，随后执行中断处理程序</p>
-<ol>
-<li>从中断信息取得中断类型码N</li>
-<li><code>pushf</code> &#x2F;&#x2F;标志寄存器入栈(中断过程中值改变)</li>
-<li><code>TF=0,IF=0</code> &#x2F;&#x2F;设置标志寄存器的TF、IF位</li>
-<li><code>push CS</code> <code>push IP</code></li>
-<li><code>(IP)=(N*4),(CS)=(N*4+2)</code></li>
-</ol>
-</blockquote>
-<h3 id="中断向量表"><a href="#中断向量表" class="headerlink" title="中断向量表"></a>中断向量表</h3><blockquote>
-<p>中断向量表是中断处理程序入口地址的列表，在内存0000:0000到0000:03FF的1024个单元中存放，一个表项存放一个中断向量,占两个字,高地址存放段地址,低地址存放偏移地址</p>
-</blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%AD%E6%96%AD%E5%90%91%E9%87%8F%E8%A1%A8.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/%E4%B8%AD%E6%96%AD%E5%90%91%E9%87%8F%E8%A1%A8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="中断处理程序"><a href="#中断处理程序" class="headerlink" title="中断处理程序"></a>中断处理程序</h3><p>中断处理程序必须一直存储在内存某段空间之中，而中断向量必须存储在对应的中断向量表表项中</p>
-<blockquote>
-<p>中断处理程序的编写方法和子程序的比较相似,下面是常规的步骤:</p>
-<ul>
-<li>保存用到的寄存器;</li>
-<li>处理中断;</li>
-<li>恢复用到的寄存器;</li>
-<li>用 iret 指令返回。</li>
-</ul>
-</blockquote>
-<h3 id="BIOS中断例程-P248"><a href="#BIOS中断例程-P248" class="headerlink" title="BIOS中断例程(P248)"></a>BIOS中断例程(P248)</h3><h2 id="外中断"><a href="#外中断" class="headerlink" title="外中断"></a>外中断</h2><h3 id="什么是外中断"><a href="#什么是外中断" class="headerlink" title="什么是外中断"></a>什么是外中断</h3><p>外设随时都可能发⽣需要CPU及时处理的事件，这种中断来⾃于CPU的外部，当CPU外部有需要处理的<br>事情发⽣的时候，⽐如说，外设的输⼊到达，相关芯⽚将向CPU发出相应的中断信息。CPU在执⾏完当<br>前指令后，可以检测到发送过来的中断信息，引发中断过程，处理外设输⼊。</p>
-<h3 id="内外中断的区别"><a href="#内外中断的区别" class="headerlink" title="内外中断的区别"></a>内外中断的区别</h3><p>简单来说，外中断和内中断的区别就是，外中断产⽣于外设，⽽内中断是由程序执⾏时产⽣的。</p>
-<h3 id="可屏蔽中断和不可屏蔽中断"><a href="#可屏蔽中断和不可屏蔽中断" class="headerlink" title="可屏蔽中断和不可屏蔽中断"></a>可屏蔽中断和不可屏蔽中断</h3><p>在PC系统中，外中断源⼀共有以下两类。</p>
-<ul>
-<li><strong>可屏蔽中断</strong></li>
-</ul>
-<blockquote>
-<p>当CPU检测到可屏蔽中断信息时，如果IF&#x3D;1，则CPU在执⾏完当前指令后响应中断，引发中断过程：如果IF&#x3D;0，则不响应可屏蔽中断。</p>
-<p>可屏蔽中断所引发的中断过程，除在第1步的实现上有所不同外，基本上和内中断的中断过程相同。因为可屏蔽中断信息来⾃于CPU外部，中断类型码是通过数据总线送⼊CPU的；⽽内中断的中断类型码是在CPU内部产⽣的。</p>
-<p>故中断过程中将IF置为0的原因：在进⼊中断处理程序后，禁⽌其他的可屏蔽中断。当然，如果在中断处理程序中需要处理可屏蔽中断，可以⽤指令将IF置1。指令：<code>sti</code> ，设置IF&#x3D;1；<code>cli</code> ，设置IF&#x3D;0</p>
-</blockquote>
-<ul>
-<li><strong>不可屏蔽中断</strong></li>
-</ul>
-<blockquote>
-<p>当CPU检测到不可屏蔽中断信息时，则在执⾏完当前指令后，⽴即响应，引发中断过程。</p>
-<p>不可屏蔽中断的中断类型码固定为2，所以中断过程中，不需要取中断类型码，则不可屏蔽中断的中断过程为</p>
-</blockquote>
-<p>⼏乎所有由外设引发的外中断，都是可屏蔽中断。</p>
 
   </div>
   
@@ -2650,10 +2599,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-09-18T01:02:56+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-02-14T23:59:20+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Sep 18, 2024</p>
+    <p>更新于：Feb 14, 2025</p>
   </a>
 </div>
 
@@ -2681,23 +2630,17 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   
     <div class="prev-next">
       
-        <a class='prev' href='/2023/12/10/OS/Linux/'>
-          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Linux</p>
-          <p class='content'>Cgroup进程绑核
-cd /sys/fs/cgroup/cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write error: No spa...</p>
+        <a class='prev' href='/2024/04/07/Storage/Sparse%20Index/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Sparse Index</p>
+          <p class='content'>在数据主键有序的基础上，只为少部分数据建立索引，从而在查询时能够圈定出大致的范围，再在范围内利用适当的查找算法找到目标数据。
+空间占用小，查询相对慢
+Sparse Index in Kafka单...</p>
         </a>
       
       
-        <a class='next' href='/2023/07/27/Other/Notes/'>
-          <p class='title'>Notes<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
-          <p class='content'>Centos开发环境
-参考链接
-
-Env &amp; Proxy
-切换默认shell chsh -s /bin/bash root
-配代理
-
-export http_proxy=http://x...</p>
+        <a class='next' href='/2023/07/26/Distribution/Zookeeper/'>
+          <p class='title'>Zookeeper<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>ZooKeeper 由 Yahoo 开发，后来捐赠给了 Apache ，现已成为 Apache 顶级项目。ZooKeeper 是一个开源的分布式应用程序协调服务器，其为分布式系统提供一致性服务。...</p>
         </a>
       
     </div>
@@ -2744,7 +2687,7 @@ export http_proxy=http://x...</p>
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">进程与线程的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text">老八股版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%B8%AD%E5%AF%B9%E7%BA%BF%E7%A8%8B%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="toc-number">1.2.</span> <span class="toc-text">内核中对线程的表示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">线程创建过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">1.5.</span> <span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E6%A0%B8%E5%BF%83%E3%80%81%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">CPU核心、线程数概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU%E7%89%A9%E7%90%86%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">CPU物理数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CORE%E6%A0%B8%E5%BF%83%E6%95%B0-%E7%89%A9%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">CORE核心数(物理核心数)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#THREAD%E7%BA%BF%E7%A8%8B%E6%95%B0-%E9%80%BB%E8%BE%91%E6%A0%B8%E5%BF%83%E6%95%B0"><span class="toc-number">2.3.</span> <span class="toc-text">THREAD线程数(逻辑核心数)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%A4%9A%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%83%BD%E5%A4%9A%E6%A0%B8%E5%B9%B6%E8%A1%8C%E5%90%97"><span class="toc-number">2.4.</span> <span class="toc-text">进程的多个线程能多核并行吗</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E4%B8%AD%E6%96%AD"><span class="toc-number">3.</span> <span class="toc-text">内中断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E4%B8%AD%E6%96%AD%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="toc-number">3.1.</span> <span class="toc-text">内中断的产生</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E8%BF%87%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">中断过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%90%91%E9%87%8F%E8%A1%A8"><span class="toc-number">3.3.</span> <span class="toc-text">中断向量表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86%E7%A8%8B%E5%BA%8F"><span class="toc-number">3.4.</span> <span class="toc-text">中断处理程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BIOS%E4%B8%AD%E6%96%AD%E4%BE%8B%E7%A8%8B-P248"><span class="toc-number">3.5.</span> <span class="toc-text">BIOS中断例程(P248)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E4%B8%AD%E6%96%AD"><span class="toc-number">4.</span> <span class="toc-text">外中断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%96%E4%B8%AD%E6%96%AD"><span class="toc-number">4.1.</span> <span class="toc-text">什么是外中断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%A4%96%E4%B8%AD%E6%96%AD%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.2.</span> <span class="toc-text">内外中断的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E5%B1%8F%E8%94%BD%E4%B8%AD%E6%96%AD%E5%92%8C%E4%B8%8D%E5%8F%AF%E5%B1%8F%E8%94%BD%E4%B8%AD%E6%96%AD"><span class="toc-number">4.3.</span> <span class="toc-text">可屏蔽中断和不可屏蔽中断</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">进程与线程的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%80%81%E5%85%AB%E8%82%A1%E7%89%88%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text">老八股版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E4%B8%AD%E5%AF%B9%E7%BA%BF%E7%A8%8B%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="toc-number">1.2.</span> <span class="toc-text">内核中对线程的表示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">线程创建过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">1.5.</span> <span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E6%A0%B8%E5%BF%83%E3%80%81%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">CPU核心、线程数概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU%E7%89%A9%E7%90%86%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">CPU物理数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CORE%E6%A0%B8%E5%BF%83%E6%95%B0-%E7%89%A9%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">CORE核心数(物理核心数)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#THREAD%E7%BA%BF%E7%A8%8B%E6%95%B0-%E9%80%BB%E8%BE%91%E6%A0%B8%E5%BF%83%E6%95%B0"><span class="toc-number">2.3.</span> <span class="toc-text">THREAD线程数(逻辑核心数)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%A4%9A%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%83%BD%E5%A4%9A%E6%A0%B8%E5%B9%B6%E8%A1%8C%E5%90%97"><span class="toc-number">2.4.</span> <span class="toc-text">进程的多个线程能多核并行吗</span></a></li></ol></li></ol>
     </div>
   </section>
 
@@ -3172,7 +3115,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3399,7 +3342,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/OS/","name":"OS"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/08/15/OS/进程与中断/","name":"进程线程与中断"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"进程线程与中断","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/","wordCount":0,"datePublished":"2023-08-14T18:09:04.000Z","dateModified":"2024-09-17T17:02:56.632Z","articleSection":"OS","keywords":"OS","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/OS/","name":"OS"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/08/15/OS/进程与中断/","name":"进程线程与中断"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"进程线程与中断","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/","wordCount":0,"datePublished":"2023-08-14T18:09:04.000Z","dateModified":"2025-02-14T15:59:20.958Z","articleSection":"OS","keywords":"OS","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

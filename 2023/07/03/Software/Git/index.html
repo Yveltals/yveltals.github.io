@@ -34,7 +34,7 @@
   <!-- 页面元数据 -->
   <title>Git - Hexo</title>
   <meta name="keywords" content="null">
-  <meta desc name="description" content="Hexo - John Doe - Hexo">
+  <meta desc name="description" content="N/A - John Doe - Hexo">
   
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git">
@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2023-07-03T15:54:04.000Z">
-<meta property="article:modified_time" content="2024-07-05T08:26:12.041Z">
+<meta property="article:modified_time" content="2025-02-14T15:59:20.958Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Git">
 <meta name="twitter:card" content="summary">
@@ -1759,7 +1759,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1738412122700),
+    lastupdate: new Date(1739723791672),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2454,7 +2454,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   </span>
   <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
     <meta itemprop="name" content="Hexo">
-    <meta itemprop="description" content="">
+    <meta itemprop="description" content="N/A">
   </span>
   
 
@@ -2521,7 +2521,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/git.jpg" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/git.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+    <h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/git.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/git.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <ul>
 <li>创建分支<ul>
 <li><code>git checkout -b name</code> 创建并转到分支</li>
@@ -2565,42 +2565,34 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 </li>
 </ul>
-<h2 id="HEAD、Index、Working-Directory"><a href="#HEAD、Index、Working-Directory" class="headerlink" title="HEAD、Index、Working Directory"></a>HEAD、Index、Working Directory</h2><p>Git里有三个区域很重要，下图解释了这三个区域的状态的变化过程：</p>
+<h2 id="工作区原理"><a href="#工作区原理" class="headerlink" title="工作区原理"></a>工作区原理</h2><p>Git里有三个区域很重要，下图解释了这三个区域的状态的变化过程：</p>
 <ul>
 <li>HEAD 指向最近一次commit里的所有snapshot</li>
 <li>Index 缓存区域，只有Index区域里的东西才可以被commit</li>
 <li>Working Directory 用户操作区域</li>
 </ul>
-<pre class="mermaid">sequenceDiagram
-  participant HEAD
-  participant Index
-  HEAD ->> Working Directory: Checkout the project
-  Working Directory ->> Index: Stage files
-  Index ->> HEAD: Commit</pre>
-
-<h3 id="初始状态"><a href="#初始状态" class="headerlink" title="初始状态"></a>初始状态</h3><p>当 checkout 分支的时候，git做了三件事情：</p>
+<h3 id="初始状态"><a href="#初始状态" class="headerlink" title="初始状态"></a>初始状态</h3><p>当 <code>git checkout</code> 的时候，git做了三件事情：</p>
 <ol>
-<li>将HEAD指向那个分支的最后一次commit</li>
-<li>将HEAD指向的commit里所有文件的snapshot替换掉Index区域里原来的内容</li>
-<li>将Index区域里的内容填充到Working Directory里</li>
+<li>将 HEAD 指向那个分支的最后一次 commit</li>
+<li>将 HEAD 指向的 commit 里所有文件的 snapshot 替换掉 Index 区域里原来的内容</li>
+<li>将 Index 区域里的内容填充到 Working Directory 里</li>
 </ol>
-<p>所以可以发现，此时 HEAD、Index、Working Directory 里的内容都是一模一样的。</p>
-<p>注意：一般会误解为，Index中的内容是空的，只有git add后才会有东西。实际上不是，Index里一直是有东西的。所以，Git的所有操作就是对这三个区域的状态（或内容）的操作。</p>
-<h3 id="Changed"><a href="#Changed" class="headerlink" title="Changed"></a>Changed</h3><p>如果你在Working Directory里修改了文件，git会发现Working Directory里的内容和Index区域里的内容不一致了。 </p>
-<p>这个时候git status的结果是：Changes not staged for commit</p>
-<h3 id="Staged"><a href="#Staged" class="headerlink" title="Staged"></a>Staged</h3><p>一个文件仅仅changed是不能被commit的，Git要求只能提交Index里的东西。</p>
-<p>所以需要git add。这个命令的意思是，把Changed的文件的内容同步到Index区域里。这样Working Directory和Index区域的内容就一致了。这个过程被称之为stage</p>
-<p>这个时候git status的结果是：Changes to be committed</p>
-<h3 id="Committed"><a href="#Committed" class="headerlink" title="Committed"></a>Committed</h3><p>最后，通过 <code>git commit</code> 提交后，HEAD 的状态和 Index 以及 Working Directory 就形成一致了。</p>
+<p>此时 HEAD、Index、Working Directory 里的内容都是一样的。<strong>Index中的内容不是空的</strong>，并非只有 <code>git add</code> 后才会有东西。</p>
+<h3 id="Changed"><a href="#Changed" class="headerlink" title="Changed"></a>Changed</h3><p>如果你在 Working Directory 里修改了文件，则 Working Directory 里的内容和 Index 区域里不一致了。 </p>
+<p>这个时候git status的结果是：<code>Changes not staged for commit</code></p>
+<h3 id="Staged"><a href="#Staged" class="headerlink" title="Staged"></a>Staged</h3><p>一个文件仅仅 changed 是不能被 commit 的，Git 要求只能提交 Index 里的东西。</p>
+<p>所以需要 <code>git add</code>。这个命令的意思是，把 Changed 的文件的内容同步到 Index 区域里。这样 Working Directory 和 Index 区域的内容就一致了。这个过程被称之为 stage</p>
+<p>这个时候git status的结果是：<code>Changes to be committed</code></p>
+<h3 id="Committed"><a href="#Committed" class="headerlink" title="Committed"></a>Committed</h3><p>最后通过 <code>git commit</code> 提交后，HEAD 的状态和 Index 以及 Working Directory 就形成一致了。</p>
 <hr>
 <h2 id="撤销操作"><a href="#撤销操作" class="headerlink" title="撤销操作"></a>撤销操作</h2><h3 id="区别-reset-和-revert"><a href="#区别-reset-和-revert" class="headerlink" title="区别 reset 和 revert"></a>区别 reset 和 revert</h3><ul>
-<li><code>git reset</code> 是会修改版本历史的，他会<strong>丢弃掉一些版本历史</strong>。</li>
+<li><code>git reset</code> 是会修改版本历史的，即<strong>丢弃掉一些版本历史</strong>。</li>
 <li><code>git revert</code> 是根据那个commit逆向生成一个新的commit，版本历史是不会被破坏的。</li>
 </ul>
-<h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><h4 id="1-用于file"><a href="#1-用于file" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><h4 id="1-用于file"><a href="#1-用于file" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure>
 
 <p><strong>撤销add操作</strong>，把文件从index退回workspace，并将更改保存在workspace中</p>
-<h4 id="2-用于commit"><a href="#2-用于commit" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset HEAD^^  <span class="comment">#回退到上上个版本</span></span><br><span class="line">git reset HEAD~2</span><br><span class="line">git reset d130664a3e6da2d2478f3c6eee8e9dc67a61b1c2</span><br></pre></td></tr></table></figure>
+<h4 id="2-用于commit"><a href="#2-用于commit" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset HEAD^^  <span class="comment">#回退到上上个版本</span></span><br><span class="line">git reset HEAD~2</span><br><span class="line">git reset d130664a3e6da2d2478f3c6eee8e9dc67a61b1c2</span><br></pre></td></tr></table></figure>
 
 <p><strong>撤销commit操作</strong>，必须是<strong>未被提交到remote</strong>的改动。除了移动当前分支的HEAD，还可以更改workspace和index：</p>
 <ul>
@@ -2610,14 +2602,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ul>
 <div class="note warning"><p>已经push到远程仓库的commit不允许reset，只能用revert。如果commit已经被push到远程仓库上了，也就意味着其他开发人员就可能基于这个commit形成了新的commit，这时你去reset，就会造成其他开发人员的提交历史莫名其妙的丢失，或者其他灾难性的后果。</p></div>
 
-<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><h4 id="1-用于file-1"><a href="#1-用于file-1" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><h4 id="1-用于file-1"><a href="#1-用于file-1" class="headerlink" title="1. 用于file"></a>1. 用于file</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout HEAD &lt;file&gt;</span><br></pre></td></tr></table></figure>
 
 <p>清除文件在workspace的修改，类似于 <code>git restore file</code></p>
-<h4 id="2-用于commit-1"><a href="#2-用于commit-1" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout b4f2fa40955cc34f441466f820b1b84350a31491   <span class="comment"># 分离HEAD模式，HEAD可以不指向main等</span></span><br><span class="line">git checkout main</span><br></pre></td></tr></table></figure>
+<h4 id="2-用于commit-1"><a href="#2-用于commit-1" class="headerlink" title="2. 用于commit"></a>2. 用于commit</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout b4f2fa40955cc34f441466f820b1b84350a31491   <span class="comment"># 分离HEAD模式，HEAD可以不指向main等</span></span><br><span class="line">git checkout main</span><br></pre></td></tr></table></figure>
 
 <p>只是移动HEAD到不同的commit，如果有unstaged的文件，git会阻止操作并提示。</p>
 <p>checkout会修改HEAD的指向，变更Index区域里的内容，修改Working Directory里的内容。</p>
-<p>这看上去很像reset –hard，但和reset –hard相比有两个重要的差别</p>
+<p>这看上去很像 <code>reset --hard</code>，但和 <code>reset --hard</code> 相比有两个重要的差别</p>
 <ol>
 <li>reset会把working directory里的所有内容都更新掉</li>
 <li>checkout不会去修改你在Working Directory里修改过的文件</li>
@@ -2630,7 +2622,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>如果 git checkout master，那么develop不会动，只有HEAD会移动指向master。</li>
 </ul>
 <p><img src="https://segmentfault.com/img/bVz7pB?w=500&h=366" class="lazyload" data-srcset="https://segmentfault.com/img/bVz7pB?w=500&h=366" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="revert"><a href="#revert" class="headerlink" title="revert"></a>revert</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git revert HEAD   <span class="comment">#revert该版本的修改，相当于 git reset HEAD^</span></span><br></pre></td></tr></table></figure>
+<h3 id="revert"><a href="#revert" class="headerlink" title="revert"></a>revert</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git revert HEAD   <span class="comment">#revert该版本的修改，相当于 git reset HEAD^</span></span><br></pre></td></tr></table></figure>
 
 <p>通过新建一个commit来撤销一次commit所做的修改，是一种安全的方式，并没有修改commit history。</p>
 <hr>
@@ -2641,20 +2633,20 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>确定一下ssh-key是否添加成功 <code>ssh -T git@github.com</code></li>
 </ol>
 <h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>全局&#x2F;仓库配置(–global&#x2F;local)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global -l</span><br><span class="line">git config --global core.editor vim</span><br><span class="line">git config --global init.defaultBranch main</span><br><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br><span class="line">git config --global user.name <span class="string">&quot;YOURUSERNAME&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;YOUREMAIL&quot;</span></span><br><span class="line">git config --global http.proxy http://127.0.0.1:xxxx</span><br><span class="line">git config --global https.proxy http://127.0.0.1:xxxx</span><br><span class="line"><span class="comment"># 取消配置</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git config --global -l</span><br><span class="line">git config --global core.editor vim</span><br><span class="line">git config --global init.defaultBranch main</span><br><span class="line">git config --global --add pull.rebase <span class="literal">true</span></span><br><span class="line">git config --global user.name <span class="string">&quot;YOURUSERNAME&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;YOUREMAIL&quot;</span></span><br><span class="line">git config --global http.proxy http://127.0.0.1:xxxx</span><br><span class="line">git config --global https.proxy http://127.0.0.1:xxxx</span><br><span class="line"><span class="comment"># 取消配置</span></span><br><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br></pre></td></tr></table></figure>
 
 <p>配置别名，在 .gitconfig 中加入</p>
- <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]  </span><br><span class="line">   lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27;</span> --abbrev-commit</span><br></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="built_in">alias</span>]  </span><br><span class="line">   lg = <span class="built_in">log</span> --color --graph --pretty=format:<span class="string">&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27;</span> --abbrev-commit</span><br></pre></td></tr></table></figure>
 
 <h2 id="重新关联远程仓库"><a href="#重新关联远程仓库" class="headerlink" title="重新关联远程仓库"></a>重新关联远程仓库</h2><ol>
 <li><p>查看远程仓库的链接方式，将http方式改成git方式 <code>git remote show origin</code></p>
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a href="mailto:&#103;&#105;&#116;&#x40;&#x67;&#105;&#116;&#104;&#x75;&#98;&#x2e;&#x63;&#111;&#x6d;">&#103;&#105;&#116;&#x40;&#x67;&#105;&#116;&#104;&#x75;&#98;&#x2e;&#x63;&#111;&#x6d;</a>的方式并关联</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
+<li><p>重新添加成<a href="mailto:&#x67;&#x69;&#116;&#64;&#103;&#x69;&#x74;&#x68;&#x75;&#x62;&#46;&#x63;&#x6f;&#109;">&#x67;&#x69;&#116;&#64;&#103;&#x69;&#x74;&#x68;&#x75;&#x62;&#46;&#x63;&#x6f;&#109;</a>的方式并关联</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
 </ol>
-<h2 id="HTTPS-协议-Authentication-failed"><a href="#HTTPS-协议-Authentication-failed" class="headerlink" title="HTTPS 协议 Authentication failed"></a>HTTPS 协议 Authentication failed</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="HTTPS-Auth-failed"><a href="#HTTPS-Auth-failed" class="headerlink" title="HTTPS Auth failed"></a>HTTPS Auth failed</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>
 <p>Github 对密码认证的支持于 2021年8月13 日被删除，需要使用个人访问令牌代替。</p>
 <ul>
 <li>Username: 注册 Github 的邮箱</li>
@@ -2687,10 +2679,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2024-07-05T16:26:12+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-02-14T23:59:20+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Jul 5, 2024</p>
+    <p>更新于：Feb 14, 2025</p>
   </a>
 </div>
 
@@ -2775,7 +2767,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HEAD%E3%80%81Index%E3%80%81Working-Directory"><span class="toc-number">2.</span> <span class="toc-text">HEAD、Index、Working Directory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E7%8A%B6%E6%80%81"><span class="toc-number">2.1.</span> <span class="toc-text">初始状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Changed"><span class="toc-number">2.2.</span> <span class="toc-text">Changed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Staged"><span class="toc-number">2.3.</span> <span class="toc-text">Staged</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Committed"><span class="toc-number">2.4.</span> <span class="toc-text">Committed</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">撤销操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%BA%E5%88%AB-reset-%E5%92%8C-revert"><span class="toc-number">3.1.</span> <span class="toc-text">区别 reset 和 revert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reset"><span class="toc-number">3.2.</span> <span class="toc-text">reset</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%A8%E4%BA%8Efile"><span class="toc-number">3.2.1.</span> <span class="toc-text">1. 用于file</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E4%BA%8Ecommit"><span class="toc-number">3.2.2.</span> <span class="toc-text">2. 用于commit</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#checkout"><span class="toc-number">3.3.</span> <span class="toc-text">checkout</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%A8%E4%BA%8Efile-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">1. 用于file</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E4%BA%8Ecommit-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">2. 用于commit</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#revert"><span class="toc-number">3.4.</span> <span class="toc-text">revert</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E4%B8%8EConfig%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">密钥与Config配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SSH-key"><span class="toc-number">4.1.</span> <span class="toc-text">SSH key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Config"><span class="toc-number">4.2.</span> <span class="toc-text">Config</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E5%85%B3%E8%81%94%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">5.</span> <span class="toc-text">重新关联远程仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS-%E5%8D%8F%E8%AE%AE-Authentication-failed"><span class="toc-number">6.</span> <span class="toc-text">HTTPS 协议 Authentication failed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA"><span class="toc-number">7.</span> <span class="toc-text">在线演示</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">工作区原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E7%8A%B6%E6%80%81"><span class="toc-number">2.1.</span> <span class="toc-text">初始状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Changed"><span class="toc-number">2.2.</span> <span class="toc-text">Changed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Staged"><span class="toc-number">2.3.</span> <span class="toc-text">Staged</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Committed"><span class="toc-number">2.4.</span> <span class="toc-text">Committed</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">撤销操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%BA%E5%88%AB-reset-%E5%92%8C-revert"><span class="toc-number">3.1.</span> <span class="toc-text">区别 reset 和 revert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reset"><span class="toc-number">3.2.</span> <span class="toc-text">reset</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%A8%E4%BA%8Efile"><span class="toc-number">3.2.1.</span> <span class="toc-text">1. 用于file</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E4%BA%8Ecommit"><span class="toc-number">3.2.2.</span> <span class="toc-text">2. 用于commit</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#checkout"><span class="toc-number">3.3.</span> <span class="toc-text">checkout</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%A8%E4%BA%8Efile-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">1. 用于file</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E4%BA%8Ecommit-1"><span class="toc-number">3.3.2.</span> <span class="toc-text">2. 用于commit</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#revert"><span class="toc-number">3.4.</span> <span class="toc-text">revert</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E4%B8%8EConfig%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">密钥与Config配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SSH-key"><span class="toc-number">4.1.</span> <span class="toc-text">SSH key</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Config"><span class="toc-number">4.2.</span> <span class="toc-text">Config</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E5%85%B3%E8%81%94%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">5.</span> <span class="toc-text">重新关联远程仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTPS-Auth-failed"><span class="toc-number">6.</span> <span class="toc-text">HTTPS Auth failed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA"><span class="toc-number">7.</span> <span class="toc-text">在线演示</span></a></li></ol>
     </div>
   </section>
 
@@ -3203,7 +3195,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3430,7 +3422,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":""},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Software/","name":"Software"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/07/03/Software/Git/","name":"Git"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":""},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Git","description":"","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/07/03/Software/Git/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/07/03/Software/Git/","wordCount":0,"datePublished":"2023-07-03T15:54:04.000Z","dateModified":"2024-07-05T08:26:12.041Z","articleSection":"Software","keywords":"Git","image":{"@type":"ImageObject","url":"/img/git.jpeg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Software/","name":"Software"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2023/07/03/Software/Git/","name":"Git"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Git","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/07/03/Software/Git/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2023/07/03/Software/Git/","wordCount":0,"datePublished":"2023-07-03T15:54:04.000Z","dateModified":"2025-02-14T15:59:20.958Z","articleSection":"Software","keywords":"Git","image":{"@type":"ImageObject","url":"/img/git.jpeg","width":1024,"height":768}}]</script>
 
 
 

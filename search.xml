@@ -2603,6 +2603,23 @@
 <h3 id="Low-Priority-Write"><a href="#Low-Priority-Write" class="headerlink" title="Low Priority Write"></a>Low Priority Write</h3><p>低优先级写能够帮助用户管理写入的优先级。通过<code>writeOptions.setLowPri(true)</code> 设置后台写入，RocksDB将对低优先级写入进行更积极的节流，以确保高优先级写入不会 Write Stall。</p>
 <p>如果系统认为存在压缩压力，RocksDB 会让低优先级写操作进行睡眠，降低写速率，确保高优先级写操作的处理优先级，不会因为低优先级写入过多而导致整体性能下降。</p>
 <p>在二阶段提交过程中，低优先级写入会在准备阶段完成，而不是在提交阶段。</p>
+<h3 id="Column-Families"><a href="#Column-Families" class="headerlink" title="Column Families"></a>Column Families</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>RocksDB 中的每个键值对都与一个列族相关联。 如果没有指定列族，键值对与列族 <code>default</code> 相关联。列族提供了一种对数据库进行逻辑分区的方法。 </p>
+<ul>
+<li>支持跨列族原子写，这个意思是可以原子写入<code>(&#123;cf1, key1, value1&#125;, &#123;cf2, key2, value2&#125;).</code></li>
+<li>跨列族的数据库一致视图。</li>
+<li>能够独立配置不同的列族。</li>
+<li>即时添加新的列族并删除它们。 这两种操作都相当快。</li>
+</ul>
+<p>Column Family 的思想是共享 WAL 日志而不共享 memtables 和sst 文件，即 log 共享而数据分离，可以独立配置列族并快速删除它们。</p>
+<p>使用一个 RocksDB 就是使用一个物理存储系统，使用一个 CF 则是使用一个逻辑存储系统，二者主要区别体现在数据备份、原子写以及写性能表现上。DB 是数据备份和复制以及 checkpoint 的基本单位，但是 CF 则利用 BatchWrite，因为这个操作是可以跨 CF 的，而且多个 CF 可以共享同一个 WAL，多个 DB 则无法做到这一点。</p>
+<p>每次 Flush 单个 CF 时，都会创建一个新的 WAL，但无法删除旧的 WAL，只有全部的列族被 Flush 且这个 WAL 包含的全部数据已经持久化时才可以删除旧的WAL文件。确保对RocksDB进行调优，以便定期刷新所有列族。另外，查看<code>Options::max_total_wal_size</code>，可以配置为自动刷新过时的列族。</p>
+<p>Column Family 使用场景：</p>
+<ol>
+<li>不同的 Column Family 可以使用不同的 setting&#x2F;comparators&#x2F;compression types&#x2F;merge operators&#x2F;compaction filters</li>
+<li>对数据进行逻辑隔离，方便分别删除</li>
+<li>一个 Column Family 存储 metadata，另一个存储 data；</li>
+</ol>
 <h3 id="LSM-Tree"><a href="#LSM-Tree" class="headerlink" title="LSM-Tree"></a>LSM-Tree</h3><p>将数据形成Log-Structured：在将数据写入LSM内存结构之前，先记录log。这样LSM就可以将有易失性的内存看做永久性存储器。并且信任内存上的数据，等到内存容量达到threshold再集体写入磁盘。</p>
 <p>LSM 将所有数据不组织成一个整体索引结构，而组织成有序的文件集。每次LSM面对磁盘写，将数据写入一个或几个新生成的文件，顺序写入且不能修改其他文件，这样就将随机读写转换成了顺序读写。LSM将一次性集体写入的文件作为一个level，磁盘上划分多level，level与level之间互相隔离。这就形成了，以写入数据时间线形成的逻辑上、而非物理上的层级结构，这也就是为什么LSM被命名为 tree，但不是 tree。</p>
 <p>除了将随机写合并之后转化为顺写之外，LSM 的另外一个关键特性就在于其是一种自带数据 Garbage Collect 的有序数据集合，对外只提供了 Add&#x2F;Get 接口，其内部的 Compaction 就是其 GC 的关键，通过 Compaction 实现了对数据的删除、附带了 TTL 的过期数据地淘汰、同一个 Key 的多个版本 Value 地合并。RocksDB 基于 LSM 对外提供了 Add&#x2F;Delete&#x2F;Get 三个接口，用户则基于 RocksDB 提供的 transaction 还可以实现 Update 语义。</p>
@@ -2642,36 +2659,6 @@
 <p><strong>6. Other Recommendation</strong></p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">cf_options.level_compaction_dynamic_level_bytes = <span class="literal">true</span>;</span><br><span class="line">opts.max_background_jobs = <span class="number">6</span>;</span><br><span class="line">options.bytes_per_sync = <span class="number">1048576</span>;</span><br><span class="line">options.compaction_pri = kMinOverlappingRatio;</span><br><span class="line">table_options.block_size = <span class="number">16</span> * <span class="number">1024</span>;</span><br><span class="line">table_options.cache_index_and_filter_blocks = <span class="literal">true</span>;</span><br><span class="line">table_options.pin_l0_filter_and_index_blocks_in_cache = <span class="literal">true</span>;</span><br><span class="line">table_options.format_version = &lt;the latest version&gt;;</span><br></pre></td></tr></table></figure>
 
-
-<h3 id="预读取"><a href="#预读取" class="headerlink" title="预读取"></a>预读取</h3><h4 id="自动预读"><a href="#自动预读" class="headerlink" title="自动预读"></a>自动预读</h4><p>自动预读仅适用于基于块的表格格式（Block-based table format）。这意味着它仅在 BlockBasedTableOptions 中启用了块化表格时有效。</p>
-<p>当 RocksDB 在迭代过程中发现对同一表文件的多个顺序 I&#x2F;O 请求时，它会启动自动预读机制。预读的大小从 8 KB 开始，随着每个额外的顺序 I&#x2F;O 请求的出现，预读的大小呈指数增长，最大为 <code>BlockBasedTableOptions.max_auto_readahead_size</code>，默认最大 256 KB。</p>
-<p>条件与限制：</p>
-<ul>
-<li>启用条件：自动预读仅在 ReadOptions.readahead_size &#x3D; 0（默认值）时启用。如果 ReadOptions.readahead_size 设置为其他值，则会禁用此功能。</li>
-<li>I&#x2F;O 模式：在 Linux 系统中，自动预读在缓冲 I&#x2F;O 模式下使用 readahead 系统调用，而在直接 I&#x2F;O 模式下则使用 AlignedBuffer 来存储预读数据。</li>
-<li>版本支持：自动迭代器预读从 RocksDB 版本 5.12 开始在缓冲 I&#x2F;O 模式下支持，从 5.15 开始也支持直接 I&#x2F;O 模式。</li>
-</ul>
-<h4 id="手动预读控制"><a href="#手动预读控制" class="headerlink" title="手动预读控制"></a>手动预读控制</h4><p>如果主要依赖迭代操作并且使用 Page Cache，可以通过设置 <code>DBOptions.advise_random_on_open = false</code> 来选择手动启用预读功能。</p>
-<p>这种设置对硬盘驱动器（HDD）或远程存储尤为有用，尤其在这些存储的延迟较高时。对于直连的 SSD，预读对性能的影响可能不明显。</p>
-<hr>
-<h2 id="RocksDB-Memory"><a href="#RocksDB-Memory" class="headerlink" title="RocksDB Memory"></a>RocksDB Memory</h2><p>RocksDB的内存大致有如下四个区：</p>
-<ul>
-<li>Block Cache</li>
-<li>Indexes and bloom filters</li>
-<li>Memtables</li>
-<li>Blocked pinned by iterators</li>
-</ul>
-<h3 id="Block-Cache"><a href="#Block-Cache" class="headerlink" title="Block Cache"></a>Block Cache</h3><p>在内存中缓存数据用于读取。一个Cache对象可以在同一个进程中被多个 DB 实例共享，从而允许用户控制整个缓存容量。Block Cache 存储未压缩的块，用户可以选择设置第二个 Block Cache 存储压缩块。先读取未压缩的块，再读取压缩的块。如果使用Direct-IO，压缩块缓存可以替代 Page cache。</p>
-<p>RocksDB 中有两种缓存实现，分别是 LRUCache 和 ClockCache。两种类型的缓存都被分片以减轻锁争用。默认每个缓存将被分片为最多 64 个分片，每个分片的容量不低于 512k 字节。</p>
-<h3 id="Indexes-and-bloom-filters"><a href="#Indexes-and-bloom-filters" class="headerlink" title="Indexes and bloom filters"></a>Indexes and bloom filters</h3><p>Index 由 key、offset 和 size 三部分构成，通常仅索引每个 Block 中的第一个 key（或者是一个代表性的 key）。当 Block Cache 增大 Block Size 时，block 个数必会减小，index 个数也会随之降低，如果减小 key size，index 占用内存空间的量也会随之降低。</p>
-<p>filter是 bloom filter 的实现，如果缩小 bloom 占用的空间，可以设置 <code>options.optimize_filters_for_hits = true</code>，则最后一个 level 的 filter 会被关闭，bloom 占用率只会用到原来的 10% 。</p>
-<p>默认情况下 index 和 filter block 与 block cache 是独立的，用户不能设定二者的内存空间使用量，但为了控制 RocksDB 的内存空间使用量，可以设置 <code>cache_index_and_filter_blocks = true</code>，将 index &amp; filter 存入 block cache。</p>
-<p>需要注意的是，index 与 filter 一般访问频次比 data 高，所以把他们放到一起会导致内存空间与 cpu 资源竞争，进而导致 cache 性能抖动厉害。有两个优化方式：</p>
-<ul>
-<li><code>cache_index_and_filter_blocks_with_high_priority = true</code> 和 <code>high_pri_pool_ratio = 0.8</code>，会把 LRU Cache 划分为高低优先级的两个区域，data 放在 low 区，index 和 filter 放在 high 区，如果高区占用的内存空间超过了 80%，则会侵占 low 区的尾部数据空间。</li>
-<li><code>pin_l0_filter_and_index_blocks_in_cache</code> 设为 true，把 level0 的 index 以及 filter block 放到 Block Cache 中，因为 l0 访问频次最高，一般内存容量不大，占用不了多大内存空间。</li>
-</ul>
-<p>如果 <code>cache_index_and_filter_blocks = false</code>（默认值），index&#x2F;filter 个数就会受 <code>max_open_files</code> 影响，官方建议把这个选项设置为 -1，以方便 RocksDB 加载所有的 index 和 filter 文件，最大化程序性能。</p>
 <h3 id="读流程"><a href="#读流程" class="headerlink" title="读流程"></a>读流程</h3><p>使用持久化在磁盘上不可变的 SST 文件，读路径要比写路径简单很多。要找寻某个 key，只需自顶而下遍历 LSM—Tree。从 MemTable 开始，下探到 L0，然后继续向更低层级查找，直到找到该 key 或者检查完所有 SST 文件为止。</p>
 <p>以下是查找步骤：</p>
 <ol>
@@ -2686,59 +2673,20 @@
 <li>查找 index 来找到可能包含这个 key 的 block 所在位置。</li>
 <li>读取 block 文件并尝试在其中找到 key。</li>
 </ol>
-<h3 id="Memory-pool"><a href="#Memory-pool" class="headerlink" title="Memory pool"></a>Memory pool</h3><p>不管 RocksDB 有多少 column family，一个 DB 只有一个 WriteController，一旦 DB 中一个 column family 发生堵塞，那么就会阻塞其他 column family 的写。RocksDB 写入时间长了以后，可能会不定时出现较大的写毛刺，可能有两个地方导致 RocksDB 会出现较大的写延时：</p>
-<ol>
-<li>获取 mutex 时可能出现几十毫秒延迟：因为 flush&#x2F;compact 线程与读写线程竞争导致的，可以通过调整线程数量降低毛刺时间。</li>
-<li>数据写入 memtable 时候可能出现几百毫秒延时：解决方法一就是使用大的 page cache，禁用系统 swap 以及配置 min_free_kbytes、dirty_ratio、dirty_background_ratio 等参数来调整系统的内存回收策略，更基础的方法是使用内存池。</li>
-</ol>
-<p>采用内存池时，memtable 的内存分配和回收流程图如下：<br><img src="https://alexstocks.github.io/pic/rocksdb_mempool.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_mempool.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<hr>
-<h2 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h2><p>blob_db参考了WiscKey的思想，设计的kv存储分离，可以有效的减小写放大。<br>LSM树里面只存储key和value的地址，这样后台线程compact的时候可以少读写很多数据。<br>rocksdb里面增加一种类型：kTypeBlobIndex 表示value是否blob_db的地址。</p>
-<h3 id="写流程"><a href="#写流程" class="headerlink" title="写流程"></a>写流程</h3><p>首先判断value大小是否超过配置，超过了就写blob_db，然后在把offset和文件id做为value写入lsm树。</p>
-<p>否则就是正常的rocksdb写入。如果设置了db最大size，并且磁盘空间超过限制了，就会淘汰删除最老的blob文件。</p>
-<p>blob文件格式：<br>head结构<br>|—-|—-|—-|-|-|——–|———|<br>magic version cf_id flag expiration_start expiration_end<br>foot结构<br>|—-|——–|——–|———|—-|<br>magic count expiration_start expiration_end crc</p>
-<p>和sst文件一样，blob文件写完以后，不会被更改，只能被删除。<br>每个blob文件都有size限制，超过这个限制就会和wal一样，重新打开一个blob文件写入。<br>每个blob文件没有类似rocksdb那样的level层级。</p>
-<h3 id="读流程-1"><a href="#读流程-1" class="headerlink" title="读流程"></a>读流程</h3><p>主要的流程还是和普通的db一样，增加GetImplOptions里面is_blob_index选项。<br>BlobDBOptions选项里面min_blob_size控制多大的value存储在blob_db中，小于min_blob_size，还是和原来一样，存储在lsm树。<br>根据返回的value类型判断，如果是kTypeBlobIndex，那么就需要再从blob_db获取真正的value，可以看到比原来多了一次读。<br>先需要解码lsm树里面获取的value,找到对应的blob_db里面的文件和offset,然后再获取真正的数据。</p>
-<h3 id="GC流程"><a href="#GC流程" class="headerlink" title="GC流程"></a>GC流程</h3><p>每个blob文件或者会有几个对应的sst文件，或者对应几个memtable。<br>只有blob文件没有关联的sst文件并且blob文件的seq比flush_seq大，才满足被gc删除条件。<br>后台线程会周期性的删除无用的blob文件。<br>Flush memtable的时候会跟进value类型判断，如果valuekTypeBlobIndex，则会更新文件对应的最早的blob文件。<br>Flush完成以后会调用blob的回调函数，建立新的sst文件和blob文件的对应关系。<br>Compact完成以后也会调用blob的回调函数，老的sst文件和blob文件映射关系解除，增加新的sst文件和blob文件的映射关系。</p>
-<hr>
-<h2 id="Column-Families"><a href="#Column-Families" class="headerlink" title="Column Families"></a>Column Families</h2><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>RocksDB 中的每个键值对都与一个列族相关联。 如果没有指定列族，键值对与列族 <code>default</code> 相关联。列族提供了一种对数据库进行逻辑分区的方法。 </p>
+<h3 id="预读取"><a href="#预读取" class="headerlink" title="预读取"></a>预读取</h3><p><strong>1. 自动预读</strong></p>
+<p>自动预读仅适用于基于块的表格格式（Block-based table format）。这意味着它仅在 BlockBasedTableOptions 中启用了块化表格时有效。</p>
+<p>当 RocksDB 在迭代过程中发现对同一表文件的多个顺序 I&#x2F;O 请求时，它会启动自动预读机制。预读的大小从 8 KB 开始，随着每个额外的顺序 I&#x2F;O 请求的出现，预读的大小呈指数增长，最大为 <code>BlockBasedTableOptions.max_auto_readahead_size</code>，默认最大 256 KB。</p>
+<p>条件与限制：</p>
 <ul>
-<li>支持跨列族原子写，这个意思是可以原子写入<code>(&#123;cf1, key1, value1&#125;, &#123;cf2, key2, value2&#125;).</code></li>
-<li>跨列族的数据库一致视图。</li>
-<li>能够独立配置不同的列族。</li>
-<li>即时添加新的列族并删除它们。 这两种操作都相当快。</li>
+<li>启用条件：自动预读仅在 <code>ReadOptions.readahead_size = 0</code>（默认值）时启用。如果设置为其他值，则会禁用此功能。</li>
+<li>I&#x2F;O 模式：在 Linux 系统中，自动预读在缓冲 I&#x2F;O 模式下使用 readahead 系统调用，而在直接 I&#x2F;O 模式下则使用 AlignedBuffer 来存储预读数据。</li>
+<li>版本支持：自动迭代器预读从 RocksDB 版本 5.12 开始在缓冲 I&#x2F;O 模式下支持，从 5.15 开始也支持直接 I&#x2F;O 模式。</li>
 </ul>
-<p>Column Family 的思想是共享 WAL 日志而不共享 memtables 和sst 文件，即 log 共享而数据分离，可以独立配置列族并快速删除它们。</p>
-<p>每次 Flush 单个 CF 时，都会创建一个新的 WAL，但无法删除旧的 WAL，只有全部的列族被 Flush 且这个 WAL 包含的全部数据已经持久化时才可以删除旧的WAL文件。确保对RocksDB进行调优，以便定期刷新所有列族。另外，查看<code>Options::max_total_wal_size</code>，可以配置为自动刷新过时的列族。</p>
-<p>读取Rocksdb时 <code>open db</code> 时需要指定<strong>全部列族</strong>，只读则不需要指定。</p>
-<h3 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h3><p>RocksDB 的 Option 有 Options, ColumnFamilyOptions, DBOptions 三种。 </p>
-<p>ColumnFamilyOptions 是 table 级的，而 Options 是 DB 级的，Options 继承自 ColumnFamilyOptions 和 DBOptions，它一般影响只有一个 CF 的 DB，如 “default”。</p>
-<p>每个 CF 都有一个 Handle：ColumnFamilyHandle，在 DB 指针被 delete 前，应该先 delete ColumnFamilyHandle。如果 ColumnFamilyHandle 指向的 CF 被别的使用者通过 DropColumnFamily 删除掉，这个 CF 仍然可以被访问，因为其引用计数不为 0.</p>
-<p>在以 Read&#x2F;Write 方式打开一个 DB 的时候，需要指定一个由所有将要用到的 CF string name 构成的 ColumnFamilyDescriptor array。不管 “default” CF 使用与否，都必须被带上。</p>
-<p>CF 存在的意义是所有 table 共享 WAL，但不共享 memtable 和 table 文件，通过 WAL 保证原子写，通过分离 table 可快读快写快删除。每次 flush 一个 CF 后，都会新建一个 WAL，都这并不意味着旧的 WAL 会被删除，因为别的 CF 数据可能还没有落盘，只有所有的 CF 数据都被 flush 且所有的 WAL 有关的 data 都落盘，相关的 WAL 才会被删除。RocksDB 会定时执行 CF flush 任务，可以通过 Options::max_total_wal_size 查看已有多少旧的 CF 文件已经被 flush 了。</p>
-<p>RocksDB 会在磁盘上依据 LSM 算法对多级磁盘文件进行 compaction，这会影响写性能，拖慢程序性能，可以通过 WriteOptions.low_pri &#x3D; true 降低 compaction 的优先级。</p>
+<p><strong>2. 手动预读控制</strong></p>
+<p>如果主要依赖迭代操作并且使用 Page Cache，可以通过设置 <code>DBOptions.advise_random_on_open = false</code> 来选择手动启用预读功能。</p>
+<p>这种设置对硬盘驱动器（HDD）或远程存储尤为有用，尤其在这些存储的延迟较高时。对于直连的 SSD，预读对性能的影响可能不明显。</p>
 <hr>
-<h2 id="Flush-Compaction-Merge"><a href="#Flush-Compaction-Merge" class="headerlink" title="Flush &amp; Compaction &amp; Merge"></a>Flush &amp; Compaction &amp; Merge</h2><h3 id="Leveled-Compaction"><a href="#Leveled-Compaction" class="headerlink" title="Leveled Compaction"></a>Leveled Compaction</h3><p>大致的 compaction 流程大致为：</p>
-<ol>
-<li>找到 score 最高的 level；</li>
-<li>根据一定策略从 level 中选择一个 sst 文件进行 compact，L0 的各个 sst 文件之间 key range 【minkey， maxkey】 有重叠，所以可能一次选取多个；</li>
-<li>获取 sst 文件的 minkey 和 maxkey;</li>
-<li>从 level + 1 中选取出于 (minkey, maxkey) 用重叠的 sst 文件，有重叠的文件则把文件与 level 中的文件进行合并（merge - sort）作为目标文件，没有重叠文件则把原始文件作为目标文件；</li>
-<li>对目标文件进行压缩后放入 level + 1 中。</li>
-</ol>
-<p><strong>L0 subcompaction</strong></p>
-<p>参数 maxbackgroundcompactions 大于 1 时，RocksDB 会进行并行 Compact，但 L0 到 L1 层的 Compaction 任务不能进行并行，这会约束整体 compaction 速度。用户可以设置 max_subcompactions 参数大于 1，RocksDB 如上图一样尝试把一个文件拆为多个 sub，然后启动多个线程执行 sub-compact。<br><img src="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p><strong>Compaction的选择策略</strong></p>
-<ul>
-<li>当多个level都满足触发compaction的条件，rocksdb通过计算得分来选择先做哪一个level的compaction。</li>
-<li>对于非0 level，score &#x3D; 该level文件的总长度 &#x2F; 阈值。已经正在做compaction的文件不计入总长度中。<br>对于L0，score &#x3D; max{文件数量 &#x2F; level0_file_num_compaction_trigger， L0文件总长度 &#x2F; max_bytes_for_level_base} 并且 L0文件数量 &gt; level0_file_num_compaction_trigger。<br>得分最高的level有限做compaction。</li>
-</ul>
-<p><strong>Compaction触发阈值</strong><br>每一层的compaction阈值设置策略由level_compaction_dynamic_level_bytes来决定。</p>
-<p>当 level_compaction_dynamic_level_bytes 为 false：<br>L1 触发阈值：max_bytes_for_level_base<br>下面的level触发阈值通过公式计算：Target_Size(Ln+1) &#x3D; Target_Size(Ln) * max_bytes_for_level_multiplier * max_bytes_for_level_multiplier_additional[n]. max_bytes_for_level_multiplier_additional<br>例如：<br>max_bytes_for_level_base &#x3D; 16384<br>max_bytes_for_level_multiplier &#x3D; 10<br>max_bytes_for_level_multiplier_additional &#x3D; 1<br>那么每个level的触发阈值为 L1, L2, L3 and L4 分别为 16384, 163840, 1638400, and 16384000</p>
-<p>当 level_compaction_dynamic_level_bytes 为 true：<br>最后一个level的文件长度总是固定的。<br>上面level触发阈值通过公式计算：Target_Size(Ln-1) &#x3D; Target_Size(Ln) &#x2F; max_bytes_for_level_multiplier<br>如果计算得到的值小于 max_bytes_for_level_base &#x2F; max_bytes_for_level_multiplier， 那么该level将维持为空，L0做compaction时将直接merge到第一个有合法阈值的level上。<br>例如：<br>max_bytes_for_level_base &#x3D; 1G<br>num_levels &#x3D; 6<br>level 6 size &#x3D; 276G<br>那么从L1到L6的触发阈值分别为：0， 0， 0.276G， 2.76G， 27.6G，276G。</p>
-<p>这样分配，保证了稳定的LSM-tree结构。并且有90%的数据存储在最后一层，9%的数据保存在倒数第二层<br><img src="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" class="lazyload" data-srcset="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h3><p>merge operator描述了原子性的在rocksdb读取修改写入操作，<strong>如果用户操作Rocksdb存在获取、修改并且再写入</strong>，那么就需要用户来保证它的原子性，merge operator可以解决这个问题。</p>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><p>merge operator描述了原子性的在rocksdb读取修改写入操作，<strong>如果用户操作Rocksdb存在获取、修改并且再写入</strong>，那么就需要用户来保证它的原子性，merge operator可以解决这个问题。</p>
 <ul>
 <li>将读-修改-写的语义封装到一个简单的抽象接口中。</li>
 <li>允许用户避免因重复Get()调用而产生额外成本。</li>
@@ -2774,59 +2722,122 @@
 <p>当调用DB::Put()和DB:Merge()接口时, 并不需要立刻计算最后的结果. RocksDB将计算的动作延后触发, 例如在下一次用户调用Get, 或者RocksDB决定做Compaction时. 所以, 当merge的动作真正开始做的时候, 可能积压(stack)了多个操作数需要处理. 这种情况就需要MergeOperator::FullMerge来对existing_value和一个操作数序列进行计算, 得到最终的值.</p>
 <h4 id="PartialMerge和Stacking"><a href="#PartialMerge和Stacking" class="headerlink" title="PartialMerge和Stacking"></a>PartialMerge和Stacking</h4><p>有时候, 在调用FullMerge之前, 可以先对某些merge操作数进行合并处理, 而不是将它们保存起来, 这就是PartialMerge的作用: 将两个操作数合并为一个, 减少FullMerge的工作量.<br>当遇到两个merge操作数时, RocksDB总是先会尝试调用用户的PartialMerge方法来做合并, 如果PartialMerge返回false才会保存操作数. 当遇到Put&#x2F;Delete操作, 就会调用FullMerge将已存在的值和操作数序列传入, 计算出最终的值.</p>
 <hr>
+<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><p>Leveled Compaction 流程大致为：</p>
+<ol>
+<li>找到 score 最高的 level</li>
+<li>根据一定策略从 level 中选择一个 sst 文件进行 compact，L0 的各个 sst 文件之间 key 有重叠，所以可能一次选取多个</li>
+<li>获取 sst 文件的 minkey 和 maxkey</li>
+<li>从 level + 1 中选取出于 (minkey, maxkey) 有重叠的 sst 文件，与 level 中的文件进行 <code>merge - sort</code> 作为目标文件，没有重叠文件则把原始文件作为目标文件</li>
+<li>对目标文件进行压缩后放入 level + 1 中</li>
+</ol>
+<p><strong>L0 subcompaction</strong></p>
+<p>参数 maxbackgroundcompactions 大于 1 时，RocksDB 会进行并行 Compact，但 L0 到 L1 层的 Compaction 任务不能进行并行，这会约束整体 compaction 速度。可以设置 max_subcompactions 参数大于 1，尝试把一个文件拆为多个 sub，启动多个线程执行 sub-compact。<br><img src="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>Compaction的选择策略</strong></p>
+<p>当多个level都满足触发compaction的条件，rocksdb通过计算得分来选择先做哪一个level的compaction。</p>
+<ul>
+<li>对于非0 level，score &#x3D; <code>该level文件的总长度 / 阈值</code>。已经正在做compaction的文件不计入总长度中。</li>
+<li>对于L0，score &#x3D; <code>max&#123;文件数量 / level0_file_num_compaction_trigger， L0文件总长度 / max_bytes_for_level_base&#125;</code> 并且 <code>L0文件数量 &gt; level0_file_num_compaction_trigger</code>。</li>
+</ul>
+<p><strong>Compaction触发阈值</strong></p>
+<p>每一层的compaction阈值设置策略由 <code>level_compaction_dynamic_level_bytes</code> 来决定。</p>
+<p>当 level_compaction_dynamic_level_bytes 为 false：</p>
+<ul>
+<li>L1 触发阈值：max_bytes_for_level_base</li>
+<li>下面的level触发阈值通过公式计算：Target_Size(Ln+1) &#x3D; Target_Size(Ln) * max_bytes_for_level_multiplier * max_bytes_for_level_multiplier_additional[n].max_bytes_for_level_multiplier_additional</li>
+</ul>
+<blockquote>
+<p>max_bytes_for_level_base &#x3D; 16384<br>max_bytes_for_level_multiplier &#x3D; 10<br>max_bytes_for_level_multiplier_additional &#x3D; 1<br>那么每个level的触发阈值为 L1, L2, L3 and L4 分别为 16384, 163840, 1638400 和 16384000</p>
+</blockquote>
+<p>当 level_compaction_dynamic_level_bytes 为 true：</p>
+<ul>
+<li>最后一个level的文件长度总是固定的。</li>
+<li>上面level触发阈值通过公式计算：Target_Size(Ln-1) &#x3D; Target_Size(Ln) &#x2F; max_bytes_for_level_multiplier。如果计算得到的值小于 max_bytes_for_level_base &#x2F; max_bytes_for_level_multiplier， 那么该level将维持为空，L0做compaction时将直接merge到第一个有合法阈值的level上。</li>
+</ul>
+<blockquote>
+<p>max_bytes_for_level_base &#x3D; 1G<br>num_levels &#x3D; 6<br>level 6 size &#x3D; 276G<br>那么从L1到L6的触发阈值分别为：0， 0， 0.276G， 2.76G， 27.6G，276G。<br>这样分配保证了稳定的 LSM-tree 结构。并且有 90% 的数据在最后一层，9%的数据在倒数第二层<br><img src="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" class="lazyload" data-srcset="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<hr>
+<h2 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h2><p>blob_db参考了WiscKey的思想，设计的kv存储分离，可以有效的减小写放大。<br>LSM树里面只存储key和value的地址，这样后台线程compact的时候可以少读写很多数据。<br>rocksdb里面增加一种类型：kTypeBlobIndex 表示value是否blob_db的地址。</p>
+<h3 id="写流程"><a href="#写流程" class="headerlink" title="写流程"></a>写流程</h3><p>首先判断value大小是否超过配置，超过了就写blob_db，然后在把offset和文件id做为value写入lsm树。</p>
+<p>否则就是正常的rocksdb写入。如果设置了db最大size，并且磁盘空间超过限制了，就会淘汰删除最老的blob文件。</p>
+<p>blob文件格式：<br>head结构<br>|—-|—-|—-|-|-|——–|———|<br>magic version cf_id flag expiration_start expiration_end<br>foot结构<br>|—-|——–|——–|———|—-|<br>magic count expiration_start expiration_end crc</p>
+<p>和sst文件一样，blob文件写完以后，不会被更改，只能被删除。<br>每个blob文件都有size限制，超过这个限制就会和wal一样，重新打开一个blob文件写入。<br>每个blob文件没有类似rocksdb那样的level层级。</p>
+<h3 id="读流程-1"><a href="#读流程-1" class="headerlink" title="读流程"></a>读流程</h3><p>主要的流程还是和普通的db一样，增加GetImplOptions里面is_blob_index选项。<br>BlobDBOptions选项里面min_blob_size控制多大的value存储在blob_db中，小于min_blob_size，还是和原来一样，存储在lsm树。<br>根据返回的value类型判断，如果是kTypeBlobIndex，那么就需要再从blob_db获取真正的value，可以看到比原来多了一次读。<br>先需要解码lsm树里面获取的value,找到对应的blob_db里面的文件和offset,然后再获取真正的数据。</p>
+<h3 id="GC流程"><a href="#GC流程" class="headerlink" title="GC流程"></a>GC流程</h3><p>每个blob文件或者会有几个对应的sst文件，或者对应几个memtable。<br>只有blob文件没有关联的sst文件并且blob文件的seq比flush_seq大，才满足被gc删除条件。<br>后台线程会周期性的删除无用的blob文件。<br>Flush memtable的时候会跟进value类型判断，如果valuekTypeBlobIndex，则会更新文件对应的最早的blob文件。<br>Flush完成以后会调用blob的回调函数，建立新的sst文件和blob文件的对应关系。<br>Compact完成以后也会调用blob的回调函数，老的sst文件和blob文件映射关系解除，增加新的sst文件和blob文件的映射关系。</p>
+<hr>
+<h2 id="RocksDB-Memory"><a href="#RocksDB-Memory" class="headerlink" title="RocksDB Memory"></a>RocksDB Memory</h2><p>RocksDB的内存大致有如下四个区：</p>
+<ul>
+<li>Block Cache</li>
+<li>Indexes and bloom filters</li>
+<li>Memtables</li>
+<li>Blocked pinned by iterators</li>
+</ul>
+<h3 id="Block-Cache"><a href="#Block-Cache" class="headerlink" title="Block Cache"></a>Block Cache</h3><p>在内存中缓存数据用于读取。一个Cache对象可以在同一个进程中被多个 DB 实例共享，从而允许用户控制整个缓存容量。Block Cache 存储未压缩的块，用户可以选择设置第二个 Block Cache 存储压缩块。先读取未压缩的块，再读取压缩的块。如果使用Direct-IO，压缩块缓存可以替代 Page cache。</p>
+<p>RocksDB 中有两种缓存实现，分别是 LRUCache 和 ClockCache。两种类型的缓存都被分片以减轻锁争用。默认每个缓存将被分片为最多 64 个分片，每个分片的容量不低于 512k 字节。</p>
+<h3 id="Indexes-and-bloom-filters"><a href="#Indexes-and-bloom-filters" class="headerlink" title="Indexes and bloom filters"></a>Indexes and bloom filters</h3><p>Index 由 key、offset 和 size 三部分构成，通常仅索引每个 Block 中的第一个 key（或者是一个代表性的 key）。当 Block Cache 增大 Block Size 时，block 个数必会减小，index 个数也会随之降低，如果减小 key size，index 占用内存空间的量也会随之降低。</p>
+<p>filter是 bloom filter 的实现，如果缩小 bloom 占用的空间，可以设置 <code>options.optimize_filters_for_hits = true</code>，则最后一个 level 的 filter 会被关闭，bloom 占用率只会用到原来的 10% 。</p>
+<p>默认情况下 index 和 filter block 与 block cache 是独立的，用户不能设定二者的内存空间使用量，但为了控制 RocksDB 的内存空间使用量，可以设置 <code>cache_index_and_filter_blocks = true</code>，将 index &amp; filter 存入 block cache。</p>
+<p>需要注意的是，index 与 filter 一般访问频次比 data 高，所以把他们放到一起会导致内存空间与 cpu 资源竞争，进而导致 cache 性能抖动厉害。有两个优化方式：</p>
+<ul>
+<li><code>cache_index_and_filter_blocks_with_high_priority = true</code> 和 <code>high_pri_pool_ratio = 0.8</code>，会把 LRU Cache 划分为高低优先级的两个区域，data 放在 low 区，index 和 filter 放在 high 区，如果高区占用的内存空间超过了 80%，则会侵占 low 区的尾部数据空间。</li>
+<li><code>pin_l0_filter_and_index_blocks_in_cache</code> 设为 true，把 level0 的 index 以及 filter block 放到 Block Cache 中，因为 l0 访问频次最高，一般内存容量不大，占用不了多大内存空间。</li>
+</ul>
+<p>如果 <code>cache_index_and_filter_blocks = false</code>（默认值），index&#x2F;filter 个数就会受 <code>max_open_files</code> 影响，官方建议把这个选项设置为 -1，以方便 RocksDB 加载所有的 index 和 filter 文件，最大化程序性能。</p>
+<h3 id="Memory-pool"><a href="#Memory-pool" class="headerlink" title="Memory pool"></a>Memory pool</h3><p>不管 RocksDB 有多少 column family，一个 DB 只有一个 WriteController，一旦 DB 中一个 column family 发生堵塞，那么就会阻塞其他 column family 的写。RocksDB 写入时间长了以后，可能会不定时出现较大的写毛刺，可能有两个地方导致 RocksDB 会出现较大的写延时：</p>
+<ol>
+<li>获取 mutex 时可能出现几十毫秒延迟：因为 flush&#x2F;compact 线程与读写线程竞争导致的，可以通过调整线程数量降低毛刺时间。</li>
+<li>数据写入 memtable 时候可能出现几百毫秒延时：解决方法一就是使用大的 page cache，禁用系统 swap 以及配置 min_free_kbytes、dirty_ratio、dirty_background_ratio 等参数来调整系统的内存回收策略，更基础的方法是使用内存池。</li>
+</ol>
+<p>采用内存池时，memtable 的内存分配和回收流程图如下：<br><img src="https://alexstocks.github.io/pic/rocksdb_mempool.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_mempool.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<hr>
 <h2 id="磁盘文件"><a href="#磁盘文件" class="headerlink" title="磁盘文件"></a>磁盘文件</h2><p>RocksDB 磁盘上的数据种类：</p>
 <ul>
-<li>db的操作日志</li>
+<li>DB 的操作日志</li>
 <li>存储实际数据的 SSTable 文件</li>
-<li>DB的元信息 Manifest 文件</li>
-<li>记录当前正在使用的 Manifest 文件，它的内容就是当前的 manifest 文件名</li>
-<li>系统的运行日志，记录系统的运行信息或者错误日志。</li>
-<li>临时数据库文件，repair 时临时生成的。</li>
+<li>DB 的元信息 Manifest 文件</li>
+<li>记录当前正在使用的 Manifest 文件，它的内容就是当前的 Manifest 文件名</li>
+<li>系统的运行日志，记录系统的运行信息或者错误日志</li>
+<li>临时数据库文件，repair 时临时生成的</li>
 </ul>
 <p><img src="https://alexstocks.github.io/pic/leveldb_arch.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_arch.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h3 id="Write-Ahead-Log"><a href="#Write-Ahead-Log" class="headerlink" title="Write Ahead Log"></a>Write Ahead Log</h3><p><img src="https://alexstocks.github.io/pic/rocksdb_log_block_record.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_log_block_record.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>如上图，log 文件的逻辑单位是 Record，物理单位是 block，每个 Record 可以存在于一个 block 中，也可以占用多个 block。Record 的详细结构见上图文字部分，其 type 字段的意义见下图，如果某 KV 过长则可以用多 Record 存储。</p>
 <p><img src="https://alexstocks.github.io/pic/rocksdb_log_record.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_log_record.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h3 id="Manifest"><a href="#Manifest" class="headerlink" title="Manifest"></a>Manifest</h3><blockquote>
-<p>MANIFEST 是指在事务日志中跟踪RocksDB状态变化的系统<br>Manifest log 是指包含 RocksDB 状态快照&#x2F;编辑的单个日志文件<br>CURRENT 是指当前最新的mainfest log</p>
+<p><code>MANIFEST</code> 是指在事务日志中跟踪 RocksDB 状态变化的系统<br><code>Manifest-&lt;seq no&gt;</code> 是指包含 RocksDB 状态快照&#x2F;编辑的单个日志文件<br><code>CURRENT</code> 是指当前最新的 mainfest log</p>
 </blockquote>
+<p>RocksDB 是文件系统和存储介质无关的。文件系统操作不是原子操作，在系统故障时很容易出现不一致。即使打开了日志记录，文件系统也不能保证不干净重启时的一致性，POSIX 文件系统也不支持原子批处理操作。为了避免进程崩溃或机器宕机导致的数据丢失，RocksDB 需要将元信息数据持久化到磁盘，承担这个任务的就是 Manifest 文件，每当有新的Version产生都需要更新 Manifest。</p>
+<p><strong>Manifest 文件记录了 DB 状态变化的事务性日志，即所有改变 DB 状态的操作</strong>。任意时间存储引擎的状态都会保存为一个Version（即SST的集合），而每次对 Version 的修改都是一个VersionEdit，而最终这些 VersionEdit 就是组成 Manifest 文件的内容。在 Manifest 中的一次增量内容称作一个Block，Manifest Block 的详细结构如下图所示：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>RocksDB 进程 Crash 后 Reboot 的过程中，会首先读取 Manifest 文件在内存中重建 LSM 树，然后根据 WAL 日志文件恢复 Memtable 内容。</p>
+<p>下图是 leveldb 的 Manifest 文件结构，这个 Manifest 文件有以下文件内容：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="VersionSet"><a href="#VersionSet" class="headerlink" title="VersionSet"></a>VersionSet</h3><p>VersionSet 是 RocksDB 用于管理数据库版本和存储布局的核心结构。它包含了关于当前数据库版本的信息，以及该版本所包含的 SST 文件、ColumnFamily、memtable 等的状态信息。</p>
+<p>RocksDB 的 Version 表示一个版本的 metadata，其主要内容是 FileMetaData 指针的二维数组，分层记录了所有的SST文件信息。FileMetaData 用来维护一个文件的元信息，包括文件大小、文件编号、最大最小值、引用计数等信息，其中引用计数记录了被不同的 Version 引用的个数，保证被引用中的文件不会被删除。</p>
+<p>Version中还记录了触发 Compaction 相关的状态信息，这些信息会在读写请求或 Compaction 过程中被更新。在 CompactMemTable 和 BackgroundCompaction 过程中会导致新文件的产生和旧文件的删除，每当这个时候都会有一个新的对应的 Version 生成，并插入 VersionSet 链表头部，LevelDB 用 VersionEdit 来表示这种相邻 Version 的差值。</p>
+<p><img src="https://alexstocks.github.io/pic/leveldb_versionset.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_versionset.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>VersionSet 结构如上图所示，它是一个 Version 构成的双向链表，这些 Version 按时间顺序先后产生，记录了当时的元信息，链表头指向当前最新的 Version，同时维护了每个 Version 的引用计数，被引用中的 Version 不会被删除，其对应的 SST 文件也因此得以保留，通过这种方式，使得LevelDB 可以在一个稳定的快照视图上访问文件。VersionSet 中除 Version 的双向链表外还会记录一些如 LogNumber、Sequence、下一个SST文件编号的状态信息。</p>
+<h3 id="MetaData-Restore"><a href="#MetaData-Restore" class="headerlink" title="MetaData Restore"></a>MetaData Restore</h3><p><img src="https://alexstocks.github.io/pic/leveldb_data_restore.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_data_restore.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>上图最上面的流程显示了恢复元信息的过程，也就是一次应用 VersionEdit 的过程，这个过程会有大量的临时 Version 产生，但这种方法显然太过于耗费资源，LevelDB 引入 <code>VersionSet::Builder</code> 来避免这种中间变量，方法是先将所有的 VersoinEdit 内容整理到 VersionBuilder 中，然后一次应用产生最终的 Version，如上图下部分所示。</p>
+<p>数据恢复的详细流程如下：</p>
 <ul>
-<li>RocksDB是文件系统和存储介质无关的。文件系统操作不是原子操作，在系统故障时很容易出现不一致。即使打开了日志记录，文件系统也不能保证不干净重启时的一致性。POSIX文件系统也不支持原子批处理操作。因此，不可能依靠嵌入在RocksDB数据存储文件中的元数据来重新启动时重建RocksDB的最后一致状态。</li>
-<li>RocksDB有一个内置的机制来克服POSIX文件系统的这些限制，通过使用Manifest日志文件中的Version Edit Records保存RocksDB状态更改的事务日志。MANIFEST用于在重启时将RocksDB恢复到最新的已知一致状态。</li>
+<li>依次读取Manifest文件中的每一个Block，将从文件中读出的 Record 反序列化为 VersionEdit；</li>
+<li>将每一个的 VersionEdit Apply 到 <code>VersionSet::Builder</code> 中，进而生成Version；</li>
+<li>计算compactionlevel、compactionscore；</li>
+<li>将新生成的 Version 挂到 VersionSet 中，并初始化 VersionSet 的 manifestfilenumber，nextfilenumber，lastsequence，lognumber，prevlognumber 信息；</li>
 </ul>
-<p>RocksDB 整个 LSM 树的信息需要常驻内存，以让 RocksDB 快速进行 kv 查找或者进行 compaction 任务，RocksDB 会用文件把这些信息固化下来，这个文件就是 Manifest 文件。RocksDB 称 Manifest 文件记录了 DB 状态变化的事务性日志，也就是说它记录了所有改变 DB 状态的操作。主要内容有事务性日志和数据库状态的变化。</p>
-<p>RocksDB 的函数 VersionSet::LogAndApply 是对 Manifest 文件的更新操作，所以可以通过定位这个函数出现的位置来跟踪 Manifest 的记录内容。</p>
-<p>Manifest 文件作为事务性日志文件，只要数据库有变化，Manifest都会记录。其内容 size 超过设定值后会被 VersionSet::WriteSnapShot 重写。</p>
-<p>RocksDB 进程 Crash 后 Reboot 的过程中，会首先读取 Manifest 文件在内存中重建 LSM 树，然后根据 WAL 日志文件恢复 memtable 内容。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_manifest.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>上图是 leveldb 的 Manifest 文件结构，这个 Manifest 文件有以下文件内容：</p>
-<p>coparator名、log编号、前一个log编号、下一个文件编号、上一个序列号，这些都是日志、sstable文件使用到的重要信息，这些字段不一定必然存在；</p>
-<h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><ul>
-<li>MANIFEST是RocksDB状态变化的事务日志。MANIFEST由- MANIFEST日志文件和指向最新MANIFEST文件(CURRENT)的指针组成。Manifest日志是正在滚动名为Manifest -(seq号)的日志文件。序列号总是在增加。CURRENT是一个特殊的文件，它指向最新的清单日志文件。</li>
-<li>在系统(重新)启动时，最新的manifest日志包含RocksDB的一致状态。RocksDB状态的任何后续更改都记录到manifest日志文件中。当manifest日志文件超过一定大小时，将使用RocksDB状态的快照创建一个新的manifest日志文件。更新最新的清单文件指针并同步文件系统。成功更新CURRENT文件后，将清除冗余清单日志。</li>
+<h3 id="SST-file"><a href="#SST-file" class="headerlink" title="SST file"></a>SST file</h3><p><img src="https://alexstocks.github.io/pic/leveldb_sst_file.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_file.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>SSTfile 结构如下，大致分为几个部分：</p>
+<ul>
+<li>Data Block 直接存储有序键值对，是 SSTfile 的数据实体</li>
+<li>Meta Block 存储 Filter 相关信息</li>
+<li>Meta Index Block 是 Meta Block 的索引，它只有一条记录</li>
+<li>Index Block 是 Key 到 Data Block 的索引，是提高查询效率的关键</li>
+<li>Footer 指向各个分区的位置和大小</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MANIFEST = &#123; CURRENT, MANIFEST-&lt;seq-no&gt;* &#125;</span><br><span class="line">CURRENT = File pointer to the latest manifest log</span><br><span class="line">MANIFEST-&lt;seq no&gt; = Contains snapshot of RocksDB state and subsequent modifications</span><br></pre></td></tr></table></figure>
-
-<h4 id="Version-Edit"><a href="#Version-Edit" class="headerlink" title="Version Edit"></a>Version Edit</h4><p>在RocksDB中任意时间存储引擎的状态都会保存为一个Version(也就是SST的集合)，而每次对Version的修改都是一个VersionEdit,而最终这些VersionEdit就是 组成manifest-log文件的内容。</p>
-<p>下面就是MANIFEST的log文件的基本构成:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">version-edit      = Any RocksDB state change</span><br><span class="line">version           = &#123; version-edit* &#125;</span><br><span class="line">manifest-log-file = &#123; version, version-edit* &#125;</span><br><span class="line">                  = &#123; version-edit* &#125;</span><br></pre></td></tr></table></figure>
-<p>关于 VersionSet 相关代码分析见<a href="https://yq.aliyun.com/articles/594728?spm=a2c4e.11157919.spm-cont-list.17.302c27aeDR3OyC">参考文档</a></p>
-<h3 id="SST-file"><a href="#SST-file" class="headerlink" title="SST file"></a>SST file</h3><p>SSTfile 结构如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;beginning_of_file&gt;</span><br><span class="line">[data block 1]</span><br><span class="line">[data block 2]</span><br><span class="line">…</span><br><span class="line">[data block N]</span><br><span class="line">[meta block 1: filter block]</span><br><span class="line">[meta block 2: stats block]</span><br><span class="line">[meta block 3: compression dictionary block]</span><br><span class="line">…</span><br><span class="line">[meta block K: future extended block]</span><br><span class="line">[metaindex block]</span><br><span class="line">[index block]</span><br><span class="line">[Footer]</span><br><span class="line">&lt;end_of_file&gt;</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://alexstocks.github.io/pic/leveldb_sst_file.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_file.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>SSTtable 大致分为几个部分：</p>
-<ul>
-<li>数据块 Data Block，直接存储有序键值对，是 SSTfile 的数据实体；</li>
-<li>Meta Block，存储Filter相关信息；</li>
-<li>Meta Index Block，对Meta Block的索引，它只有一条记录，key是meta index的名字（也就是Filter的名字），value为指向meta index的位置；</li>
-<li>Index Block，是对Data Block的索引，对于其中的每个记录，其key &gt;&#x3D;Data Block最后一条记录的key，同时&lt;其后Data Block的第一条记录的- key；value是指向data index的位置信息；</li>
-<li>Footer，指向各个分区的位置和大小。</li>
-</ul>
-<p>block结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>record 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>RocksDB 执行查询或修改时会引用当前 version，对该 version 下的 sst file 设置 reference count，Compact完成后要等 reference count 降为 0 后才能将文件真正的删除。</p>
+<p>Block结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>Record 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>Footer 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>RocksDB使用version来表示数据库的当前状态（即某一时刻sst文件的集合），每当增加或删除一个sst file时都会对Manifest增加一条version edit记录。当执行查询或修改时会引用当前version，同时会对该version下的sst file设置reference count。Compact完成后要等到sst file的reference count降为0后才能将文件真正的删除。</p>
 <h3 id="Memtable"><a href="#Memtable" class="headerlink" title="Memtable"></a>Memtable</h3><p>Memtable 中存储了一些 metadata 和 data，data 在 skiplist 中存储。metadata 数据如下：</p>
 <ul>
 <li>当前日志句柄；</li>
@@ -2835,18 +2846,6 @@
 <li>当前的状态信息以决定是否需要持久化 memtable 和合并 sstable；</li>
 <li>sstable 文件集合的信息。</li>
 </ul>
-<h3 id="VersionSet"><a href="#VersionSet" class="headerlink" title="VersionSet"></a>VersionSet</h3><p>RocksDB 的 Version 表示一个版本的 metadata，其主要内容是 FileMetaData 指针的二维数组，分层记录了所有的SST文件信息。</p>
-<p>FileMetaData 数据结构用来维护一个文件的元信息，包括文件大小，文件编号，最大最小值，引用计数等信息，其中引用计数记录了被不同的Version引用的个数，保证被引用中的文件不会被删除。</p>
-<p>Version中还记录了触发 Compaction 相关的状态信息，这些信息会在读写请求或 Compaction 过程中被更新。在 CompactMemTable 和 BackgroundCompaction 过程中会导致新文件的产生和旧文件的删除，每当这个时候都会有一个新的对应的Version生成，并插入 VersionSet 链表头部，LevelDB 用 VersionEdit 来表示这种相邻 Version 的差值。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_versionset.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_versionset.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>VersionSet 结构如上图所示，它是一个 Version 构成的双向链表，这些Version按时间顺序先后产生，记录了当时的元信息，链表头指向当前最新的Version，同时维护了每个Version的引用计数，被引用中的Version不会被删除，其对应的SST文件也因此得以保留，通过这种方式，使得LevelDB可以在一个稳定的快照视图上访问文件。</p>
-<p>VersionSet中除了Version的双向链表外还会记录一些如LogNumber，Sequence，下一个SST文件编号的状态信息。</p>
-<h3 id="MetaData-Restore"><a href="#MetaData-Restore" class="headerlink" title="MetaData Restore"></a>MetaData Restore</h3><p>为了避免进程崩溃或机器宕机导致的数据丢失，LevelDB 需要将元信息数据持久化到磁盘，承担这个任务的就是 Manifest 文件，每当有新的Version产生都需要更新 Manifest。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_version_manifest.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_version_manifest.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>新增数据正好对应于VersionEdit内容，也就是说Manifest文件记录的是一组VersionEdit值，在Manifest中的一次增量内容称作一个Block。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>Manifest Block 的详细结构如上图所示。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_data_restore.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_data_restore.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>上图最上面的流程显示了恢复元信息的过程，也就是一次应用 VersionEdit 的过程，这个过程会有大量的临时 Version 产生，但这种方法显然太过于耗费资源，LevelDB 引入 VersionSet::Builder 来避免这种中间变量，方法是先将所有的VersoinEdit内容整理到VersionBuilder中，然后一次应用产生最终的Version，详细流程如上图下边流程所示。</p>
-<p>数据恢复的详细流程如下：</p>
-<p>依次读取Manifest文件中的每一个Block， 将从文件中读出的Record反序列化为VersionEdit；<br>将每一个的VersionEdit Apply到VersionSet::Builder中，之后从VersionSet::Builder的信息中生成Version；<br>计算compactionlevel、compactionscore；<br>将新生成的Version挂到VersionSet中，并初始化VersionSet的manifestfilenumber， nextfilenumber，lastsequence，lognumber，prevlognumber_ 信息；</p>
 <h3 id="Snapshot-1"><a href="#Snapshot-1" class="headerlink" title="Snapshot"></a>Snapshot</h3><p>RocksDB 每次进行更新操作就会把更新内容写入 Manifest 文件，同时它会更新版本号。</p>
 <p>版本号是一个 8 字节的证书，每个 key 更新时，除了新数据被写入数据文件，同时记录下 RocksDB 的版本号。RocksDB 的 Snapshot 数据仅仅是逻辑数据，并没有对应的真实存在的物理数据，仅仅对应一下当前 RocksDB 的全局版本号而已，只要 Snapshot 存在，每个 key 对应版本号的数据在后面的更新、删除、合并时会一并存在，不会被删除，以保证数据一致性。</p>
 <h3 id="Checkpoints"><a href="#Checkpoints" class="headerlink" title="Checkpoints"></a>Checkpoints</h3><p>Checkpoints 是 RocksDB 提供的一种 snapshot，独立的存在一个单独的不同于 RocksDB 自身数据目录的目录中，既可以 ReadOnly 模式打开，也可以 Read-Write 模式打开。Checkpoints 被用于全量或者增量 Backup 机制中。</p>
@@ -2862,34 +2861,67 @@
 </ol>
 <p>sst 文件只有在 compact 时才会被删除，所以禁止删除就相当于禁止了 compaction。别的 RocksDB 在获取这些备份数据文件后会依据 Manifest 文件重构 LSM 结构的同时，也能恢复出 WAL 文件，进而重构出当时的 memtable 文件。</p>
 <p>在进行 Backup 的过程中，写操作是不会被阻塞的，所以 WAL 文件内容会在 backup 过程中发生改变。RocksDB 的 flushbeforebackup 选项用来控制在 backup 时是否也拷贝 WAL，其值为 true 则不拷贝。</p>
+<blockquote>
+<p>Snapshot 仅仅存在于逻辑概念上，其对应的实际物理文件可能正被 compaction 线程执行写任务；<br>Checkpoint 则是实际物理文件的一个镜像，或者说是一个硬链接，而出处于同样的 Env 下（都是 RocksDB 数据文件格式）；<br>Backup 虽然也是物理数据的镜像，但是与原始数据处于不同的 Env 下（如 backup 可能在 HDFS 上）；</p>
+</blockquote>
 <hr>
 <h2 id="调优配置"><a href="#调优配置" class="headerlink" title="调优配置"></a>调优配置</h2><h3 id="如何保证数据快速写入RocksDb"><a href="#如何保证数据快速写入RocksDb" class="headerlink" title="如何保证数据快速写入RocksDb"></a>如何保证数据快速写入RocksDb</h3><ol>
 <li>使用单个写入线程并且有序插入</li>
 <li>将数百个键批量写入一批</li>
 <li>memtable底层数据结构使用vector</li>
 <li>确保<code>options.max_background_flushes</code>至少为4</li>
-<li>在插入数据之前，禁用自动压缩，将 options.level0_file_num_compaction_trigger、options.level0_slowdown_writes_trigger 和 options.level0_stop_writes_trigger 设置为非常大的值。 插入所有数据后，发出手动压缩。</li>
+<li>在插入数据之前，禁用自动压缩，将 options.level0_file_num_compaction_trigger、options.level0_slowdown_writes_trigger 和 options.level0_stop_writes_trigger 设置为非常大的值。插入所有数据后，发出手动压缩。如果调用了Options::PrepareForBulkLoad()，后面三个方法会被自动启用；</li>
+<li>可以通过 <code>SstFileWriter</code> 直接创建 SST 文件并添加到 RocksDB 中。但是它的键范围一定不能与数据库重叠。</li>
 </ol>
-<p>如果调用<code>Options::PrepareForBulkLoad()</code>3-5条将会自动开启，如果可以离线的方式插入数据到rocksdb，有一种更快的方法：您可以对数据进行排序，并行生成具有非重叠范围的 SST 文件并批量加载 SST 文件</p>
-<h3 id="如果将计算引擎k-v数据高效写入Rocksdb"><a href="#如果将计算引擎k-v数据高效写入Rocksdb" class="headerlink" title="如果将计算引擎k-v数据高效写入Rocksdb"></a>如果将计算引擎k-v数据高效写入Rocksdb</h3><p>可以通过<code>SstFileWriter</code>,它允许您直接创建 RocksDB SST 文件并将它们添加到 RocksDB 数据库中。但是，如果你要将SST文件添加到现有的RocksDB数据库中，那么它的键范围一定不能与数据库重叠。</p>
-<h3 id="WriteStall有哪些触发场景"><a href="#WriteStall有哪些触发场景" class="headerlink" title="WriteStall有哪些触发场景"></a>WriteStall有哪些触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
-<p><strong>memtable数量过多</strong></p>
+<h3 id="WriteStall触发场景"><a href="#WriteStall触发场景" class="headerlink" title="WriteStall触发场景"></a>WriteStall触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
+<p><strong>1. memtable数量过多</strong></p>
 <ul>
 <li>当memtable数量达到min-write-buffer-number-to-merge (默认值为1) 参数个时会触发flush，Flush慢主要由于磁盘性能问题引起</li>
 <li>当等待flush的memetable数量达到参数max-write-buffer-number时会完全停止写入。当max-write-buffer-number&gt;3且等待flush的memetable数量&gt;&#x3D;参数max-write-buffer-number-1时会降低写入速度。</li>
 <li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max-write-buffer-number、max_background_jobs 、write_buffer_size 进行缓解。</li>
 </ul>
-<p>L0<strong>数量过多</strong></p>
+<p><strong>2. L0数量过多</strong></p>
 <ul>
 <li>当L0 sst文件数达到level0_slowdown_writes_trigger后会触发write stall 降低写入速度，当达到level0_stop_writes_trigger则完全停止写入。</li>
 <li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max_background_jobs 、write_buffer_size、min-write-buffer-number-to-merge进行缓解。</li>
 </ul>
-<p><strong>待compact的数据量过多</strong></p>
+<p><strong>3. 待compact的数据量过多</strong></p>
 <ul>
 <li>当需要compact的文件数量达到soft_pending_compaction_byte参数值时会触发write stall，降低写入速度，当达到hard_pending_compaction_byte时会完全停止写入.</li>
 </ul>
 <hr>
-<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><p>1 如果机器崩溃后重启，则 RocksDB 能够恢复的数据是同步写【WriteOptions.sync&#x3D;true】调用 DB::SyncWAL() 之前的数据 或者已经被写入 L0 的 memtable 的数据都是安全的；<br>2 可以通过 GetIntProperty(cf_handle, “rocksdb.estimate-num-keys”) 获取一个 column family 中大概的 key 的个数；<br>3 可以通过 GetAggregatedIntProperty(“rocksdb.estimate-num-keys”, &amp;num_keys) 获取整个 RocksDB 中大概的 key 的总数，之所以只能获取一个大概数值是因为 RocksDB 的磁盘文件有重复 key，而且 compact 的时候会进行 key 的淘汰，所以无法精确获取；<br>4 Put()&#x2F;Write()&#x2F;Get()&#x2F;NewIterator() 这几个 API 都是线程安全的；<br>5 多个进程可以同时打开同一个 RocksDB 文件，但是其中只能有一个写进程，其他的都只能通过 DB::OpenForReadOnly() 对 RocksDB 进行只读访问；<br>6 当进程中还有线程在对 RocksDB 进行 读、写或者手工 compaction 的时候，不能强行关闭它；<br>7 RocksDB 本身不建议使用大 key，但是它支持的 key 的最大长度是 8MB，value 的最大长度是 3GB；<br>8 RocksDB 最佳实践：一个线程进行写，且以顺序方式写；以 batch 方式把数据写入 RocksDB；使用 vector memtable；确保 options.max_background_flushes 最少为 4；插入数据之前设置关闭自动 compact，把 options.level0_file_num_compaction_trigger&#x2F;options.level0_slowdown_writes_trigger&#x2F;options.level0_stop_writes_trigger 三个值放大，数据插入后再启动调用 compact 函数进行 compaction 操作。 如果调用了Options::PrepareForBulkLoad()，后面三个方法会被自动启用；<br>9 关闭 RocksDB 对象时，如果是通过 DestroyDB() 去关闭时，这个 RocksDB 还正被另一个进程访问，则会造成不可预料的后果；<br>10 可以通过 DBOptions::db_paths&#x2F;DBOptions::db_log_dir&#x2F;DBOptions::wal_dir 三个参数分别存储 RocksDB 的数据，这种情况下如果要释放 RocksDB 的数据可以通过 DestroyDB() 这个 API 去执行删除任务；<br>11 当 BackupOptions::backup_log_files 或者 flush_before_backup 的值为 true 的时候，如果程序调用 CreateNewBackup() 则 RocksDB 会创建 point-in-time snapshot，RocksDB进行数据备份的时候不会影响正常的读写逻辑；<br>12 RocksDB 启动之后不能修改 prefix extractor；<br>13 SstFileWriter API 可以用来创建 SST 文件，如果这些 SST 文件被添加到别的 RocksDB 数据库发生 key range 重叠，则会导致数据错乱；<br>14 编译 RocksDB 的 gcc 版本 最低是 4.7，推荐 4.8 以上；<br>15 单个文件系统如 ext3 或者 xfs 可以使用多个磁盘，然后让 RocksDB 在这个文件系统上运行进而使用多个磁盘；<br>16 使用多磁盘时，RAID 的 stripe size 不能小于 64kb，推荐使用1MB；<br>17 RocksDB 可以针对每个 SST 文件通过 ColumnFamilyOptions::bottommost_compression 使用不同的压缩的方法；<br>18 当多个 Handle 指向同一个 Column Family 时，其中一个线程通过 DropColumnFamily() 删除一个 CF 的时候，其引用计数会减一，直至为 0 时整个 CF 会被删除；<br>19 RocksDB 接受一个写请求的时候，可能因为 compact 会导致 RocksDB 多次读取数据文件进行数据合并操作；<br>20 RocksDB 不直接支持数据的复制，但是提供了 API GetUpdatesSince() 供用户调用以获取某个时间点以后更新的 kv；<br>21 Options 的 block_size 是指 block 的内存空间大小，与数据是否压缩无关；<br>22 options.prefixextractor 一旦启用，就无法继续使用 Prev() 和 SeekToLast() 两个 API，可以把 ReadOptions.totalorder_seek 设置为 true，以禁用 prefix iterating；<br>23 当 BlockBaseTableOptions::cacheindexandfilterblocks 的值为 true 时，在进行 Get() 调用的时候相应数据的 bloom filter 和 index block 会被放进 LRU cache 中，如果这个参数为 false 则只有 memtable 的 index 和 bloom filter 会被放进内存中；<br>24 当调用 Put() 或者 Write() 时参数 WriteOptions.sync 的值为 true，则本次写以前的所有 WriteOptions.disableWAL 为 false 的写的内容都会被固化到磁盘上；<br>25 禁用 WAL 时，DB::Flush() 只对单个 Column Family 的数据固化操作是原子的，对多个 Column Family 的数据操作则不是原子的，官方考虑将来会支持这个 feature；<br>26 当使用自定义的 comparators 或者 merge operators 时，ldb 工具就无法读取 sst 文件数据；<br>27 RocksDB 执行前台的 Get() 和 Write() 任务遇到错误时，它会返回 rocksdb::IOError 具体值；<br>28 RocksDB 执行后台任务遇到错误时 且 options.paranoid_checks 值为 true，则 RocksDB 会自动进入只读模式；<br>29 RocksDB 一个线程执行 compact 的时候，这个任务是不可取消的；<br>30 RocksDB 一个线程执行 compact 任务的时候，可以在另一个线程调用 CancelAllBackgroundWork(db, true) 以中断正在执行的 compact 任务；<br>31 当多个进程打开一个 RocksDB 时，如果指定的 compact 方式不一样，则后面的进程会打开失败；<br>32 Column Family 使用场景：(1) 不同的 Column Family 可以使用不同的 setting&#x2F;comparators&#x2F;compression types&#x2F;merge operators&#x2F;compaction filters；(2) 对数据进行逻辑隔离，方便分别删除；(3) 一个 Column Family 存储 metadata，另一个存储 data；<br>33 使用一个 RocksDB 就是使用一个物理存储系统，使用一个 Column Family 则是使用一个逻辑存储系统，二者主要区别体现在 数据备份、原子写以及写性能表现上。DB 是数据备份和复制以及 checkpoint 的基本单位，但是 Column Family 则利用 BatchWrite，因为这个操作是可以跨 Column Family 的，而且多个 Column Family 可以共享同一个 WAL，多个 DB 则无法做到这一点；<br>34 RocksDB 不支持多列；<br>35 RocksDB 的读并不是无锁的，有如下情况：(1) 访问 sharded block cache (2) 如果 table cache options.maxopenfiles 不等于 -1 (3) 如果 flush 或者 compaction 刚刚完成，RocksDB 此时会使用全局 mutex lock 以获取 LSM 树的最新 metadata (4) RocksDB 使用的内存分配器如 jemalloc 有时也会加锁，这四种情况总体很少发生，总体可以认为读是无锁的；<br>36 如果想高效的对所有数据进行 iterate，则可以创建 snapshot 然后再遍历；<br>37 如果一个 key space range (minkey, maxkey) 很大，则使用 Column Family 对其进行 sharding，如果这个 range 不大则不要单独使用一个 Column Family；<br>38 RocksDB 没有进行 compaction 的时候，可以通过 rocksdb.estimate-live-data-size 可以估算 RocksDB 使用的磁盘空间；<br>39 Snapshot 仅仅存在于逻辑概念上，其对应的实际物理文件可能正被 compaction 线程执行写任务；Checkpoint 则是实际物理文件的一个镜像，或者说是一个硬链接，而出处于同样的 Env 下【都是 RocksDB 数据文件格式】；而 backup 虽然也是物理数据的镜像，但是与原始数据处于不同的 Env 下【如 backup 可能在 HDFS 上】；<br>40 推荐使用压缩算法 LZ4，Snappy 次之，压缩之后如果为了更好的压缩效果可以使用 Zlib；<br>41 即使没有被标记为删除的 key，也没有数据过期，RocksDB 仍然会执行 compaction，以提高读性能；<br>42 RocksDB 的 key 和 value 是存在一起的，遍历一个 key 的时候，RocksDB 已经把其 value 读入 cache 中；<br>43 对于一个离线 DB 可以通过 sstdump –showproperties –command&#x3D;none 命令获取特定 sst 文件的 index &amp; filter 的 size，对于正在运行的 DB 可以通过读取 DB 的属性 kAggregatedTableProperties 或者调用 DB::GetPropertiesOfAllTables() 获取 DB 的 index &amp; filter 的 size。</p>
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><ul>
+<li>如果机器崩溃后重启，则 RocksDB 能够恢复的数据是同步写【WriteOptions.sync&#x3D;true】调用 DB::SyncWAL() 之前的数据 或者已经被写入 L0 的 memtable 的数据都是安全的；</li>
+<li>可以通过 GetIntProperty(cf_handle, “rocksdb.estimate-num-keys”) 获取一个 column family 中大概的 key 的个数；</li>
+<li>可以通过 GetAggregatedIntProperty(“rocksdb.estimate-num-keys”, &amp;num_keys) 获取整个 RocksDB 中大概的 key 的总数，之所以只能获取一个大概数值是因为 RocksDB 的磁盘文件有重复 key，而且 compact 的时候会进行 key 的淘汰，所以无法精确获取；</li>
+<li>当进程中还有线程在对 RocksDB 进行 读、写或者手工 compaction 的时候，不能强行关闭它；</li>
+<li>关闭 RocksDB 对象时，如果是通过 DestroyDB() 去关闭时，这个 RocksDB 还正被另一个进程访问，则会造成不可预料的后果；</li>
+<li>当 BackupOptions::backup_log_files 或者 flush_before_backup 的值为 true 的时候，如果程序调用 CreateNewBackup() 则 RocksDB 会创建 point-in-time snapshot，RocksDB进行数据备份的时候不会影响正常的读写逻辑；</li>
+<li>RocksDB 启动之后不能修改 prefix extractor；</li>
+<li>SstFileWriter API 可以用来创建 SST 文件，如果这些 SST 文件被添加到别的 RocksDB 数据库发生 key range 重叠，则会导致数据错乱；</li>
+<li>使用多磁盘时，RAID 的 stripe size 不能小于 64kb，推荐使用1MB；</li>
+<li>RocksDB 可以针对每个 SST 文件通过 ColumnFamilyOptions::bottommost_compression 使用不同的压缩的方法；</li>
+<li>当多个 Handle 指向同一个 Column Family 时，其中一个线程通过 DropColumnFamily() 删除一个 CF 的时候，其引用计数会减一，直至为 0 时整个 CF 会被删除；</li>
+<li>RocksDB 接受一个写请求的时候，可能因为 compact 会导致 RocksDB 多次读取数据文件进行数据合并操作；</li>
+<li>RocksDB 不直接支持数据的复制，但是提供了 API GetUpdatesSince() 供用户调用以获取某个时间点以后更新的 kv；</li>
+<li>options.prefixextractor 一旦启用，就无法继续使用 Prev() 和 SeekToLast() 两个 API，可以把 ReadOptions.totalorder_seek 设置为 true，以禁用 prefix iterating；</li>
+<li>当 BlockBaseTableOptions::cache_index_and_filter_blocks 的值为 true 时，在进行 Get() 调用的时候相应数据的 bloom filter 和 index block 会被放进 LRU cache 中，如果这个参数为 false 则只有 memtable 的 index 和 bloom filter 会被放进内存中；</li>
+<li>当调用 Put() 或者 Write() 时参数 WriteOptions.sync 的值为 true，则本次写以前的所有 WriteOptions.disableWAL 为 false 的写的内容都会被固化到磁盘上；</li>
+<li>禁用 WAL 时，DB::Flush() 只对单个 Column Family 的数据固化操作是原子的，对多个 Column Family 的数据操作则不是原子的，官方考虑将来会支持这个 feature；</li>
+<li>当使用自定义的 comparators 或者 merge operators 时，ldb 工具就无法读取 sst 文件数据；</li>
+<li>RocksDB 执行前台的 Get() 和 Write() 任务遇到错误时，它会返回 rocksdb::IOError 具体值；</li>
+<li>RocksDB 执行后台任务遇到错误时 且 options.paranoid_checks 值为 true，则 RocksDB 会自动进入只读模式；</li>
+<li>RocksDB 一个线程执行 compact 的时候，这个任务是不可取消的，可以在另一个线程调用 CancelAllBackgroundWork(db, true) 以中断正在执行的 compact 任务；</li>
+<li>当多个进程打开一个 RocksDB 时，如果指定的 compact 方式不一样，则后面的进程会打开失败；</li>
+<li>RocksDB 不支持多列；</li>
+<li>RocksDB 的读并不是无锁的，有如下情况：(1) 访问 sharded block cache (2) 如果 table cache options.maxopenfiles 不等于 -1 (3) 如果 flush 或者 compaction 刚刚完成，RocksDB 此时会使用全局 mutex lock 以获取 LSM 树的最新 metadata (4) RocksDB 使用的内存分配器如 jemalloc 有时也会加锁，这四种情况总体很少发生，总体可以认为读是无锁的；</li>
+<li>如果想高效的对所有数据进行 iterate，则可以创建 snapshot 然后再遍历；</li>
+<li>如果一个 key space range (minkey, maxkey) 很大，则使用 Column Family 对其进行 sharding，如果这个 range 不大则不要单独使用一个 Column Family；</li>
+<li>RocksDB 没有进行 compaction 的时候，可以通过 rocksdb.estimate-live-data-size 可以估算 RocksDB 使用的磁盘空间；</li>
+<li>即使没有被标记为删除的 key，也没有数据过期，RocksDB 仍然会执行 compaction，以提高读性能；</li>
+<li>RocksDB 的 key 和 value 是存在一起的，遍历一个 key 的时候，RocksDB 已经把其 value 读入 cache 中；</li>
+<li>对于一个离线 DB 可以通过 sstdump –showproperties –command&#x3D;none 命令获取特定 sst 文件的 index &amp; filter 的 size，对于正在运行的 DB 可以通过读取 DB 的属性 kAggregatedTableProperties 或者调用 DB::GetPropertiesOfAllTables() 获取 DB 的 index &amp; filter 的 size。</li>
+</ul>
 ]]></content>
       <categories>
         <category>Storage</category>

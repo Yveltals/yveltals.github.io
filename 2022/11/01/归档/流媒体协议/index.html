@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2022-11-01T02:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-14T15:59:20.958Z">
+<meta property="article:modified_time" content="2025-03-06T08:41:12.394Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
@@ -1758,7 +1758,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1739811708660),
+    lastupdate: new Date(1741250486556),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2594,7 +2594,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>Timestamp  <code>4B</code>：包含了当前消息的 timestamp，大端格式</li>
 <li>StreamID  <code>3B</code>：消息归属消息流 ID 标志位，大端格式</li>
 </ul>
-<h3 id="RTMP-Chunk"><a href="#RTMP-Chunk" class="headerlink" title="RTMP Chunk"></a>RTMP Chunk</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="RTMP-Chunk"><a href="#RTMP-Chunk" class="headerlink" title="RTMP Chunk"></a>RTMP Chunk</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>Basic Header</strong>：存放fmt和CSID，长度取决第一个字节的后6位</p>
 <ul>
 <li>0：Header占2字节，CSID从64开始，范围 $2^8$</li>
@@ -2606,7 +2606,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li><p>StreamID  <code>4B</code>：同一个流中的消息（除了第一个），可省略</p>
 </li>
 <li><p>MessageType  <code>1B</code>：同一个消息拆分成的chunk，消息类型相同可省略</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </li>
 <li><p>MessageLength  <code>3B</code>：同一个消息中chunk大小固定，可省略</p>
 </li>
@@ -2711,7 +2711,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <hr>
 <h2 id="FLV"><a href="#FLV" class="headerlink" title="FLV"></a>FLV</h2><p>FLV是基于流式的文件存储结构，可以随时将音视频数据写入文件末尾，且文件头不会因文件数据的大小而变化，所以不管是在录制时，还是进行回放时，FLV 相较于 MP4 等多媒体格式都更有优势</p>
 <p>与RTMP对比发现：<strong>FLV 文件就是由 “FLV Header + RTMP 数据” 构成的</strong></p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flv_%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/flv_%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/flv_%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/flv_%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p><strong>FLV Header</strong></p>
 <ul>
 <li>T：Type标识占1字节，其中两位表明是否包含音频或视频</li>
@@ -2737,7 +2737,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <hr>
 <h2 id="AAC编码"><a href="#AAC编码" class="headerlink" title="AAC编码"></a>AAC编码</h2><h3 id="ADTS格式"><a href="#ADTS格式" class="headerlink" title="ADTS格式"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_29028177/article/details/54694861">ADTS格式</a></h3><p>每一帧的ADTS的头文件都包含音频的采样率，声道，帧长度等信息</p>
 <blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ADTS.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/ADTS.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/ADTS.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/ADTS.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </blockquote>
 <ul>
 <li>syncword ：固定 <code>0xFFF</code>，代表一个ADTS帧的开始</li>
@@ -2775,7 +2775,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>VCL层是对核心算法引擎，宏块及片的语法级别的定义，输出编码完的数据 SODB</p>
 </li>
 <li><p><strong>NAL</strong>：网络抽象层，负责将VCL的数据组织打包，解决丢包、乱序  </p>
-<p>NAL层定义片级以上的语法级别（如SPS和PS，针对网络传输），同时支持独立片解码，保证起始码唯一<br><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_NALU.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_NALU.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>NAL层定义片级以上的语法级别（如SPS和PS，针对网络传输），同时支持独立片解码，保证起始码唯一<br><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_NALU.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_NALU.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </li>
 </ul>
 <h4 id="分层结构"><a href="#分层结构" class="headerlink" title="分层结构"></a>分层结构</h4><blockquote>
@@ -2800,9 +2800,9 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li><strong>宏块 Macroblock</strong>：宏块大小通常为16×16像素，分为I、B、P宏块；编码处理的基本单元，由多个块组成</li>
 </ul>
 <blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p>宏块中包含了宏块类型、预测类型、<a target="_blank" rel="noopener" href="https://www.freesion.com/article/46181181418/">Coded Block Pattern 编码的块模式</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/fc34235/article/details/79992789">Quantization Parameter 量化参数</a>、像素的亮度和色度数据集等等信息</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264%E5%AE%8F%E5%9D%97.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264%E5%AE%8F%E5%9D%97.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%AE%8F%E5%9D%97.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%AE%8F%E5%9D%97.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </blockquote>
 <h3 id="H264编码"><a href="#H264编码" class="headerlink" title="H264编码"></a>H264编码</h3><h4 id="编码器结构"><a href="#编码器结构" class="headerlink" title="编码器结构"></a>编码器结构</h4><p>一个编码器基本上都会有帧内预测、帧间预测、变换量化、熵编码以及滤波等几个部分。</p>
 <p>预测编码是指利用相邻像素的空间或时间相关性，用已传输的像素对当前正在编码的像素进行预测，然后对预测值与真实值的差-预测误差进行编码和传输，即帧内预测，帧间预测。</p>
@@ -2833,14 +2833,14 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </li>
 </ol>
 <h4 id="压缩方式"><a href="#压缩方式" class="headerlink" title="压缩方式"></a>压缩方式</h4><p><strong>1.<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41004932/article/details/118655700">帧内压缩</a>（I帧，IDR帧）</strong>：得到预测模式信息+残差值</p>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 <p><strong>2.<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41004932/article/details/118656842">帧间压缩</a>（P帧，B帧）</strong></p>
 <p>编码时运动估计：（通过宏块匹配）得到运动矢量+残差值</p>
 <p>解码时运动补偿：将预测的图像与残差值相加</p>
 <p><strong>3.无损压缩</strong></p>
 <p>DCT变换、CAVLC压缩（MPEG2）、CABAC压缩（H.264）</p>
 <h4 id="AnnexB格式"><a href="#AnnexB格式" class="headerlink" title="AnnexB格式"></a>AnnexB格式</h4><h5 id="AnnexB流结构"><a href="#AnnexB流结构" class="headerlink" title="AnnexB流结构"></a>AnnexB流结构</h5><blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </blockquote>
 <p><strong>Startcode：</strong></p>
 <ul>
@@ -2877,7 +2877,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <li>条带RBSP尾部：NALU类型为条带（<code>1</code>-<code>5</code>）时<br>默认仍情况1，仅当①entropy_coding_mode_flag值为1（当前采用的熵编码为CABAC）且②more_rbsp_trailing_data()返回true（RBSP中有更多数据时），添加一&#x2F;多个<code>0x0000</code></li>
 </ol>
 <h4 id="AVCC格式"><a href="#AVCC格式" class="headerlink" title="AVCC格式"></a>AVCC格式</h4><h5 id="AVCC流结构"><a href="#AVCC流结构" class="headerlink" title="AVCC流结构"></a>AVCC流结构</h5><blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </blockquote>
 <ul>
 <li>视频开始有<code>extradata</code>，包含SPS、PPS和NALU前缀长度</li>
@@ -2902,7 +2902,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </ol>
 <h4 id="RTP格式"><a href="#RTP格式" class="headerlink" title="RTP格式"></a>RTP格式</h4><p>RTP封装&#x3D; 12字节固定RTP包头 + 载荷（NALU）</p>
 <h5 id="RTP包头"><a href="#RTP包头" class="headerlink" title="RTP包头"></a>RTP包头</h5><blockquote>
-<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_RTP%E5%8C%85%E5%A4%B4.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_RTP%E5%8C%85%E5%A4%B4.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_RTP%E5%8C%85%E5%A4%B4.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_RTP%E5%8C%85%E5%A4%B4.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
 </blockquote>
 <ul>
 <li>V：RTP协议的版本号为2</li>
@@ -3008,10 +3008,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-02-14T23:59:20+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-03-06T16:41:12+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Feb 14, 2025</p>
+    <p>更新于：Mar 6, 2025</p>
   </a>
 </div>
 
@@ -3537,7 +3537,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3818,7 +3818,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2022/11/01/归档/流媒体协议/","name":"流媒体协议"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"流媒体协议","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2022/11/01/%E5%BD%92%E6%A1%A3/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2022/11/01/%E5%BD%92%E6%A1%A3/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/","wordCount":0,"datePublished":"2022-11-01T02:00:00.000Z","dateModified":"2025-02-14T15:59:20.958Z","articleSection":"八股","image":{"@type":"ImageObject","url":"/img/音视频.jpg","width":1024,"height":768}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2022/11/01/归档/流媒体协议/","name":"流媒体协议"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"流媒体协议","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2022/11/01/%E5%BD%92%E6%A1%A3/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2022/11/01/%E5%BD%92%E6%A1%A3/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/","wordCount":0,"datePublished":"2022-11-01T02:00:00.000Z","dateModified":"2025-03-06T08:41:12.394Z","articleSection":"八股","image":{"@type":"ImageObject","url":"/img/音视频.jpg","width":1024,"height":768}}]</script>
 
 
 

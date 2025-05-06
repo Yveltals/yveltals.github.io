@@ -44,7 +44,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2025-02-01T16:00:22.000Z">
-<meta property="article:modified_time" content="2025-02-14T15:59:20.958Z">
+<meta property="article:modified_time" content="2025-05-06T17:14:37.309Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
@@ -1758,7 +1758,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1741250486556),
+    lastupdate: new Date(1746551688966),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2523,6 +2523,21 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <h3 id="Protobuf"><a href="#Protobuf" class="headerlink" title="Protobuf"></a>Protobuf</h3><p>压缩后的数据包更小，但序列化与反序列化都比较重度，生成的代码量较大，CPU占用较高，内存占用较多。语言支持更广，解决方案更广泛、成熟</p>
 <p>场景：适用于需要高效传输大量数据的分布式应用，如网络通信和数据存储</p>
 <p>技巧：消息的字段数量不超过15、正数使用uint而非int、尽量控制int32或int64型数据在0~127</p>
+<p>Proto 文件中定义字段的顺序与最终编码结果的字段顺序无关，两者有可能相同也可能不同。当消息被编码时，Protobuf 无法保证消息的顺序，消息的顺序可能随着版本或者不同的实现而变化。任何 Protobuf 的实现都应该保证字段以任意顺序编码的结果都能被读取。</p>
+<ul>
+<li>序列化后的消息字段顺序是不稳定的。</li>
+<li>对同一段字节流进行解码，不同实现或版本的 Protobuf 解码得到的结果不一定完全相同（bytes 层面）。只能保证相同版本相同实现的 Protobuf 对同一段字节流多次解码得到的结果相同。</li>
+<li>假设有一条消息foo，以下关系可能不成立：<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">foo.<span class="built_in">SerializeAsString</span>() == foo.<span class="built_in">SerializeAsString</span>()</span><br><span class="line"><span class="built_in">Hash</span>(foo.<span class="built_in">SerializeAsString</span>()) == <span class="built_in">Hash</span>(foo.<span class="built_in">SerializeAsString</span>())</span><br><span class="line"><span class="built_in">CRC</span>(foo.<span class="built_in">SerializeAsString</span>()) == <span class="built_in">CRC</span>(foo.<span class="built_in">SerializeAsString</span>())</span><br><span class="line"><span class="built_in">FingerPrint</span>(foo.<span class="built_in">SerializeAsString</span>()) == <span class="built_in">FingerPrint</span>(foo.<span class="built_in">SerializeAsString</span>())</span><br></pre></td></tr></table></figure></li>
+<li>假设有两条逻辑上相等消息，但是序列化之后的内容（bytes 层面）不相同，部分可能的原因有：<ul>
+<li>其中一条消息可能使用了较老版本的 protobuf，不能处理某些类型的字段，设为 unknwon。</li>
+<li>使用了不同语言实现的 Protobuf，并且以不同的顺序编码字段。</li>
+<li>消息中的字段使用了不稳定的算法进行序列化。</li>
+<li>某条消息中有 bytes 类型的字段，用于储存另一条消息使用 Protobuf 序列化的结果，而这个 bytes 使用了不同的 Protobuf 进行序列化。</li>
+<li>使用了新版本的 Protobuf，序列化实现不同。</li>
+<li>消息字段顺序不同。</li>
+</ul>
+</li>
+</ul>
 <hr>
 <h2 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h2><h3 id="GRPC"><a href="#GRPC" class="headerlink" title="GRPC"></a>GRPC</h3><p>gRPC是一种高性能 RPC 框架。使用Protocol Buffers作为二进制序列化，并使用HTTP&#x2F;2协议进行传输。gRPC基于服务的思想：定义一个服务，描述这个服务的方法以及入参出参，服务器端有这个服务的具体实现，客户端保有一个存根，提供与服务端相同的服务。</p>
 <ul>
@@ -2602,10 +2617,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-02-14T23:59:20+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-05-07T01:14:37+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：Feb 14, 2025</p>
+    <p>更新于：May 7, 2025</p>
   </a>
 </div>
 
@@ -3120,7 +3135,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 
 
   <script>
-  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp"];
   let index = 0;
   let IntervalParallax = null;
 
@@ -3401,7 +3416,7 @@ window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListener
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Other/","name":"Other"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2025/02/02/Other/Memo/","name":"Memo"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Memo","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2025/02/02/Other/Memo/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2025/02/02/Other/Memo/","wordCount":0,"datePublished":"2025-02-01T16:00:22.000Z","dateModified":"2025-02-14T15:59:20.958Z","articleSection":"Other","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://example.com/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://example.com/categories/Other/","name":"Other"}},{"@type":"ListItem","position":3,"item":{"@id":"http://example.com/2025/02/02/Other/Memo/","name":"Memo"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://example.com/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://example.com/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://example.com?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Memo","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2025/02/02/Other/Memo/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://example.com/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://example.com/2025/02/02/Other/Memo/","wordCount":0,"datePublished":"2025-02-01T16:00:22.000Z","dateModified":"2025-05-06T17:14:37.309Z","articleSection":"Other","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

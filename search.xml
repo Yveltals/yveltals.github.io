@@ -1080,7 +1080,7 @@
 </tr>
 </tbody></table>
 <h2 id="Linux命令"><a href="#Linux命令" class="headerlink" title="Linux命令"></a>Linux命令</h2><h3 id="网络与进程"><a href="#网络与进程" class="headerlink" title="网络与进程"></a>网络与进程</h3><ul>
-<li><code>netstat [选项]</code> 查看网络状态，<code>-i</code>网卡信息，<code>-anp | grep port</code>查看占用端口进程</li>
+<li><code>netstat -anp | grep 20501</code> 查看端口占用，<code>netstat -i</code> 网卡信息</li>
 <li><code>ipcs</code> 显示共享内存段、消息队列和信号量的信息</li>
 <li><code>ifconfig</code> 显示或设置网络设备，配置IP、MAC地址、启动网卡</li>
 <li><code>lsof</code> 查看文件被哪个进程修改<code>lsof tmp.txt</code>，查看端口占用 <code>lsof -i :8080</code></li>
@@ -1089,16 +1089,14 @@
 <li><code>route</code> 查看路由</li>
 <li><code>pgrep dummy</code> 查看进程号，<code>-l</code>显示进程名</li>
 <li><code>pkill dummy</code> Kill进程名，<code>-f</code>全匹配command line</li>
-<li><code>ps aux | grep -w &#39;hello&#39; | grep -v grep | awk &#39;&#123;print $2&#125;&#39; | xargs kill -9</code> Kill进程名的另一种方式</li>
+<li><code>ps aux | grep -w &#39;hello&#39; | grep -v grep | awk &#39;&#123;print $2&#125;&#39; | xargs kill -9</code></li>
+<li><code>cmd1 | xargs -I &#123;&#125; cmd2 &#123;&#125;</code> 将 cmd1 的每行输出作为 cmd2 的输入，<code>&#123;&#125;</code>仅作为占位符，换成如 <code>$</code> 均可</li>
 </ul>
-<h3 id="文件查找与操作"><a href="#文件查找与操作" class="headerlink" title="文件查找与操作"></a>文件查找与操作</h3><ul>
-<li><code>sed -i &quot;s/查找字段/替换字段/g&quot; src.txt</code></li>
-<li><code>head -n log.txt</code> 查看前 n 行</li>
-<li><code>tail -f log.txt</code> 查看尾行（实时刷新）</li>
-<li><code>which</code> 查找某一命令所在的路径,格式为 <code>which 命令</code> </li>
-<li><code>whereis</code> 命令与其类似,但是 <code>whereis</code> 还能展示命令帮助文档所在的路径</li>
-<li><code>find</code> 格式为 <code>find &#123;path&#125; -name &#123;xxx&#125;</code></li>
-<li><code>locate</code> 功能与 <code>find -name</code> 相同,find 是遍历了搜索路径下的每个文件,而 locate 是搜索<code>/var/lib/locatedb</code> 里的一个数据库,相当于散列查找。在使用 locate 命令之前,可先使用 <code>updatedb</code> 命令手动更新数据库。</li>
+<h3 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h3><ul>
+<li><code>sed -i &quot;s/查找字段/替换字段/g&quot; a.txt</code></li>
+<li><code>awk -i &#39;&#123;print $1&#125;&#39;</code> 空格分割，打印第一个。或 <code>awk -F &#39;,&#39; &#39;&#123;print $1&#125;&#39;</code> 指定 <code>,</code> 分割</li>
+<li><code>diff &lt;(sort a.txt) &lt;(sort b.txt)</code></li>
+<li><code>comm &lt;(sort a.txt) &lt;(sort b.txt)</code> 比较排序文件，展示三列分别为：只在第一个文件、只在第二个文件、两文件都出现的行</li>
 <li><code>headlink -f .</code> 查看当前路径</li>
 <li><code>zxvf xxx.tar.gz -C dst_dir/ &gt; /dev/null 2&gt;&amp;1</code> 解压缩</li>
 <li><code>mount</code>挂载<ul>
@@ -2137,7 +2135,7 @@
 </li>
 <li><p>移除现有的http方式的远程仓库 <code>git remote rm origin</code></p>
 </li>
-<li><p>重新添加成<a href="mailto:&#103;&#x69;&#x74;&#64;&#x67;&#x69;&#116;&#x68;&#x75;&#x62;&#46;&#x63;&#x6f;&#x6d;">&#103;&#x69;&#x74;&#64;&#x67;&#x69;&#116;&#x68;&#x75;&#x62;&#46;&#x63;&#x6f;&#x6d;</a>的方式并关联</p>
+<li><p>重新添加成<a href="mailto:&#x67;&#x69;&#x74;&#64;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#x6f;&#109;">&#x67;&#x69;&#x74;&#64;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#x6f;&#109;</a>的方式并关联</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin git@github.com:Yveltals/test.git</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h2 id="HTTPS-Auth-failed"><a href="#HTTPS-Auth-failed" class="headerlink" title="HTTPS Auth failed"></a>HTTPS Auth failed</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">remote: Support <span class="keyword">for</span> password authentication was removed on August 13, 2021. Please use a personal access token instead.</span><br><span class="line">remote: Please see https://*****-token-authentication-requirements-for-git-operations/ <span class="keyword">for</span> more information.</span><br><span class="line">fatal: Authentication failed <span class="keyword">for</span> <span class="string">&#x27;https://***/&#x27;</span></span><br></pre></td></tr></table></figure>

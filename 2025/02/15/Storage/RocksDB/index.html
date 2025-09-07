@@ -1,0 +1,3762 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/#5.8.0'>
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta name="Volantis" content="5.8.0">
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+  <link rel="canonical" href="http://blog.yveltals.top/2025/02/15/storage/rocksdb/"/>
+  <!-- 渲染优化 -->
+    <meta http-equiv='x-dns-prefetch-control' content='on' />
+      <link rel='dns-prefetch' href='https://unpkg.com'>
+      <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+  <meta content="telephone=no" name="format-detection">
+  <!-- import head_begin begin -->
+  <!-- import head_begin end -->
+  <!-- Custom Files headBegin begin-->
+  
+  <!-- Custom Files headBegin end-->
+  <!-- front-matter head_begin begin -->
+  <!-- front-matter head_begin end -->
+  <link rel="preload" href="/css/style.css" as="style">
+  <link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <!-- feed -->
+  <!-- 页面元数据 -->
+  <title>RocksDB - Hexo</title>
+  <meta name="keywords" content="null">
+  <meta desc name="description" content="N/A - John Doe - Hexo">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocksDB">
+<meta property="og:url" content="http://blog.yveltals.top/2025/02/15/Storage/RocksDB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="RocksDB内部数据组织方式介绍及性能压测   Basic OperationsIterator迭代器本身不会占用太多内存，但是迭代器最好保持较短的生存周期，为了确保某些资源能被释放，包括：  迭代器创建时的 memtables 和 SST 文件。即使某些 memtables 和 SST 文件在刷新或压缩后被删除，如果迭代器固定它们，它们仍然保留。 当前迭代位置的数据块。这些块将保存在内存中，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2025-02-15T06:20:04.000Z">
+<meta property="article:modified_time" content="2025-09-07T09:36:52.296Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Storage">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+  <style>
+    /* 首屏样式 */
+    #safearea {
+  display: none;
+}
+:root {
+  --color-site-body: #f4f4f4;
+  --color-site-bg: #f4f4f4;
+  --color-site-inner: #fff;
+  --color-site-footer: #666;
+  --color-card: #fff;
+  --color-text: #444;
+  --color-block: #f6f6f6;
+  --color-inlinecode: #c74f00;
+  --color-codeblock: #fff7ea;
+  --color-h1: #3a3a3a;
+  --color-h2: #3a3a3a;
+  --color-h3: #333;
+  --color-h4: #444;
+  --color-h5: #555;
+  --color-h6: #666;
+  --color-p: #444;
+  --color-list: #666;
+  --color-list-hl: #30ad91;
+  --color-meta: #888;
+  --color-read-bkg: #e0d8c8;
+  --color-read-post: #f8f1e2;
+  --color-copyright-bkg: #f5f5f5;
+}
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+*::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+*::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #3dd9b6;
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #ff5722;
+}
+html {
+  color: var(--color-text);
+  width: 100%;
+  height: 100%;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  font-size: 17px;
+}
+html >::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+html >::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+html >::-webkit-scrollbar-thumb {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+html >::-webkit-scrollbar-thumb:hover {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+}
+body {
+  background-color: var(--color-site-body);
+  text-rendering: optimizelegibility;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+body.modal-active {
+  overflow: hidden;
+}
+@media screen and (max-width: 680px) {
+  body.modal-active {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+}
+a {
+  color: #2092ec;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+a:hover {
+  color: #ff5722;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+ol {
+  padding-left: 0;
+}
+ul li,
+ol li {
+  list-style: none;
+}
+header {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+img {
+  border: 0;
+  background: none;
+  max-width: 100%;
+}
+svg:not(:root) {
+  overflow: hidden;
+}
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  height: 0;
+  border: 0;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-bottom: 1px solid rgba(68,68,68,0.1);
+}
+button,
+input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+button {
+  overflow: visible;
+  text-transform: none;
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .blur {
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: saturate(200%) blur(20px);
+  }
+}
+.shadow {
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.shadow.floatable {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.shadow.floatable:hover {
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+}
+#l_cover {
+  min-height: 56px;
+}
+.cover-wrapper {
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  height: 100vh;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  color: var(--color-site-inner);
+  padding: 0 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: -100px;
+}
+.cover-wrapper .cover-body {
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.cover-wrapper#full {
+  height: calc(100vh + 100px);
+  padding-bottom: 100px;
+}
+.cover-wrapper#half {
+  max-height: 640px;
+  min-height: 400px;
+  height: calc(36vh - 56px + 200px);
+}
+.cover-wrapper #scroll-down {
+  width: 100%;
+  height: 64px;
+  position: absolute;
+  bottom: 100px;
+  text-align: center;
+  cursor: pointer;
+}
+.cover-wrapper #scroll-down .scroll-down-effects {
+  color: #fff;
+  font-size: 24px;
+  line-height: 64px;
+  position: absolute;
+  width: 24px;
+  left: calc(50% - 12px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  animation: scroll-down-effect 1.5s infinite;
+  -webkit-animation: scroll-down-effect 1.5s infinite;
+  -khtml-animation: scroll-down-effect 1.5s infinite;
+  -moz-animation: scroll-down-effect 1.5s infinite;
+  -o-animation: scroll-down-effect 1.5s infinite;
+  -ms-animation: scroll-down-effect 1.5s infinite;
+}
+@-moz-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.cover-wrapper .cover-body {
+  margin-top: 56px;
+  margin-bottom: 100px;
+}
+.cover-wrapper .cover-body,
+.cover-wrapper .cover-body .top,
+.cover-wrapper .cover-body .bottom {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  max-width: 100%;
+}
+.cover-wrapper .cover-body .bottom {
+  margin-top: 32px;
+}
+.cover-wrapper .cover-body .title {
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+  font-size: 3.125rem;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.cover-wrapper .cover-body .subtitle {
+  font-size: 21.25px;
+}
+.cover-wrapper .cover-body .logo {
+  max-height: 120px;
+  max-width: calc(100% - 4 * 16px);
+}
+@media screen and (min-height: 1024px) {
+  .cover-wrapper .cover-body .title {
+    font-size: 3rem;
+  }
+  .cover-wrapper .cover-body .subtitle {
+    font-size: 1.05rem;
+  }
+  .cover-wrapper .cover-body .logo {
+    max-height: 150px;
+  }
+}
+.cover-wrapper .cover-body .m_search {
+  position: relative;
+  max-width: calc(100% - 16px);
+  width: 320px;
+  vertical-align: middle;
+}
+.cover-wrapper .cover-body .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  width: 100%;
+}
+.cover-wrapper .cover-body .m_search .icon,
+.cover-wrapper .cover-body .m_search .input {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.cover-wrapper .cover-body .m_search .icon {
+  position: absolute;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  line-height: 2.5rem;
+  width: 32px;
+  top: 0;
+  left: 5px;
+  color: rgba(68,68,68,0.75);
+}
+.cover-wrapper .cover-body .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  height: 2.5rem;
+  width: 100%;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-size: 0.875rem;
+  -webkit-appearance: none;
+  padding-left: 36px;
+  border-radius: 1.4rem;
+  -webkit-border-radius: 1.4rem;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: var(--color-text);
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .cover-body .m_search .input {
+    padding-left: 36px;
+  }
+}
+.cover-wrapper .cover-body .m_search .input:hover {
+  background: rgba(255,255,255,0.8);
+}
+.cover-wrapper .cover-body .m_search .input:focus {
+  background: #fff;
+}
+.cover-wrapper .list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -khtml-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -o-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  align-items: stretch;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.cover-wrapper .list-h a {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 0;
+  -ms-flex: 1 0;
+  flex: 1 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  font-weight: 600;
+}
+.cover-wrapper .list-h a img {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  margin: 4px;
+  min-width: 40px;
+  max-width: 44px;
+}
+@media screen and (max-width: 768px) {
+  .cover-wrapper .list-h a img {
+    min-width: 36px;
+    max-width: 40px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .list-h a img {
+    margin: 2px 4px;
+    min-width: 32px;
+    max-width: 36px;
+  }
+}
+@media screen and (max-width: 375px) {
+  .cover-wrapper .list-h a img {
+    min-width: 28px;
+    max-width: 32px;
+  }
+}
+.cover-wrapper {
+  max-width: 100%;
+}
+.cover-wrapper.search .bottom .menu {
+  margin-top: 16px;
+}
+.cover-wrapper.search .bottom .menu .list-h a {
+  white-space: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  align-items: baseline;
+  padding: 2px;
+  margin: 4px;
+  color: var(--color-site-inner);
+  opacity: 0.75;
+  -webkit-opacity: 0.75;
+  -moz-opacity: 0.75;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  border-bottom: 2px solid transparent;
+}
+.cover-wrapper.search .bottom .menu .list-h a i {
+  margin-right: 4px;
+}
+.cover-wrapper.search .bottom .menu .list-h a p {
+  font-size: 0.9375rem;
+}
+.cover-wrapper.search .bottom .menu .list-h a:hover,
+.cover-wrapper.search .bottom .menu .list-h a.active,
+.cover-wrapper.search .bottom .menu .list-h a:active {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+  border-bottom: 2px solid var(--color-site-inner);
+}
+.cover-wrapper #parallax-window {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+.parallax-mirror {
+  animation-delay: 0s;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  animation-name: fadeIn;
+}
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-mode: 'dark';
+  }
+  :root:not([color-scheme]) {
+    --color-site-body: #121212;
+    --color-read-bkg: #1f1f1f;
+    --color-read-post: #262626;
+    --color-site-bg: #1f1f1f;
+    --color-site-inner: rgba(238,238,238,0.871);
+    --color-site-footer: rgba(170,170,170,0.871);
+    --color-card: #262626;
+    --color-text: rgba(238,238,238,0.871);
+    --color-block: #1e1e1e;
+    --color-codeblock: #121212;
+    --color-inlinecode: #d56d28;
+    --color-h1: rgba(255,255,255,0.871);
+    --color-h2: rgba(255,255,255,0.871);
+    --color-h3: rgba(255,255,255,0.6);
+    --color-h4: rgba(255,255,255,0.6);
+    --color-h5: rgba(255,255,255,0.6);
+    --color-h6: rgba(255,255,255,0.6);
+    --color-p: rgba(217,217,217,0.871);
+    --color-list: rgba(217,217,217,0.871);
+    --color-list-hl: #63e0c4;
+    --color-meta: rgba(191,191,191,0.871);
+    --color-link: rgba(191,191,191,0.871);
+    --color-copyright-bkg: #21252b;
+  }
+  :root:not([color-scheme]) img {
+    filter: brightness(70%) !important;
+  }
+  :root:not([color-scheme]) .blur {
+    background: rgba(31,31,31,0.9) !important;
+  }
+  :root:not([color-scheme]) .white-box.blur {
+    background: rgba(38,38,38,0.9) !important;
+  }
+  :root:not([color-scheme]) .nav-main .u-search-input {
+    background: var(--color-card) !important;
+  }
+  :root:not([color-scheme]) #l_main .article .prev-next>a {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) #l_main .article .prev-next>a:hover {
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) .article blockquote {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .article-title a {
+    color: var(--color-h1) !important;
+  }
+  :root:not([color-scheme]) details>summary {
+    color: var(--color-p) !important;
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) details {
+    border: 1px solid var(--color-site-bg) !important;
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) #u-search .modal,
+  :root:not([color-scheme]) #u-search .modal-header,
+  :root:not([color-scheme]) #u-search .modal-body {
+    background: var(--color-card) !important;
+  }
+  :root:not([color-scheme]) #u-search .modal-body .modal-results .result:hover {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .u-search-input:hover {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .u-search-input:focus {
+    background: var(--color-site-body) !important;
+  }
+}
+[color-scheme='dark'] {
+  --color-site-body: #121212;
+  --color-read-bkg: #1f1f1f;
+  --color-read-post: #262626;
+  --color-site-bg: #1f1f1f;
+  --color-site-inner: rgba(238,238,238,0.871);
+  --color-site-footer: rgba(170,170,170,0.871);
+  --color-card: #262626;
+  --color-text: rgba(238,238,238,0.871);
+  --color-block: #1e1e1e;
+  --color-codeblock: #121212;
+  --color-inlinecode: #d56d28;
+  --color-h1: rgba(255,255,255,0.871);
+  --color-h2: rgba(255,255,255,0.871);
+  --color-h3: rgba(255,255,255,0.6);
+  --color-h4: rgba(255,255,255,0.6);
+  --color-h5: rgba(255,255,255,0.6);
+  --color-h6: rgba(255,255,255,0.6);
+  --color-p: rgba(217,217,217,0.871);
+  --color-list: rgba(217,217,217,0.871);
+  --color-list-hl: #63e0c4;
+  --color-meta: rgba(191,191,191,0.871);
+  --color-link: rgba(191,191,191,0.871);
+  --color-copyright-bkg: #21252b;
+}
+[color-scheme='dark'] img {
+  filter: brightness(70%) !important;
+}
+[color-scheme='dark'] .blur {
+  background: rgba(31,31,31,0.9) !important;
+}
+[color-scheme='dark'] .white-box.blur {
+  background: rgba(38,38,38,0.9) !important;
+}
+[color-scheme='dark'] .nav-main .u-search-input {
+  background: var(--color-card) !important;
+}
+[color-scheme='dark'] #l_main .article .prev-next>a {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] #l_main .article .prev-next>a:hover {
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] .article blockquote {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .article-title a {
+  color: var(--color-h1) !important;
+}
+[color-scheme='dark'] details>summary {
+  color: var(--color-p) !important;
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] details {
+  border: 1px solid var(--color-site-bg) !important;
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] #u-search .modal,
+[color-scheme='dark'] #u-search .modal-header,
+[color-scheme='dark'] #u-search .modal-body {
+  background: var(--color-card) !important;
+}
+[color-scheme='dark'] #u-search .modal-body .modal-results .result:hover {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .u-search-input:hover {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .u-search-input:focus {
+  background: var(--color-site-body) !important;
+}
+@media screen and (max-width: 500px) {
+  [color-scheme='dark'] .l_header .m_search {
+    background: var(--color-site-bg) !important;
+  }
+}
+@font-face {
+  font-family: 'UbuntuMono';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Varela Round';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+.l_header {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  width: 100%;
+  height: 56px;
+  background: var(--color-card);
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.l_header.auto {
+  transition: opacity 0.4s ease;
+  -webkit-transition: opacity 0.4s ease;
+  -khtml-transition: opacity 0.4s ease;
+  -moz-transition: opacity 0.4s ease;
+  -o-transition: opacity 0.4s ease;
+  -ms-transition: opacity 0.4s ease;
+  visibility: hidden;
+}
+.l_header.auto.show {
+  opacity: 1 !important;
+  -webkit-opacity: 1 !important;
+  -moz-opacity: 1 !important;
+  visibility: visible;
+}
+.l_header .container {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.l_header #wrapper {
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.l_header #wrapper .nav-main,
+.l_header #wrapper .nav-sub {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -khtml-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -o-justify-content: space-between;
+  -ms-justify-content: space-between;
+  align-items: center;
+}
+.l_header #wrapper .nav-main {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.l_header #wrapper.sub .nav-main {
+  transform: translateY(-56px);
+  -webkit-transform: translateY(-56px);
+  -khtml-transform: translateY(-56px);
+  -moz-transform: translateY(-56px);
+  -o-transform: translateY(-56px);
+  -ms-transform: translateY(-56px);
+}
+.l_header #wrapper .nav-sub {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  opacity: 0;
+  -webkit-opacity: 0;
+  -moz-opacity: 0;
+  height: 56px;
+  width: calc(100% - 2 * 16px);
+  position: absolute;
+}
+.l_header #wrapper .nav-sub ::-webkit-scrollbar {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (min-width: 2048px) {
+  .l_header #wrapper .nav-sub {
+    max-width: 55vw;
+    margin: auto;
+  }
+}
+.l_header #wrapper.sub .nav-sub {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+}
+.l_header #wrapper .title {
+  position: relative;
+  color: var(--color-text);
+  padding-left: 24px;
+  max-height: 56px;
+}
+.l_header #wrapper .nav-main .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  line-height: 56px;
+  padding: 0 24px;
+  font-size: 1.5rem;
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+}
+.l_header #wrapper .nav-main .title img {
+  height: 56px;
+}
+.l_header .nav-sub {
+  max-width: 1080px;
+  margin: auto;
+}
+.l_header .nav-sub .title {
+  font-weight: bold;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  line-height: 1.2;
+  max-height: 56px;
+  white-space: normal;
+  flex-shrink: 1;
+}
+.l_header .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  line-height: 56px;
+  align-items: center;
+}
+.l_header .switcher .s-toc {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (max-width: 768px) {
+  .l_header .switcher .s-toc {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+  }
+}
+.l_header .switcher >li {
+  height: 40px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  margin: 2px;
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li {
+    margin: 0 1px;
+    height: 40px;
+  }
+}
+.l_header .switcher >li >a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0.85em 1.1em;
+  border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  color: #3dd9b6;
+}
+.l_header .switcher >li >a:hover {
+  border: none;
+}
+.l_header .switcher >li >a.active,
+.l_header .switcher >li >a:active {
+  border: none;
+  background: var(--color-site-bg);
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li >a {
+    width: 36px;
+    height: 40px;
+  }
+}
+.l_header .nav-sub .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+}
+.l_header .m_search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  height: 56px;
+  width: 240px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (max-width: 1024px) {
+  .l_header .m_search {
+    width: 44px;
+    min-width: 44px;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+  }
+  .l_header .m_search:hover {
+    width: 240px;
+  }
+  .l_header .m_search:hover input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search:hover .input {
+    width: 100%;
+  }
+  .l_header .m_search:hover .input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search {
+    min-width: 0;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.l_header .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.l_header .m_search .icon {
+  position: absolute;
+  width: 36px;
+  left: 5px;
+  color: var(--color-meta);
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .icon {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+.l_header .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 1.3;
+  width: 100%;
+  color: var(--color-text);
+  background: #fafafa;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding-left: 40px;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search .input:focus {
+    box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .input {
+    background: var(--color-block);
+    padding-left: 8px;
+    border: none;
+  }
+  .l_header .m_search .input:hover,
+  .l_header .m_search .input:focus {
+    border: none;
+  }
+}
+@media (max-width: 500px) {
+  .l_header .m_search {
+    left: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+    background: #fff;
+    transition: all 0.28s ease;
+    -webkit-transition: all 0.28s ease;
+    -khtml-transition: all 0.28s ease;
+    -moz-transition: all 0.28s ease;
+    -o-transition: all 0.28s ease;
+    -ms-transition: all 0.28s ease;
+  }
+  .l_header .m_search .input {
+    border-radius: 28px;
+    -webkit-border-radius: 28px;
+    margin-left: 16px;
+    padding-left: 16px;
+  }
+  .l_header.z_search-open .m_search {
+    width: 100%;
+  }
+  .l_header.z_search-open .m_search .input {
+    width: calc(100% - 120px);
+  }
+}
+ul.m-pc >li>a {
+  color: inherit;
+  border-bottom: 2px solid transparent;
+}
+ul.m-pc >li>a:active,
+ul.m-pc >li>a.active {
+  border-bottom: 2px solid #3dd9b6;
+}
+ul.m-pc li:hover >ul.list-v,
+ul.list-v li:hover >ul.list-v {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.nav-list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  align-items: stretch;
+}
+ul.nav-list-h>li {
+  position: relative;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  height: 100%;
+  line-height: 2.4;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+ul.nav-list-h>li >a {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 600;
+}
+ul.list-v {
+  z-index: 1;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: absolute;
+  background: var(--color-card);
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  margin-top: -6px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  padding: 8px 0;
+}
+ul.list-v.show {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.list-v hr {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+ul.list-v >li {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+ul.list-v >li.header {
+  font-size: 0.78125rem;
+  font-weight: bold;
+  line-height: 2em;
+  color: var(--color-meta);
+  margin: 8px 16px 4px;
+}
+ul.list-v >li.header i {
+  margin-right: 8px;
+}
+ul.list-v >li ul {
+  margin-left: 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: -40px;
+}
+ul.list-v .aplayer-container {
+  min-height: 64px;
+  padding: 6px 16px;
+}
+ul.list-v >li>a {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  color: var(--color-list);
+  font-size: 0.875rem;
+  font-weight: bold;
+  line-height: 36px;
+  padding: 0 20px 0 16px;
+  text-overflow: ellipsis;
+  margin: 0 4px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+@media screen and (max-width: 1024px) {
+  ul.list-v >li>a {
+    line-height: 40px;
+  }
+}
+ul.list-v >li>a >i {
+  margin-right: 8px;
+}
+ul.list-v >li>a:active,
+ul.list-v >li>a.active {
+  color: var(--color-list-hl);
+}
+ul.list-v >li>a:hover {
+  color: var(--color-list-hl);
+  background: var(--color-site-bg);
+}
+.l_header .menu >ul>li>a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding: 0 8px;
+}
+.l_header .menu >ul>li>a >i {
+  margin-right: 4px;
+}
+.l_header ul.nav-list-h>li {
+  color: var(--color-list);
+  line-height: 56px;
+}
+.l_header ul.nav-list-h>li >a {
+  max-height: 56px;
+  overflow: hidden;
+  color: inherit;
+}
+.l_header ul.nav-list-h>li >a:active,
+.l_header ul.nav-list-h>li >a.active {
+  color: #3dd9b6;
+}
+.l_header ul.nav-list-h>li:hover>a {
+  color: var(--color-list-hl);
+}
+.l_header ul.nav-list-h>li i.music {
+  animation: rotate-effect 1.5s linear infinite;
+  -webkit-animation: rotate-effect 1.5s linear infinite;
+  -khtml-animation: rotate-effect 1.5s linear infinite;
+  -moz-animation: rotate-effect 1.5s linear infinite;
+  -o-animation: rotate-effect 1.5s linear infinite;
+  -ms-animation: rotate-effect 1.5s linear infinite;
+}
+@-moz-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+.menu-phone li ul.list-v {
+  right: calc(100% - 0.5 * 16px);
+}
+.menu-phone li ul.list-v ul {
+  right: calc(100% - 0.5 * 16px);
+}
+#wrapper {
+  max-width: 1080px;
+  margin: auto;
+}
+@media screen and (min-width: 2048px) {
+  #wrapper {
+    max-width: 55vw;
+  }
+}
+#wrapper .menu {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 1;
+  -ms-flex: 1 1;
+  flex: 1 1;
+  margin: 0 16px 0 0;
+}
+#wrapper .menu .list-v ul {
+  left: calc(100% - 0.5 * 16px);
+}
+.menu-phone {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: 16px;
+  right: 8px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.menu-phone ul {
+  right: calc(100% - 0.5 * 16px);
+}
+@media screen and (max-width: 500px) {
+  .menu-phone {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: block;
+  }
+}
+.l_header {
+  max-width: 65vw;
+  left: calc((100% - 65vw) * 0.5);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+@media screen and (max-width: 2048px) {
+  .l_header {
+    max-width: 1112px;
+    left: calc((100% - 1112px) * 0.5);
+  }
+}
+@media screen and (max-width: 1112px) {
+  .l_header {
+    left: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .l_header #wrapper .nav-main .title {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .l_header #wrapper .nav-sub {
+    width: 100%;
+  }
+  .l_header #wrapper .nav-sub .title {
+    overflow-y: scroll;
+    margin-top: 2px;
+    padding: 8px 16px;
+  }
+  .l_header #wrapper .switcher {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+    margin-right: 8px;
+  }
+  .l_header .menu {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  .list-v li {
+    max-width: 270px;
+  }
+}
+#u-search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 60px 20px;
+  z-index: 1001;
+}
+@media screen and (max-width: 680px) {
+  #u-search {
+    padding: 0px;
+  }
+}
+@media screen and (prefers-color-scheme: dark) and (max-width: 500px) {
+  .l_header .m_search {
+    background: var(--color-site-bg) !important;
+  }
+}
+
+  </style>
+  <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all';this.onload=null">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+    <script>
+      let userColorScheme=localStorage.getItem("color-scheme")
+      if(userColorScheme){
+        document.documentElement.setAttribute("color-scheme", userColorScheme);
+      }
+    </script>
+  
+<script>
+if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode))
+    document.write(
+	'<style>'+
+		'html{'+
+			'overflow-x: hidden !important;'+
+			'overflow-y: hidden !important;'+
+		'}'+
+		'.kill-ie{'+
+			'text-align:center;'+
+			'height: 100%;'+
+			'margin-top: 15%;'+
+			'margin-bottom: 5500%;'+
+		'}'+
+    '.kill-t{'+
+      'font-size: 2rem;'+
+    '}'+
+    '.kill-c{'+
+      'font-size: 1.2rem;'+
+    '}'+
+		'#l_header,#l_body{'+
+			'display: none;'+
+		'}'+
+	'</style>'+
+    '<div class="kill-ie">'+
+        `<span class="kill-t"><b>Sorry, your browser cannot access this site</b></span><br/>`+
+        `<span class="kill-c">Microsoft has terminated support for Internet Explorer (IE) 10 and earlier versions in 2016. <br/>There are great security risks to continue using it. Please use contemporary mainstream browsers to access.</span><br/>`+
+        `<a target="_blank" rel="noopener" href="https://blogs.windows.com/windowsexperience/2021/05/19/the-future-of-internet-explorer-on-windows-10-is-in-microsoft-edge/"><strong>Learn more ></strong></a>`+
+    '</div>');
+</script>
+
+
+<noscript>
+	<style>
+		html{
+			overflow-x: hidden !important;
+			overflow-y: hidden !important;
+		}
+		.kill-noscript{
+			text-align:center;
+			height: 100%;
+			margin-top: 15%;
+			margin-bottom: 5500%;
+		}
+    .kill-t{
+      font-size: 2rem;
+    }
+    .kill-c{
+      font-size: 1.2rem;
+    }
+		#l_header,#l_body{
+			display: none;
+		}
+	</style>
+    <div class="kill-noscript">
+        <span class="kill-t"><b>Sorry, your browser cannot access this site</b></span><br/>
+        <span class="kill-c">This page requires browser support (enable) JavaScript</span><br/>
+        <a target="_blank" rel="noopener" href="https://www.baidu.com/s?wd=启用JavaScript"><strong>Learn more ></strong></a>
+    </div>
+</noscript>
+
+
+  <script>
+  /************这个文件存放不需要重载的全局变量和全局函数*********/
+  window.volantis = {}; // volantis 全局变量
+  volantis.debug = "env"; // 调试模式
+  volantis.dom = {}; // 页面Dom see: /source/js/app.js etc.
+
+  volantis.GLOBAL_CONFIG ={
+    debug: "env",
+    cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
+    default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
+    lastupdate: new Date(1757238508336),
+    sidebar: {
+      for_page: ["blogger","category","tagcloud","donate"],
+      for_post: ["toc"],
+      webinfo: {
+        lastupd: {
+          enable: true,
+          friendlyShow: true
+        },
+        runtime: {
+          data: "2020/01/01",
+          unit: "天"
+        }
+      }
+    },
+    plugins: {
+      message: {"enable":false,"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/css/iziToast.min.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/js/iziToast.min.js","icon":{"default":"fa-solid fa-info-circle light-blue","quection":"fa-solid fa-question-circle light-blue"},"time":{"default":5000,"quection":20000},"position":"topRight","transitionIn":"bounceInLeft","transitionOut":"fadeOutRight","titleColor":"var(--color-text)","messageColor":"var(--color-text)","backgroundColor":"var(--color-card)","zindex":2147483647,"copyright":{"enable":true,"title":"知识共享许可协议","message":"请遵守 CC BY-NC-SA 4.0 协议。","icon":"far fa-copyright light-blue"},"aplayer":{"enable":true,"play":"fa-solid fa-play","pause":"fa-solid fa-pause"},"rightmenu":{"enable":true,"notice":true}},
+      fancybox: {"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.umd.js"},
+      
+      
+      
+    }
+  }
+
+  /******************** volantis.EventListener ********************************/
+  // 事件监听器 see: /source/js/app.js
+  volantis.EventListener = {}
+  // 这里存放pjax切换页面时将被移除的事件监听器
+  volantis.EventListener.list = []
+  //构造方法
+  function volantisEventListener(type, f, ele) {
+    this.type = type
+    this.f = f
+    this.ele = ele
+  }
+  // 移除事件监听器
+  volantis.EventListener.remove = () => {
+    volantis.EventListener.list.forEach(function (i) {
+      i.ele.removeEventListener(i.type, i.f, false)
+    })
+    volantis.EventListener.list = []
+  }
+  /******************** volantis.dom.$ ********************************/
+  // 注：这里没有选择器，也没有forEach一次只处理一个dom，这里重新封装主题常用的dom方法，返回的是dom对象，对象包含了以下方法，同时保留dom的原生API
+  function volantisDom(ele) {
+    if (!ele) ele = document.createElement("div")
+    this.ele = ele;
+    // ==============================================================
+    this.ele.find = (c) => {
+      let q = this.ele.querySelector(c)
+      if (q)
+        return new volantisDom(q)
+    }
+    // ==============================================================
+    this.ele.hasClass = (c) => {
+      return this.ele.className.match(new RegExp('(\\s|^)' + c + '(\\s|$)'));
+    }
+    this.ele.addClass = (c) => {
+      this.ele.classList.add(c);
+      return this.ele
+    }
+    this.ele.removeClass = (c) => {
+      this.ele.classList.remove(c);
+      return this.ele
+    }
+    this.ele.toggleClass = (c) => {
+      if (this.ele.hasClass(c)) {
+        this.ele.removeClass(c)
+      } else {
+        this.ele.addClass(c)
+      }
+      return this.ele
+    }
+    // ==============================================================
+    // 参数 r 为 true 表示pjax切换页面时事件监听器将被移除，false不移除
+    this.ele.on = (c, f, r = 1) => {
+      this.ele.addEventListener(c, f, false)
+      if (r) {
+        volantis.EventListener.list.push(new volantisEventListener(c, f, this.ele))
+      }
+      return this.ele
+    }
+    this.ele.click = (f, r) => {
+      this.ele.on("click", f, r)
+      return this.ele
+    }
+    this.ele.scroll = (f, r) => {
+      this.ele.on("scroll", f, r)
+      return this.ele
+    }
+    // ==============================================================
+    this.ele.html = (c) => {
+      // if(c=== undefined){
+      //   return this.ele.innerHTML
+      // }else{
+      this.ele.innerHTML = c
+      return this.ele
+      // }
+    }
+    // ==============================================================
+    this.ele.hide = (c) => {
+      this.ele.style.display = "none"
+      return this.ele
+    }
+    this.ele.show = (c) => {
+      this.ele.style.display = "block"
+      return this.ele
+    }
+    // ==============================================================
+    return this.ele
+  }
+  volantis.dom.$ = (ele) => {
+    return !!ele ? new volantisDom(ele) : null;
+  }
+  /******************** RunItem ********************************/
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = ()=>{
+          volantis.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) =>{
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index,1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+  /******************** Pjax ********************************/
+  // /layout/_plugins/pjax/index.ejs
+  // volantis.pjax.send(callBack[,"callBackName"]) 传入pjax:send回调函数
+  // volantis.pjax.push(callBack[,"callBackName"]) 传入pjax:complete回调函数
+  // volantis.pjax.error(callBack[,"callBackName"]) 传入pjax:error回调函数
+  volantis.pjax = {};
+  volantis.pjax.method = {
+    complete: new RunItem(),
+    error: new RunItem(),
+    send: new RunItem(),
+  };
+  volantis.pjax = Object.assign(volantis.pjax, {
+    push: volantis.pjax.method.complete.push,
+    error: volantis.pjax.method.error.push,
+    send: volantis.pjax.method.send.push,
+  });
+  /******************** RightMenu ********************************/
+  // volantis.rightmenu.handle(callBack[,"callBackName"]) 外部菜单项控制
+  // 可在 volantis.mouseEvent 处获取右键事件
+  volantis.rightmenu = {};
+  volantis.rightmenu.method = {
+    handle: new RunItem(),
+  }
+  volantis.rightmenu = Object.assign(volantis.rightmenu, {
+    handle: volantis.rightmenu.method.handle.push,
+  });
+  /********************  Dark Mode  ********************************/
+  // /layout/_partial/scripts/darkmode.ejs
+  // volantis.dark.mode 当前模式 dark or light
+  // volantis.dark.toggle() 暗黑模式触发器
+  // volantis.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  volantis.dark = {};
+  volantis.dark.method = {
+    toggle: new RunItem(),
+  };
+  volantis.dark = Object.assign(volantis.dark, {
+    push: volantis.dark.method.toggle.push,
+  });
+  /********************  Message  ********************************/
+  // VolantisApp.message
+  /********************  isMobile  ********************************/
+  // /source/js/app.js
+  // volantis.isMobile
+  // volantis.isMobileOld
+  /********************脚本动态加载函数********************************/
+  // volantis.js(src, cb)  cb 可以传入onload回调函数 或者 JSON对象 例如: volantis.js("src", ()=>{}) 或 volantis.js("src", {defer:true,onload:()=>{}})
+  // volantis.css(src)
+
+  // 返回Promise对象，如下方法同步加载资源，这利于处理文件资源之间的依赖关系，例如：APlayer 需要在 MetingJS 之前加载
+  // (async () => {
+  //     await volantis.js("...theme.plugins.aplayer.js.aplayer...")
+  //     await volantis.js("...theme.plugins.aplayer.js.meting...")
+  // })();
+
+  // 已经加入了setTimeout
+  volantis.js = (src, cb) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var HEAD = document.getElementsByTagName("head")[0] || document.documentElement;
+        var script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        if (cb) {
+          if (JSON.stringify(cb)) {
+            for (let p in cb) {
+              if (p == "onload") {
+                script[p] = () => {
+                  cb[p]()
+                  resolve()
+                }
+              } else {
+                script[p] = cb[p]
+                script.onload = resolve
+              }
+            }
+          } else {
+            script.onload = () => {
+              cb()
+              resolve()
+            };
+          }
+        } else {
+          script.onload = resolve
+        }
+        script.setAttribute("src", src);
+        HEAD.appendChild(script);
+      });
+    });
+  }
+  volantis.css = (src) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.href = src;
+        link.onload = resolve;
+        document.getElementsByTagName("head")[0].appendChild(link);
+      });
+    });
+  }
+  /********************按需加载的插件********************************/
+  // volantis.import.jQuery().then(()=>{})
+  volantis.import = {
+    jQuery: () => {
+      if (typeof jQuery == "undefined") {
+        return volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/jquery/dist/jquery.min.js")
+      } else {
+        return new Promise(resolve => {
+          resolve()
+        });
+      }
+    }
+  }
+  /********************** requestAnimationFrame ********************************/
+  // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+  // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+  volantis.requestAnimationFrame = (fn)=>{
+    if (!window.requestAnimationFrame) {
+      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+    }
+    window.requestAnimationFrame(fn)
+  }
+  /************************ layoutHelper *****************************************/
+  volantis.layoutHelper = (helper, html, opt)=>{
+    opt = Object.assign({clean:false, pjax:true}, opt)
+    function myhelper(helper, html, clean) {
+      volantis.tempDiv = document.createElement("div");
+      volantis.tempDiv.innerHTML = html;
+      let layoutHelper = document.querySelector("#layoutHelper-"+helper)
+      if (layoutHelper) {
+        if (clean) {
+          layoutHelper.innerHTML = ""
+        }
+        layoutHelper.append(volantis.tempDiv);
+      }
+    }
+    myhelper(helper, html, opt.clean)
+    if (opt.pjax) {
+      volantis.pjax.push(()=>{
+        myhelper(helper, html, opt.clean)
+      },"layoutHelper-"+helper)
+    }
+  }
+  /****************************** 滚动事件处理 ****************************************/
+  volantis.scroll = {
+    engine: new RunItem(),
+    unengine: new RunItem(),
+  };
+  volantis.scroll = Object.assign(volantis.scroll, {
+    push: volantis.scroll.engine.push,
+  });
+  // 滚动条距离顶部的距离
+  volantis.scroll.getScrollTop = () =>{
+    let scrollPos;
+    if (window.pageYOffset) {
+      scrollPos = window.pageYOffset;
+    } else if (document.compatMode && document.compatMode != 'BackCompat') {
+      scrollPos = document.documentElement.scrollTop;
+    } else if (document.body) {
+      scrollPos = document.body.scrollTop;
+    }
+    return scrollPos;
+  }
+  // 使用 requestAnimationFrame 处理滚动事件
+  // `volantis.scroll.del` 中存储了一个数值, 该数值检测一定时间间隔内滚动条滚动的位移, 数值的检测频率是浏览器的刷新频率. 数值为正数时, 表示向下滚动. 数值为负数时, 表示向上滚动.
+  volantis.scroll.handleScrollEvents = () => {
+    volantis.scroll.lastScrollTop = volantis.scroll.getScrollTop()
+    function loop() {
+      const scrollTop = volantis.scroll.getScrollTop();
+      if (volantis.scroll.lastScrollTop !== scrollTop) {
+        volantis.scroll.del = scrollTop - volantis.scroll.lastScrollTop;
+        volantis.scroll.lastScrollTop = scrollTop;
+        // if (volantis.scroll.del > 0) {
+        //   console.log("向下滚动");
+        // } else {
+        //   console.log("向上滚动");
+        // }
+        // 注销过期的unengine未滚动事件
+        volantis.scroll.unengine.list=[]
+        volantis.scroll.engine.start();
+      }else{
+        volantis.scroll.unengine.start();
+      }
+      volantis.requestAnimationFrame(loop)
+    }
+    volantis.requestAnimationFrame(loop)
+  }
+  volantis.scroll.handleScrollEvents()
+  volantis.scroll.ele = null;
+  // 触发页面滚动至目标元素位置
+  volantis.scroll.to = (ele, option = {}) => {
+    if (!ele) return;
+    volantis.scroll.ele = ele;
+    // 默认配置
+    opt = {
+      top: ele.getBoundingClientRect().top + document.documentElement.scrollTop,
+      behavior: "smooth"
+    }
+    // 定义配置
+    if ("top" in option) {
+      opt.top = option.top
+    }
+    if ("behavior" in option) {
+      opt.behavior = option.behavior
+    }
+    if ("addTop" in option) {
+      opt.top += option.addTop
+    }
+    if (!("observerDic" in option)) {
+      option.observerDic = 100
+    }
+    // 滚动
+    window.scrollTo(opt);
+    // 监视器
+    // 监视并矫正元素滚动到指定位置
+    // 用于处理 lazyload 引起的 cls 导致的定位失败问题
+    // option.observer = false
+    if (option.observer) {
+      setTimeout(() => {
+        if (volantis.scroll.ele != ele) {
+          return
+        }
+        volantis.scroll.unengine.push(() => {
+          let me = ele.getBoundingClientRect().top
+          if(!(me >= -option.observerDic && me <= option.observerDic)){
+            volantis.scroll.to(ele, option)
+          }
+          volantis.scroll.unengine.remove("unengineObserver")
+        },"unengineObserver")
+      },1000)
+    }
+  }
+  /********************** Content Visibility ********************************/
+  // 见 source/css/first.styl 如果遇到任何问题 删除 .post-story 即可
+  // 一个元素被声明 content-visibility 属性后 如果元素不在 viewport 中 浏览器不会计算其后代元素样式和属性 从而节省 Style & Layout 耗时
+  // content-visibility 的副作用: 锚点失效 等等(实验初期 暂不明确), 使用此方法清除样式
+  volantis.cleanContentVisibility = ()=>{
+    if (document.querySelector(".post-story")) {
+      console.log("cleanContentVisibility");
+      document.querySelectorAll(".post-story").forEach(e=>{
+        e.classList.remove("post-story")
+      })
+    }
+  }
+  /******************************************************************************/
+  /******************************************************************************/
+  /******************************************************************************/
+  //图像加载出错时的处理
+  function errorImgAvatar(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg";
+    img.onerror = null;
+  }
+  function errorImgCover(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg";
+    img.onerror = null;
+  }
+  /******************************************************************************/
+</script>
+
+  <!-- import head_end begin -->
+  <!-- import head_end end -->
+  <!-- Custom Files headEnd begin-->
+  
+  <!-- Custom Files headEnd end-->
+  <!-- front-matter head_end begin -->
+  <!-- front-matter head_end end -->
+</head>
+  <body itemscope itemtype="http://schema.org/WebPage">
+    <!-- import body_begin begin-->
+    <!-- import body_begin end-->
+    <!-- Custom Files bodyBegin begin-->
+    
+    <!-- Custom Files bodyBegin end-->
+    <!-- front-matter body_begin begin -->
+    <!-- front-matter body_begin end -->
+    <header itemscope itemtype="http://schema.org/WPHeader" id="l_header" class="l_header auto shadow floatable blur " style='opacity: 0' >
+  <div class='container'>
+  <div id='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a id="s-comment" class="fa-solid fa-comments fa-fw" target="_self"  href="/" onclick="return false;" title="comment"></a></li>
+        
+          <li><a id="s-toc" class="s-toc fa-solid fa-list fa-fw" target="_self"  href="/" onclick="return false;" title="toc"></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box header toggle-mode-btn">
+                  <i class='fa-solid fa-moon fa-fw'></i>暗黑模式
+                </a>
+              <li>
+            
+          
+          
+				</ul>
+			</div>
+      
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fa-solid fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+      
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fa-solid fa-search fa-fw" target="_self" href="/" onclick="return false;" title="search"></a></li>
+				
+				<li>
+          <a class="s-menu fa-solid fa-bars fa-fw" target="_self" href="/" onclick="return false;" title="menu"></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box header toggle-mode-btn">
+                  <i class='fa-solid fa-moon fa-fw'></i>暗黑模式
+                </a>
+              <li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+
+      <!-- Custom Files header begin -->
+      
+      <!-- Custom Files header end -->
+		</div>
+	</div>
+  </div>
+</header>
+
+    <div id="l_body">
+      <div id="l_cover">
+  
+    
+      <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
+      <div id="half" class='cover-wrapper post search' style="display: ;">
+        
+  <div id="parallax-window"></div>
+
+<div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Yveltals Blog</p>
+    
+    
+  </div>
+  <div class='bottom'>
+    
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+          <i class="icon fa-solid fa-search fa-fw"></i>
+        </form>
+      </div>
+    
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div id="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+    
+  
+</div>
+
+      <div id="safearea">
+        <div class="body-wrapper">
+          
+<div id="l_main" class=''>
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://blog.yveltals.top/2025/02/15/Storage/RocksDB/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="N/A">
+  </span>
+  
+
+
+  
+    <div class='headimg-div'>
+      <a class='headimg-a'>
+        <img itemprop="image" class='headimg' src='/img/rocksdb.jpg'/>
+      </a>
+    </div>
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title" itemprop="name headline">
+        RocksDB
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/Storage/">Storage</a>
+    
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/Storage/" itemprop="url"><span itemprop="name">Storage</span></a>
+      </span>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2025-02-15T14:20:04+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Feb 15, 2025</p>
+  </a>
+</div>
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <blockquote>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ylp1LxvtP31gNELHWUwfwA">RocksDB内部数据组织方式介绍及性能压测</a></p>
+</blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RocksDB/rocksdb_arch.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/RocksDB/rocksdb_arch.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h2 id="Basic-Operations"><a href="#Basic-Operations" class="headerlink" title="Basic Operations"></a>Basic Operations</h2><h3 id="Iterator"><a href="#Iterator" class="headerlink" title="Iterator"></a>Iterator</h3><p>迭代器本身不会占用太多内存，但是迭代器最好保持较短的生存周期，为了确保某些资源能被释放，包括：</p>
+<ul>
+<li>迭代器创建时的 memtables 和 SST 文件。即使某些 memtables 和 SST 文件在刷新或压缩后被删除，如果迭代器固定它们，它们仍然保留。</li>
+<li>当前迭代位置的数据块。这些块将保存在内存中，要么固定在 Block Cache 中，要么在未设置块缓存时在堆中。</li>
+</ul>
+<p>Iterator的创建也存在成本，因此复用iterator是最合适的，调用<code>Iterator::Refresh()</code> 来刷新以表示最近的状态，并且先前固定的资源会被释放。</p>
+<h4 id="Prefix-Iterator"><a href="#Prefix-Iterator" class="headerlink" title="Prefix Iterator"></a>Prefix Iterator</h4><p>前缀 Iterator 是一种特殊的迭代器，允许高效地遍历具有 <strong>特定前缀</strong> 的键值对，避免遍历整个数据库，减少不必要的数据扫描，提高读取效率。</p>
+<ul>
+<li><code>read_options.prefix_same_as_start = true</code>，启用前缀迭代器</li>
+<li><code>read_options.total_order_seek</code>，默认 false 只遍历前缀匹配的键，设置 true 会忽略前缀限制，允许迭代整个数据库（按顺序扫描所有键）</li>
+</ul>
+<h4 id="Prefix-Bloom-filter"><a href="#Prefix-Bloom-filter" class="headerlink" title="Prefix Bloom filter"></a>Prefix Bloom filter</h4><p>前缀 Bloom Filter 是专门为 <strong>前缀迭代器</strong> 设计的，它通过将前缀与 Bloom Filter 结合，减少不必要的磁盘读取操作，加速前缀匹配的查找。</p>
+<p>加速前缀迭代器：在进行前缀迭代时，RocksDB 会使用前缀 Bloom Filter 来判断数据是否存在于某个 SST 文件中，否则不会去读取文件。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Options options;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Set up bloom filter</span></span><br><span class="line">rocksdb::BlockBasedTableOptions table_options;</span><br><span class="line">table_options.filter_policy.<span class="built_in">reset</span>(rocksdb::<span class="built_in">NewBloomFilterPolicy</span>(<span class="number">10</span>, <span class="literal">false</span>));</span><br><span class="line">table_options.whole_key_filtering = <span class="literal">false</span>;  <span class="comment">// If you also need Get() to use whole key filters, leave it to true.</span></span><br><span class="line">options.table_factory.<span class="built_in">reset</span>(</span><br><span class="line">    rocksdb::<span class="built_in">NewBlockBasedTableFactory</span>(table_options));  <span class="comment">// For multiple column family setting, set up specific column family&#x27;s ColumnFamilyOptions.table_factory instead.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Define a prefix. In this way, a fixed length prefix extractor. A recommended one to use.</span></span><br><span class="line">options.prefix_extractor.<span class="built_in">reset</span>(<span class="built_in">NewCappedPrefixTransform</span>(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">DB* db;</span><br><span class="line">Status s = DB::<span class="built_in">Open</span>(options, <span class="string">&quot;/tmp/rocksdb&quot;</span>,  &amp;db);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>options.prefix_extractor</code>指定前缀，如果这个参数改变需要重启DB，通常，最终结果是现有SST文件中的bloom过滤器在读取时会被忽略。</li>
+<li><code>read_options.total_order_seek = true</code> 将确保查询返回与没有前缀布隆过滤器相同的结果，忽略前缀bloom filter。</li>
+<li><code>read_options.auto_prefix_mode = true;</code> 防止 bloom filter 的 “假阳性” 因 hash 冲突导致的不存在的数据显示存在。</li>
+</ul>
+<h3 id="Bloom-Filter"><a href="#Bloom-Filter" class="headerlink" title="Bloom Filter"></a>Bloom Filter</h3><p>RocksDB 的每个 SST 文件都包含一个 Bloom filter。Bloom Filter 只对特定的一组 keys 有效，所以只有新的 SST 文件创建的时候才会生成这个 filter。当两个 SST 文件合并的时候，会生成新的 filter 数据。</p>
+<p>当 SST 文件加载进内存的时候，filter 也会被加载进内存，当关闭 SST 文件的时候，filter 也会被关闭。如果想让 filter 常驻内存，可以设置<br><code>BlockBasedTableOptions::cache_index_and_filter_blocks</code> 为 true。</p>
+<h3 id="Compaction-Filter"><a href="#Compaction-Filter" class="headerlink" title="Compaction Filter"></a>Compaction Filter</h3><p>RocksDB提供了一种基于自定义逻辑在后台删除或修改键&#x2F;值对的方法。它可以方便地实现自定义垃圾收集，比如根据TTL删除过期的键，或者在后台删除一系列键。它还可以更新现有键的值。</p>
+<p>要使用压缩过滤器，需要实现 <code>CompactionFilter</code> 接口并将其设置为ColumnFamilyOptions<code>。或者可以实现 </code>CompactionFilterFactory&#96; 接口，灵活地为每个（子）压缩创建不同的压缩过滤器实例。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">options.compaction_filter = <span class="keyword">new</span> <span class="built_in">CustomCompactionFilter</span>();</span><br><span class="line"><span class="comment">// or</span></span><br><span class="line">options.compaction_filter_factory.<span class="built_in">reset</span>(<span class="keyword">new</span> <span class="built_in">CustomCompactionFilterFactory</span>());</span><br></pre></td></tr></table></figure>
+
+<p>每次(子)压缩从其输入中看到一个新键，且该值是正常值时，它就调用压缩筛选器。根据压实过滤器的结果：</p>
+<ul>
+<li>如果它决定保留key，什么都不会改变。</li>
+<li>如果请求过滤键，则该值将被删除标记替换。注意，如果压缩的输出级别是底层，则不需要输出删除标记。</li>
+<li>如果请求更改该值，则该值将被更改后的值替换。</li>
+<li>如果它请求通过返回kRemoveAndSkipUntil来删除一段键，则压缩将跳到skip_until(意味着skip_until将是压缩后的下一个可能的键输出)。这个比较棘手，因为在这种情况下，压缩不会为它跳过的键插入删除标记。这意味着旧版本的键可能会重新出现。另一方面，如果应用程序知道没有旧版本的键，或者可以重新出现旧版本，那么简单地删除键会更有效。</li>
+</ul>
+<p>如果来自压缩输入的相同键有多个版本，则对最新版本只调用压缩筛选器一次。如果最新版本是删除标记，则不会调用压缩筛选器。但是，如果删除标记没有包含在压缩的输入中，则可能对已删除的键调用压缩筛选器。</p>
+<p>当merge被使用，每个合并操作数调用压缩过滤器。 在调用合并运算符之前，将压缩过滤器的结果应用于合并操作数。</p>
+<h3 id="Snapshot"><a href="#Snapshot" class="headerlink" title="Snapshot"></a>Snapshot</h3><p>快照在创建时捕获数据库的时间点视图，快照不会在数据库重新启动后持续存在。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="built_in">getSnapshot</span>()</span><br><span class="line">ReadOptions.<span class="built_in">setSnapshot</span>()</span><br><span class="line">db.<span class="built_in">releaseSnapshot</span>()</span><br></pre></td></tr></table></figure>
+
+<p>快照由 <code>SnapshotImpl</code> 类的一个小对象表示。它只保存几个基本字段，比如快照所在的seqnum。</p>
+<p>快照被存储在DBImpl的一个链表里。一个好处是我们可以在获取 DB 互斥锁之前分配列表节点。然后在持有互斥锁的同时，我们只需要更新列表指针。此外，可以按任意顺序对快照调用 ReleaseSnapshot()。使用链表，可以在不移动的情况下从中间删除一个节点。</p>
+<p>在刷新&#x2F;压缩期间，当我们需要找出某个键可见的最早快照时，我们必须扫描快照列表。但是链表不能二分搜索，当有很多快照时会显着降低刷新&#x2F;压缩速度，导致 Write Stall。</p>
+<h3 id="Low-Priority-Write"><a href="#Low-Priority-Write" class="headerlink" title="Low Priority Write"></a>Low Priority Write</h3><p>低优先级写能够帮助用户管理写入的优先级。通过<code>writeOptions.setLowPri(true)</code> 设置后台写入，RocksDB将对低优先级写入进行更积极的节流，以确保高优先级写入不会 Write Stall。</p>
+<p>如果系统认为存在压缩压力，RocksDB 会让低优先级写操作进行睡眠，降低写速率，确保高优先级写操作的处理优先级，不会因为低优先级写入过多而导致整体性能下降。</p>
+<p>在二阶段提交过程中，低优先级写入会在准备阶段完成，而不是在提交阶段。</p>
+<h3 id="Column-Families"><a href="#Column-Families" class="headerlink" title="Column Families"></a>Column Families</h3><p><img src="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" class="lazyload" data-srcset="https://tidb-blog.oss-cn-beijing.aliyuncs.com/media/image-1656491897779.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>RocksDB 中的每个键值对都与一个列族相关联。 如果没有指定列族，键值对与列族 <code>default</code> 相关联。列族提供了一种对数据库进行逻辑分区的方法。 </p>
+<ul>
+<li>支持跨列族原子写，这个意思是可以原子写入<code>(&#123;cf1, key1, value1&#125;, &#123;cf2, key2, value2&#125;).</code></li>
+<li>跨列族的数据库一致视图。</li>
+<li>能够独立配置不同的列族。</li>
+<li>即时添加新的列族并删除它们。 这两种操作都相当快。</li>
+</ul>
+<p>Column Family 的思想是共享 WAL 日志而不共享 memtables 和sst 文件，即 log 共享而数据分离，可以独立配置列族并快速删除它们。</p>
+<p>使用一个 RocksDB 就是使用一个物理存储系统，使用一个 CF 则是使用一个逻辑存储系统，二者主要区别体现在数据备份、原子写以及写性能表现上。DB 是数据备份和复制以及 checkpoint 的基本单位，但是 CF 则利用 BatchWrite，因为这个操作是可以跨 CF 的，而且多个 CF 可以共享同一个 WAL，多个 DB 则无法做到这一点。</p>
+<p>每次 Flush 单个 CF 时，都会创建一个新的 WAL，但无法删除旧的 WAL，只有全部的列族被 Flush 且这个 WAL 包含的全部数据已经持久化时才可以删除旧的WAL文件。确保对RocksDB进行调优，以便定期刷新所有列族。另外，查看<code>Options::max_total_wal_size</code>，可以配置为自动刷新过时的列族。</p>
+<p>Column Family 使用场景：</p>
+<ol>
+<li>不同的 Column Family 可以使用不同的 setting&#x2F;comparators&#x2F;compression types&#x2F;merge operators&#x2F;compaction filters</li>
+<li>对数据进行逻辑隔离，方便分别删除</li>
+<li>一个 Column Family 存储 metadata，另一个存储 data；</li>
+</ol>
+<h3 id="LSM-Tree"><a href="#LSM-Tree" class="headerlink" title="LSM-Tree"></a>LSM-Tree</h3><p>将数据形成Log-Structured：在将数据写入LSM内存结构之前，先记录log。这样LSM就可以将有易失性的内存看做永久性存储器。并且信任内存上的数据，等到内存容量达到threshold再集体写入磁盘。</p>
+<p>LSM 将所有数据不组织成一个整体索引结构，而组织成有序的文件集。每次LSM面对磁盘写，将数据写入一个或几个新生成的文件，顺序写入且不能修改其他文件，这样就将随机读写转换成了顺序读写。LSM将一次性集体写入的文件作为一个level，磁盘上划分多level，level与level之间互相隔离。这就形成了，以写入数据时间线形成的逻辑上、而非物理上的层级结构，这也就是为什么LSM被命名为 tree，但不是 tree。</p>
+<p>除了将随机写合并之后转化为顺写之外，LSM 的另外一个关键特性就在于其是一种自带数据 Garbage Collect 的有序数据集合，对外只提供了 Add&#x2F;Get 接口，其内部的 Compaction 就是其 GC 的关键，通过 Compaction 实现了对数据的删除、附带了 TTL 的过期数据地淘汰、同一个 Key 的多个版本 Value 地合并。RocksDB 基于 LSM 对外提供了 Add&#x2F;Delete&#x2F;Get 三个接口，用户则基于 RocksDB 提供的 transaction 还可以实现 Update 语义。</p>
+<h3 id="Checksums"><a href="#Checksums" class="headerlink" title="Checksums"></a>Checksums</h3><p>Rocksdb 对每个 kv 以及整体数据文件都分别计算了 checksum，以进行数据正确性校验。下面有两个选项对 checksum 的行为进行控制。</p>
+<ul>
+<li><code>ReadOptions::verify_checksums</code> 默认 true，强制对每次从磁盘读取的数据进行校验。</li>
+<li><code>Options::paranoid_checks</code> 默认 false，这个选项为 true 的时候，如果检测到内部数据部分错乱，马上抛出一个错误。</li>
+</ul>
+<p>如果 RocksDB 的数据错乱，RocksDB 会尽量把它隔离出来，保证大部分数据的可用性和正确性。</p>
+<h3 id="Thread-Pool"><a href="#Thread-Pool" class="headerlink" title="Thread Pool"></a>Thread Pool</h3><p>RocksDB 会创建一个 thread pool 与 Env 对象进行关联，线程池中线程的数目可以通过 <code>Env::SetBackgroundThreads()</code> 设定。通过这个线程池可以执行 compaction 与 memtable flush 任务。</p>
+<p>当 memtable flush 和 compaction 两个任务同时执行的时候，会导致写请求被 hang 住。RocksDB 建议创建两个线程池，分别指定 HIGH 和 LOW 两个优先级。默认情况下 HIGH 线程池执行 memtable flush 任务，LOW 线程池执行 compaction 任务。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> “rocksdb/env.h”</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> “rocksdb/db.h”</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> env = rocksdb::Env::<span class="built_in">Default</span>();</span><br><span class="line">env-&gt;<span class="built_in">SetBackgroundThreads</span>(<span class="number">2</span>, rocksdb::Env::LOW);</span><br><span class="line">env-&gt;<span class="built_in">SetBackgroundThreads</span>(<span class="number">1</span>, rocksdb::Env::HIGH);</span><br><span class="line">rocksdb::DB* db;</span><br><span class="line">rocksdb::Options options;</span><br><span class="line">options.env = env;</span><br><span class="line">options.max_background_compactions = <span class="number">2</span>;</span><br><span class="line">options.max_background_flushes = <span class="number">1</span>;</span><br><span class="line">rocksdb::Status status = rocksdb::DB::<span class="built_in">Open</span>(options, “/tmp/testdb”, &amp;db);</span><br><span class="line"><span class="built_in">assert</span>(status.<span class="built_in">ok</span>());</span><br></pre></td></tr></table></figure>
+
+<h3 id="Setup-Option"><a href="#Setup-Option" class="headerlink" title="Setup Option"></a>Setup Option</h3><p><strong>1. Write Buffer</strong></p>
+<ul>
+<li><code>Options::write_buffer_size</code> 是一个全局配置，应用于所有 Column Family 的默认写缓冲区。</li>
+<li><code>cf_options.write_buffer_size</code> 允许为每个 CF 定义不同的写缓冲区大小，从而精细化内存管理。</li>
+<li><code>db_options.db_write_buffer_size</code> 则影响的是数据库整体的写缓冲区大小，特别是在多 CF 的情况下，影响数据库的整体内存配置。</li>
+<li><code>Options::max_write_buffer_number</code> 限制了内存中可以并行存在的最大写缓冲区数量，超过将触发合并操作，默认为 2.</li>
+<li><code>Options::min_write_buffer_number_to_merge </code> 至少 n 个写缓冲区都填满时，才会进行合并与 Flush，防止合并操作频繁。影响了 L0 的文件个数，太小导致读放大，太大去重效果差。</li>
+</ul>
+<blockquote>
+<p>Memtable 占用的空间越大，则写放大效应越小，因为数据在内存被整理好，磁盘上就越少的内容会被 compaction。Write Buffer size 并非越大越好，会导致 DB 被重新打开时的数据加载时间变长。</p>
+</blockquote>
+<p><strong>2. Block Cache</strong></p>
+<p>建议设置为总内存的 1&#x2F;3 左右，剩余留给 Page Cache。所有 CF 的所有 table_options 都必须使用同一个 cache 对象，或者让所有的 DB 所有的 CF 使用同一个 table_options&#x2F;table_factory。</p>
+<p>默认 Block 的大小是 4KB，数据未经压缩。经常 bulk scan 可能需要增大 block size，单 key 读写则可能需要减小，修改方式为 <code>Options::block_size</code>，范围为 <code>1KB ~ a few MB</code>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> cache = <span class="built_in">NewLRUCache</span>(<span class="number">128</span> &lt;&lt; <span class="number">20</span>);  <span class="comment">// 128MB</span></span><br><span class="line">BlockBasedTableOptions table_options;</span><br><span class="line">table_options.block_cache = cache;</span><br><span class="line"><span class="keyword">auto</span> table_factory = <span class="keyword">new</span> <span class="built_in">BlockBasedTableFactory</span>(table_options);</span><br><span class="line">cf_options.table_factory.<span class="built_in">reset</span>(table_factory);</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. Compression</strong></p>
+<ul>
+<li><code>cf_options.compression</code> 前 n-1 层压缩格式推荐 kLZ4Compression 或 kSnappyCompression</li>
+<li><code>cf_options.bottommost_compression</code> 第 n 层压缩格式推荐 kZSTD 或 kZlibCompression</li>
+</ul>
+<p><strong>4. Bloom Filters</strong><br>适用于大量点查如 <code>Get()</code>，不适合范围迭代场景 <code>Iterator()</code>。布隆过滤器为每个键使用一定数量的位，推荐值 10 会产生大约 1% 的假阳率。<br><code>table_options.filter_policy.reset(NewBloomFilterPolicy(10, false))</code></p>
+<p><strong>5. RateLimter</strong><br>设置每秒处理 request 速率：<code>dbOptions.setRateLimiter(new RateLimiter(200))</code></p>
+<p><strong>6. Other Recommendation</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cf_options.level_compaction_dynamic_level_bytes = <span class="literal">true</span>;</span><br><span class="line">opts.max_background_jobs = <span class="number">6</span>;</span><br><span class="line">options.bytes_per_sync = <span class="number">1048576</span>;</span><br><span class="line">options.compaction_pri = kMinOverlappingRatio;</span><br><span class="line">table_options.block_size = <span class="number">16</span> * <span class="number">1024</span>;</span><br><span class="line">table_options.cache_index_and_filter_blocks = <span class="literal">true</span>;</span><br><span class="line">table_options.pin_l0_filter_and_index_blocks_in_cache = <span class="literal">true</span>;</span><br><span class="line">table_options.format_version = &lt;the latest version&gt;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="读流程"><a href="#读流程" class="headerlink" title="读流程"></a>读流程</h3><p>使用持久化在磁盘上不可变的 SST 文件，读路径要比写路径简单很多。要找寻某个 key，只需自顶而下遍历 LSM—Tree。从 MemTable 开始，下探到 L0，然后继续向更低层级查找，直到找到该 key 或者检查完所有 SST 文件为止。</p>
+<p>以下是查找步骤：</p>
+<ol>
+<li>检索 MemTable。</li>
+<li>检索不可变 MemTables。</li>
+<li>搜索最近 flush 过的 L0 层中的所有 SST 文件。</li>
+<li>对于 L1 层及以下层级，首先找到可能包含该 key 的单个 SST 文件，然后在文件内进行搜索。</li>
+</ol>
+<p>搜索 SST 文件涉及：</p>
+<ol>
+<li>（可选）探测布隆过滤器。</li>
+<li>查找 index 来找到可能包含这个 key 的 block 所在位置。</li>
+<li>读取 block 文件并尝试在其中找到 key。</li>
+</ol>
+<h3 id="预读取"><a href="#预读取" class="headerlink" title="预读取"></a>预读取</h3><p><strong>1. 自动预读</strong></p>
+<p>自动预读仅适用于基于块的表格格式（Block-based table format）。这意味着它仅在 BlockBasedTableOptions 中启用了块化表格时有效。</p>
+<p>当 RocksDB 在迭代过程中发现对同一表文件的多个顺序 I&#x2F;O 请求时，它会启动自动预读机制。预读的大小从 8 KB 开始，随着每个额外的顺序 I&#x2F;O 请求的出现，预读的大小呈指数增长，最大为 <code>BlockBasedTableOptions.max_auto_readahead_size</code>，默认最大 256 KB。</p>
+<p>条件与限制：</p>
+<ul>
+<li>启用条件：自动预读仅在 <code>ReadOptions.readahead_size = 0</code>（默认值）时启用。如果设置为其他值，则会禁用此功能。</li>
+<li>I&#x2F;O 模式：在 Linux 系统中，自动预读在缓冲 I&#x2F;O 模式下使用 readahead 系统调用，而在直接 I&#x2F;O 模式下则使用 AlignedBuffer 来存储预读数据。</li>
+<li>版本支持：自动迭代器预读从 RocksDB 版本 5.12 开始在缓冲 I&#x2F;O 模式下支持，从 5.15 开始也支持直接 I&#x2F;O 模式。</li>
+</ul>
+<p><strong>2. 手动预读控制</strong></p>
+<p>如果主要依赖迭代操作并且使用 Page Cache，可以通过设置 <code>DBOptions.advise_random_on_open = false</code> 来选择手动启用预读功能。</p>
+<p>这种设置对硬盘驱动器（HDD）或远程存储尤为有用，尤其在这些存储的延迟较高时。对于直连的 SSD，预读对性能的影响可能不明显。</p>
+<hr>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><p>merge operator描述了原子性的在rocksdb读取修改写入操作，<strong>如果用户操作Rocksdb存在获取、修改并且再写入</strong>，那么就需要用户来保证它的原子性，merge operator可以解决这个问题。</p>
+<ul>
+<li>将读-修改-写的语义封装到一个简单的抽象接口中。</li>
+<li>允许用户避免因重复Get()调用而产生额外成本。</li>
+<li>在不改变底层语义的情况下，执行后端优化以决定何时&#x2F;如何组合操作数。</li>
+<li>在某些情况下，可以摊销所有增量更新的成本，以提供渐进的效率提高。</li>
+</ul>
+<h3 id="MergeOperator"><a href="#MergeOperator" class="headerlink" title="MergeOperator"></a>MergeOperator</h3><p>MergeOperator定义了几个方法来告诉RocksDB应该如何在已有的数据上做增量更新。这些方法(PartialMerge、FullMerge)可以组成新的merge操作。</p>
+<p>AssociativeMergeOperator 接口封装了partial merge的实现细节，可以满足大部分场景的需要。使用AssociativeMergeOperator的一个前提是：数据类型的关联性，即：</p>
+<ul>
+<li>调用Put接口写入RocksDB的数据的格式和Merge接口是相同的</li>
+<li>使用用户自定义的merge操作，可以将多个merge操作数合并成一个</li>
+</ul>
+<p>Generic MergeOperator 还可以用于非关联型数据类型的更新：例如，在RocksDB中保存json字符串，即Put接口写入data的格式为合法的json字符串。而Merge接口只希望更新json中的某个字段。使用场景为：</p>
+<ul>
+<li>merge 操作数的格式和Put不同</li>
+<li>当多个merge操作数可以合并时，PartialMerge()方法返回true</li>
+</ul>
+<h3 id="AssociativeMergeOperator"><a href="#AssociativeMergeOperator" class="headerlink" title="AssociativeMergeOperator"></a>AssociativeMergeOperator</h3><details blue><summary> Folding </summary>
+              <div class='content'>
+              <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The simpler, associative merge operator.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AssociativeMergeOperator</span> : <span class="keyword">public</span> MergeOperator &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">AssociativeMergeOperator</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Gives the client a way to express the read -&gt; modify -&gt; write semantics</span></span><br><span class="line">  <span class="comment">// key:           (IN) The key that&#x27;s associated with this merge operation.</span></span><br><span class="line">  <span class="comment">// existing_value:(IN) null indicates the key does not exist before this op</span></span><br><span class="line">  <span class="comment">// value:         (IN) the value to update/merge the existing_value with</span></span><br><span class="line">  <span class="comment">// new_value:    (OUT) Client is responsible for filling the merge result</span></span><br><span class="line">  <span class="comment">// here. The string that new_value is pointing to will be empty.</span></span><br><span class="line">  <span class="comment">// logger:        (IN) Client could use this to log errors during merge.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// Return true on success.</span></span><br><span class="line">  <span class="comment">// All values passed in will be client-specific values. So if this method</span></span><br><span class="line">  <span class="comment">// returns false, it is because client specified bad data or there was</span></span><br><span class="line">  <span class="comment">// internal corruption. The client should assume that this will be treated</span></span><br><span class="line">  <span class="comment">// as an error by the library.</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">Merge</span><span class="params">(<span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">                     <span class="type">const</span> Slice* existing_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                     <span class="type">const</span> Slice&amp; value,</span></span></span><br><span class="line"><span class="params"><span class="function">                     std::string* new_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                     Logger* logger)</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// Default implementations of the MergeOperator functions</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">FullMergeV2</span><span class="params">(<span class="type">const</span> MergeOperationInput&amp; merge_in,</span></span></span><br><span class="line"><span class="params"><span class="function">                           MergeOperationOutput* merge_out)</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">PartialMerge</span><span class="params">(<span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">                            <span class="type">const</span> Slice&amp; left_operand,</span></span></span><br><span class="line"><span class="params"><span class="function">                            <span class="type">const</span> Slice&amp; right_operand,</span></span></span><br><span class="line"><span class="params"><span class="function">                            std::string* new_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                            Logger* logger)</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+              </div>
+            </details>
+
+<p>用户需要定义一个子类，继承AssociativeMergeOperator，重载用到的接口。</p>
+<p>RocksDB持有一个MergeOperator类型的成员变量，并提供了Merge接口。用户将自定义的MergeOperator子类赋值给DB对应的成员变量，这样RocksDB可以调用用户定义的Merge方法，达到用户定义merge语义的目的。</p>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// In addition to Get(), Put(), and Delete(), the DB class now also has an additional method: Merge().</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DB</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// Merge the database entry for &quot;key&quot; with &quot;value&quot;. Returns OK on success,</span></span><br><span class="line">  <span class="comment">// and a non-OK status on error. The semantics of this operation is</span></span><br><span class="line">  <span class="comment">// determined by the user provided merge_operator when opening DB.</span></span><br><span class="line">  <span class="comment">// Returns Status::NotSupported if DB does not have a merge_operator.</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> Status <span class="title">Merge</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> WriteOptions&amp; options,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">      <span class="type">const</span> Slice&amp; value)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    ...</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  Struct Options &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// REQUIRES: The client must provide a merge operator if Merge operation</span></span><br><span class="line">    <span class="comment">// needs to be accessed. Calling Merge on a DB without a merge operator</span></span><br><span class="line">    <span class="comment">// would result in Status::NotSupported. The client must ensure that the</span></span><br><span class="line">    <span class="comment">// merge operator supplied here has the same name and *exactly* the same</span></span><br><span class="line">    <span class="comment">// semantics as the merge operator provided to previous open calls on</span></span><br><span class="line">    <span class="comment">// the same DB. The only exception is reserved for upgrade, where a DB</span></span><br><span class="line">    <span class="comment">// previously without a merge operator is introduced to Merge operation</span></span><br><span class="line">    <span class="comment">// for the first time. It&#x27;s necessary to specify a merge operator when</span></span><br><span class="line">    <span class="comment">// opening the DB in this case.</span></span><br><span class="line">    <span class="comment">// Default: nullptr</span></span><br><span class="line">    <span class="type">const</span> std::shared_ptr&lt;MergeOperator&gt; merge_operator;</span><br><span class="line">    ...</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+              </div>
+            </details>
+
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A &#x27;model&#x27; merge operator with uint64 addition semantics</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UInt64AddOperator</span> : <span class="keyword">public</span> AssociativeMergeOperator &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">Merge</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> Slice* existing_value,</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">const</span> Slice&amp; value,</span></span></span><br><span class="line"><span class="params"><span class="function">    std::string* new_value,</span></span></span><br><span class="line"><span class="params"><span class="function">    Logger* logger)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assuming 0 if no existing value</span></span><br><span class="line">    <span class="type">uint64_t</span> existing = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (existing_value) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!<span class="built_in">Deserialize</span>(*existing_value, &amp;existing)) &#123;</span><br><span class="line">        <span class="comment">// if existing_value is corrupted, treat it as 0</span></span><br><span class="line">        <span class="built_in">Log</span>(logger, <span class="string">&quot;existing value corruption&quot;</span>);</span><br><span class="line">        existing = <span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> oper;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">Deserialize</span>(value, &amp;oper)) &#123;</span><br><span class="line">      <span class="comment">// if operand is corrupted, treat it as 0</span></span><br><span class="line">      <span class="built_in">Log</span>(logger, <span class="string">&quot;operand value corruption&quot;</span>);</span><br><span class="line">      oper = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> <span class="keyword">new</span> = existing + oper;</span><br><span class="line">    *new_value = <span class="built_in">Serialize</span>(<span class="keyword">new</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;        <span class="comment">// always return true for this, since we treat all errors as &quot;zero&quot;.</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">Name</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;UInt64AddOperator&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Implement &#x27;add&#x27; directly with the new Merge operation</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MergeBasedCounters</span> : <span class="keyword">public</span> RocksCounters &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">MergeBasedCounters</span>(std::shared_ptr&lt;DB&gt; db);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// mapped to a leveldb Merge operation</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Add</span><span class="params">(<span class="type">const</span> string&amp; key, <span class="type">uint64_t</span> value)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    string serialized = <span class="built_in">Serialize</span>(value);</span><br><span class="line">    db_-&gt;<span class="built_in">Merge</span>(merge_option_, key, serialized);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// How to use it</span></span><br><span class="line">DB* dbp;</span><br><span class="line">Options options;</span><br><span class="line">options.merge_operator.<span class="built_in">reset</span>(<span class="keyword">new</span> UInt64AddOperator);</span><br><span class="line">DB::<span class="built_in">Open</span>(options, <span class="string">&quot;/tmp/db&quot;</span>, &amp;dbp);</span><br><span class="line"><span class="function">std::shared_ptr&lt;DB&gt; <span class="title">db</span><span class="params">(dbp)</span></span>;</span><br><span class="line"><span class="function">MergeBasedCounters <span class="title">counters</span><span class="params">(db)</span></span>;</span><br><span class="line">counters.<span class="built_in">Add</span>(<span class="string">&quot;a&quot;</span>, <span class="number">1</span>);</span><br><span class="line">...</span><br><span class="line"><span class="type">uint64_t</span> v;</span><br><span class="line">counters.<span class="built_in">Get</span>(<span class="string">&quot;a&quot;</span>, &amp;v);</span><br></pre></td></tr></table></figure>
+              </div>
+            </details>
+
+<h3 id="Generic-MergeOperator"><a href="#Generic-MergeOperator" class="headerlink" title="Generic MergeOperator"></a>Generic MergeOperator</h3><ul>
+<li>MergeOperator提供了两个方法, FullMerge和PartialMerge. 第一个方法用于对已有的值做Put或Delete操作. 第二个方法用于在可能的情况下将两个操作数合并.</li>
+<li>AssociativeMergeOperator继承了MergeOperator, 并提供了这些方法的默认实现, 暴露了简化后的接口.</li>
+<li>MergeOperator的FullMerge方法的传入exsiting_value和一个操作数序列, 而不是单独的一个操作数.</li>
+</ul>
+<details blue><summary> Folding </summary>
+              <div class='content'>
+              <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The Merge Operator</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Essentially, a MergeOperator specifies the SEMANTICS of a merge, which only</span></span><br><span class="line"><span class="comment">// client knows. It could be numeric addition, list append, string</span></span><br><span class="line"><span class="comment">// concatenation, edit data structure, ... , anything.</span></span><br><span class="line"><span class="comment">// The library, on the other hand, is concerned with the exercise of this</span></span><br><span class="line"><span class="comment">// interface, at the right time (during get, iteration, compaction...)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MergeOperator</span> &#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="keyword">virtual</span> ~<span class="built_in">MergeOperator</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Gives the client a way to express the read -&gt; modify -&gt; write semantics</span></span><br><span class="line">  <span class="comment">// key:         (IN) The key that&#x27;s associated with this merge operation.</span></span><br><span class="line">  <span class="comment">// existing:    (IN) null indicates that the key does not exist before this op</span></span><br><span class="line">  <span class="comment">// operand_list:(IN) the sequence of merge operations to apply, front() first.</span></span><br><span class="line">  <span class="comment">// new_value:  (OUT) Client is responsible for filling the merge result here</span></span><br><span class="line">  <span class="comment">// logger:      (IN) Client could use this to log errors during merge.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// Return true on success. Return false failure / error / corruption.</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">FullMerge</span><span class="params">(<span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">                          <span class="type">const</span> Slice* existing_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                          <span class="type">const</span> std::deque&lt;std::string&gt;&amp; operand_list,</span></span></span><br><span class="line"><span class="params"><span class="function">                          std::string* new_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                          Logger* logger)</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// This function performs merge(left_op, right_op)</span></span><br><span class="line">  <span class="comment">// when both the operands are themselves merge operation types.</span></span><br><span class="line">  <span class="comment">// Save the result in *new_value and return true. If it is impossible</span></span><br><span class="line">  <span class="comment">// or infeasible to combine the two operations, return false instead.</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">PartialMerge</span><span class="params">(<span class="type">const</span> Slice&amp; key,</span></span></span><br><span class="line"><span class="params"><span class="function">                            <span class="type">const</span> Slice&amp; left_operand,</span></span></span><br><span class="line"><span class="params"><span class="function">                            <span class="type">const</span> Slice&amp; right_operand,</span></span></span><br><span class="line"><span class="params"><span class="function">                            std::string* new_value,</span></span></span><br><span class="line"><span class="params"><span class="function">                            Logger* logger)</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The name of the MergeOperator. Used to check for MergeOperator</span></span><br><span class="line">  <span class="comment">// mismatches (i.e., a DB created with one MergeOperator is</span></span><br><span class="line">  <span class="comment">// accessed using a different MergeOperator)</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">const</span> <span class="type">char</span>* <span class="title">Name</span><span class="params">()</span> <span class="type">const</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+              </div>
+            </details>
+
+<p>当调用DB::Put()和DB:Merge()接口时, 并不需要立刻计算最后的结果. RocksDB将计算的动作延后触发, 例如在下一次用户调用Get, 或者RocksDB决定做Compaction时. 所以, 当merge的动作真正开始做的时候, 可能积压(stack)了多个操作数需要处理. 这种情况就需要MergeOperator::FullMerge来对existing_value和一个操作数序列进行计算, 得到最终的值.</p>
+<h3 id="PartialMerge和Stacking"><a href="#PartialMerge和Stacking" class="headerlink" title="PartialMerge和Stacking"></a>PartialMerge和Stacking</h3><p>有时候, 在调用FullMerge之前, 可以先对某些merge操作数进行合并处理, 而不是将它们保存起来, 这就是PartialMerge的作用: 将两个操作数合并为一个, 减少FullMerge的工作量.<br>当遇到两个merge操作数时, RocksDB总是先会尝试调用用户的PartialMerge方法来做合并, 如果PartialMerge返回false才会保存操作数. 当遇到Put&#x2F;Delete操作, 就会调用FullMerge将已存在的值和操作数序列传入, 计算出最终的值.</p>
+<hr>
+<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><p>Leveled Compaction 流程大致为：</p>
+<ol>
+<li>找到 score 最高的 level</li>
+<li>根据一定策略从 level 中选择一个 sst 文件进行 compact，L0 的各个 sst 文件之间 key 有重叠，所以可能一次选取多个</li>
+<li>获取 sst 文件的 minkey 和 maxkey</li>
+<li>从 level + 1 中选取出于 (minkey, maxkey) 有重叠的 sst 文件，与 level 中的文件进行 <code>merge - sort</code> 作为目标文件，没有重叠文件则把原始文件作为目标文件</li>
+<li>对目标文件进行压缩后放入 level + 1 中</li>
+</ol>
+<p><strong>L0 subcompaction</strong></p>
+<p>参数 maxbackgroundcompactions 大于 1 时，RocksDB 会进行并行 Compact，但 L0 到 L1 层的 Compaction 任务不能进行并行，这会约束整体 compaction 速度。可以设置 max_subcompactions 参数大于 1，尝试把一个文件拆为多个 sub，启动多个线程执行 sub-compact。<br><img src="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>Compaction的选择策略</strong></p>
+<p>当多个level都满足触发compaction的条件，rocksdb通过计算得分来选择先做哪一个level的compaction。</p>
+<ul>
+<li>对于非0 level，score &#x3D; <code>该level文件的总长度 / 阈值</code>。已经正在做compaction的文件不计入总长度中。</li>
+<li>对于L0，score &#x3D; <code>max&#123;文件数量 / level0_file_num_compaction_trigger， L0文件总长度 / max_bytes_for_level_base&#125;</code> 并且 <code>L0文件数量 &gt; level0_file_num_compaction_trigger</code>。</li>
+</ul>
+<p><strong>Compaction触发阈值</strong></p>
+<p>每一层的compaction阈值设置策略由 <code>level_compaction_dynamic_level_bytes</code> 来决定。</p>
+<p>当 level_compaction_dynamic_level_bytes 为 false：</p>
+<ul>
+<li>L1 触发阈值：max_bytes_for_level_base</li>
+<li>下面的level触发阈值通过公式计算：Target_Size(Ln+1) &#x3D; Target_Size(Ln) * max_bytes_for_level_multiplier * max_bytes_for_level_multiplier_additional[n].max_bytes_for_level_multiplier_additional</li>
+</ul>
+<blockquote>
+<p>max_bytes_for_level_base &#x3D; 16384<br>max_bytes_for_level_multiplier &#x3D; 10<br>max_bytes_for_level_multiplier_additional &#x3D; 1<br>那么每个level的触发阈值为 L1, L2, L3 and L4 分别为 16384, 163840, 1638400 和 16384000</p>
+</blockquote>
+<p>当 level_compaction_dynamic_level_bytes 为 true：</p>
+<ul>
+<li>最后一个level的文件长度总是固定的。</li>
+<li>上面level触发阈值通过公式计算：Target_Size(Ln-1) &#x3D; Target_Size(Ln) &#x2F; max_bytes_for_level_multiplier。如果计算得到的值小于 max_bytes_for_level_base &#x2F; max_bytes_for_level_multiplier， 那么该level将维持为空，L0做compaction时将直接merge到第一个有合法阈值的level上。</li>
+</ul>
+<blockquote>
+<p>max_bytes_for_level_base &#x3D; 1G<br>num_levels &#x3D; 6<br>level 6 size &#x3D; 276G<br>那么从L1到L6的触发阈值分别为：0， 0， 0.276G， 2.76G， 27.6G，276G。<br>这样分配保证了稳定的 LSM-tree 结构。并且有 90% 的数据在最后一层，9%的数据在倒数第二层<br><img src="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" class="lazyload" data-srcset="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<hr>
+<h2 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h2><p>blob_db参考了WiscKey的思想，设计的kv存储分离，可以有效的减小写放大。<br>LSM树里面只存储key和value的地址，这样后台线程compact的时候可以少读写很多数据。<br>rocksdb里面增加一种类型：kTypeBlobIndex 表示value是否blob_db的地址。</p>
+<h3 id="写流程"><a href="#写流程" class="headerlink" title="写流程"></a>写流程</h3><p>首先判断value大小是否超过配置，超过了就写blob_db，然后在把offset和文件id做为value写入lsm树。</p>
+<p>否则就是正常的rocksdb写入。如果设置了db最大size，并且磁盘空间超过限制了，就会淘汰删除最老的blob文件。</p>
+<p>blob文件格式：<br>head结构<br>|—-|—-|—-|-|-|——–|———|<br>magic version cf_id flag expiration_start expiration_end<br>foot结构<br>|—-|——–|——–|———|—-|<br>magic count expiration_start expiration_end crc</p>
+<p>和sst文件一样，blob文件写完以后，不会被更改，只能被删除。<br>每个blob文件都有size限制，超过这个限制就会和wal一样，重新打开一个blob文件写入。<br>每个blob文件没有类似rocksdb那样的level层级。</p>
+<h3 id="读流程-1"><a href="#读流程-1" class="headerlink" title="读流程"></a>读流程</h3><p>主要的流程还是和普通的db一样，增加GetImplOptions里面is_blob_index选项。<br>BlobDBOptions选项里面min_blob_size控制多大的value存储在blob_db中，小于min_blob_size，还是和原来一样，存储在lsm树。<br>根据返回的value类型判断，如果是kTypeBlobIndex，那么就需要再从blob_db获取真正的value，可以看到比原来多了一次读。<br>先需要解码lsm树里面获取的value,找到对应的blob_db里面的文件和offset,然后再获取真正的数据。</p>
+<h3 id="GC流程"><a href="#GC流程" class="headerlink" title="GC流程"></a>GC流程</h3><p>每个blob文件或者会有几个对应的sst文件，或者对应几个memtable。<br>只有blob文件没有关联的sst文件并且blob文件的seq比flush_seq大，才满足被gc删除条件。<br>后台线程会周期性的删除无用的blob文件。<br>Flush memtable的时候会跟进value类型判断，如果valuekTypeBlobIndex，则会更新文件对应的最早的blob文件。<br>Flush完成以后会调用blob的回调函数，建立新的sst文件和blob文件的对应关系。<br>Compact完成以后也会调用blob的回调函数，老的sst文件和blob文件映射关系解除，增加新的sst文件和blob文件的映射关系。</p>
+<hr>
+<h2 id="内存结构"><a href="#内存结构" class="headerlink" title="内存结构"></a>内存结构</h2><p>RocksDB的内存大致有如下四个区：</p>
+<ul>
+<li>Block Cache</li>
+<li>Indexes and bloom filters</li>
+<li>Memtables</li>
+<li>Blocked pinned by iterators</li>
+</ul>
+<h3 id="Block-Cache"><a href="#Block-Cache" class="headerlink" title="Block Cache"></a>Block Cache</h3><p>在内存中缓存数据用于读取。一个Cache对象可以在同一个进程中被多个 DB 实例共享，从而允许用户控制整个缓存容量。Block Cache 存储未压缩的块，用户可以选择设置第二个 Block Cache 存储压缩块。先读取未压缩的块，再读取压缩的块。如果使用Direct-IO，压缩块缓存可以替代 Page cache。</p>
+<p>RocksDB 中有两种缓存实现，分别是 LRUCache 和 ClockCache。两种类型的缓存都被分片以减轻锁争用。默认每个缓存将被分片为最多 64 个分片，每个分片的容量不低于 512k 字节。</p>
+<h3 id="Indexes-and-bloom-filters"><a href="#Indexes-and-bloom-filters" class="headerlink" title="Indexes and bloom filters"></a>Indexes and bloom filters</h3><p>Index 由 key、offset 和 size 三部分构成，通常仅索引每个 Block 中的第一个 key（或者是一个代表性的 key）。当 Block Cache 增大 Block Size 时，block 个数必会减小，index 个数也会随之降低，如果减小 key size，index 占用内存空间的量也会随之降低。</p>
+<p>filter是 bloom filter 的实现，如果缩小 bloom 占用的空间，可以设置 <code>options.optimize_filters_for_hits = true</code>，则最后一个 level 的 filter 会被关闭，bloom 占用率只会用到原来的 10% 。</p>
+<p>默认情况下 index 和 filter block 与 block cache 是独立的，用户不能设定二者的内存空间使用量，但为了控制 RocksDB 的内存空间使用量，可以设置 <code>cache_index_and_filter_blocks = true</code>，将 index &amp; filter 存入 block cache。</p>
+<p>需要注意的是，index 与 filter 一般访问频次比 data 高，所以把他们放到一起会导致内存空间与 cpu 资源竞争，进而导致 cache 性能抖动厉害。有两个优化方式：</p>
+<ul>
+<li><code>cache_index_and_filter_blocks_with_high_priority = true</code> 和 <code>high_pri_pool_ratio = 0.8</code>，会把 LRU Cache 划分为高低优先级的两个区域，data 放在 low 区，index 和 filter 放在 high 区，如果高区占用的内存空间超过了 80%，则会侵占 low 区的尾部数据空间。</li>
+<li><code>pin_l0_filter_and_index_blocks_in_cache</code> 设为 true，把 level0 的 index 以及 filter block 放到 Block Cache 中，因为 l0 访问频次最高，一般内存容量不大，占用不了多大内存空间。</li>
+</ul>
+<p>如果 <code>cache_index_and_filter_blocks = false</code>（默认值），index&#x2F;filter 个数就会受 <code>max_open_files</code> 影响，官方建议把这个选项设置为 -1，以方便 RocksDB 加载所有的 index 和 filter 文件，最大化程序性能。</p>
+<h3 id="Memory-pool"><a href="#Memory-pool" class="headerlink" title="Memory pool"></a>Memory pool</h3><p>不管 RocksDB 有多少 column family，一个 DB 只有一个 WriteController，一旦 DB 中一个 column family 发生堵塞，那么就会阻塞其他 column family 的写。RocksDB 写入时间长了以后，可能会不定时出现较大的写毛刺，可能有两个地方导致 RocksDB 会出现较大的写延时：</p>
+<ol>
+<li>获取 mutex 时可能出现几十毫秒延迟：因为 flush&#x2F;compact 线程与读写线程竞争导致的，可以通过调整线程数量降低毛刺时间。</li>
+<li>数据写入 memtable 时候可能出现几百毫秒延时：解决方法一就是使用大的 page cache，禁用系统 swap 以及配置 min_free_kbytes、dirty_ratio、dirty_background_ratio 等参数来调整系统的内存回收策略，更基础的方法是使用内存池。</li>
+</ol>
+<p>采用内存池时，memtable 的内存分配和回收流程图如下：<br><img src="https://alexstocks.github.io/pic/rocksdb_mempool.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_mempool.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<hr>
+<h2 id="磁盘结构"><a href="#磁盘结构" class="headerlink" title="磁盘结构"></a>磁盘结构</h2><p>RocksDB 磁盘上的数据种类：</p>
+<ul>
+<li>DB 的操作日志</li>
+<li>存储实际数据的 SSTable 文件</li>
+<li>DB 的元信息 Manifest 文件</li>
+<li>记录当前正在使用的 Manifest 文件，它的内容就是当前的 Manifest 文件名</li>
+<li>系统的运行日志，记录系统的运行信息或者错误日志</li>
+<li>临时数据库文件，repair 时临时生成的</li>
+</ul>
+<p><img src="https://alexstocks.github.io/pic/leveldb_arch.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_arch.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="Write-Ahead-Log"><a href="#Write-Ahead-Log" class="headerlink" title="Write Ahead Log"></a>Write Ahead Log</h3><p><img src="https://alexstocks.github.io/pic/rocksdb_log_block_record.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_log_block_record.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>如上图，log 文件的逻辑单位是 Record，物理单位是 block，每个 Record 可以存在于一个 block 中，也可以占用多个 block。Record 的详细结构见上图文字部分，其 type 字段的意义见下图，如果某 KV 过长则可以用多 Record 存储。</p>
+<p><img src="https://alexstocks.github.io/pic/rocksdb_log_record.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_log_record.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="Manifest"><a href="#Manifest" class="headerlink" title="Manifest"></a>Manifest</h3><blockquote>
+<p><code>MANIFEST</code> 是指在事务日志中跟踪 RocksDB 状态变化的系统<br><code>Manifest-&lt;seq no&gt;</code> 是指包含 RocksDB 状态快照&#x2F;编辑的单个日志文件<br><code>CURRENT</code> 是指当前最新的 mainfest log</p>
+</blockquote>
+<p>RocksDB 是文件系统和存储介质无关的。文件系统操作不是原子操作，在系统故障时很容易出现不一致。即使打开了日志记录，文件系统也不能保证不干净重启时的一致性，POSIX 文件系统也不支持原子批处理操作。为了避免进程崩溃或机器宕机导致的数据丢失，RocksDB 需要将元信息数据持久化到磁盘，承担这个任务的就是 Manifest 文件，每当有新的Version产生都需要更新 Manifest。</p>
+<p><strong>Manifest 文件记录了 DB 状态变化的事务性日志，即所有改变 DB 状态的操作</strong>。任意时间存储引擎的状态都会保存为一个Version（即SST的集合），而每次对 Version 的修改都是一个VersionEdit，而最终这些 VersionEdit 就是组成 Manifest 文件的内容。在 Manifest 中的一次增量内容称作一个Block，Manifest Block 的详细结构如下图所示：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest_block_item.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>RocksDB 进程 Crash 后 Reboot 的过程中，会首先读取 Manifest 文件在内存中重建 LSM 树，然后根据 WAL 日志文件恢复 Memtable 内容。</p>
+<p>下图是 leveldb 的 Manifest 文件结构，这个 Manifest 文件有以下文件内容：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="VersionSet"><a href="#VersionSet" class="headerlink" title="VersionSet"></a>VersionSet</h3><p>VersionSet 是 RocksDB 用于管理数据库版本和存储布局的核心结构。它包含了关于当前数据库版本的信息，以及该版本所包含的 SST 文件、ColumnFamily、memtable 等的状态信息。</p>
+<p>RocksDB 的 Version 表示一个版本的 metadata，其主要内容是 FileMetaData 指针的二维数组，分层记录了所有的SST文件信息。FileMetaData 用来维护一个文件的元信息，包括文件大小、文件编号、最大最小值、引用计数等信息，其中引用计数记录了被不同的 Version 引用的个数，保证被引用中的文件不会被删除。</p>
+<p>Version中还记录了触发 Compaction 相关的状态信息，这些信息会在读写请求或 Compaction 过程中被更新。在 CompactMemTable 和 BackgroundCompaction 过程中会导致新文件的产生和旧文件的删除，每当这个时候都会有一个新的对应的 Version 生成，并插入 VersionSet 链表头部，LevelDB 用 VersionEdit 来表示这种相邻 Version 的差值。</p>
+<p><img src="https://alexstocks.github.io/pic/leveldb_versionset.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_versionset.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>VersionSet 结构如上图所示，它是一个 Version 构成的双向链表，这些 Version 按时间顺序先后产生，记录了当时的元信息，链表头指向当前最新的 Version，同时维护了每个 Version 的引用计数，被引用中的 Version 不会被删除，其对应的 SST 文件也因此得以保留，通过这种方式，使得LevelDB 可以在一个稳定的快照视图上访问文件。VersionSet 中除 Version 的双向链表外还会记录一些如 LogNumber、Sequence、下一个SST文件编号的状态信息。</p>
+<h3 id="MetaData-Restore"><a href="#MetaData-Restore" class="headerlink" title="MetaData Restore"></a>MetaData Restore</h3><p><img src="https://alexstocks.github.io/pic/leveldb_data_restore.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_data_restore.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>上图最上面的流程显示了恢复元信息的过程，也就是一次应用 VersionEdit 的过程，这个过程会有大量的临时 Version 产生，但这种方法显然太过于耗费资源，LevelDB 引入 <code>VersionSet::Builder</code> 来避免这种中间变量，方法是先将所有的 VersoinEdit 内容整理到 VersionBuilder 中，然后一次应用产生最终的 Version，如上图下部分所示。</p>
+<p>数据恢复的详细流程如下：</p>
+<ul>
+<li>依次读取Manifest文件中的每一个Block，将从文件中读出的 Record 反序列化为 VersionEdit；</li>
+<li>将每一个的 VersionEdit Apply 到 <code>VersionSet::Builder</code> 中，进而生成Version；</li>
+<li>计算compactionlevel、compactionscore；</li>
+<li>将新生成的 Version 挂到 VersionSet 中，并初始化 VersionSet 的 manifestfilenumber，nextfilenumber，lastsequence，lognumber，prevlognumber 信息；</li>
+</ul>
+<h3 id="SST-file"><a href="#SST-file" class="headerlink" title="SST file"></a>SST file</h3><p><img src="https://alexstocks.github.io/pic/leveldb_sst_file.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_file.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>SSTfile 结构如下，大致分为几个部分：</p>
+<ul>
+<li>Data Block 直接存储有序键值对，是 SSTfile 的数据实体</li>
+<li>Meta Block 存储 Filter 相关信息</li>
+<li>Meta Index Block 是 Meta Block 的索引，它只有一条记录</li>
+<li>Index Block 是 Key 到 Data Block 的索引，是提高查询效率的关键</li>
+<li>Footer 指向各个分区的位置和大小</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;beginning_of_file&gt;</span><br><span class="line">[data block 1]</span><br><span class="line">[data block 2]</span><br><span class="line">…</span><br><span class="line">[data block N]</span><br><span class="line">[meta block 1: filter block]</span><br><span class="line">[meta block 2: stats block]</span><br><span class="line">[meta block 3: compression dictionary block]</span><br><span class="line">…</span><br><span class="line">[meta block K: future extended block]</span><br><span class="line">[metaindex block]</span><br><span class="line">[index block]</span><br><span class="line">[Footer]</span><br><span class="line">&lt;end_of_file&gt;</span><br></pre></td></tr></table></figure>
+
+<p>RocksDB 执行查询或修改时会引用当前 version，对该 version 下的 sst file 设置 reference count，Compact完成后要等 reference count 降为 0 后才能将文件真正的删除。</p>
+<p>Block结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>Record 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>Footer 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="Memtable"><a href="#Memtable" class="headerlink" title="Memtable"></a>Memtable</h3><p>Memtable 中存储了一些 metadata 和 data，data 在 skiplist 中存储。metadata 数据如下：</p>
+<ul>
+<li>当前日志句柄；</li>
+<li>版本管理器、当前的版本信息（对应 compaction）和对应的持久化文件标示；</li>
+<li>当前的全部db配置信息比如 comparator 及其对应的 memtable 指针；</li>
+<li>当前的状态信息以决定是否需要持久化 memtable 和合并 sstable；</li>
+<li>sstable 文件集合的信息。</li>
+</ul>
+<h3 id="Snapshot-1"><a href="#Snapshot-1" class="headerlink" title="Snapshot"></a>Snapshot</h3><p>RocksDB 每次进行更新操作就会把更新内容写入 Manifest 文件，同时它会更新版本号。</p>
+<p>版本号是一个 8 字节的证书，每个 key 更新时，除了新数据被写入数据文件，同时记录下 RocksDB 的版本号。RocksDB 的 Snapshot 数据仅仅是逻辑数据，并没有对应的真实存在的物理数据，仅仅对应一下当前 RocksDB 的全局版本号而已，只要 Snapshot 存在，每个 key 对应版本号的数据在后面的更新、删除、合并时会一并存在，不会被删除，以保证数据一致性。</p>
+<h3 id="Checkpoints"><a href="#Checkpoints" class="headerlink" title="Checkpoints"></a>Checkpoints</h3><p>Checkpoints 是 RocksDB 提供的一种 snapshot，独立的存在一个单独的不同于 RocksDB 自身数据目录的目录中，既可以 ReadOnly 模式打开，也可以 Read-Write 模式打开。Checkpoints 被用于全量或者增量 Backup 机制中。</p>
+<p>如果 Checkpoints 目录和 RocksDB 数据目录在同一个文件系统上，则 Checkpoints 目录下的 SST 是一个 hard link（SST 文件是 Read-Only的），而 manifest 和 CURRENT 两个文件则会被拷贝出来。如果 DB 有多个 Column Family，wal 文件也会被复制，其时间范围足以覆盖 Checkpoints 的起始和结束，以保证数据一致性。</p>
+<p>如果以 Read-Write 模式打开 Checkpoints 文件，则其中过时的 SST 文件会被删除掉。</p>
+<h3 id="Backup"><a href="#Backup" class="headerlink" title="Backup"></a>Backup</h3><p>RocksDB 提供了 point-of-time 数据备份功能，可以调用 BackupEngine::CreateNewBackup(db, flush_before_backup &#x3D; false) 接口进行数据备份， 其大致流程如下：</p>
+<ol>
+<li>禁止删除文件（sst 文件和 log 文件）；</li>
+<li>调用 GetLiveFiles() 获取当前的有效文件，如 table files, current, options and manifest file;</li>
+<li>将 RocksDB 中的所有的 sst&#x2F;Manifest&#x2F;配置&#x2F;CURRENT 等有效文件备份到指定目录；GetLiveFiles() 接口返回的 SST 文件如果已经被备份过，则这个文件不会被重新复制到目标备份目录，但是 BackupEngine 会对这个文件进行 checksum 校验，如果校验失败则会中止备份过程。</li>
+<li>如果 flush_before_backup 为 false，则BackupEngine 会调用 GetSortedWalFiles() 接口把当前有效的 wal 文件也拷贝到备份目录；</li>
+<li>重新允许删除文件。</li>
+</ol>
+<p>sst 文件只有在 compact 时才会被删除，所以禁止删除就相当于禁止了 compaction。别的 RocksDB 在获取这些备份数据文件后会依据 Manifest 文件重构 LSM 结构的同时，也能恢复出 WAL 文件，进而重构出当时的 memtable 文件。</p>
+<p>在进行 Backup 的过程中，写操作是不会被阻塞的，所以 WAL 文件内容会在 backup 过程中发生改变。RocksDB 的 flushbeforebackup 选项用来控制在 backup 时是否也拷贝 WAL，其值为 true 则不拷贝。</p>
+<blockquote>
+<p>Snapshot 仅仅存在于逻辑概念上，其对应的实际物理文件可能正被 compaction 线程执行写任务；<br>Checkpoint 则是实际物理文件的一个镜像，或者说是一个硬链接，而出处于同样的 Env 下（都是 RocksDB 数据文件格式）；<br>Backup 虽然也是物理数据的镜像，但是与原始数据处于不同的 Env 下（如 backup 可能在 HDFS 上）；</p>
+</blockquote>
+<hr>
+<h2 id="调优配置"><a href="#调优配置" class="headerlink" title="调优配置"></a>调优配置</h2><h3 id="如何保证数据快速写入RocksDb"><a href="#如何保证数据快速写入RocksDb" class="headerlink" title="如何保证数据快速写入RocksDb"></a>如何保证数据快速写入RocksDb</h3><ol>
+<li>使用单个写入线程并且有序插入</li>
+<li>将数百个键批量写入一批</li>
+<li>memtable底层数据结构使用vector</li>
+<li>确保<code>options.max_background_flushes</code>至少为4</li>
+<li>在插入数据之前，禁用自动压缩，将 options.level0_file_num_compaction_trigger、options.level0_slowdown_writes_trigger 和 options.level0_stop_writes_trigger 设置为非常大的值。插入所有数据后，发出手动压缩。如果调用了Options::PrepareForBulkLoad()，后面三个方法会被自动启用；</li>
+<li>可以通过 <code>SstFileWriter</code> 直接创建 SST 文件并添加到 RocksDB 中。但是它的键范围一定不能与数据库重叠。</li>
+</ol>
+<h3 id="WriteStall触发场景"><a href="#WriteStall触发场景" class="headerlink" title="WriteStall触发场景"></a>WriteStall触发场景</h3><p>当RocksDB的flush或compact 速度落后于数据写入速度就会增加空间放大和读放大，可能导致磁盘空间被撑满或严重的读性能下降，为此则需要限制数据写入速度或者完全停止写入，这个限制就是write  stall，触发原因有三个：</p>
+<p><strong>1. memtable数量过多</strong></p>
+<ul>
+<li>当memtable数量达到min-write-buffer-number-to-merge (默认值为1) 参数个时会触发flush，Flush慢主要由于磁盘性能问题引起</li>
+<li>当等待flush的memetable数量达到参数max-write-buffer-number时会完全停止写入。当max-write-buffer-number&gt;3且等待flush的memetable数量&gt;&#x3D;参数max-write-buffer-number-1时会降低写入速度。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max-write-buffer-number、max_background_jobs 、write_buffer_size 进行缓解。</li>
+</ul>
+<p><strong>2. L0数量过多</strong></p>
+<ul>
+<li>当L0 sst文件数达到level0_slowdown_writes_trigger后会触发write stall 降低写入速度，当达到level0_stop_writes_trigger则完全停止写入。</li>
+<li>当由于memtable数量引起write stall时，内存充足的情况下可尝试调大max_background_jobs 、write_buffer_size、min-write-buffer-number-to-merge进行缓解。</li>
+</ul>
+<p><strong>3. 待compact的数据量过多</strong></p>
+<ul>
+<li>当需要compact的文件数量达到soft_pending_compaction_byte参数值时会触发write stall，降低写入速度，当达到hard_pending_compaction_byte时会完全停止写入.</li>
+</ul>
+<hr>
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><ul>
+<li>如果机器崩溃后重启，则 RocksDB 能够恢复的数据是同步写【WriteOptions.sync&#x3D;true】调用 DB::SyncWAL() 之前的数据 或者已经被写入 L0 的 memtable 的数据都是安全的；</li>
+<li>可以通过 GetIntProperty(cf_handle, “rocksdb.estimate-num-keys”) 获取一个 column family 中大概的 key 的个数；</li>
+<li>可以通过 GetAggregatedIntProperty(“rocksdb.estimate-num-keys”, &amp;num_keys) 获取整个 RocksDB 中大概的 key 的总数，之所以只能获取一个大概数值是因为 RocksDB 的磁盘文件有重复 key，而且 compact 的时候会进行 key 的淘汰，所以无法精确获取；</li>
+<li>当进程中还有线程在对 RocksDB 进行 读、写或者手工 compaction 的时候，不能强行关闭它；</li>
+<li>关闭 RocksDB 对象时，如果是通过 DestroyDB() 去关闭时，这个 RocksDB 还正被另一个进程访问，则会造成不可预料的后果；</li>
+<li>当 BackupOptions::backup_log_files 或者 flush_before_backup 的值为 true 的时候，如果程序调用 CreateNewBackup() 则 RocksDB 会创建 point-in-time snapshot，RocksDB进行数据备份的时候不会影响正常的读写逻辑；</li>
+<li>RocksDB 启动之后不能修改 prefix extractor；</li>
+<li>SstFileWriter API 可以用来创建 SST 文件，如果这些 SST 文件被添加到别的 RocksDB 数据库发生 key range 重叠，则会导致数据错乱；</li>
+<li>使用多磁盘时，RAID 的 stripe size 不能小于 64kb，推荐使用1MB；</li>
+<li>RocksDB 可以针对每个 SST 文件通过 ColumnFamilyOptions::bottommost_compression 使用不同的压缩的方法；</li>
+<li>当多个 Handle 指向同一个 Column Family 时，其中一个线程通过 DropColumnFamily() 删除一个 CF 的时候，其引用计数会减一，直至为 0 时整个 CF 会被删除；</li>
+<li>RocksDB 接受一个写请求的时候，可能因为 compact 会导致 RocksDB 多次读取数据文件进行数据合并操作；</li>
+<li>RocksDB 不直接支持数据的复制，但是提供了 API GetUpdatesSince() 供用户调用以获取某个时间点以后更新的 kv；</li>
+<li>options.prefixextractor 一旦启用，就无法继续使用 Prev() 和 SeekToLast() 两个 API，可以把 ReadOptions.totalorder_seek 设置为 true，以禁用 prefix iterating；</li>
+<li>当 BlockBaseTableOptions::cache_index_and_filter_blocks 的值为 true 时，在进行 Get() 调用的时候相应数据的 bloom filter 和 index block 会被放进 LRU cache 中，如果这个参数为 false 则只有 memtable 的 index 和 bloom filter 会被放进内存中；</li>
+<li>当调用 Put() 或者 Write() 时参数 WriteOptions.sync 的值为 true，则本次写以前的所有 WriteOptions.disableWAL 为 false 的写的内容都会被固化到磁盘上；</li>
+<li>禁用 WAL 时，DB::Flush() 只对单个 Column Family 的数据固化操作是原子的，对多个 Column Family 的数据操作则不是原子的，官方考虑将来会支持这个 feature；</li>
+<li>当使用自定义的 comparators 或者 merge operators 时，ldb 工具就无法读取 sst 文件数据；</li>
+<li>RocksDB 执行前台的 Get() 和 Write() 任务遇到错误时，它会返回 rocksdb::IOError 具体值；</li>
+<li>RocksDB 执行后台任务遇到错误时 且 options.paranoid_checks 值为 true，则 RocksDB 会自动进入只读模式；</li>
+<li>RocksDB 一个线程执行 compact 的时候，这个任务是不可取消的，可以在另一个线程调用 CancelAllBackgroundWork(db, true) 以中断正在执行的 compact 任务；</li>
+<li>当多个进程打开一个 RocksDB 时，如果指定的 compact 方式不一样，则后面的进程会打开失败；</li>
+<li>RocksDB 不支持多列；</li>
+<li>RocksDB 的读并不是无锁的，有如下情况：(1) 访问 sharded block cache (2) 如果 table cache options.maxopenfiles 不等于 -1 (3) 如果 flush 或者 compaction 刚刚完成，RocksDB 此时会使用全局 mutex lock 以获取 LSM 树的最新 metadata (4) RocksDB 使用的内存分配器如 jemalloc 有时也会加锁，这四种情况总体很少发生，总体可以认为读是无锁的；</li>
+<li>如果想高效的对所有数据进行 iterate，则可以创建 snapshot 然后再遍历；</li>
+<li>如果一个 key space range (minkey, maxkey) 很大，则使用 Column Family 对其进行 sharding，如果这个 range 不大则不要单独使用一个 Column Family；</li>
+<li>RocksDB 没有进行 compaction 的时候，可以通过 rocksdb.estimate-live-data-size 可以估算 RocksDB 使用的磁盘空间；</li>
+<li>即使没有被标记为删除的 key，也没有数据过期，RocksDB 仍然会执行 compaction，以提高读性能；</li>
+<li>RocksDB 的 key 和 value 是存在一起的，遍历一个 key 的时候，RocksDB 已经把其 value 读入 cache 中；</li>
+<li>对于一个离线 DB 可以通过 sstdump –showproperties –command&#x3D;none 命令获取特定 sst 文件的 index &amp; filter 的 size，对于正在运行的 DB 可以通过读取 DB 的属性 kAggregatedTableProperties 或者调用 DB::GetPropertiesOfAllTables() 获取 DB 的 index &amp; filter 的 size。</li>
+</ul>
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-09-07T17:36:52+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Sep 7, 2025</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Storage/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Storage</p></a></div>
+  <span hidden itemprop="keywords">Storage</span>
+
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
+    
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2025/06/30/Distribution/GFS/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>GFS</p>
+          <p class='content'>GFS的产生背景GFS是Google针对其数据访问量和应用场景而设计的分布式存储系统，其特点：
+
+数据量大：海量数据，大文件为主，每个文件有几百MB，甚至几GB大小。系统支持小文件，但不需要针对...</p>
+        </a>
+      
+      
+        <a class='next' href='/2025/02/03/OS/Linux/'>
+          <p class='title'>Linux<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>Cgroup进程绑核
+12345678910cd /sys/fs/cgroup/cpusetmkdir mygroup &amp;&amp; cd mygroup## 避免报错 write er...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
+  
+
+
+
+
+
+</div>
+<aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
+  
+
+  
+    
+    
+      
+    
+  
+
+
+<div class="widget-sticky pjax">
+
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Basic-Operations"><span class="toc-number">1.</span> <span class="toc-text">Basic Operations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Iterator"><span class="toc-number">1.1.</span> <span class="toc-text">Iterator</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Prefix-Iterator"><span class="toc-number">1.1.1.</span> <span class="toc-text">Prefix Iterator</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Prefix-Bloom-filter"><span class="toc-number">1.1.2.</span> <span class="toc-text">Prefix Bloom filter</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bloom-Filter"><span class="toc-number">1.2.</span> <span class="toc-text">Bloom Filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compaction-Filter"><span class="toc-number">1.3.</span> <span class="toc-text">Compaction Filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Snapshot"><span class="toc-number">1.4.</span> <span class="toc-text">Snapshot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Low-Priority-Write"><span class="toc-number">1.5.</span> <span class="toc-text">Low Priority Write</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Column-Families"><span class="toc-number">1.6.</span> <span class="toc-text">Column Families</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LSM-Tree"><span class="toc-number">1.7.</span> <span class="toc-text">LSM-Tree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Checksums"><span class="toc-number">1.8.</span> <span class="toc-text">Checksums</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Thread-Pool"><span class="toc-number">1.9.</span> <span class="toc-text">Thread Pool</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Setup-Option"><span class="toc-number">1.10.</span> <span class="toc-text">Setup Option</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">1.11.</span> <span class="toc-text">读流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E8%AF%BB%E5%8F%96"><span class="toc-number">1.12.</span> <span class="toc-text">预读取</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Merge"><span class="toc-number">2.</span> <span class="toc-text">Merge</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MergeOperator"><span class="toc-number">2.1.</span> <span class="toc-text">MergeOperator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AssociativeMergeOperator"><span class="toc-number">2.2.</span> <span class="toc-text">AssociativeMergeOperator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generic-MergeOperator"><span class="toc-number">2.3.</span> <span class="toc-text">Generic MergeOperator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PartialMerge%E5%92%8CStacking"><span class="toc-number">2.4.</span> <span class="toc-text">PartialMerge和Stacking</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction"><span class="toc-number">3.</span> <span class="toc-text">Compaction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Blob"><span class="toc-number">4.</span> <span class="toc-text">Blob</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E6%B5%81%E7%A8%8B"><span class="toc-number">4.1.</span> <span class="toc-text">写流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E6%B5%81%E7%A8%8B-1"><span class="toc-number">4.2.</span> <span class="toc-text">读流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC%E6%B5%81%E7%A8%8B"><span class="toc-number">4.3.</span> <span class="toc-text">GC流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="toc-number">5.</span> <span class="toc-text">内存结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Block-Cache"><span class="toc-number">5.1.</span> <span class="toc-text">Block Cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Indexes-and-bloom-filters"><span class="toc-number">5.2.</span> <span class="toc-text">Indexes and bloom filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Memory-pool"><span class="toc-number">5.3.</span> <span class="toc-text">Memory pool</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84"><span class="toc-number">6.</span> <span class="toc-text">磁盘结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Write-Ahead-Log"><span class="toc-number">6.1.</span> <span class="toc-text">Write Ahead Log</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Manifest"><span class="toc-number">6.2.</span> <span class="toc-text">Manifest</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VersionSet"><span class="toc-number">6.3.</span> <span class="toc-text">VersionSet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MetaData-Restore"><span class="toc-number">6.4.</span> <span class="toc-text">MetaData Restore</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SST-file"><span class="toc-number">6.5.</span> <span class="toc-text">SST file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Memtable"><span class="toc-number">6.6.</span> <span class="toc-text">Memtable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Snapshot-1"><span class="toc-number">6.7.</span> <span class="toc-text">Snapshot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Checkpoints"><span class="toc-number">6.8.</span> <span class="toc-text">Checkpoints</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Backup"><span class="toc-number">6.9.</span> <span class="toc-text">Backup</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E4%BC%98%E9%85%8D%E7%BD%AE"><span class="toc-number">7.</span> <span class="toc-text">调优配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E5%BF%AB%E9%80%9F%E5%86%99%E5%85%A5RocksDb"><span class="toc-number">7.1.</span> <span class="toc-text">如何保证数据快速写入RocksDb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WriteStall%E8%A7%A6%E5%8F%91%E5%9C%BA%E6%99%AF"><span class="toc-number">7.2.</span> <span class="toc-text">WriteStall触发场景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FAQ"><span class="toc-number">8.</span> <span class="toc-text">FAQ</span></a></li></ol>
+    </div>
+  </section>
+
+  
+
+</div>
+
+
+<!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <!-- Custom Files side begin -->
+  
+  <!-- Custom Files side end -->
+</aside>
+
+
+
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+<pjax>
+<script>
+  window.pdata={}
+  pdata.ispage=true;
+  pdata.commentPath="";
+  pdata.commentPlaceholder="";
+  pdata.commentConfig={};
+  //  see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs
+  
+    // header
+    var l_header=document.getElementById("l_header");
+    
+    l_header.classList.remove("show");
+    
+    
+      // cover
+      var cover_wrapper=document.querySelector('#l_cover .cover-wrapper');
+      var scroll_down=document.getElementById('scroll-down');
+      cover_wrapper.id="half";
+      cover_wrapper.style.display="";
+      scroll_down.style.display="none";
+    
+  
+</script>
+</pjax>
+        </div>
+        
+  
+  <footer class="footer clearfix"  itemscope itemtype="http://schema.org/WPFooter">
+    <br><br>
+    
+    <!-- Custom Files footer begin-->
+    
+    <!-- Custom Files footer end-->
+  </footer>
+
+
+        <a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return false;" title="top"></a>
+      </div>
+    </div>
+    <div>
+      <script>
+  /******************** volantis.dom ********************************/
+  // 页面选择器 将dom对象缓存起来 see: /source/js/app.js etc.
+  volantis.dom.bodyAnchor = volantis.dom.$(document.getElementById("safearea")); // 页面主体
+  volantis.dom.topBtn = volantis.dom.$(document.getElementById('s-top')); // 向上
+  volantis.dom.wrapper = volantis.dom.$(document.getElementById('wrapper')); // 整个导航栏
+  volantis.dom.coverAnchor = volantis.dom.$(document.querySelector('#l_cover .cover-wrapper')); // 1个
+  volantis.dom.switcher = volantis.dom.$(document.querySelector('#l_header .switcher .s-search')); // 搜索按钮   移动端 1个
+  volantis.dom.header = volantis.dom.$(document.getElementById('l_header')); // 移动端导航栏
+  volantis.dom.search = volantis.dom.$(document.querySelector('#l_header .m_search')); // 搜索框 桌面端 移动端 1个
+  volantis.dom.mPhoneList = volantis.dom.$(document.querySelectorAll('#l_header .m-phone .list-v')); //  手机端 子菜单 多个
+</script>
+
+<script>
+  
+  volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css");
+  
+  
+  
+</script>
+
+<!-- required -->
+
+
+<!-- internal -->
+
+<script src="/js/app.js"></script>
+
+
+
+
+
+
+<!-- rightmenu要在darkmode之前（ToggleButton） darkmode要在comments之前（volantis.dark.push）-->
+
+  <script>
+const rootElement = document.documentElement;
+const darkModeStorageKey = "color-scheme";
+const rootElementDarkModeAttributeName = "color-scheme";
+const setLS = (k, v) => {
+    localStorage.setItem(k, v);
+};
+const removeLS = (k) => {
+    localStorage.removeItem(k);
+};
+const getLS = (k) => {
+    return localStorage.getItem(k);
+};
+const getModeFromCSSMediaQuery = () => {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+const resetRootDarkModeAttributeAndLS = () => {
+  rootElement.removeAttribute(rootElementDarkModeAttributeName);
+  removeLS(darkModeStorageKey);
+};
+const validColorModeKeys = {
+  dark: true,
+  light: true,
+};
+const applyCustomDarkModeSettings = (mode) => {
+  const currentSetting = mode || getLS(darkModeStorageKey);
+  getCustomDarkMode();
+  if (currentSetting === getModeFromCSSMediaQuery()) {
+    resetRootDarkModeAttributeAndLS();
+  } else if (validColorModeKeys[currentSetting]) {
+    rootElement.setAttribute(rootElementDarkModeAttributeName, currentSetting);
+  } else {
+    resetRootDarkModeAttributeAndLS();
+  }
+};
+const invertDarkModeObj = {
+  dark: "light",
+  light: "dark",
+};
+/**
+ * get target mode
+ */
+ const getCustomDarkMode = () => {
+  let currentSetting = getLS(darkModeStorageKey);
+  if (validColorModeKeys[currentSetting]) {
+    currentSetting = invertDarkModeObj[currentSetting];
+  } else if (currentSetting === null) {
+    currentSetting = invertDarkModeObj[getModeFromCSSMediaQuery()];
+  } else {
+    return;
+  }
+  if(currentSetting=="dark"){
+    volantis.dark.mode="light";
+  }else{
+    volantis.dark.mode="dark";
+  }
+  // console.log(volantis.dark.mode)
+};
+const toggleCustomDarkMode = () => {
+  let currentSetting = getLS(darkModeStorageKey);
+  if (validColorModeKeys[currentSetting]) {
+    currentSetting = invertDarkModeObj[currentSetting];
+  } else if (currentSetting === null) {
+    currentSetting = invertDarkModeObj[getModeFromCSSMediaQuery()];
+  } else {
+    return;
+  }
+  setLS(darkModeStorageKey, currentSetting);
+  return currentSetting;
+};
+/**
+ * 暗黑模式触发器
+ */
+volantis.dark.toggle=()=>{
+  const mode = toggleCustomDarkMode();
+  applyCustomDarkModeSettings(mode);
+  // 使用 volantis.dark.push 方法传入volantis.dark.toggle回调函数 参见layout/_partial/scripts/global.ejs
+  volantis.dark.method.toggle.start();
+}
+/**
+ * bind event for toggle button
+ */
+
+function bindToggleButton() {
+  var btn= document.querySelectorAll("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn")
+  btn.forEach(function (e) {
+    volantis.dom.$(e).on('click',volantis.dark.toggle);
+  })
+}
+applyCustomDarkModeSettings();
+document.addEventListener("DOMContentLoaded", ()=>{
+  volantis.requestAnimationFrame(bindToggleButton)
+});
+volantis.pjax.push(bindToggleButton);
+
+const darkModelListeners={
+  dark:(mediaQueryList )=>{
+    if(mediaQueryList.matches){
+      volantis.dark.mode = "dark";
+    }
+    volantis.dark.method.toggle.start();
+  },
+  light:(mediaQueryList)=>{
+    if(mediaQueryList.matches){
+      volantis.dark.mode = "light";
+    }
+    volantis.dark.method.toggle.start();
+  }
+}
+window.matchMedia('(prefers-color-scheme: dark)').addListener(darkModelListeners.dark)
+window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListeners.light)
+</script>
+
+
+
+
+<script>
+  function loadIssuesJS() {
+    
+      const sites_api = document.getElementById('sites-api');
+      if (sites_api != undefined && typeof SitesJS === 'undefined') {
+        volantis.js("/js/plugins/tags/sites.js")
+      }
+    
+    
+      const friends_api = document.getElementById('friends-api');
+      if (friends_api != undefined && typeof FriendsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/friends.js")
+      }
+    
+    
+      const contributors_api = document.getElementById('contributors-api');
+      if (contributors_api != undefined && typeof ContributorsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/contributors.js")
+      }
+    
+  };
+  loadIssuesJS()
+  volantis.pjax.push(()=>{
+    loadIssuesJS();
+  })
+
+</script>
+
+
+
+
+  <script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+
+<script>
+  window.FPConfig = {
+	delay: 0,
+	ignoreKeywords: ["#"],
+	maxRPS: 6,
+	hoverDelay: 0
+  };
+</script>
+<script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- optional -->
+
+  <script>
+  const SearchServiceDataPathRoot = ("/" || "/").endsWith("/") ?
+    "/" || "/" :
+    "//" || "/";
+  const SearchServiceDataPath = SearchServiceDataPathRoot + "content.json";
+
+  function loadSearchScript() {
+    // see: layout/_partial/scripts/_ctrl/cdnCtrl.ejs
+    return volantis.js("/js/search/hexo.js");
+  }
+
+  function loadSearchService() {
+    loadSearchScript();
+    document.querySelectorAll(".input.u-search-input").forEach((e) => {
+      e.removeEventListener("focus", loadSearchService, false);
+    });
+
+    document.querySelectorAll(".u-search-form").forEach((e) => {
+      e.addEventListener("submit", (event) => {
+        event.preventDefault();
+      }, false);
+    });
+  }
+
+  // 打开并搜索 字符串 s
+  function OpenSearch(s) {
+    if (typeof SearchService === 'undefined')
+      loadSearchScript().then(() => {
+        SearchService.setQueryText(s);
+        SearchService.search();
+      });
+    else {
+      SearchService.setQueryText(s);
+      SearchService.search();
+    }
+  }
+
+  // 访问含有 ?s=xxx  的链接时打开搜索 // 与搜索引擎 structured data 相关: /scripts/helpers/structured-data/lib/config.js
+  if (window.location.search && /^\?s=/g.test(window.location.search)) {
+    let queryText = decodeURI(window.location.search)
+      .replace(/\ /g, "-")
+      .replace(/^\?s=/g, "");
+    OpenSearch(queryText);
+  }
+
+  // 搜索输入框获取焦点时加载搜索
+  document.querySelectorAll(".input.u-search-input").forEach((e) => {
+    e.addEventListener("focus", loadSearchService, false);
+  });
+</script>
+
+
+
+
+
+
+
+  <script>
+
+  volantis.css("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/default.min.css");
+
+
+  volantis.js("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js").then(()=>{
+    volantis.requestAnimationFrame(hljs.highlightAll)
+  })
+  volantis.pjax.push(()=>{
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+    });
+  },"highlightjs")
+
+
+  function pjax_highlightjs_copyCode(){
+    if (!(document.querySelector(".highlight .code pre") ||
+      document.querySelector(".article pre code"))) {
+      return;
+    }
+    VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")
+  }
+  volantis.requestAnimationFrame(pjax_highlightjs_copyCode)
+  volantis.pjax.push(pjax_highlightjs_copyCode)
+
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script>
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
+  let index = 0;
+  let IntervalParallax = null;
+
+  function parallax(){
+    let ParallaxWindow = document.querySelector("#parallax-window");
+    
+      ParallaxWindow = document.querySelector("html");
+    
+    Parallax.window = ParallaxWindow;
+    Parallax.options.fade = 1000;
+    Parallax.cache = 1;
+    next_parallax();
+    Parallax.init();
+    if (imgs.length>1) {
+      IntervalParallax = setInterval(function () {
+        next_parallax();
+      }, '30000');
+    }
+  }
+
+  function next_parallax() {
+    if (typeof Parallax == "undefined") {
+      return
+    }
+    
+    if (imgs.length>=1) {
+      Parallax.options.src = imgs[index % imgs.length];
+      Parallax.start();
+      index++;
+      if (Parallax.cache) {
+        fetch(imgs[index % imgs.length] +"?t=" + new Date().getTime());
+        if (index == imgs.length) {
+          Parallax.cache = 0;
+        }
+      }
+    }
+  }
+  var runningOnBrowser = typeof window !== "undefined";
+  var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+  if (!isBot) {
+    volantis.js('/js/plugins/parallax.js').then(()=>{
+      parallax()
+    })
+    volantis.pjax.send(()=>{
+      clearInterval(IntervalParallax)
+    },"clearIntervalParallax");
+    volantis.pjax.push(parallax);
+  }
+</script>
+
+
+
+
+  <script>
+  function load_swiper() {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css");
+    volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(() => {
+      pjax_swiper();
+    });
+  }
+
+  load_swiper();
+
+  function pjax_swiper() {
+    volantis.swiper = new Swiper('.swiper-container', {
+      slidesPerView: 'auto',
+      spaceBetween: 8,
+      centeredSlides: true,
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  }
+
+  volantis.pjax.push(() => {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    if (typeof volantis.swiper === "undefined") {
+      load_swiper();
+    } else {
+      pjax_swiper();
+    }
+  });
+</script>
+
+
+<!-- pjax 标签必须存在于所有页面 否则 pjax error -->
+<pjax>
+
+</pjax>
+
+<script>
+  function listennSidebarTOC() {
+    const navItems = document.querySelectorAll(".toc li");
+    if (!navItems.length) return;
+    let targets = []
+    const sections = [...navItems].map((element) => {
+      const link = element.querySelector(".toc-link");
+      const target = document.getElementById(
+        decodeURI(link.getAttribute("href")).replace("#", "")
+      );
+      targets.push(target)
+      // 解除 a 标签 href 的 锚点定位, a 标签 href 的 锚点定位 会随机启用?? 产生错位???
+      link.setAttribute("onclick","return false;")
+      link.setAttribute("toc-action","toc-"+decodeURI(link.getAttribute("href")).replace("#", ""))
+      link.setAttribute("href","/")
+      // 配置 点击 触发新的锚点定位
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        // 这里的 addTop 是通过错位使得 toc 自动展开.
+        volantis.scroll.to(target,{addTop: 5, observer:true})
+        // Anchor id
+        history.pushState(null, document.title, "#" + target.id);
+      });
+      return target;
+    });
+
+    function activateNavByIndex(target) {
+      if (target.classList.contains("active-current")) return;
+
+      document.querySelectorAll(".toc .active").forEach((element) => {
+        element.classList.remove("active", "active-current");
+      });
+      target.classList.add("active", "active-current");
+      let parent = target.parentNode;
+      while (!parent.matches(".toc")) {
+        if (parent.matches("li")) parent.classList.add("active");
+        parent = parent.parentNode;
+      }
+    }
+
+    // 方案一：
+    volantis.activateNavIndex=0
+    activateNavByIndex(navItems[volantis.activateNavIndex])
+    volantis.scroll.push(()=>{
+      if (targets[0].getBoundingClientRect().top >= 0) {
+        volantis.activateNavIndex = 0
+      }else if (targets[targets.length-1].getBoundingClientRect().top < 0) {
+        volantis.activateNavIndex = targets.length-1
+      } else {
+        for (let index = 0; index < targets.length; index++) {
+          const target0 = targets[index];
+          const target1 = targets[(index+1)%targets.length];
+          if (target0.getBoundingClientRect().top < 0&&target1.getBoundingClientRect().top >= 0) {
+            volantis.activateNavIndex=index
+            break;
+          }
+        }
+      }
+      activateNavByIndex(navItems[volantis.activateNavIndex])
+    })
+
+    // 方案二：
+    // IntersectionObserver 不是完美精确到像素级别 也不是低延时性的
+    // function findIndex(entries) {
+    //   let index = 0;
+    //   let entry = entries[index];
+    //   if (entry.boundingClientRect.top > 0) {
+    //     index = sections.indexOf(entry.target);
+    //     return index === 0 ? 0 : index - 1;
+    //   }
+    //   for (; index < entries.length; index++) {
+    //     if (entries[index].boundingClientRect.top <= 0) {
+    //       entry = entries[index];
+    //     } else {
+    //       return sections.indexOf(entry.target);
+    //     }
+    //   }
+    //   return sections.indexOf(entry.target);
+    // }
+    // function createIntersectionObserver(marginTop) {
+    //   marginTop = Math.floor(marginTop + 10000);
+    //   let intersectionObserver = new IntersectionObserver(
+    //     (entries, observe) => {
+    //       let scrollHeight = document.documentElement.scrollHeight;
+    //       if (scrollHeight > marginTop) {
+    //         observe.disconnect();
+    //         createIntersectionObserver(scrollHeight);
+    //         return;
+    //       }
+    //       let index = findIndex(entries);
+    //       activateNavByIndex(navItems[index]);
+    //     }, {
+    //       rootMargin: marginTop + "px 0px -100% 0px",
+    //       threshold: 0,
+    //     }
+    //   );
+    //   sections.forEach((element) => {
+    //     element && intersectionObserver.observe(element);
+    //   });
+    // }
+    // createIntersectionObserver(document.documentElement.scrollHeight);
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+  document.addEventListener("pjax:success", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+</script>
+
+
+
+<script>
+  document.onreadystatechange = function () {
+    if (document.readyState == 'complete') {
+      // 页面加载完毕 样式加载失败，或是当前网速慢，或是开启了省流模式
+      const { saveData, effectiveType } = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {}
+      if (getComputedStyle(document.querySelector("#safearea"), null)["display"] == "none" || saveData || /2g/.test(effectiveType)) {
+        document.querySelectorAll(".reveal").forEach(function (e) {
+          e.style["opacity"] = "1";
+        });
+        document.querySelector("#safearea").style["display"] = "block";
+      }
+    }
+  }
+</script>
+
+
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://blog.yveltals.top/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://blog.yveltals.top/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://blog.yveltals.top/categories/Storage/","name":"Storage"}},{"@type":"ListItem","position":3,"item":{"@id":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/","name":"RocksDB"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://blog.yveltals.top/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://blog.yveltals.top/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://blog.yveltals.top?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"RocksDB","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/","wordCount":0,"datePublished":"2025-02-15T06:20:04.000Z","dateModified":"2025-09-07T09:36:52.296Z","articleSection":"Storage","keywords":"Storage","image":{"@type":"ImageObject","url":"/img/rocksdb.jpg","width":1024,"height":768}}]</script>
+
+
+
+      
+        <!--
+  pjax重载区域接口：
+  1.  <pjax></pjax> 标签 pjax 标签必须存在于所有页面 否则 pjax error
+  2.  script[data-pjax]
+  3.  .pjax-reload script
+  4.  .pjax
+-->
+
+
+
+<script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script>
+
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',
+        selectors: [
+          "head title",
+          "head meta[name=keywords]",
+          "head meta[name=description]",
+          
+          "#l_main",
+          "#pjax-header-nav-list",
+          ".pjax",
+          "pjax", // <pjax></pjax> 标签
+          "script[data-pjax], .pjax-reload script" // script标签添加data-pjax 或 script标签外层添加.pjax-reload 的script代码段重载
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000,
+        
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      //window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      // 使用 volantis.pjax.send 方法传入pjax:send回调函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.send.start();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 使用 volantis.pjax.push 方法传入重载函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.complete.start();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      if(volantis.debug) {
+        console.error(e);
+        console.log('pjax error: \n' + JSON.stringify(e));
+      }else{
+        // 使用 volantis.pjax.error 方法传入pjax:error回调函数 参见layout/_partial/scripts/global.ejs
+        volantis.pjax.method.error.start();
+        window.location.href = e.triggerElement.href;
+      }
+    });
+</script>
+
+      
+    </div>
+    <!-- import body_end begin-->
+    <!-- import body_end end-->
+    <!-- Custom Files bodyEnd begin-->
+    
+    <!-- Custom Files bodyEnd end-->
+    <!-- front-matter body_end begin -->
+    <!-- front-matter body_end end -->
+  </body>
+</html>

@@ -1,0 +1,3908 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/#5.8.0'>
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta name="Volantis" content="5.8.0">
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+  <link rel="canonical" href="http://blog.yveltals.top/2022/11/01/archive/流媒体协议/"/>
+  <!-- 渲染优化 -->
+    <meta http-equiv='x-dns-prefetch-control' content='on' />
+      <link rel='dns-prefetch' href='https://unpkg.com'>
+      <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+  <meta content="telephone=no" name="format-detection">
+  <!-- import head_begin begin -->
+  <!-- import head_begin end -->
+  <!-- Custom Files headBegin begin-->
+  
+  <!-- Custom Files headBegin end-->
+  <!-- front-matter head_begin begin -->
+  <!-- front-matter head_begin end -->
+  <link rel="preload" href="/css/style.css" as="style">
+  <link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <!-- feed -->
+  <!-- 页面元数据 -->
+  <title>流媒体协议 - Hexo</title>
+  <meta name="keywords" content="null">
+  <meta desc name="description" content="N/A - John Doe - Hexo">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="流媒体协议">
+<meta property="og:url" content="http://blog.yveltals.top/2022/11/01/Archive/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="RTMP RTMP协议详解 一篇文章搞清楚直播协议RTMP  什么是 RTMP一种应用层的实时信息传输协议，对低延时和音视频同步有良好的支持。解决多媒体数据传输流的分包和多路复用的问题  message 消息：将数据封装成消息，是 RTMP 协议中的基本数据单元 chunk 块：将消息分包成更小的块，基于TCP网络传输  RTMP 设计思想 分包：可以将大的消息数据分包成小的块通过网络来进行传输，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2022-11-01T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-09-07T09:36:52.289Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+  <style>
+    /* 首屏样式 */
+    #safearea {
+  display: none;
+}
+:root {
+  --color-site-body: #f4f4f4;
+  --color-site-bg: #f4f4f4;
+  --color-site-inner: #fff;
+  --color-site-footer: #666;
+  --color-card: #fff;
+  --color-text: #444;
+  --color-block: #f6f6f6;
+  --color-inlinecode: #c74f00;
+  --color-codeblock: #fff7ea;
+  --color-h1: #3a3a3a;
+  --color-h2: #3a3a3a;
+  --color-h3: #333;
+  --color-h4: #444;
+  --color-h5: #555;
+  --color-h6: #666;
+  --color-p: #444;
+  --color-list: #666;
+  --color-list-hl: #30ad91;
+  --color-meta: #888;
+  --color-read-bkg: #e0d8c8;
+  --color-read-post: #f8f1e2;
+  --color-copyright-bkg: #f5f5f5;
+}
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+*::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+*::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #3dd9b6;
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #ff5722;
+}
+html {
+  color: var(--color-text);
+  width: 100%;
+  height: 100%;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  font-size: 17px;
+}
+html >::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+html >::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+html >::-webkit-scrollbar-thumb {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+html >::-webkit-scrollbar-thumb:hover {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+}
+body {
+  background-color: var(--color-site-body);
+  text-rendering: optimizelegibility;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+body.modal-active {
+  overflow: hidden;
+}
+@media screen and (max-width: 680px) {
+  body.modal-active {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+}
+a {
+  color: #2092ec;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+a:hover {
+  color: #ff5722;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+ol {
+  padding-left: 0;
+}
+ul li,
+ol li {
+  list-style: none;
+}
+header {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+img {
+  border: 0;
+  background: none;
+  max-width: 100%;
+}
+svg:not(:root) {
+  overflow: hidden;
+}
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  height: 0;
+  border: 0;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-bottom: 1px solid rgba(68,68,68,0.1);
+}
+button,
+input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+button {
+  overflow: visible;
+  text-transform: none;
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .blur {
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: saturate(200%) blur(20px);
+  }
+}
+.shadow {
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.shadow.floatable {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.shadow.floatable:hover {
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+}
+#l_cover {
+  min-height: 56px;
+}
+.cover-wrapper {
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  height: 100vh;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  color: var(--color-site-inner);
+  padding: 0 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: -100px;
+}
+.cover-wrapper .cover-body {
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.cover-wrapper#full {
+  height: calc(100vh + 100px);
+  padding-bottom: 100px;
+}
+.cover-wrapper#half {
+  max-height: 640px;
+  min-height: 400px;
+  height: calc(36vh - 56px + 200px);
+}
+.cover-wrapper #scroll-down {
+  width: 100%;
+  height: 64px;
+  position: absolute;
+  bottom: 100px;
+  text-align: center;
+  cursor: pointer;
+}
+.cover-wrapper #scroll-down .scroll-down-effects {
+  color: #fff;
+  font-size: 24px;
+  line-height: 64px;
+  position: absolute;
+  width: 24px;
+  left: calc(50% - 12px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  animation: scroll-down-effect 1.5s infinite;
+  -webkit-animation: scroll-down-effect 1.5s infinite;
+  -khtml-animation: scroll-down-effect 1.5s infinite;
+  -moz-animation: scroll-down-effect 1.5s infinite;
+  -o-animation: scroll-down-effect 1.5s infinite;
+  -ms-animation: scroll-down-effect 1.5s infinite;
+}
+@-moz-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.cover-wrapper .cover-body {
+  margin-top: 56px;
+  margin-bottom: 100px;
+}
+.cover-wrapper .cover-body,
+.cover-wrapper .cover-body .top,
+.cover-wrapper .cover-body .bottom {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  max-width: 100%;
+}
+.cover-wrapper .cover-body .bottom {
+  margin-top: 32px;
+}
+.cover-wrapper .cover-body .title {
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+  font-size: 3.125rem;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.cover-wrapper .cover-body .subtitle {
+  font-size: 21.25px;
+}
+.cover-wrapper .cover-body .logo {
+  max-height: 120px;
+  max-width: calc(100% - 4 * 16px);
+}
+@media screen and (min-height: 1024px) {
+  .cover-wrapper .cover-body .title {
+    font-size: 3rem;
+  }
+  .cover-wrapper .cover-body .subtitle {
+    font-size: 1.05rem;
+  }
+  .cover-wrapper .cover-body .logo {
+    max-height: 150px;
+  }
+}
+.cover-wrapper .cover-body .m_search {
+  position: relative;
+  max-width: calc(100% - 16px);
+  width: 320px;
+  vertical-align: middle;
+}
+.cover-wrapper .cover-body .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  width: 100%;
+}
+.cover-wrapper .cover-body .m_search .icon,
+.cover-wrapper .cover-body .m_search .input {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.cover-wrapper .cover-body .m_search .icon {
+  position: absolute;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  line-height: 2.5rem;
+  width: 32px;
+  top: 0;
+  left: 5px;
+  color: rgba(68,68,68,0.75);
+}
+.cover-wrapper .cover-body .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  height: 2.5rem;
+  width: 100%;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-size: 0.875rem;
+  -webkit-appearance: none;
+  padding-left: 36px;
+  border-radius: 1.4rem;
+  -webkit-border-radius: 1.4rem;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: var(--color-text);
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .cover-body .m_search .input {
+    padding-left: 36px;
+  }
+}
+.cover-wrapper .cover-body .m_search .input:hover {
+  background: rgba(255,255,255,0.8);
+}
+.cover-wrapper .cover-body .m_search .input:focus {
+  background: #fff;
+}
+.cover-wrapper .list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -khtml-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -o-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  align-items: stretch;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.cover-wrapper .list-h a {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 0;
+  -ms-flex: 1 0;
+  flex: 1 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  font-weight: 600;
+}
+.cover-wrapper .list-h a img {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  margin: 4px;
+  min-width: 40px;
+  max-width: 44px;
+}
+@media screen and (max-width: 768px) {
+  .cover-wrapper .list-h a img {
+    min-width: 36px;
+    max-width: 40px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .list-h a img {
+    margin: 2px 4px;
+    min-width: 32px;
+    max-width: 36px;
+  }
+}
+@media screen and (max-width: 375px) {
+  .cover-wrapper .list-h a img {
+    min-width: 28px;
+    max-width: 32px;
+  }
+}
+.cover-wrapper {
+  max-width: 100%;
+}
+.cover-wrapper.search .bottom .menu {
+  margin-top: 16px;
+}
+.cover-wrapper.search .bottom .menu .list-h a {
+  white-space: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  align-items: baseline;
+  padding: 2px;
+  margin: 4px;
+  color: var(--color-site-inner);
+  opacity: 0.75;
+  -webkit-opacity: 0.75;
+  -moz-opacity: 0.75;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  border-bottom: 2px solid transparent;
+}
+.cover-wrapper.search .bottom .menu .list-h a i {
+  margin-right: 4px;
+}
+.cover-wrapper.search .bottom .menu .list-h a p {
+  font-size: 0.9375rem;
+}
+.cover-wrapper.search .bottom .menu .list-h a:hover,
+.cover-wrapper.search .bottom .menu .list-h a.active,
+.cover-wrapper.search .bottom .menu .list-h a:active {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+  border-bottom: 2px solid var(--color-site-inner);
+}
+.cover-wrapper #parallax-window {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+.parallax-mirror {
+  animation-delay: 0s;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  animation-name: fadeIn;
+}
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-mode: 'dark';
+  }
+  :root:not([color-scheme]) {
+    --color-site-body: #121212;
+    --color-read-bkg: #1f1f1f;
+    --color-read-post: #262626;
+    --color-site-bg: #1f1f1f;
+    --color-site-inner: rgba(238,238,238,0.871);
+    --color-site-footer: rgba(170,170,170,0.871);
+    --color-card: #262626;
+    --color-text: rgba(238,238,238,0.871);
+    --color-block: #1e1e1e;
+    --color-codeblock: #121212;
+    --color-inlinecode: #d56d28;
+    --color-h1: rgba(255,255,255,0.871);
+    --color-h2: rgba(255,255,255,0.871);
+    --color-h3: rgba(255,255,255,0.6);
+    --color-h4: rgba(255,255,255,0.6);
+    --color-h5: rgba(255,255,255,0.6);
+    --color-h6: rgba(255,255,255,0.6);
+    --color-p: rgba(217,217,217,0.871);
+    --color-list: rgba(217,217,217,0.871);
+    --color-list-hl: #63e0c4;
+    --color-meta: rgba(191,191,191,0.871);
+    --color-link: rgba(191,191,191,0.871);
+    --color-copyright-bkg: #21252b;
+  }
+  :root:not([color-scheme]) img {
+    filter: brightness(70%) !important;
+  }
+  :root:not([color-scheme]) .blur {
+    background: rgba(31,31,31,0.9) !important;
+  }
+  :root:not([color-scheme]) .white-box.blur {
+    background: rgba(38,38,38,0.9) !important;
+  }
+  :root:not([color-scheme]) .nav-main .u-search-input {
+    background: var(--color-card) !important;
+  }
+  :root:not([color-scheme]) #l_main .article .prev-next>a {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) #l_main .article .prev-next>a:hover {
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) .article blockquote {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .article-title a {
+    color: var(--color-h1) !important;
+  }
+  :root:not([color-scheme]) details>summary {
+    color: var(--color-p) !important;
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) details {
+    border: 1px solid var(--color-site-bg) !important;
+    background: var(--color-site-bg) !important;
+  }
+  :root:not([color-scheme]) #u-search .modal,
+  :root:not([color-scheme]) #u-search .modal-header,
+  :root:not([color-scheme]) #u-search .modal-body {
+    background: var(--color-card) !important;
+  }
+  :root:not([color-scheme]) #u-search .modal-body .modal-results .result:hover {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .u-search-input:hover {
+    background: var(--color-block) !important;
+  }
+  :root:not([color-scheme]) .u-search-input:focus {
+    background: var(--color-site-body) !important;
+  }
+}
+[color-scheme='dark'] {
+  --color-site-body: #121212;
+  --color-read-bkg: #1f1f1f;
+  --color-read-post: #262626;
+  --color-site-bg: #1f1f1f;
+  --color-site-inner: rgba(238,238,238,0.871);
+  --color-site-footer: rgba(170,170,170,0.871);
+  --color-card: #262626;
+  --color-text: rgba(238,238,238,0.871);
+  --color-block: #1e1e1e;
+  --color-codeblock: #121212;
+  --color-inlinecode: #d56d28;
+  --color-h1: rgba(255,255,255,0.871);
+  --color-h2: rgba(255,255,255,0.871);
+  --color-h3: rgba(255,255,255,0.6);
+  --color-h4: rgba(255,255,255,0.6);
+  --color-h5: rgba(255,255,255,0.6);
+  --color-h6: rgba(255,255,255,0.6);
+  --color-p: rgba(217,217,217,0.871);
+  --color-list: rgba(217,217,217,0.871);
+  --color-list-hl: #63e0c4;
+  --color-meta: rgba(191,191,191,0.871);
+  --color-link: rgba(191,191,191,0.871);
+  --color-copyright-bkg: #21252b;
+}
+[color-scheme='dark'] img {
+  filter: brightness(70%) !important;
+}
+[color-scheme='dark'] .blur {
+  background: rgba(31,31,31,0.9) !important;
+}
+[color-scheme='dark'] .white-box.blur {
+  background: rgba(38,38,38,0.9) !important;
+}
+[color-scheme='dark'] .nav-main .u-search-input {
+  background: var(--color-card) !important;
+}
+[color-scheme='dark'] #l_main .article .prev-next>a {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] #l_main .article .prev-next>a:hover {
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] .article blockquote {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .article-title a {
+  color: var(--color-h1) !important;
+}
+[color-scheme='dark'] details>summary {
+  color: var(--color-p) !important;
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] details {
+  border: 1px solid var(--color-site-bg) !important;
+  background: var(--color-site-bg) !important;
+}
+[color-scheme='dark'] #u-search .modal,
+[color-scheme='dark'] #u-search .modal-header,
+[color-scheme='dark'] #u-search .modal-body {
+  background: var(--color-card) !important;
+}
+[color-scheme='dark'] #u-search .modal-body .modal-results .result:hover {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .u-search-input:hover {
+  background: var(--color-block) !important;
+}
+[color-scheme='dark'] .u-search-input:focus {
+  background: var(--color-site-body) !important;
+}
+@media screen and (max-width: 500px) {
+  [color-scheme='dark'] .l_header .m_search {
+    background: var(--color-site-bg) !important;
+  }
+}
+@font-face {
+  font-family: 'UbuntuMono';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Varela Round';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+.l_header {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  width: 100%;
+  height: 56px;
+  background: var(--color-card);
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.l_header.auto {
+  transition: opacity 0.4s ease;
+  -webkit-transition: opacity 0.4s ease;
+  -khtml-transition: opacity 0.4s ease;
+  -moz-transition: opacity 0.4s ease;
+  -o-transition: opacity 0.4s ease;
+  -ms-transition: opacity 0.4s ease;
+  visibility: hidden;
+}
+.l_header.auto.show {
+  opacity: 1 !important;
+  -webkit-opacity: 1 !important;
+  -moz-opacity: 1 !important;
+  visibility: visible;
+}
+.l_header .container {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.l_header #wrapper {
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.l_header #wrapper .nav-main,
+.l_header #wrapper .nav-sub {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -khtml-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -o-justify-content: space-between;
+  -ms-justify-content: space-between;
+  align-items: center;
+}
+.l_header #wrapper .nav-main {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.l_header #wrapper.sub .nav-main {
+  transform: translateY(-56px);
+  -webkit-transform: translateY(-56px);
+  -khtml-transform: translateY(-56px);
+  -moz-transform: translateY(-56px);
+  -o-transform: translateY(-56px);
+  -ms-transform: translateY(-56px);
+}
+.l_header #wrapper .nav-sub {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  opacity: 0;
+  -webkit-opacity: 0;
+  -moz-opacity: 0;
+  height: 56px;
+  width: calc(100% - 2 * 16px);
+  position: absolute;
+}
+.l_header #wrapper .nav-sub ::-webkit-scrollbar {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (min-width: 2048px) {
+  .l_header #wrapper .nav-sub {
+    max-width: 55vw;
+    margin: auto;
+  }
+}
+.l_header #wrapper.sub .nav-sub {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+}
+.l_header #wrapper .title {
+  position: relative;
+  color: var(--color-text);
+  padding-left: 24px;
+  max-height: 56px;
+}
+.l_header #wrapper .nav-main .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  line-height: 56px;
+  padding: 0 24px;
+  font-size: 1.5rem;
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+}
+.l_header #wrapper .nav-main .title img {
+  height: 56px;
+}
+.l_header .nav-sub {
+  max-width: 1080px;
+  margin: auto;
+}
+.l_header .nav-sub .title {
+  font-weight: bold;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  line-height: 1.2;
+  max-height: 56px;
+  white-space: normal;
+  flex-shrink: 1;
+}
+.l_header .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  line-height: 56px;
+  align-items: center;
+}
+.l_header .switcher .s-toc {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (max-width: 768px) {
+  .l_header .switcher .s-toc {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+  }
+}
+.l_header .switcher >li {
+  height: 40px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  margin: 2px;
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li {
+    margin: 0 1px;
+    height: 40px;
+  }
+}
+.l_header .switcher >li >a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0.85em 1.1em;
+  border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  color: #3dd9b6;
+}
+.l_header .switcher >li >a:hover {
+  border: none;
+}
+.l_header .switcher >li >a.active,
+.l_header .switcher >li >a:active {
+  border: none;
+  background: var(--color-site-bg);
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li >a {
+    width: 36px;
+    height: 40px;
+  }
+}
+.l_header .nav-sub .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+}
+.l_header .m_search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  height: 56px;
+  width: 240px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (max-width: 1024px) {
+  .l_header .m_search {
+    width: 44px;
+    min-width: 44px;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+  }
+  .l_header .m_search:hover {
+    width: 240px;
+  }
+  .l_header .m_search:hover input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search:hover .input {
+    width: 100%;
+  }
+  .l_header .m_search:hover .input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search {
+    min-width: 0;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.l_header .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.l_header .m_search .icon {
+  position: absolute;
+  width: 36px;
+  left: 5px;
+  color: var(--color-meta);
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .icon {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+.l_header .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 1.3;
+  width: 100%;
+  color: var(--color-text);
+  background: #fafafa;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding-left: 40px;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search .input:focus {
+    box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .input {
+    background: var(--color-block);
+    padding-left: 8px;
+    border: none;
+  }
+  .l_header .m_search .input:hover,
+  .l_header .m_search .input:focus {
+    border: none;
+  }
+}
+@media (max-width: 500px) {
+  .l_header .m_search {
+    left: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+    background: #fff;
+    transition: all 0.28s ease;
+    -webkit-transition: all 0.28s ease;
+    -khtml-transition: all 0.28s ease;
+    -moz-transition: all 0.28s ease;
+    -o-transition: all 0.28s ease;
+    -ms-transition: all 0.28s ease;
+  }
+  .l_header .m_search .input {
+    border-radius: 28px;
+    -webkit-border-radius: 28px;
+    margin-left: 16px;
+    padding-left: 16px;
+  }
+  .l_header.z_search-open .m_search {
+    width: 100%;
+  }
+  .l_header.z_search-open .m_search .input {
+    width: calc(100% - 120px);
+  }
+}
+ul.m-pc >li>a {
+  color: inherit;
+  border-bottom: 2px solid transparent;
+}
+ul.m-pc >li>a:active,
+ul.m-pc >li>a.active {
+  border-bottom: 2px solid #3dd9b6;
+}
+ul.m-pc li:hover >ul.list-v,
+ul.list-v li:hover >ul.list-v {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.nav-list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  align-items: stretch;
+}
+ul.nav-list-h>li {
+  position: relative;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  height: 100%;
+  line-height: 2.4;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+ul.nav-list-h>li >a {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 600;
+}
+ul.list-v {
+  z-index: 1;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: absolute;
+  background: var(--color-card);
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  margin-top: -6px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  padding: 8px 0;
+}
+ul.list-v.show {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.list-v hr {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+ul.list-v >li {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+ul.list-v >li.header {
+  font-size: 0.78125rem;
+  font-weight: bold;
+  line-height: 2em;
+  color: var(--color-meta);
+  margin: 8px 16px 4px;
+}
+ul.list-v >li.header i {
+  margin-right: 8px;
+}
+ul.list-v >li ul {
+  margin-left: 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: -40px;
+}
+ul.list-v .aplayer-container {
+  min-height: 64px;
+  padding: 6px 16px;
+}
+ul.list-v >li>a {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  color: var(--color-list);
+  font-size: 0.875rem;
+  font-weight: bold;
+  line-height: 36px;
+  padding: 0 20px 0 16px;
+  text-overflow: ellipsis;
+  margin: 0 4px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+@media screen and (max-width: 1024px) {
+  ul.list-v >li>a {
+    line-height: 40px;
+  }
+}
+ul.list-v >li>a >i {
+  margin-right: 8px;
+}
+ul.list-v >li>a:active,
+ul.list-v >li>a.active {
+  color: var(--color-list-hl);
+}
+ul.list-v >li>a:hover {
+  color: var(--color-list-hl);
+  background: var(--color-site-bg);
+}
+.l_header .menu >ul>li>a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding: 0 8px;
+}
+.l_header .menu >ul>li>a >i {
+  margin-right: 4px;
+}
+.l_header ul.nav-list-h>li {
+  color: var(--color-list);
+  line-height: 56px;
+}
+.l_header ul.nav-list-h>li >a {
+  max-height: 56px;
+  overflow: hidden;
+  color: inherit;
+}
+.l_header ul.nav-list-h>li >a:active,
+.l_header ul.nav-list-h>li >a.active {
+  color: #3dd9b6;
+}
+.l_header ul.nav-list-h>li:hover>a {
+  color: var(--color-list-hl);
+}
+.l_header ul.nav-list-h>li i.music {
+  animation: rotate-effect 1.5s linear infinite;
+  -webkit-animation: rotate-effect 1.5s linear infinite;
+  -khtml-animation: rotate-effect 1.5s linear infinite;
+  -moz-animation: rotate-effect 1.5s linear infinite;
+  -o-animation: rotate-effect 1.5s linear infinite;
+  -ms-animation: rotate-effect 1.5s linear infinite;
+}
+@-moz-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+.menu-phone li ul.list-v {
+  right: calc(100% - 0.5 * 16px);
+}
+.menu-phone li ul.list-v ul {
+  right: calc(100% - 0.5 * 16px);
+}
+#wrapper {
+  max-width: 1080px;
+  margin: auto;
+}
+@media screen and (min-width: 2048px) {
+  #wrapper {
+    max-width: 55vw;
+  }
+}
+#wrapper .menu {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 1;
+  -ms-flex: 1 1;
+  flex: 1 1;
+  margin: 0 16px 0 0;
+}
+#wrapper .menu .list-v ul {
+  left: calc(100% - 0.5 * 16px);
+}
+.menu-phone {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: 16px;
+  right: 8px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.menu-phone ul {
+  right: calc(100% - 0.5 * 16px);
+}
+@media screen and (max-width: 500px) {
+  .menu-phone {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: block;
+  }
+}
+.l_header {
+  max-width: 65vw;
+  left: calc((100% - 65vw) * 0.5);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+@media screen and (max-width: 2048px) {
+  .l_header {
+    max-width: 1112px;
+    left: calc((100% - 1112px) * 0.5);
+  }
+}
+@media screen and (max-width: 1112px) {
+  .l_header {
+    left: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .l_header #wrapper .nav-main .title {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .l_header #wrapper .nav-sub {
+    width: 100%;
+  }
+  .l_header #wrapper .nav-sub .title {
+    overflow-y: scroll;
+    margin-top: 2px;
+    padding: 8px 16px;
+  }
+  .l_header #wrapper .switcher {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+    margin-right: 8px;
+  }
+  .l_header .menu {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  .list-v li {
+    max-width: 270px;
+  }
+}
+#u-search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 60px 20px;
+  z-index: 1001;
+}
+@media screen and (max-width: 680px) {
+  #u-search {
+    padding: 0px;
+  }
+}
+@media screen and (prefers-color-scheme: dark) and (max-width: 500px) {
+  .l_header .m_search {
+    background: var(--color-site-bg) !important;
+  }
+}
+
+  </style>
+  <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all';this.onload=null">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+    <script>
+      let userColorScheme=localStorage.getItem("color-scheme")
+      if(userColorScheme){
+        document.documentElement.setAttribute("color-scheme", userColorScheme);
+      }
+    </script>
+  
+<script>
+if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode))
+    document.write(
+	'<style>'+
+		'html{'+
+			'overflow-x: hidden !important;'+
+			'overflow-y: hidden !important;'+
+		'}'+
+		'.kill-ie{'+
+			'text-align:center;'+
+			'height: 100%;'+
+			'margin-top: 15%;'+
+			'margin-bottom: 5500%;'+
+		'}'+
+    '.kill-t{'+
+      'font-size: 2rem;'+
+    '}'+
+    '.kill-c{'+
+      'font-size: 1.2rem;'+
+    '}'+
+		'#l_header,#l_body{'+
+			'display: none;'+
+		'}'+
+	'</style>'+
+    '<div class="kill-ie">'+
+        `<span class="kill-t"><b>Sorry, your browser cannot access this site</b></span><br/>`+
+        `<span class="kill-c">Microsoft has terminated support for Internet Explorer (IE) 10 and earlier versions in 2016. <br/>There are great security risks to continue using it. Please use contemporary mainstream browsers to access.</span><br/>`+
+        `<a target="_blank" rel="noopener" href="https://blogs.windows.com/windowsexperience/2021/05/19/the-future-of-internet-explorer-on-windows-10-is-in-microsoft-edge/"><strong>Learn more ></strong></a>`+
+    '</div>');
+</script>
+
+
+<noscript>
+	<style>
+		html{
+			overflow-x: hidden !important;
+			overflow-y: hidden !important;
+		}
+		.kill-noscript{
+			text-align:center;
+			height: 100%;
+			margin-top: 15%;
+			margin-bottom: 5500%;
+		}
+    .kill-t{
+      font-size: 2rem;
+    }
+    .kill-c{
+      font-size: 1.2rem;
+    }
+		#l_header,#l_body{
+			display: none;
+		}
+	</style>
+    <div class="kill-noscript">
+        <span class="kill-t"><b>Sorry, your browser cannot access this site</b></span><br/>
+        <span class="kill-c">This page requires browser support (enable) JavaScript</span><br/>
+        <a target="_blank" rel="noopener" href="https://www.baidu.com/s?wd=启用JavaScript"><strong>Learn more ></strong></a>
+    </div>
+</noscript>
+
+
+  <script>
+  /************这个文件存放不需要重载的全局变量和全局函数*********/
+  window.volantis = {}; // volantis 全局变量
+  volantis.debug = "env"; // 调试模式
+  volantis.dom = {}; // 页面Dom see: /source/js/app.js etc.
+
+  volantis.GLOBAL_CONFIG ={
+    debug: "env",
+    cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
+    default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
+    lastupdate: new Date(1757238508336),
+    sidebar: {
+      for_page: ["blogger","category","tagcloud","donate"],
+      for_post: ["toc"],
+      webinfo: {
+        lastupd: {
+          enable: true,
+          friendlyShow: true
+        },
+        runtime: {
+          data: "2020/01/01",
+          unit: "天"
+        }
+      }
+    },
+    plugins: {
+      message: {"enable":false,"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/css/iziToast.min.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/js/iziToast.min.js","icon":{"default":"fa-solid fa-info-circle light-blue","quection":"fa-solid fa-question-circle light-blue"},"time":{"default":5000,"quection":20000},"position":"topRight","transitionIn":"bounceInLeft","transitionOut":"fadeOutRight","titleColor":"var(--color-text)","messageColor":"var(--color-text)","backgroundColor":"var(--color-card)","zindex":2147483647,"copyright":{"enable":true,"title":"知识共享许可协议","message":"请遵守 CC BY-NC-SA 4.0 协议。","icon":"far fa-copyright light-blue"},"aplayer":{"enable":true,"play":"fa-solid fa-play","pause":"fa-solid fa-pause"},"rightmenu":{"enable":true,"notice":true}},
+      fancybox: {"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.umd.js"},
+      
+      
+      
+    }
+  }
+
+  /******************** volantis.EventListener ********************************/
+  // 事件监听器 see: /source/js/app.js
+  volantis.EventListener = {}
+  // 这里存放pjax切换页面时将被移除的事件监听器
+  volantis.EventListener.list = []
+  //构造方法
+  function volantisEventListener(type, f, ele) {
+    this.type = type
+    this.f = f
+    this.ele = ele
+  }
+  // 移除事件监听器
+  volantis.EventListener.remove = () => {
+    volantis.EventListener.list.forEach(function (i) {
+      i.ele.removeEventListener(i.type, i.f, false)
+    })
+    volantis.EventListener.list = []
+  }
+  /******************** volantis.dom.$ ********************************/
+  // 注：这里没有选择器，也没有forEach一次只处理一个dom，这里重新封装主题常用的dom方法，返回的是dom对象，对象包含了以下方法，同时保留dom的原生API
+  function volantisDom(ele) {
+    if (!ele) ele = document.createElement("div")
+    this.ele = ele;
+    // ==============================================================
+    this.ele.find = (c) => {
+      let q = this.ele.querySelector(c)
+      if (q)
+        return new volantisDom(q)
+    }
+    // ==============================================================
+    this.ele.hasClass = (c) => {
+      return this.ele.className.match(new RegExp('(\\s|^)' + c + '(\\s|$)'));
+    }
+    this.ele.addClass = (c) => {
+      this.ele.classList.add(c);
+      return this.ele
+    }
+    this.ele.removeClass = (c) => {
+      this.ele.classList.remove(c);
+      return this.ele
+    }
+    this.ele.toggleClass = (c) => {
+      if (this.ele.hasClass(c)) {
+        this.ele.removeClass(c)
+      } else {
+        this.ele.addClass(c)
+      }
+      return this.ele
+    }
+    // ==============================================================
+    // 参数 r 为 true 表示pjax切换页面时事件监听器将被移除，false不移除
+    this.ele.on = (c, f, r = 1) => {
+      this.ele.addEventListener(c, f, false)
+      if (r) {
+        volantis.EventListener.list.push(new volantisEventListener(c, f, this.ele))
+      }
+      return this.ele
+    }
+    this.ele.click = (f, r) => {
+      this.ele.on("click", f, r)
+      return this.ele
+    }
+    this.ele.scroll = (f, r) => {
+      this.ele.on("scroll", f, r)
+      return this.ele
+    }
+    // ==============================================================
+    this.ele.html = (c) => {
+      // if(c=== undefined){
+      //   return this.ele.innerHTML
+      // }else{
+      this.ele.innerHTML = c
+      return this.ele
+      // }
+    }
+    // ==============================================================
+    this.ele.hide = (c) => {
+      this.ele.style.display = "none"
+      return this.ele
+    }
+    this.ele.show = (c) => {
+      this.ele.style.display = "block"
+      return this.ele
+    }
+    // ==============================================================
+    return this.ele
+  }
+  volantis.dom.$ = (ele) => {
+    return !!ele ? new volantisDom(ele) : null;
+  }
+  /******************** RunItem ********************************/
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = ()=>{
+          volantis.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) =>{
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index,1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+  /******************** Pjax ********************************/
+  // /layout/_plugins/pjax/index.ejs
+  // volantis.pjax.send(callBack[,"callBackName"]) 传入pjax:send回调函数
+  // volantis.pjax.push(callBack[,"callBackName"]) 传入pjax:complete回调函数
+  // volantis.pjax.error(callBack[,"callBackName"]) 传入pjax:error回调函数
+  volantis.pjax = {};
+  volantis.pjax.method = {
+    complete: new RunItem(),
+    error: new RunItem(),
+    send: new RunItem(),
+  };
+  volantis.pjax = Object.assign(volantis.pjax, {
+    push: volantis.pjax.method.complete.push,
+    error: volantis.pjax.method.error.push,
+    send: volantis.pjax.method.send.push,
+  });
+  /******************** RightMenu ********************************/
+  // volantis.rightmenu.handle(callBack[,"callBackName"]) 外部菜单项控制
+  // 可在 volantis.mouseEvent 处获取右键事件
+  volantis.rightmenu = {};
+  volantis.rightmenu.method = {
+    handle: new RunItem(),
+  }
+  volantis.rightmenu = Object.assign(volantis.rightmenu, {
+    handle: volantis.rightmenu.method.handle.push,
+  });
+  /********************  Dark Mode  ********************************/
+  // /layout/_partial/scripts/darkmode.ejs
+  // volantis.dark.mode 当前模式 dark or light
+  // volantis.dark.toggle() 暗黑模式触发器
+  // volantis.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  volantis.dark = {};
+  volantis.dark.method = {
+    toggle: new RunItem(),
+  };
+  volantis.dark = Object.assign(volantis.dark, {
+    push: volantis.dark.method.toggle.push,
+  });
+  /********************  Message  ********************************/
+  // VolantisApp.message
+  /********************  isMobile  ********************************/
+  // /source/js/app.js
+  // volantis.isMobile
+  // volantis.isMobileOld
+  /********************脚本动态加载函数********************************/
+  // volantis.js(src, cb)  cb 可以传入onload回调函数 或者 JSON对象 例如: volantis.js("src", ()=>{}) 或 volantis.js("src", {defer:true,onload:()=>{}})
+  // volantis.css(src)
+
+  // 返回Promise对象，如下方法同步加载资源，这利于处理文件资源之间的依赖关系，例如：APlayer 需要在 MetingJS 之前加载
+  // (async () => {
+  //     await volantis.js("...theme.plugins.aplayer.js.aplayer...")
+  //     await volantis.js("...theme.plugins.aplayer.js.meting...")
+  // })();
+
+  // 已经加入了setTimeout
+  volantis.js = (src, cb) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var HEAD = document.getElementsByTagName("head")[0] || document.documentElement;
+        var script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        if (cb) {
+          if (JSON.stringify(cb)) {
+            for (let p in cb) {
+              if (p == "onload") {
+                script[p] = () => {
+                  cb[p]()
+                  resolve()
+                }
+              } else {
+                script[p] = cb[p]
+                script.onload = resolve
+              }
+            }
+          } else {
+            script.onload = () => {
+              cb()
+              resolve()
+            };
+          }
+        } else {
+          script.onload = resolve
+        }
+        script.setAttribute("src", src);
+        HEAD.appendChild(script);
+      });
+    });
+  }
+  volantis.css = (src) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.href = src;
+        link.onload = resolve;
+        document.getElementsByTagName("head")[0].appendChild(link);
+      });
+    });
+  }
+  /********************按需加载的插件********************************/
+  // volantis.import.jQuery().then(()=>{})
+  volantis.import = {
+    jQuery: () => {
+      if (typeof jQuery == "undefined") {
+        return volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/jquery/dist/jquery.min.js")
+      } else {
+        return new Promise(resolve => {
+          resolve()
+        });
+      }
+    }
+  }
+  /********************** requestAnimationFrame ********************************/
+  // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+  // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+  volantis.requestAnimationFrame = (fn)=>{
+    if (!window.requestAnimationFrame) {
+      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+    }
+    window.requestAnimationFrame(fn)
+  }
+  /************************ layoutHelper *****************************************/
+  volantis.layoutHelper = (helper, html, opt)=>{
+    opt = Object.assign({clean:false, pjax:true}, opt)
+    function myhelper(helper, html, clean) {
+      volantis.tempDiv = document.createElement("div");
+      volantis.tempDiv.innerHTML = html;
+      let layoutHelper = document.querySelector("#layoutHelper-"+helper)
+      if (layoutHelper) {
+        if (clean) {
+          layoutHelper.innerHTML = ""
+        }
+        layoutHelper.append(volantis.tempDiv);
+      }
+    }
+    myhelper(helper, html, opt.clean)
+    if (opt.pjax) {
+      volantis.pjax.push(()=>{
+        myhelper(helper, html, opt.clean)
+      },"layoutHelper-"+helper)
+    }
+  }
+  /****************************** 滚动事件处理 ****************************************/
+  volantis.scroll = {
+    engine: new RunItem(),
+    unengine: new RunItem(),
+  };
+  volantis.scroll = Object.assign(volantis.scroll, {
+    push: volantis.scroll.engine.push,
+  });
+  // 滚动条距离顶部的距离
+  volantis.scroll.getScrollTop = () =>{
+    let scrollPos;
+    if (window.pageYOffset) {
+      scrollPos = window.pageYOffset;
+    } else if (document.compatMode && document.compatMode != 'BackCompat') {
+      scrollPos = document.documentElement.scrollTop;
+    } else if (document.body) {
+      scrollPos = document.body.scrollTop;
+    }
+    return scrollPos;
+  }
+  // 使用 requestAnimationFrame 处理滚动事件
+  // `volantis.scroll.del` 中存储了一个数值, 该数值检测一定时间间隔内滚动条滚动的位移, 数值的检测频率是浏览器的刷新频率. 数值为正数时, 表示向下滚动. 数值为负数时, 表示向上滚动.
+  volantis.scroll.handleScrollEvents = () => {
+    volantis.scroll.lastScrollTop = volantis.scroll.getScrollTop()
+    function loop() {
+      const scrollTop = volantis.scroll.getScrollTop();
+      if (volantis.scroll.lastScrollTop !== scrollTop) {
+        volantis.scroll.del = scrollTop - volantis.scroll.lastScrollTop;
+        volantis.scroll.lastScrollTop = scrollTop;
+        // if (volantis.scroll.del > 0) {
+        //   console.log("向下滚动");
+        // } else {
+        //   console.log("向上滚动");
+        // }
+        // 注销过期的unengine未滚动事件
+        volantis.scroll.unengine.list=[]
+        volantis.scroll.engine.start();
+      }else{
+        volantis.scroll.unengine.start();
+      }
+      volantis.requestAnimationFrame(loop)
+    }
+    volantis.requestAnimationFrame(loop)
+  }
+  volantis.scroll.handleScrollEvents()
+  volantis.scroll.ele = null;
+  // 触发页面滚动至目标元素位置
+  volantis.scroll.to = (ele, option = {}) => {
+    if (!ele) return;
+    volantis.scroll.ele = ele;
+    // 默认配置
+    opt = {
+      top: ele.getBoundingClientRect().top + document.documentElement.scrollTop,
+      behavior: "smooth"
+    }
+    // 定义配置
+    if ("top" in option) {
+      opt.top = option.top
+    }
+    if ("behavior" in option) {
+      opt.behavior = option.behavior
+    }
+    if ("addTop" in option) {
+      opt.top += option.addTop
+    }
+    if (!("observerDic" in option)) {
+      option.observerDic = 100
+    }
+    // 滚动
+    window.scrollTo(opt);
+    // 监视器
+    // 监视并矫正元素滚动到指定位置
+    // 用于处理 lazyload 引起的 cls 导致的定位失败问题
+    // option.observer = false
+    if (option.observer) {
+      setTimeout(() => {
+        if (volantis.scroll.ele != ele) {
+          return
+        }
+        volantis.scroll.unengine.push(() => {
+          let me = ele.getBoundingClientRect().top
+          if(!(me >= -option.observerDic && me <= option.observerDic)){
+            volantis.scroll.to(ele, option)
+          }
+          volantis.scroll.unengine.remove("unengineObserver")
+        },"unengineObserver")
+      },1000)
+    }
+  }
+  /********************** Content Visibility ********************************/
+  // 见 source/css/first.styl 如果遇到任何问题 删除 .post-story 即可
+  // 一个元素被声明 content-visibility 属性后 如果元素不在 viewport 中 浏览器不会计算其后代元素样式和属性 从而节省 Style & Layout 耗时
+  // content-visibility 的副作用: 锚点失效 等等(实验初期 暂不明确), 使用此方法清除样式
+  volantis.cleanContentVisibility = ()=>{
+    if (document.querySelector(".post-story")) {
+      console.log("cleanContentVisibility");
+      document.querySelectorAll(".post-story").forEach(e=>{
+        e.classList.remove("post-story")
+      })
+    }
+  }
+  /******************************************************************************/
+  /******************************************************************************/
+  /******************************************************************************/
+  //图像加载出错时的处理
+  function errorImgAvatar(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg";
+    img.onerror = null;
+  }
+  function errorImgCover(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg";
+    img.onerror = null;
+  }
+  /******************************************************************************/
+</script>
+
+  <!-- import head_end begin -->
+  <!-- import head_end end -->
+  <!-- Custom Files headEnd begin-->
+  
+  <!-- Custom Files headEnd end-->
+  <!-- front-matter head_end begin -->
+  <!-- front-matter head_end end -->
+</head>
+  <body itemscope itemtype="http://schema.org/WebPage">
+    <!-- import body_begin begin-->
+    <!-- import body_begin end-->
+    <!-- Custom Files bodyBegin begin-->
+    
+    <!-- Custom Files bodyBegin end-->
+    <!-- front-matter body_begin begin -->
+    <!-- front-matter body_begin end -->
+    <header itemscope itemtype="http://schema.org/WPHeader" id="l_header" class="l_header auto shadow floatable blur " style='opacity: 0' >
+  <div class='container'>
+  <div id='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a id="s-comment" class="fa-solid fa-comments fa-fw" target="_self"  href="/" onclick="return false;" title="comment"></a></li>
+        
+          <li><a id="s-toc" class="s-toc fa-solid fa-list fa-fw" target="_self"  href="/" onclick="return false;" title="toc"></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box header toggle-mode-btn">
+                  <i class='fa-solid fa-moon fa-fw'></i>暗黑模式
+                </a>
+              <li>
+            
+          
+          
+				</ul>
+			</div>
+      
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fa-solid fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+      
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fa-solid fa-search fa-fw" target="_self" href="/" onclick="return false;" title="search"></a></li>
+				
+				<li>
+          <a class="s-menu fa-solid fa-bars fa-fw" target="_self" href="/" onclick="return false;" title="menu"></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box header toggle-mode-btn">
+                  <i class='fa-solid fa-moon fa-fw'></i>暗黑模式
+                </a>
+              <li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+
+      <!-- Custom Files header begin -->
+      
+      <!-- Custom Files header end -->
+		</div>
+	</div>
+  </div>
+</header>
+
+    <div id="l_body">
+      <div id="l_cover">
+  
+    
+      <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
+      <div id="half" class='cover-wrapper post search' style="display: ;">
+        
+  <div id="parallax-window"></div>
+
+<div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Yveltals Blog</p>
+    
+    
+  </div>
+  <div class='bottom'>
+    
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+          <i class="icon fa-solid fa-search fa-fw"></i>
+        </form>
+      </div>
+    
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div id="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+    
+  
+</div>
+
+      <div id="safearea">
+        <div class="body-wrapper">
+          
+<div id="l_main" class=''>
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="http://blog.yveltals.top/2022/11/01/Archive/流媒体协议/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="Hexo">
+    <meta itemprop="description" content="N/A">
+  </span>
+  
+
+
+  
+    <div class='headimg-div'>
+      <a class='headimg-a'>
+        <img itemprop="image" class='headimg' src='/img/音视频.jpg'/>
+      </a>
+    </div>
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title" itemprop="name headline">
+        流媒体协议
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">Yveltal</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+  <div class='new-meta-item category'>
+    <i class="fa-solid fa-folder-open fa-fw" aria-hidden="true"></i>
+    <a class="category-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a>
+    
+      <span hidden itemprop="about" itemscope itemtype="http://schema.org/Thing">
+        <a href="/categories/%E5%85%AB%E8%82%A1/" itemprop="url"><span itemprop="name">八股</span></a>
+      </span>
+    
+  </div>
+
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2022-11-01T10:00:00+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：Nov 1, 2022</p>
+  </a>
+</div>
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <h2 id="RTMP"><a href="#RTMP" class="headerlink" title="RTMP"></a>RTMP</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jimodetiantang/p/8974075.html">RTMP协议详解</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6956240080214327303">一篇文章搞清楚直播协议RTMP</a></p>
+</blockquote>
+<h3 id="什么是-RTMP"><a href="#什么是-RTMP" class="headerlink" title="什么是 RTMP"></a>什么是 RTMP</h3><p>一种应用层的实时信息传输协议，对低延时和音视频同步有良好的支持。解决多媒体数据传输流的<strong>分包</strong>和<strong>多路复用</strong>的问题</p>
+<ul>
+<li>message 消息：将数据封装成<strong>消息</strong>，是 RTMP 协议中的基本数据单元</li>
+<li>chunk 块：将消息分包成更小的<strong>块</strong>，基于TCP网络传输</li>
+</ul>
+<h3 id="RTMP-设计思想"><a href="#RTMP-设计思想" class="headerlink" title="RTMP 设计思想"></a>RTMP 设计思想</h3><ul>
+<li><code>分包</code>：可以将大的消息数据分包成小的块通过网络来进行传输，是降低延时的关键</li>
+<li><code>多路复用</code>：音频、视频数据就能够合到一个传输流（块流）中进行同步传输，是音视频同步的关键</li>
+<li><code>消息分优先级设计</code>：优先级：控制消息 &gt; 音频消息 &gt; 视频消息，当网络传输能力受限时优先传输高优先级数据。要使优先级能够有效执行，分块也很关键：将大消息切割成小块，可以避免大的低优先级的消息（视频消息）堵塞了发送缓冲而延误高优先级的消息（音频、控制消息）</li>
+<li><code>块大小协商</code>：充分考虑流媒体服务器、带宽、客户端的情况，通过块大小协商动态的适应环境</li>
+<li><code>Header压缩优化</code>：块 Header 最大 12 字节，最小可以压缩到 1 字节，节省带宽</li>
+</ul>
+<h3 id="创建流的过程"><a href="#创建流的过程" class="headerlink" title="创建流的过程"></a>创建流的过程</h3><p><strong>1.建立TCP连接</strong></p>
+<p><strong>2.RTMP握手</strong></p>
+<blockquote>
+<ul>
+<li>客户端发送 C0 表示<strong>版本号</strong>、紧接着发送 C1 表示<strong>时间戳</strong></li>
+<li>服务器收到 C0 的时候，返回 S0 表明自己的版本号（版本不匹配则断开），然后直接发送时间戳 S1</li>
+<li>客户端收到 S1 的时候，发一个知道了对方时间戳的 ACK C2，同理服务器收到 C1 的时候发 S2</li>
+</ul>
+</blockquote>
+<p><strong>3.建立RTMP连接</strong></p>
+<blockquote>
+<ul>
+<li>客户端发送<strong>connect</strong>命令，请求与一个服务应用实例建立连接</li>
+<li>服务器接收到连接命令消息后，发送<strong>确认窗口大小协议消息</strong>，同时连接应用程序</li>
+<li>服务器发送<strong>设置带宽协议消息</strong>到客户端</li>
+<li>客户端处理设置带宽协议消息后，发送<strong>确认窗口大小协议消息</strong>到服务器端</li>
+<li>服务器发送<strong>Stream Begin</strong></li>
+<li>服务器发送命令消息中的<strong>result</strong>，通知客户端连接的状态</li>
+</ul>
+</blockquote>
+<p><strong>4.创建RTMP流</strong></p>
+<blockquote>
+<ul>
+<li>客户端发送 <strong>createStream</strong> 命令</li>
+<li>服务器发送命令消息中的<strong>result</strong>，通知客户端流的状态。</li>
+</ul>
+</blockquote>
+<h3 id="推流"><a href="#推流" class="headerlink" title="推流"></a>推流</h3><blockquote>
+<ul>
+<li>客户端发送<strong>publish</strong>命令到服务器，请求创建绑定推流</li>
+<li>服务端返回<strong>onStatus</strong>告知结果</li>
+<li>客户端向服务器设置**媒体元数据 **<ul>
+<li>服务端直接将metaData转发给订阅者，以便解码器初始化</li>
+<li>服务端解析metaData，设置解码器</li>
+</ul>
+</li>
+<li>客户端向服务器<strong>推送媒体数据</strong></li>
+</ul>
+</blockquote>
+<h3 id="拉流"><a href="#拉流" class="headerlink" title="拉流"></a>拉流</h3><blockquote>
+<ul>
+<li>客户端发送 <strong>play</strong> 命令到服务器，指定播放哪个频道</li>
+<li>服务器发送<strong>设置块大小协议消息</strong></li>
+<li>服务器发送<strong>streambegin</strong>告知客户端流ID</li>
+<li>服务器发送<strong>onStatus</strong>告知客户端成功</li>
+<li>此后服务器发送<strong>音视频</strong>数据</li>
+</ul>
+</blockquote>
+<h3 id="RTMP-Message-Header"><a href="#RTMP-Message-Header" class="headerlink" title="RTMP Message Header"></a>RTMP Message Header</h3><blockquote>
+<p>注意：消息需要分块发送。消息的类型只是消息本身格式的设定，和分块传输过程是不同的概念。<strong>应该把消息格式理解为消息的信息排列样式；把传输过程理解为物理上发送数据的方案</strong>。</p>
+<p>RTMP 消息的头（而非 Message Header）是会被切割到 Chunk 里传输的。不过因为和 Chunk Header 内容重复，实际的实现上也可以不考虑这个（得约定好）</p>
+</blockquote>
+<ul>
+<li>MessageType  <code>1B</code>：类型 ID 1 - 6 被保留用于协议控制消息</li>
+<li>MessageLength  <code>3B</code>：表示有效负载的字节数，大端格式</li>
+<li>Timestamp  <code>4B</code>：包含了当前消息的 timestamp，大端格式</li>
+<li>StreamID  <code>3B</code>：消息归属消息流 ID 标志位，大端格式</li>
+</ul>
+<h3 id="RTMP-Chunk"><a href="#RTMP-Chunk" class="headerlink" title="RTMP Chunk"></a>RTMP Chunk</h3><p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>Basic Header</strong>：存放fmt和CSID，长度取决第一个字节的后6位</p>
+<ul>
+<li>0：Header占2字节，CSID从64开始，范围 $2^8$</li>
+<li>1：Header占4字节，CSID从64+$2^8$开始，范围$2^{24}$</li>
+<li>2-63：Header占1字节，后6位本身即为CSID，范围2-63</li>
+</ul>
+<p><strong>Message Header</strong>：长度可变，取决于fmt</p>
+<ul>
+<li><p>StreamID  <code>4B</code>：同一个流中的消息（除了第一个），可省略</p>
+</li>
+<li><p>MessageType  <code>1B</code>：同一个消息拆分成的chunk，消息类型相同可省略</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/RTMP_%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</li>
+<li><p>MessageLength  <code>3B</code>：同一个消息中chunk大小固定，可省略</p>
+</li>
+<li><p>TimeStamp  <code>3B</code>：前三个都相同且chunk由同一个Message切割而来，则时间戳相同，可省略</p>
+</li>
+</ul>
+<p><strong>Extended Time Stamp</strong>：可选，TimeStamp为0xFFFFFF时采用扩展时间戳</p>
+<hr>
+<h2 id="RTP-RTCP与RTSP"><a href="#RTP-RTCP与RTSP" class="headerlink" title="RTP&#x2F;RTCP与RTSP"></a>RTP&#x2F;RTCP与RTSP</h2><h3 id="流式传输"><a href="#流式传输" class="headerlink" title="流式传输"></a>流式传输</h3><p>包括<strong>顺序流式</strong>传输和<strong>实时流式</strong>传输。直播场景中使用两者均可，但实时流式传输的延迟应当更低。</p>
+<h3 id="RTP-实时传输协议"><a href="#RTP-实时传输协议" class="headerlink" title="RTP 实时传输协议"></a>RTP 实时传输协议</h3><p>RTP为IP网络上多媒体数据提供端到端的实时传输服务。为端到端的实时传输提供<strong>时间信息</strong>和<strong>流同步</strong>，但并不保证服务质量，服务质量（乱序、流量控制）由RTCP来提供</p>
+<ul>
+<li>RTP被划分在传输层，它建立在UDP上。载荷按IP-UDP-RTP的结构进行封装，其中RTP头12B</li>
+<li>整个RTP协议由两个密切相关的部分组成：RTP数据协议和RTP控制协议（即RTCP）</li>
+</ul>
+<h3 id="RTCP-实时传输控制协议"><a href="#RTCP-实时传输控制协议" class="headerlink" title="RTCP 实时传输控制协议"></a>RTCP 实时传输控制协议</h3><p>RTCP同样是基于UDP的，但是每一个RTCP包都只包含一些控制信息，因而会很短，可以把多个RTCP分组封装在一个UDP包中。RTCP的原理是向会话中的所有成员<strong>周期性地发送控制包</strong>，应用程序通过接收这些控制数据包，从中获取<strong>会话参与者的相关资料</strong>，以及<strong>网络状况</strong>、<strong>丢包率</strong>等反馈信息，从而控制服务质量或者诊断网络状况。但当有许多用户一起加入会话进程的时候，由于每个参与者都周期发送RTCP信息包，导致RTCP包泛滥</p>
+<p>RTCP协议的不同数据包：</p>
+<ul>
+<li>SR(Sender Report)：类型200，发送端报告，用来使发送端以多播方式向所有接收端报告发送情况。发送端是指发出RTP数据报的终端，可以同时作为接收端。</li>
+<li>RR(Receiver Report)：类型201，接收端报告，接收端是指仅接收但不发送RTP数据报的终端</li>
+<li>SDES：类型202，源描述，用于报告和站点相关的信息。</li>
+<li>BYE：类型203，是站点离开系统的报告，表示结束</li>
+<li>APP：类型204，由应用程序自己定义，解决了RTCP的扩展性问题</li>
+</ul>
+<h3 id="RTSP-实时流协议"><a href="#RTSP-实时流协议" class="headerlink" title="RTSP 实时流协议"></a>RTSP 实时流协议</h3><p>RTSP是一个基于文本的多媒体播放控制协议，属于应用层。RTSP主要用来控制具有实时特性的数据的发送，但其本身并不用于传送流媒体数据，而必须依赖下层传输协议(如RTP&#x2F;RTCP)所提供的服务来完成流媒体数据的传送。RTSP负责定义具体的<strong>控制信息、操作方法、状态码</strong>，以及描述与RTP之间的交互操作。</p>
+<ul>
+<li>RTSP的请求主要有DESCRIBE,SETUP,PLAY,PAUSE,TEARDOWN,OPTIONS等</li>
+<li>RTSP控制的流媒体一般传输TS、MP4之类的格式</li>
+</ul>
+<p><strong>RTSP的工作流程</strong></p>
+<ol>
+<li>首先，客户端连接到流服务器并发送 <strong>DESCRIBE</strong> 命令</li>
+<li>流服务器返回一个SDP描述，包括流数量、媒体类型等</li>
+<li>客户端再分析该SDP描述，并为会话中的每一个流发送一个 <strong>SETUP</strong> 命令，告诉服务器客户端接收媒体数据的端口，流媒体连接建立完成</li>
+<li>客户端发送 <strong>PLAY</strong> 命令，服务器就开始在UDP上传送媒体流 (RTP包)。在播放过程中客户端还可以向服务器发送命令来控制快进、快退和暂停等</li>
+<li>最后，客户端可发送 <strong>TERADOWN</strong> 命令来结束流媒体会话</li>
+</ol>
+<hr>
+<h2 id="MP4"><a href="#MP4" class="headerlink" title="MP4"></a>MP4</h2><blockquote>
+<p>在 MP4 文件中，Chunk 是最小的基本单位，是为了优化数据的 I&#x2F;O 读取效率，媒体数据 -&gt; chunk -&gt; sample -&gt; 帧(默认1个)</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chyingp/p/mp4-file-format.html">5分钟入门MP4</a>  <a target="_blank" rel="noopener" href="https://blog.csdn.net/u012117034/article/details/123746138">封装格式分析MP4</a></p>
+</blockquote>
+<h3 id="Box结构"><a href="#Box结构" class="headerlink" title="Box结构"></a>Box结构</h3><ul>
+<li>box header：box的元数据<ul>
+<li>type：4B，box类型，包括 预定义类型、自定义扩展类型</li>
+<li>size：4B，整个box的字节数，为0时大小由8B的largesize确定，为1时表示是最后一个box</li>
+</ul>
+</li>
+<li>box body：数据部分存储的内容跟box类型有关，有的很简单如 ftyp，有的可能嵌套了其他box比如moov</li>
+</ul>
+<blockquote>
+<p>Container box：嵌套其他box</p>
+<p>FullBox：扩展多了 version、flags 字段</p>
+<ul>
+<li>version：1B，当前box的版本，为扩展做准备</li>
+<li>flags：3B，标志位，含义由具体的box自己定义</li>
+</ul>
+</blockquote>
+<h3 id="Box类型"><a href="#Box类型" class="headerlink" title="Box类型"></a>Box类型</h3><p><strong>ftyp</strong> (<code>file type box</code>)：描述文件遵从的MP4规范与版本</p>
+<ul>
+<li>major_brand：最好基于哪种格式来解析文件，比如常见的 isom、mp41&#x2F;42、avc1、qt等</li>
+<li>minor_version：提供 major_brand 的说明信息，比如版本号</li>
+<li>compatible_brands：文件兼容的brand列表</li>
+</ul>
+<p><strong>moov</strong> (<code>movie box</code>)：媒体的metadata信息，有且仅有一个</p>
+<ul>
+<li>mvhd：mp4文件的整体信息，比如创建时间、文件时长</li>
+<li>trak (<code>Track Box</code>)：包含的轨道信息，是container box，至少包含两个box<ul>
+<li>tkhd：单个 track 的信息，如track创建时间、时长，音频音量、视频宽高</li>
+<li>mdia：<ul>
+<li>mdhd (<code>Media Header Box</code>)</li>
+<li>hdlr (<code>Handler Reference Box</code>)：声明track的类型，以及对应的处理器</li>
+<li>minf (<code>Media Information Box</code>)： trak 中媒体数据的所有特征信息<ul>
+<li>vmhd &#x2F; smhd</li>
+<li>stbl (<code>Sample Table Box</code>)：是包含媒体数据信息最多的 Box。主要包含了时间和媒体采样数据的索引表，能按照时间检索出采样数据的位置、类型（是否 I 帧）、大小、实际偏移位置<ul>
+<li>stsd (<code>Sample Description</code>)：音视频的编码、宽高、音量，每个sample中包含多少个帧（包含SPS 和 PPS）</li>
+<li>stco (<code>Chunk Offset</code>)：chunk索引表，chunk在文件中的偏移</li>
+<li>stsc (<code>Sample To Chunk</code>)：包含 Sample 和 Chunk 的映射关系，即每个chunk中包含几个sample，用来找到包含 sample 的 chunk</li>
+<li>stsz (<code>Sample Size</code>)：每个sample的大小，AVPacket的size大小</li>
+<li>stts (<code>Decoding Time to Sample</code>)：每个sample的时长（ 相邻两帧的解码间隔）</li>
+<li>stss (<code>Sync Sample</code>)：哪些sample是关键帧</li>
+<li>ctts (<code>Composition Time to Sample</code>)： 时间补偿，用来计算出 pts，因为mp4 是按解码顺序存储，packet 按 dts 递增。通常用于B帧场景</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>mdat</strong> (<code>Media Data Box</code>)：存放实际的媒体数据，这里数据是没有结构的，依赖于moov中的信息索引</p>
+<h3 id="Moov和Mdat的前后"><a href="#Moov和Mdat的前后" class="headerlink" title="Moov和Mdat的前后"></a>Moov和Mdat的前后</h3><ul>
+<li>moov 在 mdat 后面：修改moov中的用户自定义信息时，不会影响 Chunk Offset，无需更新 stco ，编辑效率较高。但从网络播放 MP4 时就需较长时间，直到播放器获取到 moov 数据后才能初始化解码器并播放</li>
+<li>moov 在 mdat 前面：则与上述情况相反，这时候从网络读取和播放 MP4 文件时，就可以较快获取到 moov 的数据并开始播放。所以<strong>对于通过网络播放 MP4 视频的场景，都建议将视频处理为 moov 前置。</strong></li>
+</ul>
+<h3 id="Seek操作原理"><a href="#Seek操作原理" class="headerlink" title="Seek操作原理"></a>Seek操作原理</h3><ol>
+<li>sample &#x3D; 秒数 * 帧率</li>
+<li>stsc根据sample找到chunk，以及该chunk中前面sample的数量</li>
+<li>stco找到chunk偏移位置</li>
+<li>stsz确定每个sample大小，求和即为字节数</li>
+</ol>
+<hr>
+<h2 id="FLV"><a href="#FLV" class="headerlink" title="FLV"></a>FLV</h2><p>FLV是基于流式的文件存储结构，可以随时将音视频数据写入文件末尾，且文件头不会因文件数据的大小而变化，所以不管是在录制时，还是进行回放时，FLV 相较于 MP4 等多媒体格式都更有优势</p>
+<p>与RTMP对比发现：<strong>FLV 文件就是由 “FLV Header + RTMP 数据” 构成的</strong></p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/flv_%E6%A0%BC%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/flv_%E6%A0%BC%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><p><strong>FLV Header</strong></p>
+<ul>
+<li>T：Type标识占1字节，其中两位表明是否包含音频或视频</li>
+<li>Offset：Header长度，固定为9B</li>
+</ul>
+<p><strong>FLV Body</strong></p>
+<ul>
+<li>Pre TagSize：占4字节，表示前一个Tag大小</li>
+<li>Tag Header：同RTMP Header<ul>
+<li>TagType  <code>1B</code>：类型音频、视频、脚本数据</li>
+<li>DataSize  <code>3B</code>：数据长度</li>
+<li>Timestamp和扩展Timestamp  <code>4B</code>：数据生成时间戳</li>
+<li>StreamID  <code>3B</code>：总为0</li>
+</ul>
+</li>
+<li>Tag Data：存放<code>AudioHeader + AudioData</code> 或 <code>VideoHeader + VideoData</code></li>
+</ul>
+<h3 id="TagData"><a href="#TagData" class="headerlink" title="TagData"></a>TagData</h3><ul>
+<li><strong>Script Tags</strong><br>存放FLV视频和音频的元信息（onMetadata），是第一个Tag，且仅有一个</li>
+<li><strong>Audio Tags</strong><br>在 FLV 中一般会用第一个 Audio Tag 来封装 AudioSpecificConfig。如果音频使用 AAC 编码格式，那么这个 Tag 就是 AAC 音频同步包</li>
+<li><strong>Video Tags</strong><br>在 FLV 中一般会用第一个 Video Tag 来封装 AVCDecoderConfigurationRecord。如果视频使用 AVC 编码格式，那么这个 Tag 就是 AVC 视频同步包。它记录了 AVC 解码相关的 sps 和 pps 信息，解码器在解码前要先获取的 sps 和 pps ，在做 seek 等操作引起解码器重启时，也需再传一遍 sps 和 pps</li>
+</ul>
+<hr>
+<h2 id="AAC编码"><a href="#AAC编码" class="headerlink" title="AAC编码"></a>AAC编码</h2><h3 id="ADTS格式"><a href="#ADTS格式" class="headerlink" title="ADTS格式"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_29028177/article/details/54694861">ADTS格式</a></h3><p>每一帧的ADTS的头文件都包含音频的采样率，声道，帧长度等信息</p>
+<blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/ADTS.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/ADTS.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<ul>
+<li>syncword ：固定 <code>0xFFF</code>，代表一个ADTS帧的开始</li>
+<li>ID：MPEG版本: MPEG-4为0，MPEG-2为1</li>
+<li>Layer：固定 <code>0x00</code></li>
+<li>protection_absent：需要CRC校验为0（header length&#x3D;9B），不需要为1（7B），</li>
+<li>profile：表示使用哪个级别的AAC</li>
+<li>sampling_frequency_index：采样率的下标，如44.1k对应 <code>0x4</code></li>
+<li>channel_configuration：声道数，如2表示立体声双声道</li>
+<li><strong>aac_frame_length</strong>：ADTS帧的长度 &#x3D; (protection_absent &#x3D;&#x3D; 1 ? 7 : 9) + size(AACFrame)</li>
+<li>adts_buffer_fullness：<code>0x7FF</code> 说明是码率可变的码流。</li>
+<li>number_of_raw_data_blocks_in_frame：表示ADTS帧中有 <code>k+1</code>个AAC原始帧</li>
+<li><a target="_blank" rel="noopener" href="https://www.p23.nl/projects/aac-header/">AAC首部分析网站</a></li>
+</ul>
+<hr>
+<h2 id="JPEG编码"><a href="#JPEG编码" class="headerlink" title="JPEG编码"></a>JPEG编码</h2><p><strong>块划分</strong>：源图像中每点的 3个分量是交替出现的，先要分开存放到 3 张表中去。按8x8大小划分块，不足则填充</p>
+<p><strong>DCT变换</strong>：先将图像分层N*N的像素块，再针对每个像素块逐一DCT操作。编码时正向DCT变换，解码时反向</p>
+<p><strong>Zigzag 扫描排序</strong>：从左上角Z形扫描并保存DCT系数</p>
+<p><strong>量化</strong>：量化阶段需要两个 8*8 量化表，分别处理亮度和色度的频率系数，将频率系数除以量化矩阵的值之后取整，即完成了量化过程。量化阶段之后所有数据只保留了整数近似值，会有损失。在 JPEG 算法中，由于对亮度和色度的精度要求不同，分别对亮度和色度采用不同的量化表，前者细量化，后者粗量化。</p>
+<p><strong>DC和AC分量编码</strong>：</p>
+<p>DC进行DPCM差值编码，因为相邻DC系数值变化不大，取同一个图像分量中相邻DC的差值来进行编码</p>
+<p>AC进行行程长度编码，因为系数中很多0，所以用一个数据对表示两个非零AC系数间的0个数</p>
+<p><strong>熵编码</strong>：</p>
+<p>对得到的DC和AC系数的中间格式进行熵编码，JPEG标准规定了两种方式：Huffman编码和算术编码，JPEG基本系统规定采用Huffman编码</p>
+<p>Huffman编码：对出现概率大的字符分配字符长度较短的二进制编码，对出现概率小的字符分配字符长度较长的二进制编码，从而使得字符的平均编码长度最短。具体Huffman编码采用查表的方式高效地完成，需要4张Huffman编码表：DC系数&amp;AC系数、亮度&amp;色度</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/hesays/article/details/39499091">JPEG解码</a></p>
+</blockquote>
+<hr>
+<h2 id="H264-AVC"><a href="#H264-AVC" class="headerlink" title="H264 &#x2F;AVC"></a>H264 &#x2F;AVC</h2><blockquote>
+<p>en.wikipedia.org&#x2F;wiki&#x2F;Advanced_Video_Coding</p>
+</blockquote>
+<h3 id="H264码流结构"><a href="#H264码流结构" class="headerlink" title="H264码流结构"></a>H264码流结构</h3><h4 id="VCL和NAL"><a href="#VCL和NAL" class="headerlink" title="VCL和NAL"></a>VCL和NAL</h4><ul>
+<li><p><strong>VCL</strong>：视频编码层，H264编码的核心，负责将视频数据编码压缩、切分</p>
+<p>VCL层是对核心算法引擎，宏块及片的语法级别的定义，输出编码完的数据 SODB</p>
+</li>
+<li><p><strong>NAL</strong>：网络抽象层，负责将VCL的数据组织打包，解决丢包、乱序  </p>
+<p>NAL层定义片级以上的语法级别（如SPS和PS，针对网络传输），同时支持独立片解码，保证起始码唯一<br><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_NALU.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_NALU.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</li>
+</ul>
+<h4 id="分层结构"><a href="#分层结构" class="headerlink" title="分层结构"></a>分层结构</h4><blockquote>
+<p><strong>封闭式GOP</strong>：指每一个GOP都以IDR开始，各个GOP之间独立地编解码</p>
+<p><strong>开放式GOP</strong>：指第一个GOP中的第一个帧内编码图像是IDR，后续GOP中的第一个帧内编码图像为non-IDR图像，因此后面GOP中的帧间编码图像可以用前一个GOP中的已编码图像做参考图像</p>
+<p><strong>GOP值大的好处</strong>：</p>
+<ul>
+<li>在码率不变的前提下，GOP值越大，P、B帧的数量会越多，画面细节更多，图像质量越高；</li>
+</ul>
+<p><strong>GOP值大的局限</strong>：</p>
+<ul>
+<li>场景切换时，编码器会自动强制插入一个I帧，此时实际的GOP值被缩短了</li>
+<li>当I帧的图像质量差时会影响到后续P、B帧的质量，直到下一个GOP开始才有可能得以恢复</li>
+<li>过多的P、B帧会影响编码效率，使编码效率降低</li>
+<li>过长的GOP还会影响Seek操作的响应速度，解码某一个P或B帧时，需要先解码得到本GOP内的I帧及之前的N个预测帧才可以，GOP值越长，需要解码的预测帧就越多，seek响应的时间也越长。</li>
+</ul>
+</blockquote>
+<p><strong>五个层次</strong>：GOP -&gt; 图像 -&gt; Slice -&gt; 宏块 -&gt;子块</p>
+<ul>
+<li><strong>封闭式GOP</strong>：一组连续的画面，第一帧为IDR帧，一般由一张 I 帧和数张 B &#x2F; P 帧组成</li>
+<li><strong>片 slice</strong>：宏块的载体，限制误码的扩散和传输（常一帧图片对应一个slice） ，Slice Header中包括帧类型、GOP中解码帧的序号、预测权重、滤波</li>
+<li><strong>宏块 Macroblock</strong>：宏块大小通常为16×16像素，分为I、B、P宏块；编码处理的基本单元，由多个块组成</li>
+</ul>
+<blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/h264_%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>宏块中包含了宏块类型、预测类型、<a target="_blank" rel="noopener" href="https://www.freesion.com/article/46181181418/">Coded Block Pattern 编码的块模式</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/fc34235/article/details/79992789">Quantization Parameter 量化参数</a>、像素的亮度和色度数据集等等信息</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%AE%8F%E5%9D%97.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%AE%8F%E5%9D%97.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<h3 id="H264编码"><a href="#H264编码" class="headerlink" title="H264编码"></a>H264编码</h3><h4 id="编码器结构"><a href="#编码器结构" class="headerlink" title="编码器结构"></a>编码器结构</h4><p>一个编码器基本上都会有帧内预测、帧间预测、变换量化、熵编码以及滤波等几个部分。</p>
+<p>预测编码是指利用相邻像素的空间或时间相关性，用已传输的像素对当前正在编码的像素进行预测，然后对预测值与真实值的差-预测误差进行编码和传输，即帧内预测，帧间预测。</p>
+<p>变换编码是指将空间域描述的图像，经过某种变换形成变换域中的数据，改变数据分布，减少有效数据量。</p>
+<h4 id="编码流程"><a href="#编码流程" class="headerlink" title="编码流程"></a>编码流程</h4><ol>
+<li><strong>帧内预测</strong>：空间冗余<br>利用相邻像素的相关性，通过当前像素块的左边和上边的像素进行预测，计算出每个宏块的<strong>预测模式信息</strong>，再将预测得到的全部图像数据和当前帧原数据进行对比得到<strong>残差值</strong>，进行变换量化，拆包生成NAL分发<br>区别：帧内预测模式H264有9种；H265有35种，预测方向更细、更灵活</li>
+<li><strong>帧间预测</strong>：时间冗余<br>基于当前帧与参考帧，通过运动评估（对所有宏块匹配查找）得到<strong>运动矢量</strong>，与当前帧对比得出<strong>残差值</strong>，进行变换量化，生成NAL<br>区别：<ul>
+<li>H264以16x16<strong>宏块</strong>为预测单位，也可以划分为16x8, 8x8, 8x4, 4x4等；H265对应的是64x64的CTU，CTU可以递归的分解为编码块CU，CU是视频编码和帧间预测的基本单元，大小32x32, 16x16, 8x8等，可以进一步划分为PU和TU</li>
+<li>采用了更合理的子像素插值算法，进一步提高了运动估计和运动补偿的精度</li>
+<li>采用了新的合并模式，可以更加高效地编码传输运动参数</li>
+</ul>
+</li>
+<li><strong>变换和量化</strong>：为了压缩残差信息的统计冗余<ul>
+<li>DCT变换（离散余弦变换）：将图像分成互不重叠的图像块，将空间域的图像信号变换到频率域。变换后，左上角的低频系数集中了大量能量，而右下角的高频系数上的能量很小，有益于有损压缩的数据处理</li>
+<li>量化：人眼对图像的低频特性很敏感（如总体亮度），而对高频细节信息不敏感，因此在传送过程中可以少传高频信息。量化过程通过对低频区的系数进行细量化，高频区的系数进行粗量化，去除了人眼不敏感的高频信息，从而降低信息传送量。因此，量化是<strong>有损</strong>压缩，是视频压缩编码中质量损伤的主要原因</li>
+<li>区别：H265提高了编码效率</li>
+</ul>
+</li>
+<li><strong>熵编码</strong>：使用新的编码来表示输入的数据，从而达到压缩的效果<ul>
+<li>效率稍低、实现较易的基于上下文的自适应可变长编码（CAVLC），常用数据块用短码表示</li>
+<li>效率较高、实现较难的基于上下文的自适应二进制算术编码（CABAC），<strong>目的是从概率的角度再做一次压缩</strong>，编码的过程主要分为二值化，上下文建模，二进制算术编码</li>
+</ul>
+</li>
+<li><strong>环路滤波</strong><br>视频压缩编码是有损压缩，逐块地对预测后的残差进行变换和量化，将导致重建图像时失真，出现方块效应（图像块边界上不连续）等。因此采用环路滤波的方法对重建图像进行滤波，降低重建误差<ul>
+<li>H264：去方块滤波（在 TU&#x2F;PU 块边界进行不同强度滤波，减少重构图像会出现的方块效应）</li>
+<li>H265：去方块滤波、SAO样点自适应补偿（通过补偿重构像素值，以减少振铃效应）</li>
+</ul>
+</li>
+</ol>
+<h4 id="压缩方式"><a href="#压缩方式" class="headerlink" title="压缩方式"></a>压缩方式</h4><p><strong>1.<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41004932/article/details/118655700">帧内压缩</a>（I帧，IDR帧）</strong>：得到预测模式信息+残差值</p>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_%E5%B8%A7%E5%86%85%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%BC%8F.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><strong>2.<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41004932/article/details/118656842">帧间压缩</a>（P帧，B帧）</strong></p>
+<p>编码时运动估计：（通过宏块匹配）得到运动矢量+残差值</p>
+<p>解码时运动补偿：将预测的图像与残差值相加</p>
+<p><strong>3.无损压缩</strong></p>
+<p>DCT变换、CAVLC压缩（MPEG2）、CABAC压缩（H.264）</p>
+<h4 id="AnnexB格式"><a href="#AnnexB格式" class="headerlink" title="AnnexB格式"></a>AnnexB格式</h4><h5 id="AnnexB流结构"><a href="#AnnexB流结构" class="headerlink" title="AnnexB流结构"></a>AnnexB流结构</h5><blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AnnexB%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<p><strong>Startcode：</strong></p>
+<ul>
+<li>0x000001：单帧多slice（即单帧多个NALU）之间间隔</li>
+<li>0x00000001：帧之间，或者SPS、PPS等之前</li>
+</ul>
+<p><strong>NALU：</strong></p>
+<ul>
+<li>EBSP扩展字节序列载荷 &#x3D; RBSP插入防竞争字节<code>0x03</code> （连续两个<code>0x00</code>字节时）</li>
+<li>RBSP原始字节序列载荷 &#x3D; SODB + RBSP尾部（补齐）</li>
+<li>SODB为原始数据比特流 &#x3D; Slice Header + Slice Data</li>
+</ul>
+<p><strong>SPS和PPS</strong></p>
+<ul>
+<li>序列参数集，包括一组编码视频序列的全局参数，包含了profile、level、宽高和颜色空间等信息</li>
+<li>图像参数集，包括一幅图像的公共参数，PPS可以引用SPS参数，也会被码流中的slice引用</li>
+<li>一般均位于码流起始，但也可能在中间：解码器需要从中间开始解码；编码过程中改变了参数</li>
+</ul>
+<h5 id="NALU-Header-8-bits"><a href="#NALU-Header-8-bits" class="headerlink" title="NALU Header(8 bits)"></a>NALU Header(8 bits)</h5><ol>
+<li>第一位：forbidden_zero_bit 禁止位，初始为0，当网络发现NAL单元有错误时可置为1</li>
+<li>后两位：nal_ref_idc代表 NALU 的重要性，取值范围0~3。对于重要数据（参考帧，序列集参数集或图像集）必须大于0</li>
+<li>最后五位：nal_unit_type指的是当前 <strong>NAL 类型</strong><ul>
+<li><code>1-4</code>：I&#x2F;P&#x2F;B帧，是依据VLC的slice区分的</li>
+<li><code>5</code>：IDR帧，告诉解码器之前依赖的解码参数集合（接下来要出现的SPS\PPS等）可以被刷新了</li>
+<li><code>6</code>：SEI补充增强信息，提供了向视频码流中加入额外信息的方法</li>
+<li><code>7</code>：SPS序列参数集，保存了一组编码视频序列(Coded Video Sequence)的全局参数</li>
+<li><code>8</code>：PPS图像参数集，保存了整体图像相关的参数</li>
+<li><code>9</code>：AU分隔符，Access Unit是一个或者多个NALU的集合，代表了一个完整的帧</li>
+</ul>
+</li>
+</ol>
+<h5 id="RBSP尾部"><a href="#RBSP尾部" class="headerlink" title="RBSP尾部"></a>RBSP尾部</h5><ol>
+<li>RBSP尾部：大多数（非<code>1</code>-<code>5</code>）NALU<br>SODB在最后紧跟1个比特<code>1</code>，再增加若干比特<code>0</code>补齐字节</li>
+<li>条带RBSP尾部：NALU类型为条带（<code>1</code>-<code>5</code>）时<br>默认仍情况1，仅当①entropy_coding_mode_flag值为1（当前采用的熵编码为CABAC）且②more_rbsp_trailing_data()返回true（RBSP中有更多数据时），添加一&#x2F;多个<code>0x0000</code></li>
+</ol>
+<h4 id="AVCC格式"><a href="#AVCC格式" class="headerlink" title="AVCC格式"></a>AVCC格式</h4><h5 id="AVCC流结构"><a href="#AVCC流结构" class="headerlink" title="AVCC流结构"></a>AVCC流结构</h5><blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_AVCC%E6%B5%81%E7%BB%93%E6%9E%84.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<ul>
+<li>视频开始有<code>extradata</code>，包含SPS、PPS和NALU前缀长度</li>
+<li>前缀指明了NALU大小，前缀字节数1、2或4</li>
+<li>AVCC中的NALU格式与AnnexB一致。AVCC转AnnexB时，如果检测到NALU Type &#x3D; 5关键帧，须在关键帧前面加上SPS NALU和PPS NALU即可</li>
+</ul>
+<h5 id="Extradata"><a href="#Extradata" class="headerlink" title="Extradata"></a>Extradata</h5><ol>
+<li><p>前4字节无用跳过</p>
+</li>
+<li><p>第5个字节：前6位保留全1，后2位为<strong>NALU前缀大小</strong>，值013分别对应前缀124字节</p>
+</li>
+<li><p>第6个字节：前3位保留全1，后5位存放<strong>SPS NALU的个数</strong>（通常为1个）<br>根据SPS NALU个数，循环获取SPS数据：</p>
+<blockquote>
+<p>前2个字节为前缀，表示SPS字节数N，后N个字节为SPS的数据</p>
+</blockquote>
+</li>
+<li><p>获取全部SPS数据后，下个字节为<strong>PPS NALU的个数</strong>（通常为1个）<br>根据PPS NALU个数，循环获取PPS数据：</p>
+<blockquote>
+<p>前2个字节为前缀，表示PPS字节数N，后N个字节为PPS的数据</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="RTP格式"><a href="#RTP格式" class="headerlink" title="RTP格式"></a>RTP格式</h4><p>RTP封装&#x3D; 12字节固定RTP包头 + 载荷（NALU）</p>
+<h5 id="RTP包头"><a href="#RTP包头" class="headerlink" title="RTP包头"></a>RTP包头</h5><blockquote>
+<p><img src="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_RTP%E5%8C%85%E5%A4%B4.png" class="lazyload" data-srcset="https://gcore.jsdelivr.net/gh/Yveltals/Picgo/Audio/h264_RTP%E5%8C%85%E5%A4%B4.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+</blockquote>
+<ul>
+<li>V：RTP协议的版本号为2</li>
+<li>P：填充标志，置1将在包尾包含附加填充字节，它不属于有效载荷。填充的最后一个八进制包含应该忽略的八进制计数。某些加密算法需要固定大小的填充字节，或为在底层协议数据单元中携带几个RTP包</li>
+<li>X：扩展标志，置1则在RTP报头后跟有一个扩展报头</li>
+<li>CC：CSRC计数器，指示CSRC 标识符的个数</li>
+<li>Ｍ：标记位（不同载荷含义不同，视频标记一帧的最后一个分片slice则1,其他0）</li>
+<li>PT：载荷类型RTP_PAYLOAD_RTSP，记录使用哪种 <strong>Codec</strong> ，receiver 端找出相应的 decoder解码出来。如H264&#x3D;96</li>
+<li>序列号：标识 RTP 报文的序列号（初始值随机），每发送一个报文序号加 1</li>
+<li>时间戳：反映了该报文第一个八位组的采样时刻。 接受者使用时间戳来计算延迟和抖动， 并进行同步控制</li>
+<li>SSRC：区分是在和谁通信，两个同步信源的SSRC要相同</li>
+<li>CSRC：每个32位，可以有0～15个。每个CSRC标识了该报文有效载荷中的所有特约信源</li>
+</ul>
+<h5 id="NALU类型"><a href="#NALU类型" class="headerlink" title="NALU类型"></a>NALU类型</h5><p>最后五位：nal_unit_type指的是当前 <strong>NAL 类型</strong></p>
+<ul>
+<li><code>1-23</code>：NAL单元，单个 NAL 单元包.</li>
+<li><code>24</code>：STAP-A，单一时间的组合包</li>
+<li><code>25</code>：STAP-B，单一时间的组合包</li>
+<li><code>26</code>：MTAP16，多个时间的组合包</li>
+<li><code>27</code>：MTAP24，多个时间的组合包</li>
+<li><code>28</code>：FU-A，分片的单元</li>
+<li><code>29</code>：FU-B，分片的单元</li>
+</ul>
+<h5 id="打包模式"><a href="#打包模式" class="headerlink" title="打包模式"></a>打包模式</h5><ol>
+<li><p>单一NALU的RTP包（1个RTP包：1个NALU）</p>
+<p>打包时去除<code>000..1</code>开始码，把其他数据封包得 RTP 包即可</p>
+</li>
+<li><p>组合NALU的RTP包（1个RTP包：多个NALU），需要解包时在重组，以STEP-A为例：</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[RTP Header] [78 (STAP-A头，1B)] </span><br><span class="line">   [第一个NALU长度(2B)] [67 42 A0 1E 23 56 0E 2F ] </span><br><span class="line">   [第二个NALU长度(2B)] [68 42 B0 12 58 6A D4 FF ... ]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分片NALU的RTP包（1个NALU：多RTP包），因NALU＞MTU</p>
+</li>
+</ol>
+<hr>
+<h2 id="H265-HEVC"><a href="#H265-HEVC" class="headerlink" title="H265 &#x2F;HEVC"></a>H265 &#x2F;HEVC</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/709524#slide-3">白话H.265&#x2F;HEVC和H.264&#x2F;AVC编码结构</a>***</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39969848/article/details/129003896">HEVC（H.265）视频压缩编码格式与其原理</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/dong_daxia/article/details/82870838">详细分析 HEVC&#x2F;H265编码框架原理</a></p>
+</blockquote>
+<h3 id="H265码流结构"><a href="#H265码流结构" class="headerlink" title="H265码流结构"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45374297/article/details/108492982#:~:text=H.265%2FHE,%E6%95%B0%E9%9B%86%EF%BC%88PPS%EF%BC%89%E3%80%82">H265码流结构</a></h3><h4 id="码流结构"><a href="#码流结构" class="headerlink" title="码流结构"></a>码流结构</h4><p>H.265&#x2F;HEVC压缩数据采用了类似H.264&#x2F;AVC的分层结构，将数据GOP层、Slice层中公用的大部分语法元素游离出来组成SPS和PPS，并增加了视频参数集VPS。</p>
+<ul>
+<li>SPS 序列参数集，包括一组编码视频序列的全局参数，包含了profile、level、宽高和颜色空间等信息</li>
+<li>PPS 图像参数集，包括一幅图像的公共参数，<strong>引用关系 slice -&gt; PPS -&gt; SPS -&gt;VPS</strong></li>
+<li>VPS 视频参数集，包括多个子层共享的语法元素和其他不属于SPS的特定信息</li>
+</ul>
+<h4 id="分层结构-1"><a href="#分层结构-1" class="headerlink" title="分层结构"></a>分层结构</h4><ol>
+<li><p>视频序列划分为GOP（开放式）</p>
+</li>
+<li><p>GOP包含多个Slice或Tile，为了独立编解码</p>
+<ul>
+<li>Slice带状，包括一个独立<strong>片段</strong>SS和若干依赖SS，SS包含多个<strong>树形编码单元</strong>CTU</li>
+<li>Tile矩形，包含整数个CTU</li>
+</ul>
+</li>
+<li><p>CTU按照四叉树划分为不同类型，包括CU、PU、TU</p>
+<ul>
+<li>CU是进行预测、变换、量化和熵编码等处理的基本单元</li>
+<li>PU是进行帧内&#x2F;帧间预测的基本单元</li>
+<li>TU是进行变换和量化的基本单元</li>
+</ul>
+</li>
+</ol>
+<h3 id="AnnexB与HVCC格式"><a href="#AnnexB与HVCC格式" class="headerlink" title="AnnexB与HVCC格式"></a>AnnexB与HVCC格式</h3><h3 id="H-265的优势-区别"><a href="#H-265的优势-区别" class="headerlink" title="H.265的优势&#x2F;区别"></a>H.265的优势&#x2F;区别</h3><ul>
+<li>H.265的编码架构和H.264相似，包含帧内预测、帧间预测、转换、量化、去区块滤波器、熵编码。但在HEVC编码架构中，整体被分为了三个基本单位，分别是编码单元CU、预测单元PU和转换单元 TU。并且对一些技术加以改进：改善码流、编码质量、算法复杂度</li>
+<li>H.265采用了块的四叉树划分结构，采用了从64×64～8×8像素的自适应块划分，并基于这种块划分结构采用一系列自适应的预测和变换等编码技术；而H.264中每个宏块大小都是固定的16×16像素</li>
+<li>H.265的帧内预测模式支持35种方向（H.264只支持9种），预测方向更细、更灵活</li>
+<li>H.265的帧间预测采用了更合理的子像素插值算法，提高了运动补偿和估计的精度</li>
+<li>H.264可以低于1Mbps的速度实现标清数字图像传送；H.265则可以实现利用1~2Mbps的速度传送720P普通高清音视频</li>
+<li>同样的画质和同样的码率，H.265比H.264占用的存储空间要少理论50%</li>
+</ul>
+<h3 id="档次、层和级别"><a href="#档次、层和级别" class="headerlink" title="档次、层和级别"></a>档次、层和级别</h3><ol>
+<li><p>Profile（3种）：主要规定编码器可采用哪些编码工具或算法</p>
+<blockquote>
+<p>H.264有四种画质级别：<br>Baseline Profile：基本画质。支持I&#x2F;P 帧，只支持无交错和CAVLC<br>Extended profile：进阶画质。支持I&#x2F;P&#x2F;B&#x2F;SP&#x2F;SI 帧，只支持无交错和CAVLC<br>Main profile：主流画质。提供I&#x2F;P&#x2F;B 帧，支持无交错和交错，也支持CAVLC 和CABAC<br>High profile：高级画质。在main Profile 的基础上增加了8x8内部预测、自定义量化、无损视频编码</p>
+</blockquote>
+</li>
+<li><p>Level（13种）：根据解码端的负载和存储空间情况对关键参数加以限制，主要包括采样率、分辨率、码率的最大值、压缩率的最小值、解码图像缓存区的容量(DPB)、编码图像缓存区的容量(CPB)等</p>
+</li>
+<li><p>Tier（2种）：H.265新定义的，规定了每个级别的码率的高低</p>
+</li>
+</ol>
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2025-09-07T17:36:52+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：Sep 7, 2025</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
+    
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2022/11/01/Archive/Cpp%20trivial/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Cpp trivial</p>
+          <p class='content'>运算符优先级
+
+
+优先级
+类型
+运算符
+
+
+
+0
+一元后缀运算符
+()  []  ++  –  -&gt;  .
+
+
+1
+一元前缀运算符
+++  –   +  -  !  * &amp; (ty...</p>
+        </a>
+      
+      
+        <a class='next' href='/2022/10/01/Archive/FFmpeg/'>
+          <p class='title'>FFmpeg<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>FFmpeg开发时间基与时间戳关联：
+
+时间基 (time_base) 乘以时间戳 (timestamp) 即为实际时刻（单位s）
+如：总时长 &#x3D; duration * av_q2d(...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
+  
+
+
+
+
+
+</div>
+<aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
+  
+
+  
+    
+    
+      
+    
+  
+
+
+<div class="widget-sticky pjax">
+
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RTMP"><span class="toc-number">1.</span> <span class="toc-text">RTMP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-RTMP"><span class="toc-number">1.1.</span> <span class="toc-text">什么是 RTMP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTMP-%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3"><span class="toc-number">1.2.</span> <span class="toc-text">RTMP 设计思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B5%81%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">创建流的过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%B5%81"><span class="toc-number">1.4.</span> <span class="toc-text">推流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%89%E6%B5%81"><span class="toc-number">1.5.</span> <span class="toc-text">拉流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTMP-Message-Header"><span class="toc-number">1.6.</span> <span class="toc-text">RTMP Message Header</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTMP-Chunk"><span class="toc-number">1.7.</span> <span class="toc-text">RTMP Chunk</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RTP-RTCP%E4%B8%8ERTSP"><span class="toc-number">2.</span> <span class="toc-text">RTP&#x2F;RTCP与RTSP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E4%BC%A0%E8%BE%93"><span class="toc-number">2.1.</span> <span class="toc-text">流式传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTP-%E5%AE%9E%E6%97%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.2.</span> <span class="toc-text">RTP 实时传输协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTCP-%E5%AE%9E%E6%97%B6%E4%BC%A0%E8%BE%93%E6%8E%A7%E5%88%B6%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.3.</span> <span class="toc-text">RTCP 实时传输控制协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RTSP-%E5%AE%9E%E6%97%B6%E6%B5%81%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.4.</span> <span class="toc-text">RTSP 实时流协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MP4"><span class="toc-number">3.</span> <span class="toc-text">MP4</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Box%E7%BB%93%E6%9E%84"><span class="toc-number">3.1.</span> <span class="toc-text">Box结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Box%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">Box类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Moov%E5%92%8CMdat%E7%9A%84%E5%89%8D%E5%90%8E"><span class="toc-number">3.3.</span> <span class="toc-text">Moov和Mdat的前后</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Seek%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">3.4.</span> <span class="toc-text">Seek操作原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FLV"><span class="toc-number">4.</span> <span class="toc-text">FLV</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TagData"><span class="toc-number">4.2.</span> <span class="toc-text">TagData</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AAC%E7%BC%96%E7%A0%81"><span class="toc-number">5.</span> <span class="toc-text">AAC编码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ADTS%E6%A0%BC%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">ADTS格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JPEG%E7%BC%96%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text">JPEG编码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#H264-AVC"><span class="toc-number">7.</span> <span class="toc-text">H264 &#x2F;AVC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#H264%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84"><span class="toc-number">7.1.</span> <span class="toc-text">H264码流结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#VCL%E5%92%8CNAL"><span class="toc-number">7.1.1.</span> <span class="toc-text">VCL和NAL</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E5%B1%82%E7%BB%93%E6%9E%84"><span class="toc-number">7.1.2.</span> <span class="toc-text">分层结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#H264%E7%BC%96%E7%A0%81"><span class="toc-number">7.2.</span> <span class="toc-text">H264编码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%96%E7%A0%81%E5%99%A8%E7%BB%93%E6%9E%84"><span class="toc-number">7.2.1.</span> <span class="toc-text">编码器结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%96%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="toc-number">7.2.2.</span> <span class="toc-text">编码流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F"><span class="toc-number">7.2.3.</span> <span class="toc-text">压缩方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AnnexB%E6%A0%BC%E5%BC%8F"><span class="toc-number">7.2.4.</span> <span class="toc-text">AnnexB格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AVCC%E6%A0%BC%E5%BC%8F"><span class="toc-number">7.2.5.</span> <span class="toc-text">AVCC格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RTP%E6%A0%BC%E5%BC%8F"><span class="toc-number">7.2.6.</span> <span class="toc-text">RTP格式</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#H265-HEVC"><span class="toc-number">8.</span> <span class="toc-text">H265 &#x2F;HEVC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#H265%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84"><span class="toc-number">8.1.</span> <span class="toc-text">H265码流结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A0%81%E6%B5%81%E7%BB%93%E6%9E%84"><span class="toc-number">8.1.1.</span> <span class="toc-text">码流结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E5%B1%82%E7%BB%93%E6%9E%84-1"><span class="toc-number">8.1.2.</span> <span class="toc-text">分层结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AnnexB%E4%B8%8EHVCC%E6%A0%BC%E5%BC%8F"><span class="toc-number">8.2.</span> <span class="toc-text">AnnexB与HVCC格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#H-265%E7%9A%84%E4%BC%98%E5%8A%BF-%E5%8C%BA%E5%88%AB"><span class="toc-number">8.3.</span> <span class="toc-text">H.265的优势&#x2F;区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%A3%E6%AC%A1%E3%80%81%E5%B1%82%E5%92%8C%E7%BA%A7%E5%88%AB"><span class="toc-number">8.4.</span> <span class="toc-text">档次、层和级别</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
+  
+
+</div>
+
+
+<!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <!-- Custom Files side begin -->
+  
+  <!-- Custom Files side end -->
+</aside>
+
+
+
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+<pjax>
+<script>
+  window.pdata={}
+  pdata.ispage=true;
+  pdata.commentPath="";
+  pdata.commentPlaceholder="";
+  pdata.commentConfig={};
+  //  see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs
+  
+    // header
+    var l_header=document.getElementById("l_header");
+    
+    l_header.classList.remove("show");
+    
+    
+      // cover
+      var cover_wrapper=document.querySelector('#l_cover .cover-wrapper');
+      var scroll_down=document.getElementById('scroll-down');
+      cover_wrapper.id="half";
+      cover_wrapper.style.display="";
+      scroll_down.style.display="none";
+    
+  
+</script>
+</pjax>
+        </div>
+        
+  
+  <footer class="footer clearfix"  itemscope itemtype="http://schema.org/WPFooter">
+    <br><br>
+    
+    <!-- Custom Files footer begin-->
+    
+    <!-- Custom Files footer end-->
+  </footer>
+
+
+        <a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return false;" title="top"></a>
+      </div>
+    </div>
+    <div>
+      <script>
+  /******************** volantis.dom ********************************/
+  // 页面选择器 将dom对象缓存起来 see: /source/js/app.js etc.
+  volantis.dom.bodyAnchor = volantis.dom.$(document.getElementById("safearea")); // 页面主体
+  volantis.dom.topBtn = volantis.dom.$(document.getElementById('s-top')); // 向上
+  volantis.dom.wrapper = volantis.dom.$(document.getElementById('wrapper')); // 整个导航栏
+  volantis.dom.coverAnchor = volantis.dom.$(document.querySelector('#l_cover .cover-wrapper')); // 1个
+  volantis.dom.switcher = volantis.dom.$(document.querySelector('#l_header .switcher .s-search')); // 搜索按钮   移动端 1个
+  volantis.dom.header = volantis.dom.$(document.getElementById('l_header')); // 移动端导航栏
+  volantis.dom.search = volantis.dom.$(document.querySelector('#l_header .m_search')); // 搜索框 桌面端 移动端 1个
+  volantis.dom.mPhoneList = volantis.dom.$(document.querySelectorAll('#l_header .m-phone .list-v')); //  手机端 子菜单 多个
+</script>
+
+<script>
+  
+  volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css");
+  
+  
+  
+</script>
+
+<!-- required -->
+
+
+<!-- internal -->
+
+<script src="/js/app.js"></script>
+
+
+
+
+
+
+<!-- rightmenu要在darkmode之前（ToggleButton） darkmode要在comments之前（volantis.dark.push）-->
+
+  <script>
+const rootElement = document.documentElement;
+const darkModeStorageKey = "color-scheme";
+const rootElementDarkModeAttributeName = "color-scheme";
+const setLS = (k, v) => {
+    localStorage.setItem(k, v);
+};
+const removeLS = (k) => {
+    localStorage.removeItem(k);
+};
+const getLS = (k) => {
+    return localStorage.getItem(k);
+};
+const getModeFromCSSMediaQuery = () => {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+const resetRootDarkModeAttributeAndLS = () => {
+  rootElement.removeAttribute(rootElementDarkModeAttributeName);
+  removeLS(darkModeStorageKey);
+};
+const validColorModeKeys = {
+  dark: true,
+  light: true,
+};
+const applyCustomDarkModeSettings = (mode) => {
+  const currentSetting = mode || getLS(darkModeStorageKey);
+  getCustomDarkMode();
+  if (currentSetting === getModeFromCSSMediaQuery()) {
+    resetRootDarkModeAttributeAndLS();
+  } else if (validColorModeKeys[currentSetting]) {
+    rootElement.setAttribute(rootElementDarkModeAttributeName, currentSetting);
+  } else {
+    resetRootDarkModeAttributeAndLS();
+  }
+};
+const invertDarkModeObj = {
+  dark: "light",
+  light: "dark",
+};
+/**
+ * get target mode
+ */
+ const getCustomDarkMode = () => {
+  let currentSetting = getLS(darkModeStorageKey);
+  if (validColorModeKeys[currentSetting]) {
+    currentSetting = invertDarkModeObj[currentSetting];
+  } else if (currentSetting === null) {
+    currentSetting = invertDarkModeObj[getModeFromCSSMediaQuery()];
+  } else {
+    return;
+  }
+  if(currentSetting=="dark"){
+    volantis.dark.mode="light";
+  }else{
+    volantis.dark.mode="dark";
+  }
+  // console.log(volantis.dark.mode)
+};
+const toggleCustomDarkMode = () => {
+  let currentSetting = getLS(darkModeStorageKey);
+  if (validColorModeKeys[currentSetting]) {
+    currentSetting = invertDarkModeObj[currentSetting];
+  } else if (currentSetting === null) {
+    currentSetting = invertDarkModeObj[getModeFromCSSMediaQuery()];
+  } else {
+    return;
+  }
+  setLS(darkModeStorageKey, currentSetting);
+  return currentSetting;
+};
+/**
+ * 暗黑模式触发器
+ */
+volantis.dark.toggle=()=>{
+  const mode = toggleCustomDarkMode();
+  applyCustomDarkModeSettings(mode);
+  // 使用 volantis.dark.push 方法传入volantis.dark.toggle回调函数 参见layout/_partial/scripts/global.ejs
+  volantis.dark.method.toggle.start();
+}
+/**
+ * bind event for toggle button
+ */
+
+function bindToggleButton() {
+  var btn= document.querySelectorAll("#wrapper .toggle-mode-btn,#rightmenu-wrapper .toggle-mode-btn")
+  btn.forEach(function (e) {
+    volantis.dom.$(e).on('click',volantis.dark.toggle);
+  })
+}
+applyCustomDarkModeSettings();
+document.addEventListener("DOMContentLoaded", ()=>{
+  volantis.requestAnimationFrame(bindToggleButton)
+});
+volantis.pjax.push(bindToggleButton);
+
+const darkModelListeners={
+  dark:(mediaQueryList )=>{
+    if(mediaQueryList.matches){
+      volantis.dark.mode = "dark";
+    }
+    volantis.dark.method.toggle.start();
+  },
+  light:(mediaQueryList)=>{
+    if(mediaQueryList.matches){
+      volantis.dark.mode = "light";
+    }
+    volantis.dark.method.toggle.start();
+  }
+}
+window.matchMedia('(prefers-color-scheme: dark)').addListener(darkModelListeners.dark)
+window.matchMedia('(prefers-color-scheme: light)').addListener(darkModelListeners.light)
+</script>
+
+
+
+
+<script>
+  function loadIssuesJS() {
+    
+      const sites_api = document.getElementById('sites-api');
+      if (sites_api != undefined && typeof SitesJS === 'undefined') {
+        volantis.js("/js/plugins/tags/sites.js")
+      }
+    
+    
+      const friends_api = document.getElementById('friends-api');
+      if (friends_api != undefined && typeof FriendsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/friends.js")
+      }
+    
+    
+      const contributors_api = document.getElementById('contributors-api');
+      if (contributors_api != undefined && typeof ContributorsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/contributors.js")
+      }
+    
+  };
+  loadIssuesJS()
+  volantis.pjax.push(()=>{
+    loadIssuesJS();
+  })
+
+</script>
+
+
+
+
+  <script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+
+<script>
+  window.FPConfig = {
+	delay: 0,
+	ignoreKeywords: ["#"],
+	maxRPS: 6,
+	hoverDelay: 0
+  };
+</script>
+<script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- optional -->
+
+  <script>
+  const SearchServiceDataPathRoot = ("/" || "/").endsWith("/") ?
+    "/" || "/" :
+    "//" || "/";
+  const SearchServiceDataPath = SearchServiceDataPathRoot + "content.json";
+
+  function loadSearchScript() {
+    // see: layout/_partial/scripts/_ctrl/cdnCtrl.ejs
+    return volantis.js("/js/search/hexo.js");
+  }
+
+  function loadSearchService() {
+    loadSearchScript();
+    document.querySelectorAll(".input.u-search-input").forEach((e) => {
+      e.removeEventListener("focus", loadSearchService, false);
+    });
+
+    document.querySelectorAll(".u-search-form").forEach((e) => {
+      e.addEventListener("submit", (event) => {
+        event.preventDefault();
+      }, false);
+    });
+  }
+
+  // 打开并搜索 字符串 s
+  function OpenSearch(s) {
+    if (typeof SearchService === 'undefined')
+      loadSearchScript().then(() => {
+        SearchService.setQueryText(s);
+        SearchService.search();
+      });
+    else {
+      SearchService.setQueryText(s);
+      SearchService.search();
+    }
+  }
+
+  // 访问含有 ?s=xxx  的链接时打开搜索 // 与搜索引擎 structured data 相关: /scripts/helpers/structured-data/lib/config.js
+  if (window.location.search && /^\?s=/g.test(window.location.search)) {
+    let queryText = decodeURI(window.location.search)
+      .replace(/\ /g, "-")
+      .replace(/^\?s=/g, "");
+    OpenSearch(queryText);
+  }
+
+  // 搜索输入框获取焦点时加载搜索
+  document.querySelectorAll(".input.u-search-input").forEach((e) => {
+    e.addEventListener("focus", loadSearchService, false);
+  });
+</script>
+
+
+
+
+
+
+
+  <script>
+
+  volantis.css("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/styles/default.min.css");
+
+
+  volantis.js("https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js").then(()=>{
+    volantis.requestAnimationFrame(hljs.highlightAll)
+  })
+  volantis.pjax.push(()=>{
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+    });
+  },"highlightjs")
+
+
+  function pjax_highlightjs_copyCode(){
+    if (!(document.querySelector(".highlight .code pre") ||
+      document.querySelector(".article pre code"))) {
+      return;
+    }
+    VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")
+  }
+  volantis.requestAnimationFrame(pjax_highlightjs_copyCode)
+  volantis.pjax.push(pjax_highlightjs_copyCode)
+
+</script>
+
+
+
+
+
+
+
+
+
+
+  <script>
+  let imgs = ["https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/003.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/025.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/012.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/046.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/006.webp","https://unpkg.com/volantis-static@0.0.1654736714924/media/wallpaper/minimalist/2020/001.webp"];
+  let index = 0;
+  let IntervalParallax = null;
+
+  function parallax(){
+    let ParallaxWindow = document.querySelector("#parallax-window");
+    
+      ParallaxWindow = document.querySelector("html");
+    
+    Parallax.window = ParallaxWindow;
+    Parallax.options.fade = 1000;
+    Parallax.cache = 1;
+    next_parallax();
+    Parallax.init();
+    if (imgs.length>1) {
+      IntervalParallax = setInterval(function () {
+        next_parallax();
+      }, '30000');
+    }
+  }
+
+  function next_parallax() {
+    if (typeof Parallax == "undefined") {
+      return
+    }
+    
+    if (imgs.length>=1) {
+      Parallax.options.src = imgs[index % imgs.length];
+      Parallax.start();
+      index++;
+      if (Parallax.cache) {
+        fetch(imgs[index % imgs.length] +"?t=" + new Date().getTime());
+        if (index == imgs.length) {
+          Parallax.cache = 0;
+        }
+      }
+    }
+  }
+  var runningOnBrowser = typeof window !== "undefined";
+  var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+  if (!isBot) {
+    volantis.js('/js/plugins/parallax.js').then(()=>{
+      parallax()
+    })
+    volantis.pjax.send(()=>{
+      clearInterval(IntervalParallax)
+    },"clearIntervalParallax");
+    volantis.pjax.push(parallax);
+  }
+</script>
+
+
+
+
+  <script>
+  function load_swiper() {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css");
+    volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(() => {
+      pjax_swiper();
+    });
+  }
+
+  load_swiper();
+
+  function pjax_swiper() {
+    volantis.swiper = new Swiper('.swiper-container', {
+      slidesPerView: 'auto',
+      spaceBetween: 8,
+      centeredSlides: true,
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  }
+
+  volantis.pjax.push(() => {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    if (typeof volantis.swiper === "undefined") {
+      load_swiper();
+    } else {
+      pjax_swiper();
+    }
+  });
+</script>
+
+
+<!-- pjax 标签必须存在于所有页面 否则 pjax error -->
+<pjax>
+
+        <script>
+  // https://github.com/theme-next/hexo-theme-next/blob/master/layout/_third-party/math/mathjax.swig
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = "https://unpkg.com/volantis-static@0.0.1654736714924/libs/mathjax/es5/tex-mml-chtml.js";
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    // 文章章节标题不能为 “MathJax” ，否则会报错。
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typesetPromise();
+  }
+</script>
+
+
+
+</pjax>
+
+<script>
+  function listennSidebarTOC() {
+    const navItems = document.querySelectorAll(".toc li");
+    if (!navItems.length) return;
+    let targets = []
+    const sections = [...navItems].map((element) => {
+      const link = element.querySelector(".toc-link");
+      const target = document.getElementById(
+        decodeURI(link.getAttribute("href")).replace("#", "")
+      );
+      targets.push(target)
+      // 解除 a 标签 href 的 锚点定位, a 标签 href 的 锚点定位 会随机启用?? 产生错位???
+      link.setAttribute("onclick","return false;")
+      link.setAttribute("toc-action","toc-"+decodeURI(link.getAttribute("href")).replace("#", ""))
+      link.setAttribute("href","/")
+      // 配置 点击 触发新的锚点定位
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        // 这里的 addTop 是通过错位使得 toc 自动展开.
+        volantis.scroll.to(target,{addTop: 5, observer:true})
+        // Anchor id
+        history.pushState(null, document.title, "#" + target.id);
+      });
+      return target;
+    });
+
+    function activateNavByIndex(target) {
+      if (target.classList.contains("active-current")) return;
+
+      document.querySelectorAll(".toc .active").forEach((element) => {
+        element.classList.remove("active", "active-current");
+      });
+      target.classList.add("active", "active-current");
+      let parent = target.parentNode;
+      while (!parent.matches(".toc")) {
+        if (parent.matches("li")) parent.classList.add("active");
+        parent = parent.parentNode;
+      }
+    }
+
+    // 方案一：
+    volantis.activateNavIndex=0
+    activateNavByIndex(navItems[volantis.activateNavIndex])
+    volantis.scroll.push(()=>{
+      if (targets[0].getBoundingClientRect().top >= 0) {
+        volantis.activateNavIndex = 0
+      }else if (targets[targets.length-1].getBoundingClientRect().top < 0) {
+        volantis.activateNavIndex = targets.length-1
+      } else {
+        for (let index = 0; index < targets.length; index++) {
+          const target0 = targets[index];
+          const target1 = targets[(index+1)%targets.length];
+          if (target0.getBoundingClientRect().top < 0&&target1.getBoundingClientRect().top >= 0) {
+            volantis.activateNavIndex=index
+            break;
+          }
+        }
+      }
+      activateNavByIndex(navItems[volantis.activateNavIndex])
+    })
+
+    // 方案二：
+    // IntersectionObserver 不是完美精确到像素级别 也不是低延时性的
+    // function findIndex(entries) {
+    //   let index = 0;
+    //   let entry = entries[index];
+    //   if (entry.boundingClientRect.top > 0) {
+    //     index = sections.indexOf(entry.target);
+    //     return index === 0 ? 0 : index - 1;
+    //   }
+    //   for (; index < entries.length; index++) {
+    //     if (entries[index].boundingClientRect.top <= 0) {
+    //       entry = entries[index];
+    //     } else {
+    //       return sections.indexOf(entry.target);
+    //     }
+    //   }
+    //   return sections.indexOf(entry.target);
+    // }
+    // function createIntersectionObserver(marginTop) {
+    //   marginTop = Math.floor(marginTop + 10000);
+    //   let intersectionObserver = new IntersectionObserver(
+    //     (entries, observe) => {
+    //       let scrollHeight = document.documentElement.scrollHeight;
+    //       if (scrollHeight > marginTop) {
+    //         observe.disconnect();
+    //         createIntersectionObserver(scrollHeight);
+    //         return;
+    //       }
+    //       let index = findIndex(entries);
+    //       activateNavByIndex(navItems[index]);
+    //     }, {
+    //       rootMargin: marginTop + "px 0px -100% 0px",
+    //       threshold: 0,
+    //     }
+    //   );
+    //   sections.forEach((element) => {
+    //     element && intersectionObserver.observe(element);
+    //   });
+    // }
+    // createIntersectionObserver(document.documentElement.scrollHeight);
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+  document.addEventListener("pjax:success", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+</script>
+
+
+
+<script>
+  document.onreadystatechange = function () {
+    if (document.readyState == 'complete') {
+      // 页面加载完毕 样式加载失败，或是当前网速慢，或是开启了省流模式
+      const { saveData, effectiveType } = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {}
+      if (getComputedStyle(document.querySelector("#safearea"), null)["display"] == "none" || saveData || /2g/.test(effectiveType)) {
+        document.querySelectorAll(".reveal").forEach(function (e) {
+          e.style["opacity"] = "1";
+        });
+        document.querySelector("#safearea").style["display"] = "block";
+      }
+    }
+  }
+</script>
+
+
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"Hexo","url":"http://blog.yveltals.top/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/","sameAs":["https://github.com/volantis-x"],"description":"N/A"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"http://blog.yveltals.top/","name":"Hexo"}},{"@type":"ListItem","position":2,"item":{"@id":"http://blog.yveltals.top/categories/八股/","name":"八股"}},{"@type":"ListItem","position":3,"item":{"@id":"http://blog.yveltals.top/2022/11/01/Archive/流媒体协议/","name":"流媒体协议"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"Hexo","url":"http://blog.yveltals.top/","keywords":null,"description":"N/A","author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/","description":"N/A"},"publisher":{"@type":"Organization","name":"Hexo","url":"http://blog.yveltals.top/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"http://blog.yveltals.top?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"流媒体协议","description":"N/A","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2022/11/01/Archive/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/"},"author":{"@type":"Person","name":"John Doe","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"http://blog.yveltals.top/"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"http://blog.yveltals.top/2022/11/01/Archive/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/","wordCount":0,"datePublished":"2022-11-01T02:00:00.000Z","dateModified":"2025-09-07T09:36:52.289Z","articleSection":"八股","image":{"@type":"ImageObject","url":"/img/音视频.jpg","width":1024,"height":768}}]</script>
+
+
+
+      
+        <!--
+  pjax重载区域接口：
+  1.  <pjax></pjax> 标签 pjax 标签必须存在于所有页面 否则 pjax error
+  2.  script[data-pjax]
+  3.  .pjax-reload script
+  4.  .pjax
+-->
+
+
+
+<script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script>
+
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',
+        selectors: [
+          "head title",
+          "head meta[name=keywords]",
+          "head meta[name=description]",
+          
+          "#l_main",
+          "#pjax-header-nav-list",
+          ".pjax",
+          "pjax", // <pjax></pjax> 标签
+          "script[data-pjax], .pjax-reload script" // script标签添加data-pjax 或 script标签外层添加.pjax-reload 的script代码段重载
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000,
+        
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      //window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      // 使用 volantis.pjax.send 方法传入pjax:send回调函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.send.start();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 使用 volantis.pjax.push 方法传入重载函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.complete.start();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      if(volantis.debug) {
+        console.error(e);
+        console.log('pjax error: \n' + JSON.stringify(e));
+      }else{
+        // 使用 volantis.pjax.error 方法传入pjax:error回调函数 参见layout/_partial/scripts/global.ejs
+        volantis.pjax.method.error.start();
+        window.location.href = e.triggerElement.href;
+      }
+    });
+</script>
+
+      
+    </div>
+    <!-- import body_end begin-->
+    <!-- import body_end end-->
+    <!-- Custom Files bodyEnd begin-->
+    
+    <!-- Custom Files bodyEnd end-->
+    <!-- front-matter body_end begin -->
+    <!-- front-matter body_end end -->
+  </body>
+</html>

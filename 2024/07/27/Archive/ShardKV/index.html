@@ -17,28 +17,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
   <meta name="theme-color" content="#f9fafb">
-  <title>MIT 6.824 - Hexo</title>
+  <title>MIT 6.824 - Yveltals</title>
 
   
-    <meta name="description" content="Raft QA Folding                               Raft 只在非拜占庭的条件下才能正常工作非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且不会发送错误结果给客户端。拜占庭故障是指有些服务器不好好干活了">
+    <meta name="description" content="Raft QAFolding Raft 只在非拜占庭的条件下才能正常工作 非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且不会发送错误结果给客户端。 拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MIT 6.824">
 <meta property="og:url" content="http://blog.yveltals.top/2024/07/27/Archive/ShardKV/">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Raft QA Folding                               Raft 只在非拜占庭的条件下才能正常工作非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且不会发送错误结果给客户端。拜占庭故障是指有些服务器不好好干活了">
+<meta property="og:site_name" content="Yveltals">
+<meta property="og:description" content="Raft QAFolding Raft 只在非拜占庭的条件下才能正常工作 非拜占庭条件 是指所有的服务器都是 宕机-停止 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且不会发送错误结果给客户端。 拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg">
+<meta property="og:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
 <meta property="article:published_time" content="2024-07-27T11:30:00.000Z">
-<meta property="article:modified_time" content="2026-07-19T10:35:41.453Z">
+<meta property="article:modified_time" content="2026-08-02T08:03:18.549Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="八股">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png">
+<meta name="twitter:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
   
   
   
@@ -51,10 +46,12 @@
 
 
   
+    <link rel="shortcut icon" href="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+  
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[]},"dateCreated":"2024-07-27T19:30:00+08:00","dateModified":"2026-07-19T18:35:41+08:00","datePublished":"2024-07-27T19:30:00+08:00","description":"","headline":"MIT 6.824","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2024/07/27/Archive/ShardKV/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[]},"url":"http://blog.yveltals.top/2024/07/27/Archive/ShardKV/","keywords":"八股","image":[]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"dateCreated":"2024-07-27T19:30:00+08:00","dateModified":"2026-08-02T16:03:18+08:00","datePublished":"2024-07-27T19:30:00+08:00","description":"","headline":"MIT 6.824","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2024/07/27/Archive/ShardKV/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg","logo":{"@type":"ImageObject","url":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"}},"url":"http://blog.yveltals.top/2024/07/27/Archive/ShardKV/","keywords":"八股","image":[]}</script>
   
 </head>
 <body>
@@ -62,18 +59,18 @@
 <div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
 
 
-<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="undefined" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Hexo</div></a></div></header>
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
 
 <div class="nav-area">
 
-<nav class="menu dis-select"></nav>
+<nav class="menu dis-select"><a class="nav-item active" title="Articles" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="Tags" href="/tags/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="Categories" href="/categories/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="About" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
 </div>
 <div class="widgets">
 <div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
 
 
 
-<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2025/02/15/Storage/RocksDB/"><span class="title">RocksDB</span></a><a class="item title" href="/2026/07/15/LLM/KV-Cache/"><span class="title">KV Cache</span></a><a class="item title" href="/2025/02/03/OS/Linux/"><span class="title">Linux</span></a><a class="item title" href="/2023/07/03/Software/Git/"><span class="title">Git</span></a><a class="item title" href="/2023/07/03/Software/Design/"><span class="title">Staged</span></a><a class="item title" href="/2023/06/07/Software/SVN/"><span class="title">SVN</span></a><a class="item title" href="/2023/01/22/Storage/Kafka/"><span class="title">Kafka</span></a><a class="item title" href="/2024/04/07/Storage/Sparse%20Index/"><span class="title">Sparse Index</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2020/07/20/Other/Financing/"><span class="title">Financing</span></a></div></widget>
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2023/04/26/Archive/CMU%2015445/"><span class="title">CMU 15445</span></a><a class="item title" href="/2023/03/24/Archive/Leetcode/"><span class="title">Leetcode</span></a><a class="item title" href="/2024/12/18/Software/Design%20pattern/"><span class="title">Design pattern</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2022/11/01/Archive/Cpp%20trivial/"><span class="title">Cpp trivial</span></a><a class="item title" href="/2024/07/04/CPP/Cpp/"><span class="title">Cpp</span></a><a class="item title" href="/2025/02/01/Other/Notes/"><span class="title">Notes</span></a><a class="item title" href="/2024/07/27/Archive/ShardKV/"><span class="title">MIT 6.824</span></a><a class="item title" href="/2023/04/20/Archive/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"><span class="title">操作系统</span></a><a class="item title" href="/2023/02/01/CPP/STL/"><span class="title">STL</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -86,7 +83,7 @@
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
 <span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-07-27T11:30:00.000Z">2024-07-27</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-07-19T10:35:41.453Z">2026-07-19</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2024-07-27T11:30:00.000Z">2024-07-27</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-08-02T08:03:18.549Z">2026-08-02</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -97,11 +94,8 @@
     </div>
     
   </div>
-  </div><article class="md-text content"><h2 id="Raft-QA"><a href="#Raft-QA" class="headerlink" title="Raft QA"></a>Raft QA</h2><details blue><summary> Folding </summary>
-              <div class='content'>
-              <p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p><p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p><p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p><p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p><p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p><p><strong>Raft 对网络有什么假设</strong></p><p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p><p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p><p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p><p><strong>Raft 中的选举流程</strong></p><ol><li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li><li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li><li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li></ol><p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p>
-              </div>
-            </details>
+  </div><article class="md-text content"><h2 id="Raft-QA"><a href="#Raft-QA" class="headerlink" title="Raft QA"></a>Raft QA</h2><details class="tag-plugin colorful folding" ><summary><p>Folding</p>
+</summary><div class="body"><p><strong>Raft 只在非拜占庭的条件下才能正常工作</strong></p> <p><code>非拜占庭条件</code> 是指所有的服务器都是 <code>宕机-停止</code> 模型：即每个服务器要么严格遵循 Raft 协议，要么停止服务。例如，服务器断电就是一个非拜占庭条件，此时服务器会停止执行指令，则 Raft 也会停止运行，且<strong>不会发送错误结果给客户端</strong>。</p> <p>拜占庭故障是指有些服务器不好好干活了——可能是代码因为有 bug，也可能是混入了恶意节点。如果出现这种类型节点，Raft 可能会发送错误的结果给客户端。</p> <p><strong>发生网络分区后 Raft 会出现两个 Leader（脑裂）吗</strong></p> <p>不会，被分到少数派分区的 Leader 会发现日志不能同步到大多数节点，从而不能提交任何日志。一种优化是，如果一个 Leader 持续不能联系到多数节点，就自动变为 Follower。</p> <p><strong>Raft 对网络有什么假设</strong></p> <p>网络是不可靠的：可能会丢失 RPC 请求和回复，也可能会经历任意延迟后请求才到达。但网络是有界的（bounded）：在一段时间内请求总会到达，如果还不到达，我们就认为该 RPC 丢失了。</p> <p><strong>即使服务器不宕机，Leader 也可能会下台吗</strong></p> <p>是的，比如说 Leader 所在服务器可能 CPU 负载太高、响应速度过慢，或者网络出现故障，或者丢包太严重，都有可能造成其他 Peer 不能及时收到其 AppendEntries，从而造成超时，发起选举。</p> <p><strong>Raft 中的选举流程</strong></p> <ol> <li>所有的 Peer 都会初始化为 Follower，且每个 Peer 都会有一个内置的选举超时的 Timer。</li> <li>当一段时间没有收到领导者的心跳或者没有投给其他 Candidate 票时，选举时钟就会超时。该 Peer 就会由 Follower 变为 Candidate，Term++，然后向其他 Peer 要票（带上自己的 Term 和最后一条日志信息）</li> <li>其他 Peer 收到请求后，如果发现 Term 不大于该 Candidate、日志也没有该 Candidate 新、本 Term 中也没有投过票，就投给该 Term 票。<br>如果该 Peer 能收集到多数票，则为成为 Leader。</li> </ol> <p><strong>读旧数据&#x2F;不知道被新leader取代的情况</strong><br>集群发生网络隔离，原 Leader 被隔离到少数节点的区域，多数节点区域已选出新 Leader，但原 Leader 由于无法通信并不知道，继续响应客户端请求，返回了旧数据。</p> </div></details>
 
 <hr>
 <p><strong>Raft 主要在什么场景中使用</strong></p>
@@ -130,7 +124,7 @@
 </blockquote>
 <p>“no-op”日志即只有 index 和 term 信息，command 信息为空，也是要写到磁盘存储的。</p>
 <p>本质原因：新Leader当选后，旧任期的日志只能通过commit自己任期的日志来捎带提交，如图 Raft-figure8 所示：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_figure8.png"></p>
 <p>(c)中S5刚写完一条日志就挂了，S1重新当选Leader，Term&#x3D;4。此时还没有新的请求写入，如果S1将此前的<code>index=2 &amp;&amp; term=2</code> 的日志append到多数节点并提交了（<strong>埋下了隐患</strong>）<br>(d)中S1又挂了，S5重新当选，并将 <code>index=2 &amp;&amp; term=3</code> 的日志复制到其他节点并提交，此时 index&#x3D;2 的日志提交了两次，已提交过的日志被覆盖了！！！ </p>
 <p>虽然加了这个约束不会重复提交了，但如果一直没新的请求进来，旧term的日志迟迟无法提交，Leader 查到日志有记录但又不能回复，线性一致性要求不能返回陈旧的数据，Leader 迫切地需要知道这条日志到底能不能提交。</p>
 <p>因此需要在 Leader 刚选举成功的时候立刻追加一条”no-op”日志，”no-op”日志一经提交，隐式地提交了之前任期未提交的日志，确认当前 commitIndex。</p>
@@ -169,11 +163,8 @@
 <p>此外，客户端请求和 shard 迁移请求存在并发情况，需要保证线性一致性。因此将 shard 迁移的请求也传入到 raft 模块进行同步，这样和客户端的请求是一致的，利用 raft 的一致性来保证两种不同请求的先后顺序，前面的执行结果一定对后续的请求可见。</p>
 <hr>
 <h2 id="线性一致读"><a href="#线性一致读" class="headerlink" title="线性一致读"></a>线性一致读</h2><h3 id="什么是线性一致读"><a href="#什么是线性一致读" class="headerlink" title="什么是线性一致读"></a>什么是线性一致读</h3><p>所谓线性一致读，一个简单的例子是在 t1 的时刻我们写入了一个值，那么在 t1 之后，我们一定能读到这个值，不可能读到 t1 之前的旧值。即当 Client 向集群发起写操作的请求并且获得成功响应之后，该写操作的结果要对所有后来的读请求可见。</p>
-<details blue><summary> Folding </summary>
-              <div class='content'>
-              <p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p><p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-              </div>
-            </details>
+<details class="tag-plugin colorful folding" ><summary><p>Folding</p>
+</summary><div class="body"><p>左图展示了 Client A 的一个请求从发起到结束的过程。变量 x 的初始值是 1，<code>x R() A</code> 是一个事件 Invocation 意思是 A 发起了读请求，相应的 <code>x OK(1) A</code> 就是事件 Response A 读到了 x 且值为 1，Server 执行读操作。</p> <p>右图 Client A、B、C、D 均符合线性一致读。C 在 B 之后正确读到了 2。而 D 看起来是 Stale Read，但因为 D 请求横跨 3 个阶段，Read 可能发生在任意时刻，所以读到 1 或 2 都行。</p> <p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_seq.png"></p> </div></details>
 
 <h3 id="为什么有线性一致的问题"><a href="#为什么有线性一致的问题" class="headerlink" title="为什么有线性一致的问题"></a>为什么有线性一致的问题</h3><p>实现共识算法并不意味着能线性一致。共识算法只能保证不同节点对 Raft Log 能达成一致，但 Log 后面的状态机的一致性没有做详细规定，用户可以自由实现。例如 TiKV 在将 commit 的 Log 应用状态机（RocksDB）上时，可推出<strong>各个 TiKV 状态机的状态能达成一致，但不能保证同时将某个 Log 应用到 RocksDB 上，即各个节点不能实时一致</strong>，加之 Leader 会在不同节点之间切换，所以 Leader 的状态机也不总有最新的状态。Leader 处理请求时稍有不慎，没有在最新的状态上进行，这会导致整个系统违反线性一致性。</p>
 <h3 id="Raft-LogRead"><a href="#Raft-LogRead" class="headerlink" title="Raft LogRead"></a>Raft LogRead</h3><p>每个 read 都有一个对应的 Op log，和 write 一样都走一遍一致性协议的流程。这个方法依据 commit index 对所有请求都做了排序，Log 是严格全序的，将这些 R&#x2F;W 操作一个一个应用到状态机，所得的结果必定符合线性一致性。</p>
@@ -203,9 +194,9 @@
 </blockquote>
 <hr>
 <h2 id="ShardKV"><a href="#ShardKV" class="headerlink" title="ShardKV"></a>ShardKV</h2><p>分布式 KV 服务将是一个复制状态机，由几个使用 raft 进行状态复制的 kv 服务节点组成。分布式 KV 服务需要保证在集群大多数节点正常的情况下依然能够正常提供服务，即使有一些其他的错误或者网络分区。</p>
-<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_cluster.jpg"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/shardkv_node.jpg"></p>
+<h3 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h3><p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_diagram.png"></p>
 <h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>客户端 Clerk 会向 KV 服务发送三种类型的请求：<code>Get/Put/Append</code>。</p>
 <p>保证线性一致性：要求客户端的修改对后续的请求都是生效的，即其他客户端能够立即看到修改后的结果，而不会因为我们的多副本机制而看到不一样的结果，最终的目的是要 kv 服务对客户端来说看起来“像是只有一个副本”。</p>
 <h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端的 KVServer 描述了一个 kv server 节点所维护的状态。里面维护了一个 raft 库中的 Raft 结构体，表示其是一个 raft 集群中的节点，它会通过 raft 提供的功能向其他的 KVServer 同步状态，让整个 raft 集群中的数据保持一致。</p>
@@ -218,21 +209,13 @@
 <li>服务端启动 applyTask 后台线程，从 applyCh 中接收来自 raft 的日志消息。取出的日志消息对应的 Operation 已在节点间中同步完成，因此将 Operation 应用到本地状态机中，把返回结果（读到的值&#x2F;写是否成功）存储到 notifyCh 中。</li>
 <li>这时 Get&#x2F;Put&#x2F;Append 方法就能从这个 notifyCh 中获取到结果，并返回给客户端。</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/raft_applyChan.jpg"></p>
 <hr>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><blockquote>
 <p><a target="_blank" rel="noopener" href="http://nil.csail.mit.edu/6.824/2022/schedule.html">6.824 Schedule: Spring 2022</a><br><a target="_blank" rel="noopener" href="https://thesquareplanet.com/blog/students-guide-to-raft/">Students’ Guide to Raft</a><br><a target="_blank" rel="noopener" href="https://0xffff.one/d/1815">MIT 6.824 distributed systems 2022</a><br><a target="_blank" rel="noopener" href="https://mit-public-courses-cn-translatio.gitbook.io/mit6-824">简介与课程翻译|6.824</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43705457/article/details/106083524">MIT 6.824涉及的部分论文翻译</a><br><a target="_blank" rel="noopener" href="https://gitee.com/GeminiCx/lab_6824">GeminiCx&#x2F;6.824-2022</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45938441/article/details/125286772?spm=1001.2014.3001.5502">MIT6.824-lab3AB-2022（万字推导思路及代码构建）</a><br><a target="_blank" rel="noopener" href="https://www.inlighting.org/archives/mit-6-824-notes">2021 MIT 6.824 札记</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lawliet12/p/16972383.html">2022-6.824-Lab2:Raft</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7338721296867344424">Raft 算法、分布式 KV 面试汇总</a></p>
 </blockquote>
 </article>
-<div class="article-footer">
-    <section id="license">
-      <div class="header"><span>License</span></div>
-      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
-</div>
-    </section>
-    
 
-</div>
 
 <div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2024/09/17/Distribution/Distribution/">分布式理论</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2024/07/04/CPP/Cpp/">Cpp</a></div></section></div>
 

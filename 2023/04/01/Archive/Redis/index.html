@@ -17,27 +17,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
   <meta name="theme-color" content="#f9fafb">
-  <title>Redis - Hexo</title>
+  <title>Redis - Yveltals</title>
 
   
     <meta name="description" content="Redis线程模型Redis基于Reactor模式开发了自己的网络事件处理器，也就是文件事件处理器。它使用IO多路复用技术，同时监听多个套接字，当套接字的可读或者可写事件触发时，就会调用相应的事件处理函数。 Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不同的操作系统按不同的优先级选择。 文件事件处理器有四个组成部分：套接字、I&#x2F;O多路复用程序、文件事件派发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis">
 <meta property="og:url" content="http://blog.yveltals.top/2023/04/01/Archive/Redis/">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Yveltals">
 <meta property="og:description" content="Redis线程模型Redis基于Reactor模式开发了自己的网络事件处理器，也就是文件事件处理器。它使用IO多路复用技术，同时监听多个套接字，当套接字的可读或者可写事件触发时，就会调用相应的事件处理函数。 Redis 使用的IO多路复用技术主要有：select、epoll等，会根据不同的操作系统按不同的优先级选择。 文件事件处理器有四个组成部分：套接字、I&#x2F;O多路复用程序、文件事件派发">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695286546/970CB95850BF97354D08E8B5223CBAA7">
-<meta property="og:image" content="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695378829/478F1C196356F6F3651356CE0C66B7E2">
-<meta property="og:image" content="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695305483/60B13CA732C1FB43E9EE353C373E0CC9">
-<meta property="og:image" content="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Note/redis_cluster.png">
+<meta property="og:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
 <meta property="article:published_time" content="2023-04-01T07:45:13.000Z">
-<meta property="article:modified_time" content="2026-07-19T10:35:41.453Z">
+<meta property="article:modified_time" content="2026-08-02T07:49:44.156Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="八股">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695286546/970CB95850BF97354D08E8B5223CBAA7">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
   
   
   
@@ -50,10 +46,12 @@
 
 
   
+    <link rel="shortcut icon" href="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+  
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[]},"dateCreated":"2023-04-01T15:45:13+08:00","dateModified":"2026-07-19T18:35:41+08:00","datePublished":"2023-04-01T15:45:13+08:00","description":"","headline":"Redis","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2023/04/01/Archive/Redis/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[]},"url":"http://blog.yveltals.top/2023/04/01/Archive/Redis/","keywords":"八股","image":[]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"dateCreated":"2023-04-01T15:45:13+08:00","dateModified":"2026-08-02T15:49:44+08:00","datePublished":"2023-04-01T15:45:13+08:00","description":"","headline":"Redis","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2023/04/01/Archive/Redis/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg","logo":{"@type":"ImageObject","url":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"}},"url":"http://blog.yveltals.top/2023/04/01/Archive/Redis/","keywords":"八股","thumbnailUrl":"/img/redis.jpeg","image":1}</script>
   
 </head>
 <body>
@@ -61,18 +59,18 @@
 <div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
 
 
-<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="undefined" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Hexo</div></a></div></header>
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
 
 <div class="nav-area">
 
-<nav class="menu dis-select"></nav>
+<nav class="menu dis-select"><a class="nav-item active" title="Articles" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="Tags" href="/tags/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="Categories" href="/categories/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="About" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
 </div>
 <div class="widgets">
 <div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
 
 
 
-<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2025/02/15/Storage/RocksDB/"><span class="title">RocksDB</span></a><a class="item title" href="/2026/07/15/LLM/KV-Cache/"><span class="title">KV Cache</span></a><a class="item title" href="/2025/02/03/OS/Linux/"><span class="title">Linux</span></a><a class="item title" href="/2023/07/03/Software/Git/"><span class="title">Git</span></a><a class="item title" href="/2023/07/03/Software/Design/"><span class="title">Staged</span></a><a class="item title" href="/2023/06/07/Software/SVN/"><span class="title">SVN</span></a><a class="item title" href="/2023/01/22/Storage/Kafka/"><span class="title">Kafka</span></a><a class="item title" href="/2024/04/07/Storage/Sparse%20Index/"><span class="title">Sparse Index</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2020/07/20/Other/Financing/"><span class="title">Financing</span></a></div></widget>
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2023/04/26/Archive/CMU%2015445/"><span class="title">CMU 15445</span></a><a class="item title" href="/2023/03/24/Archive/Leetcode/"><span class="title">Leetcode</span></a><a class="item title" href="/2024/12/18/Software/Design%20pattern/"><span class="title">Design pattern</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2022/11/01/Archive/Cpp%20trivial/"><span class="title">Cpp trivial</span></a><a class="item title" href="/2024/07/04/CPP/Cpp/"><span class="title">Cpp</span></a><a class="item title" href="/2025/02/01/Other/Notes/"><span class="title">Notes</span></a><a class="item title" href="/2024/07/27/Archive/ShardKV/"><span class="title">MIT 6.824</span></a><a class="item title" href="/2023/04/20/Archive/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"><span class="title">操作系统</span></a><a class="item title" href="/2023/02/01/CPP/STL/"><span class="title">STL</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -81,11 +79,11 @@
 
 
 
-<div class="article banner top">
+<div class="article banner top"><img class="lazy bg" data-src="/img/redis.jpeg">
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
 <span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E5%85%AB%E8%82%A1/">八股</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2023-04-01T07:45:13.000Z">2023-04-01</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-07-19T10:35:41.453Z">2026-07-19</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2023-04-01T07:45:13.000Z">2023-04-01</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-08-02T07:49:44.156Z">2026-08-02</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -139,7 +137,7 @@
 <li>free：预分配和惰性释放空间，可以减少修改字符串时的内存重分配</li>
 </ul>
 <h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a><strong>链表</strong></h3><p>用于列表键包含元素数量较多、元素都是长字符串时，双端链表，包括了头尾结点和长度</p>
-<h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a><strong>字典</strong></h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695286546/970CB95850BF97354D08E8B5223CBAA7" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695286546/970CB95850BF97354D08E8B5223CBAA7" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a><strong>字典</strong></h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695286546/970CB95850BF97354D08E8B5223CBAA7"></p>
 <p>用于实现map类型，由两个哈希表构成，每个哈希表里包含一个数组，数组的每个slot连接若干个哈希表结点KV</p>
 <p><strong>哈希算法</strong>：MurmurHash，即使输入的键规律也能得到很好的随机分布性，计算速度快</p>
 <p><strong>REHASH</strong>：负载因子&gt;1且没执行bgsave或bgrewriteof || 负载因子&gt;5：</p>
@@ -166,14 +164,14 @@
 <li>插入键值对直接保存到ht[1]中，保证了 ht[0] 中的已经被清空的单向链表不会新增元素</li>
 <li>删除、修改、查找等其他操作，会在两个哈希表上进行，即程序先尝试去ht[0]中访问要操作的数据，若不存在则到ht[1]中访问，再对访问到的数据做相应的处理。</li>
 </ol>
-<h3 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695378829/478F1C196356F6F3651356CE0C66B7E2" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695378829/478F1C196356F6F3651356CE0C66B7E2" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695378829/478F1C196356F6F3651356CE0C66B7E2"></p>
 <p>跳跃表的查找复杂度为平均O(logN)，最坏O(N)，效率堪比红黑树但实现更简单。跳跃表是在链表的基础上，通过增加索引来提高查找效率的。</p>
 <p>跳跃表是从有序链表中选取部分节点，组成一个新链表，并以此作为原始链表的一级索引。再从一级索引中选取部分节点，组成一个新链表，并以此作为原始链表的二级索引，以此类推。</p>
 <p>跳跃表在查找时，优先从高层开始查找，若next节点值大于目标值或为NULL，则从当前节点下降一层继续向后查找，这样便可以提高查找的效率了。</p>
 <p>跳表结点的底层结构包括一个元素数组、前进后退双向指针、层数（跳表查询过程中跨度）。插入跳表结点时会随机生成一个层数值以保证查询效率。</p>
 <h3 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a><strong>整数集合</strong></h3><p>用于保存整数值的集合，整数不重复且类型可以不同，底层结构只包括编码格式、长度、底层数组三个字段。</p>
 <p>升级操作：由于集合中可以插入不同类型整数，当插入更长类型时会触发升级，首先将底层数组扩容到相应的大小，再依次将元素转换成新类型，最后插入新元素。</p>
-<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a><strong>压缩列表</strong></h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695305483/60B13CA732C1FB43E9EE353C373E0CC9" class="lazyload" data-srcset="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695305483/60B13CA732C1FB43E9EE353C373E0CC9" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a><strong>压缩列表</strong></h3><p><img src="https://uploadfiles.nowcoder.com/images/20220224/4107856_1645695305483/60B13CA732C1FB43E9EE353C373E0CC9"></p>
 <p>用于节约内存的一种线性数据结构，由一系列特殊编码的连续内存块组成，列表中可以包含多个节点，每个节点可以保存字节数组或者整数值，每个节点都有一个属性记录前一个节点的长度。</p>
 <hr>
 <h2 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h2><h3 id="RDB快照"><a href="#RDB快照" class="headerlink" title="RDB快照"></a>RDB快照</h3><p>把内存中的数据库状态以快照形式压缩保存到一个二进制文件。创建快照之后，可以对快照进行备份，可以复制到其他服务器从而创建具有相同数据的服务器副本，还可以将快照留在原地以便重启服务器的时候使用。</p>
@@ -246,7 +244,7 @@
 <li>单机的CPU、内存、连接数、计算力都是有极限的，不能无限制的承载流量的扩增</li>
 <li>当数据量过多的情况下，RDB持久化时响应会变慢，因为fork会阻塞主线程，数据量越大阻塞时间越长</li>
 </ul>
-<h3 id="数据分片原理"><a href="#数据分片原理" class="headerlink" title="数据分片原理"></a>数据分片原理</h3><h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><div class="img-wrap"><div class="img-bg" style="background:#c8c8c8"><img class="img lazyload" src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" class="lazyload" data-srcset="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="image" style="width:350px;"/></div></div>
+<h3 id="数据分片原理"><a href="#数据分片原理" class="headerlink" title="数据分片原理"></a>数据分片原理</h3><h4 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h4><div class="tag-plugin image"><div class="image-bg" style="background:#c8c8c8;aspect-ratio:587/560;width:350px;"><img class="lazy" src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png" data-src="https://cdn.xiaolincoding.com//mysql/other/30c2c70721c12f9c140358fbdc5f2282.png"onerror="this.src=&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2rem' height='2rem' viewBox='0 0 24 24'%3E%3C!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --%3E%3Cpath fill='%23F44336' d='M22 12.698c-.002 1.47-.013 2.718-.096 3.743c-.097 1.19-.296 2.184-.74 3.009a4.2 4.2 0 0 1-.73.983c-.833.833-1.893 1.21-3.237 1.39C15.884 22 14.2 22 12.053 22h-.106c-2.148 0-3.83 0-5.144-.177c-1.343-.18-2.404-.557-3.236-1.39c-.738-.738-1.12-1.656-1.322-2.795c-.2-1.12-.236-2.512-.243-4.241Q1.999 12.737 2 12v-.054c0-2.148 0-3.83.177-5.144c.18-1.343.557-2.404 1.39-3.236s1.893-1.21 3.236-1.39c1.168-.157 2.67-.175 4.499-.177a.697.697 0 1 1 0 1.396c-1.855.002-3.234.018-4.313.163c-1.189.16-1.906.464-2.436.994S3.72 5.8 3.56 6.99C3.397 8.2 3.395 9.788 3.395 12v.784l.932-.814a2.14 2.14 0 0 1 2.922.097l3.99 3.99a1.86 1.86 0 0 0 2.385.207l.278-.195a2.79 2.79 0 0 1 3.471.209l2.633 2.37c.265-.557.423-1.288.507-2.32c.079-.972.09-2.152.091-3.63a.698.698 0 0 1 1.396 0' opacity='.5'/%3E%3Cpath fill='%23F44336' fill-rule='evenodd' d='M17.5 11c-2.121 0-3.182 0-3.841-.659S13 8.621 13 6.5s0-3.182.659-3.841S15.379 2 17.5 2s3.182 0 3.841.659S22 4.379 22 6.5s0 3.182-.659 3.841S19.621 11 17.5 11m-1.47-7.03a.75.75 0 1 0-1.06 1.06l1.47 1.47l-1.47 1.47a.75.75 0 0 0 1.06 1.06l1.47-1.47l1.47 1.47a.75.75 0 1 0 1.06-1.06L18.56 6.5l1.47-1.47a.75.75 0 0 0-1.06-1.06L17.5 5.44z' clip-rule='evenodd'/%3E%3C/svg%3E&quot;"/><div class="lazy-icon" style="background-image:url(https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd);"></div></div></div>
 
 <p>哈希算法是对节点的数量取模，而一致哈希算法是对固定的 <code>2^32</code> 取模，将「存储节点」和「数据」都映射到一个首尾相连的哈希环上。查找数据时，将key的映射位置往顺时针的方向的找到第一个节点，就是存储该数据的节点。</p>
 <ul>
@@ -263,7 +261,7 @@
 <li>对 key 经过 CRC16 计算后取模，得到 slot id</li>
 <li>通过 slot id 定位到实例，发送请求</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Note/redis_cluster.png" class="lazyload" data-srcset="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Note/redis_cluster.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Yveltals/Picgo/Note/redis_cluster.png"></p>
 <h3 id="数据复制"><a href="#数据复制" class="headerlink" title="数据复制"></a>数据复制</h3><p>Cluster 具备 Master 和 Slave 模式，Slave 节点是通过主从方式同步主节点数据。节点之间保持TCP通信，当Master发生了宕机， Redis Cluster 自动会将对应的 Slave 节点选为 Master，来继续提供服务。<strong>与纯主从模式不同的是，主从节点之间并没有读写分离，Slave 只用作 Master 宕机的高可用备份，所以更合理来说应该是主备模式。</strong></p>
 <h3 id="故障检测与转移"><a href="#故障检测与转移" class="headerlink" title="故障检测与转移"></a>故障检测与转移</h3><p>Redis 集群的节点采用 Gossip 协议来广播信息，每个节点都会定期向其他节点发送 ping 命令，如果超时未回复就认为节点失联了，标记为主观下线。对于主节点A，如果超过半数主节点都将其标记为了主观下线，则标记成客观下线，并向整个集群广播节点A已经下线，开始进行主从切换：</p>
 <ol>
@@ -335,15 +333,7 @@
 <p><strong>加锁</strong>: 以相同的 KEY 向 N 个节点加锁，如果超过一半节点获取到了锁，且总耗时没超过锁有效时间，则认定加锁成功。之后要重新计算锁的有效时间，减去获取锁的耗时。</p>
 <p><strong>解锁</strong>: 向所有的节点发送 DEL 命令，和单节点一样，执行释放锁的 Lua 脚本即可。</p>
 </article>
-<div class="article-footer">
-    <section id="license">
-      <div class="header"><span>License</span></div>
-      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
-</div>
-    </section>
-    
 
-</div>
 
 <div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2023/04/05/Archive/%E8%AE%A1%E7%AE%97%E8%AE%A1%E7%BD%91%E7%BB%9C/">计算计网络</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2023/03/30/Archive/Mysql/">MySQL</a></div></section></div>
 

@@ -17,32 +17,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
   <meta name="theme-color" content="#f9fafb">
-  <title>RocksDB - Hexo</title>
+  <title>RocksDB - Yveltals</title>
 
   
     <meta name="description" content="Basic OperationsIterator迭代器本身不会占用太多内存，但是迭代器最好保持较短的生存周期，为了确保某些资源能被释放，包括：  迭代器创建时的 memtables 和 SST 文件。即使某些 memtables 和 SST 文件在刷新或压缩后被删除，如果迭代器固定它们，它们仍然保留。 当前迭代位置的数据块。这些块将保存在内存中，要么固定在 Block Cache 中，要么在未设置">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RocksDB">
 <meta property="og:url" content="http://blog.yveltals.top/2025/02/15/Storage/RocksDB/">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Yveltals">
 <meta property="og:description" content="Basic OperationsIterator迭代器本身不会占用太多内存，但是迭代器最好保持较短的生存周期，为了确保某些资源能被释放，包括：  迭代器创建时的 memtables 和 SST 文件。即使某些 memtables 和 SST 文件在刷新或压缩后被删除，如果迭代器固定它们，它们仍然保留。 当前迭代位置的数据块。这些块将保存在内存中，要么固定在 Block Cache 中，要么在未设置">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://alexstocks.github.io/pic/rocksdb_subcompaction.png">
-<meta property="og:image" content="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png">
-<meta property="og:image" content="https://alexstocks.github.io/pic/rocksdb_log_record.png">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_manifest.jpg">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_versionset.png">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_data_restore.png">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_sst_file.png">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_sst_block.jpg">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_sst_record.jpg">
-<meta property="og:image" content="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg">
+<meta property="og:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
 <meta property="article:published_time" content="2025-02-15T06:20:04.000Z">
-<meta property="article:modified_time" content="2026-08-01T16:40:56.015Z">
+<meta property="article:modified_time" content="2026-08-02T07:32:31.381Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Storage">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://alexstocks.github.io/pic/rocksdb_subcompaction.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
   
   
   
@@ -55,10 +46,12 @@
 
 
   
+    <link rel="shortcut icon" href="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+  
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[]},"dateCreated":"2025-02-15T14:20:04+08:00","dateModified":"2026-08-02T00:40:56+08:00","datePublished":"2025-02-15T14:20:04+08:00","description":"","headline":"RocksDB","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[]},"url":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/","keywords":"Storage","image":[]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"dateCreated":"2025-02-15T14:20:04+08:00","dateModified":"2026-08-02T15:32:31+08:00","datePublished":"2025-02-15T14:20:04+08:00","description":"","headline":"RocksDB","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg","logo":{"@type":"ImageObject","url":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"}},"url":"http://blog.yveltals.top/2025/02/15/Storage/RocksDB/","keywords":"Storage","thumbnailUrl":"/img/rocksdb.jpg","image":1}</script>
   
 </head>
 <body>
@@ -66,18 +59,18 @@
 <div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
 
 
-<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="undefined" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Hexo</div></a></div></header>
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
 
 <div class="nav-area">
 
-<nav class="menu dis-select"></nav>
+<nav class="menu dis-select"><a class="nav-item active" title="Articles" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="Tags" href="/tags/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="Categories" href="/categories/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="About" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
 </div>
 <div class="widgets">
 <div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
 
 
 
-<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2025/02/15/Storage/RocksDB/"><span class="title">RocksDB</span></a><a class="item title" href="/2026/07/15/LLM/KV-Cache/"><span class="title">KV Cache</span></a><a class="item title" href="/2025/02/03/OS/Linux/"><span class="title">Linux</span></a><a class="item title" href="/2023/07/03/Software/Git/"><span class="title">Git</span></a><a class="item title" href="/2023/07/03/Software/Design/"><span class="title">Staged</span></a><a class="item title" href="/2023/06/07/Software/SVN/"><span class="title">SVN</span></a><a class="item title" href="/2023/01/22/Storage/Kafka/"><span class="title">Kafka</span></a><a class="item title" href="/2024/04/07/Storage/Sparse%20Index/"><span class="title">Sparse Index</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2020/07/20/Other/Financing/"><span class="title">Financing</span></a></div></widget>
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2023/04/26/Archive/CMU%2015445/"><span class="title">CMU 15445</span></a><a class="item title" href="/2023/03/24/Archive/Leetcode/"><span class="title">Leetcode</span></a><a class="item title" href="/2024/12/18/Software/Design%20pattern/"><span class="title">Design pattern</span></a><a class="item title" href="/2024/09/25/Storage/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2022/11/01/Archive/Cpp%20trivial/"><span class="title">Cpp trivial</span></a><a class="item title" href="/2024/07/04/CPP/Cpp/"><span class="title">Cpp</span></a><a class="item title" href="/2025/02/01/Other/Notes/"><span class="title">Notes</span></a><a class="item title" href="/2024/07/27/Archive/ShardKV/"><span class="title">MIT 6.824</span></a><a class="item title" href="/2023/04/20/Archive/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"><span class="title">操作系统</span></a><a class="item title" href="/2023/02/01/CPP/STL/"><span class="title">STL</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -86,11 +79,11 @@
 
 
 
-<div class="article banner top">
+<div class="article banner top"><img class="lazy bg" data-src="/img/rocksdb.jpg">
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
 <span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Storage/">Storage</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2025-02-15T06:20:04.000Z">2025-02-15</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-08-01T16:40:56.015Z">2026-08-02</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2025-02-15T06:20:04.000Z">2025-02-15</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-08-02T07:32:31.381Z">2026-08-02</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -120,12 +113,12 @@
 <p>在二阶段提交过程中，低优先级写入会在准备阶段完成，而不是在提交阶段。</p>
 <h3 id="Column-Families"><a href="#Column-Families" class="headerlink" title="Column Families"></a>Column Families</h3><p>RocksDB 中的每个键值对都与一个列族相关联。 如果没有指定列族，键值对与列族 <code>default</code> 相关联。列族提供了一种对数据库进行逻辑分区的方法。 </p>
 <ul>
-<li>支持跨列族原子写，这个意思是可以原子写入<code>({cf1, key1, value1}, {cf2, key2, value2}).</code></li>
+<li>支持跨列族原子写，这个意思是可以原子写入<code>(&#123;cf1, key1, value1&#125;, &#123;cf2, key2, value2&#125;).</code></li>
 <li>跨列族的数据库一致视图。</li>
 <li>能够独立配置不同的列族。</li>
 <li>即时添加新的列族并删除它们。 这两种操作都相当快。</li>
 </ul>
-<p>Column Family 的思想是 <strong>共享 WAL 日志而不共享 memtables 和sst 文件</strong>，即 log 共享而数据分离，可以独立配置列族并快速删除它们。</p>
+<p>Column Family 的思想是 <wavy>共享 WAL 日志而不共享 memtables 和sst 文件</wavy>，即 log 共享而数据分离，可以独立配置列族并快速删除它们。</p>
 <p>使用一个 RocksDB 就是使用一个物理存储系统，使用一个 CF 则是使用一个逻辑存储系统，二者主要区别体现在数据备份、原子写以及写性能表现上。DB 是数据备份和复制以及 checkpoint 的基本单位，但是 CF 则利用 BatchWrite，因为这个操作是可以跨 CF 的，而且多个 CF 可以共享同一个 WAL，多个 DB 则无法做到这一点。</p>
 <p>每次 Flush 单个 CF 时，都会创建一个新的 WAL，但无法删除旧的 WAL，只有全部的列族被 Flush 且这个 WAL 包含的全部数据已经持久化时才可以删除旧的WAL文件。确保对RocksDB进行调优，以便定期刷新所有列族。另外，查看<code>Options::max_total_wal_size</code>，可以配置为自动刷新过时的列族。</p>
 <p>Column Family 使用场景：</p>
@@ -195,7 +188,7 @@
 <p>如果主要依赖迭代操作并且使用 Page Cache，可以通过设置 <code>DBOptions.advise_random_on_open = false</code> 来选择手动启用预读功能。</p>
 <p>这种设置对硬盘驱动器（HDD）或远程存储尤为有用，尤其在这些存储的延迟较高时。对于直连的 SSD，预读对性能的影响可能不明显。</p>
 <hr>
-<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><p>merge operator描述了原子性的在rocksdb读取修改写入操作，<strong>如果用户操作Rocksdb存在获取、修改并且再写入</strong>，那么就需要用户来保证它的原子性，merge operator可以解决这个问题。</p>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><p>merge operator描述了原子性的在rocksdb读取修改写入操作，<wavy>如果用户操作Rocksdb存在获取、修改并且再写入</wavy>，那么就需要用户来保证它的原子性，merge operator可以解决这个问题。</p>
 <ul>
 <li>将读-修改-写的语义封装到一个简单的抽象接口中。</li>
 <li>允许用户避免因重复Get()调用而产生额外成本。</li>
@@ -226,12 +219,12 @@
 <li>对目标文件进行压缩后放入 level + 1 中</li>
 </ol>
 <p><strong>L0 subcompaction</strong></p>
-<p>参数 maxbackgroundcompactions 大于 1 时，RocksDB 会进行并行 Compact，但 L0 到 L1 层的 Compaction 任务不能进行并行，这会约束整体 compaction 速度。可以设置 max_subcompactions 参数大于 1，尝试把一个文件拆为多个 sub，启动多个线程执行 sub-compact。<br><img src="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_subcompaction.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>参数 maxbackgroundcompactions 大于 1 时，RocksDB 会进行并行 Compact，但 L0 到 L1 层的 Compaction 任务不能进行并行，这会约束整体 compaction 速度。可以设置 max_subcompactions 参数大于 1，尝试把一个文件拆为多个 sub，启动多个线程执行 sub-compact。<br><img src="https://alexstocks.github.io/pic/rocksdb_subcompaction.png"></p>
 <p><strong>Compaction的选择策略</strong></p>
 <p>当多个level都满足触发compaction的条件，rocksdb通过计算得分来选择先做哪一个level的compaction。</p>
 <ul>
 <li>对于非0 level，score &#x3D; <code>该level文件的总长度 / 阈值</code>。已经正在做compaction的文件不计入总长度中。</li>
-<li>对于L0，score &#x3D; <code>max{文件数量 / level0_file_num_compaction_trigger， L0文件总长度 / max_bytes_for_level_base}</code> 并且 <code>L0文件数量 &gt; level0_file_num_compaction_trigger</code>。</li>
+<li>对于L0，score &#x3D; <code>max&#123;文件数量 / level0_file_num_compaction_trigger， L0文件总长度 / max_bytes_for_level_base&#125;</code> 并且 <code>L0文件数量 &gt; level0_file_num_compaction_trigger</code>。</li>
 </ul>
 <p><strong>Compaction触发阈值</strong></p>
 <p>每一层的compaction阈值设置策略由 <code>level_compaction_dynamic_level_bytes</code> 来决定。</p>
@@ -249,7 +242,7 @@
 <li>上面level触发阈值通过公式计算：Target_Size(Ln-1) &#x3D; Target_Size(Ln) &#x2F; max_bytes_for_level_multiplier。如果计算得到的值小于 max_bytes_for_level_base &#x2F; max_bytes_for_level_multiplier， 那么该level将维持为空，L0做compaction时将直接merge到第一个有合法阈值的level上。</li>
 </ul>
 <blockquote>
-<p>max_bytes_for_level_base &#x3D; 1G<br>num_levels &#x3D; 6<br>level 6 size &#x3D; 276G<br>那么从L1到L6的触发阈值分别为：0， 0， 0.276G， 2.76G， 27.6G，276G。<br>这样分配保证了稳定的 LSM-tree 结构。并且有 90% 的数据在最后一层，9%的数据在倒数第二层<br><img src="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" class="lazyload" data-srcset="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>max_bytes_for_level_base &#x3D; 1G<br>num_levels &#x3D; 6<br>level 6 size &#x3D; 276G<br>那么从L1到L6的触发阈值分别为：0， 0， 0.276G， 2.76G， 27.6G，276G。<br>这样分配保证了稳定的 LSM-tree 结构。并且有 90% 的数据在最后一层，9%的数据在倒数第二层<br><img src="https://github.com/facebook/rocksdb/raw/gh-pages-old/pictures/dynamic_level.png"></p>
 </blockquote>
 <hr>
 <h2 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h2><p>kv存储分离，可以有效的减小写放大。LSM树里面只存储key和value的地址，这样后台线程compact的时候可以少读写很多数据。rocksdb里面增加一种类型：kTypeBlobIndex 表示value是否blob_db的地址。</p>
@@ -277,7 +270,7 @@
 <li>Memtables</li>
 <li>Blocked pinned by iterators</li>
 </ul>
-<h3 id="Block-Cache"><a href="#Block-Cache" class="headerlink" title="Block Cache"></a>Block Cache</h3><p>在内存中缓存数据用于读取。一个Cache对象可以在同一个进程中被多个 DB 实例共享，从而允许用户控制整个缓存容量。Block Cache 存储 <strong>未压缩</strong> 的块，用户可以选择设置第二个 Block Cache 存储压缩块。先读取未压缩的块，再读取压缩的块。如果使用Direct-IO，压缩块缓存可以替代 Page cache。</p>
+<h3 id="Block-Cache"><a href="#Block-Cache" class="headerlink" title="Block Cache"></a>Block Cache</h3><p>在内存中缓存数据用于读取。一个Cache对象可以在同一个进程中被多个 DB 实例共享，从而允许用户控制整个缓存容量。<wavy>Block Cache 存储未压缩的块</wavy>，用户可以选择设置第二个 Block Cache 存储压缩块。先读取未压缩的块，再读取压缩的块。如果使用Direct-IO，压缩块缓存可以替代 Page cache。</p>
 <p>RocksDB 中有两种缓存实现，分别是 LRUCache 和 ClockCache。两种类型的缓存都被分片以减轻锁争用。默认每个缓存将被分片为最多 64 个分片，每个分片的容量不低于 512k 字节。</p>
 <h3 id="Indexes-and-bloom-filters"><a href="#Indexes-and-bloom-filters" class="headerlink" title="Indexes and bloom filters"></a>Indexes and bloom filters</h3><p>Index 由 key、offset 和 size 三部分构成，通常仅索引每个 Block 中的第一个 key（或者是一个代表性的 key）。当 Block Cache 增大 Block Size 时，block 个数必会减小，index 个数也会随之降低，如果减小 key size，index 占用内存空间的量也会随之降低。</p>
 <p>filter是 bloom filter 的实现，如果缩小 bloom 占用的空间，可以设置 <code>options.optimize_filters_for_hits = true</code>，则最后一个 level 的 filter 会被关闭，bloom 占用率只会用到原来的 10% 。</p>
@@ -304,17 +297,18 @@
 <li>临时数据库文件，repair 时临时生成的</li>
 </ul>
 <h3 id="Write-Ahead-Log"><a href="#Write-Ahead-Log" class="headerlink" title="Write Ahead Log"></a>Write Ahead Log</h3><p>log 文件的逻辑单位是 Record，物理单位是 block，每个 Record 可以存在于一个 block 中，也可以占用多个 block。Record 的详细结构见上图文字部分，其 type 字段的意义见下图，如果某 KV 过长则可以用多 Record 存储。</p>
-<p><img src="https://alexstocks.github.io/pic/rocksdb_log_record.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/rocksdb_log_record.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://alexstocks.github.io/pic/rocksdb_log_record.png"></p>
 <h3 id="Manifest"><a href="#Manifest" class="headerlink" title="Manifest"></a>Manifest</h3><p>RocksDB 是文件系统和存储介质无关的。文件系统操作不是原子操作，在系统故障时很容易出现不一致。即使打开了日志记录，文件系统也不能保证不干净重启时的一致性，POSIX 文件系统也不支持原子批处理操作。为了避免进程崩溃或机器宕机导致的数据丢失，RocksDB 需要将元信息数据持久化到磁盘，承担这个任务的就是 Manifest 文件，每当有新的 Version 产生都需要更新 Manifest。</p>
-<p><strong>Manifest 文件记录了 DB 状态变化的事务性日志，即所有改变 DB 状态的操作</strong>。任意时间存储引擎的状态都会保存为一个Version（即SST的集合），而每次对 Version 的修改都是一个VersionEdit，而最终这些 VersionEdit 就是组成 Manifest 文件的内容。在 Manifest 中的一次增量内容称作一个Block。</p>
+<wavy>Manifest 文件记录了 DB 状态变化的事务性日志，即所有改变 DB 状态的操作</wavy>。任意时间存储引擎的状态都会保存为一个Version（即SST的集合），而每次对 Version 的修改都是一个VersionEdit，而最终这些 VersionEdit 就是组成 Manifest 文件的内容。在 Manifest 中的一次增量内容称作一个Block。
+
 <p>RocksDB 进程 Crash 后 Reboot 的过程中，会首先读取 Manifest 文件在内存中重建 LSM 树，然后根据 WAL 日志文件恢复 Memtable 内容。</p>
-<p>下图是 leveldb 的 Manifest 文件结构，这个 Manifest 文件有以下文件内容：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_manifest.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>下图是 leveldb 的 Manifest 文件结构，这个 Manifest 文件有以下文件内容：<br><img src="https://alexstocks.github.io/pic/leveldb_manifest.jpg"></p>
 <h3 id="VersionSet"><a href="#VersionSet" class="headerlink" title="VersionSet"></a>VersionSet</h3><p>VersionSet 是 RocksDB 用于管理数据库版本和存储布局的核心结构。它包含了关于当前数据库版本的信息，以及该版本所包含的 SST 文件、ColumnFamily、memtable 等的状态信息。</p>
 <p>RocksDB 的 Version 表示一个版本的 metadata，其主要内容是 FileMetaData 指针的二维数组，分层记录了所有的SST文件信息。FileMetaData 用来维护一个文件的元信息，包括文件大小、文件编号、最大最小值、引用计数等信息，其中引用计数记录了被不同的 Version 引用的个数，保证被引用中的文件不会被删除。</p>
 <p>Version中还记录了触发 Compaction 相关的状态信息，这些信息会在读写请求或 Compaction 过程中被更新。在 CompactMemTable 和 BackgroundCompaction 过程中会导致新文件的产生和旧文件的删除，每当这个时候都会有一个新的对应的 Version 生成，并插入 VersionSet 链表头部，LevelDB 用 VersionEdit 来表示这种相邻 Version 的差值。</p>
-<p><img src="https://alexstocks.github.io/pic/leveldb_versionset.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_versionset.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p><img src="https://alexstocks.github.io/pic/leveldb_versionset.png"></p>
 <p>VersionSet 结构如上图所示，它是一个 Version 构成的双向链表，这些 Version 按时间顺序先后产生，记录了当时的元信息，链表头指向当前最新的 Version，同时维护了每个 Version 的引用计数，被引用中的 Version 不会被删除，其对应的 SST 文件也因此得以保留，通过这种方式，使得LevelDB 可以在一个稳定的快照视图上访问文件。VersionSet 中除 Version 的双向链表外还会记录一些如 LogNumber、Sequence、下一个SST文件编号的状态信息。</p>
-<h3 id="MetaData-Restore"><a href="#MetaData-Restore" class="headerlink" title="MetaData Restore"></a>MetaData Restore</h3><p><img src="https://alexstocks.github.io/pic/leveldb_data_restore.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_data_restore.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="><br>上图最上面的流程显示了恢复元信息的过程，也就是一次应用 VersionEdit 的过程，这个过程会有大量的临时 Version 产生，但这种方法显然太过于耗费资源，LevelDB 引入 <code>VersionSet::Builder</code> 来避免这种中间变量，方法是先将所有的 VersoinEdit 内容整理到 VersionBuilder 中，然后一次应用产生最终的 Version，如上图下部分所示。</p>
+<h3 id="MetaData-Restore"><a href="#MetaData-Restore" class="headerlink" title="MetaData Restore"></a>MetaData Restore</h3><p><img src="https://alexstocks.github.io/pic/leveldb_data_restore.png"><br>上图最上面的流程显示了恢复元信息的过程，也就是一次应用 VersionEdit 的过程，这个过程会有大量的临时 Version 产生，但这种方法显然太过于耗费资源，LevelDB 引入 <code>VersionSet::Builder</code> 来避免这种中间变量，方法是先将所有的 VersoinEdit 内容整理到 VersionBuilder 中，然后一次应用产生最终的 Version，如上图下部分所示。</p>
 <p>数据恢复的详细流程如下：</p>
 <ul>
 <li>依次读取Manifest文件中的每一个Block，将从文件中读出的 Record 反序列化为 VersionEdit；</li>
@@ -322,7 +316,7 @@
 <li>计算compactionlevel、compactionscore；</li>
 <li>将新生成的 Version 挂到 VersionSet 中，并初始化 VersionSet 的 manifestfilenumber，nextfilenumber，lastsequence，lognumber，prevlognumber 信息；</li>
 </ul>
-<h3 id="SST-file"><a href="#SST-file" class="headerlink" title="SST file"></a>SST file</h3><p><img src="https://alexstocks.github.io/pic/leveldb_sst_file.png" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_file.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<h3 id="SST-file"><a href="#SST-file" class="headerlink" title="SST file"></a>SST file</h3><p><img src="https://alexstocks.github.io/pic/leveldb_sst_file.png"></p>
 <p>SSTfile 结构如下，大致分为几个部分：</p>
 <ul>
 <li>Data Block 直接存储有序键值对，是 SSTfile 的数据实体</li>
@@ -332,9 +326,9 @@
 <li>Footer 指向各个分区的位置和大小</li>
 </ul>
 <p>RocksDB 执行查询或修改时会引用当前 version，对该 version 下的 sst file 设置 reference count，Compact完成后要等 reference count 降为 0 后才能将文件真正的删除。</p>
-<p>Block结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_block.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>Record 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_record.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
-<p>Footer 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" class="lazyload" data-srcset="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p>
+<p>Block结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_block.jpg"></p>
+<p>Record 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_record.jpg"></p>
+<p>Footer 结构如下图：<br><img src="https://alexstocks.github.io/pic/leveldb_sst_footer.jpg"></p>
 <h3 id="Memtable"><a href="#Memtable" class="headerlink" title="Memtable"></a>Memtable</h3><p>Memtable 中存储了一些 metadata 和 data，data 在 skiplist 中存储。metadata 数据如下：</p>
 <ul>
 <li>当前日志句柄；</li>
@@ -394,15 +388,7 @@
 <li>当需要compact的文件数量达到 <code>soft_pending_compaction_byte</code> 参数值时会触发write stall，降低写入速度，当达到 <code>hard_pending_compaction_byte</code> 时会完全停止写入.</li>
 </ul>
 </article>
-<div class="article-footer">
-    <section id="license">
-      <div class="header"><span>License</span></div>
-      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
-</div>
-    </section>
-    
 
-</div>
 
 <div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2025/06/30/Distribution/GFS/">GFS</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2025/02/03/OS/Linux/">Linux</a></div></section></div>
 

@@ -1,0 +1,1070 @@
+
+<!DOCTYPE html><html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>Yveltals</title>
+
+  
+    <meta name="description" content="专家并行（EP）DeepSeek-V3 有 671B 参数、256 个路由专家。一个 H100 只有 80 GB HBM。如果每张 GPU 都装完整模型，671B × FP16 2 bytes ≈ 1.3 TB——需要 17 张 H100 才能放下，还不算 KV Cache。但好消息是：每个 token 只激活 37B 参数（~74 GB FP16，一张 H100 刚好装下）。 「每个 token">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yveltals">
+<meta property="og:url" content="http://blog.yveltals.top/2026/09/19/LLM/%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C(EP)/">
+<meta property="og:site_name" content="Yveltals">
+<meta property="og:description" content="专家并行（EP）DeepSeek-V3 有 671B 参数、256 个路由专家。一个 H100 只有 80 GB HBM。如果每张 GPU 都装完整模型，671B × FP16 2 bytes ≈ 1.3 TB——需要 17 张 H100 才能放下，还不算 KV Cache。但好消息是：每个 token 只激活 37B 参数（~74 GB FP16，一张 H100 刚好装下）。 「每个 token">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+<meta property="article:published_time" content="2026-09-19T13:20:19.909Z">
+<meta property="article:modified_time" content="2026-09-19T13:22:03.632Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"dateCreated":"2026-09-19T21:20:19+08:00","dateModified":"2026-09-19T21:22:03+08:00","datePublished":"2026-09-19T21:20:19+08:00","description":"","headline":"","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2026/09/19/LLM/%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C(EP)/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg","logo":{"@type":"ImageObject","url":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"}},"url":"http://blog.yveltals.top/2026/09/19/LLM/%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C(EP)/","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="Articles" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="Tags" href="/tags/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="Categories" href="/categories/" style="color:#FA6400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12a8 8 0 1 1-16 0a8 8 0 0 1 16 0" opacity=".5"/><path fill="currentColor" d="M17.712 5.453c1.047-.193 2.006-.259 2.797-.152c.77.103 1.536.393 1.956 1.064c.446.714.312 1.542-.012 2.258c-.33.728-.918 1.499-1.672 2.268c-1.516 1.547-3.836 3.226-6.597 4.697c-2.763 1.472-5.495 2.484-7.694 2.92c-1.095.217-2.098.299-2.923.201c-.8-.095-1.6-.383-2.032-1.075c-.47-.752-.296-1.63.07-2.379c.375-.768 1.032-1.586 1.872-2.403L4 12.416c0 .219.083.71.168 1.146c.045.23.09.444.123.596c-.652.666-1.098 1.263-1.339 1.756c-.277.567-.208.825-.145.925c.072.116.305.305.937.38c.609.073 1.44.018 2.455-.183c2.02-.4 4.613-1.351 7.28-2.772c2.667-1.42 4.85-3.015 6.23-4.423c.694-.707 1.15-1.334 1.377-1.836c.233-.515.167-.75.107-.844c-.07-.112-.289-.294-.883-.374c-.542-.072-1.272-.041-2.163.112L16.87 5.656c.338-.101.658-.17.842-.203"/></svg></a><a class="nav-item" title="About" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2025/02/03/OS/Notes/"><span class="title">Notes</span></a><a class="item title" href="/2024/07/04/CPP/Cpp/"><span class="title">Cpp</span></a><a class="item title" href="/2024/09/25/OS/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2023/07/03/Software/Git/"><span class="title">Git</span></a><a class="item title" href="/2023/07/03/Archive/Stellar/"><span class="title">Stellar</span></a><a class="item title" href="/2024/12/18/Software/Design%20pattern/"><span class="title">Design pattern</span></a><a class="item title" href="/2024/05/15/OS/CPU%20Cache/"><span class="title">CPU Cache</span></a><a class="item title" href="/2024/07/27/Archive/ShardKV/"><span class="title">MIT 6.824</span></a><a class="item title" href="/2021/12/26/GRE/%E9%AB%98%E6%95%B0/"><span class="title">高数十八讲</span></a><a class="item title" href="/2023/02/01/CPP/STL/"><span class="title">STL</span></a></div></widget>
+</div>
+
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2026-09-19T13:20:19.909Z">2026-09-19</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-09-19T13:22:03.632Z">2026-09-19</time></span></div></div></div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="专家并行（EP）"><a href="#专家并行（EP）" class="headerlink" title="专家并行（EP）"></a>专家并行（EP）</h1><p>DeepSeek-V3 有 671B 参数、256 个路由专家。一个 H100 只有 80 GB HBM。如果每张 GPU 都装完整模型，671B × FP16 2 bytes ≈ 1.3 TB——需要 17 张 H100 才能放下，还不算 KV Cache。但好消息是：每个 token 只激活 37B 参数（~74 GB FP16，一张 H100 刚好装下）。</p>
+<p>「每个 token 只用少数专家」这个事实，催生了 DP&#x2F;TP&#x2F;PP 之后的一个全新并行维度——<strong>EP（Expert Parallelism，专家并行）</strong>。它不是 TP 的变种，不是 DP 的特例，它是为 MoE 的稀疏激活专门设计的第五种策略。</p>
+<p>本文从「为什么 DP&#x2F;TP&#x2F;PP 解决不了 MoE 的存储问题」出发，拆解 EP 的核心机制、All-to-All 通信模式、EP+DP 耦合关系、EPLB 负载均衡、DeepEP 低延迟后端，以及生产环境的选型决策。</p>
+<hr>
+<h2 id="一、DP、TP、PP-为什么都解决不了-MoE？"><a href="#一、DP、TP、PP-为什么都解决不了-MoE？" class="headerlink" title="一、DP、TP、PP 为什么都解决不了 MoE？"></a>一、DP、TP、PP 为什么都解决不了 MoE？</h2><p>先看三种经典策略面对 MoE 会发生什么。</p>
+<p><strong>DP（数据并行）</strong>：每张 GPU 有完整模型副本。DeepSeek-V3 完整 FP16 副本 &#x3D; 1.3 TB。单卡装不下，DP 直接出局。</p>
+<p><strong>TP（张量并行）</strong>：把每层的权重矩阵按 hidden 维度切分。Attention 的 QKV projection 可以切，MoE 层的专家 FFN（gate&#x2F;up projection shape <code>[7168, 2048]</code>）也可以切。但 TP 的问题是：每层每个 token 都有一次 All-Reduce。DeepSeek-V3 共 61 层 Transformer，其中后 58 层为 MoE（前 3 层为 Dense FFN，intermediate_size&#x3D;18432）——仅 MoE 层就有 58 层 × 每层至少 2 次 All-Reduce（up_proj + down_proj 之后各一次）&#x3D; 116 次 All-Reduce 每次 decode step，加上前 3 层 Dense FFN 的约 6 次，总计约 122 次。在 NVLink 内的 H100 上，单次 All-Reduce 延迟约 5-10μs——122 次就是 0.6-1.2ms，这比一次 decode step 的计算时间（~2-5ms）占比不低，但对 Dense 模型是可以接受的。问题在于：<strong>TP 切专家 FFN 并没有利用 MoE 的稀疏性</strong>——每个 token 的每个专家 FFN 计算 TP 都要参与 All-Reduce，即使 token 根本不走那个专家。而如果专家没有被切分到每张 GPU（即用 DP 方式保留完整专家），那 TP 就没有解决专家的存储问题。</p>
+<p><strong>PP（流水线并行）</strong>：把 61 层 Transformer（含 58 个 MoE 层）切成几段放到不同 GPU 上。PP 的问题是：它只切层数，不切专家数。每段 GPU 仍然要装下该段内所有层的全部 256 个专家——存储问题没解决，只是换了个维度。</p>
+<p>结论：这三种策略都假设「每张 GPU 参与每个 token 的全部计算」，只是分工方式不同。MoE 打破了这一假设——每个 token 只需要少数专家，为什么要让所有 GPU 都参与？</p>
+<p><strong>EP 的思路不是「切分所有 GPU 都要用的东西」，而是「让 token 自己选择要去哪张 GPU」。</strong></p>
+<hr>
+<h2 id="二、EP-的核心机制：分布、路由、通信"><a href="#二、EP-的核心机制：分布、路由、通信" class="headerlink" title="二、EP 的核心机制：分布、路由、通信"></a>二、EP 的核心机制：分布、路由、通信</h2><h3 id="2-1-专家如何分布到-GPU-上"><a href="#2-1-专家如何分布到-GPU-上" class="headerlink" title="2.1 专家如何分布到 GPU 上"></a>2.1 专家如何分布到 GPU 上</h3><p>EP 的核心操作：把模型的所有路由专家均匀分配到 EP 组的各张 GPU 上。每张 GPU 持有连续的 1&#x2F;N 专家权重。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">EP=8, 256 个路由专家, 共享专家 = 2</span><br><span class="line"></span><br><span class="line">GPU 0: Expert   0 -  31  (32 experts)       ← 每张 GPU 还有共享专家的完整副本</span><br><span class="line">GPU 1: Expert  32 -  63  (32 experts)</span><br><span class="line">GPU 2: Expert  64 -  95  (32 experts)</span><br><span class="line">GPU 3: Expert  96 - 127  (32 experts)</span><br><span class="line">GPU 4: Expert 128 - 159  (32 experts)</span><br><span class="line">GPU 5: Expert 160 - 191  (32 experts)</span><br><span class="line">GPU 6: Expert 192 - 223  (32 experts)</span><br><span class="line">GPU 7: Expert 224 - 255  (32 experts)</span><br></pre></td></tr></table></figure>
+
+<p>连续分布（连续编号的专家在同一张 GPU 上）是 vLLM 和 SGLang 的默认策略，原因有两个：一是路由层的输出（256 维 logits）可以简单地按分段映射到 GPU ID，不需要一张额外的映射表；二是连续分布让 Router 的 weight 和专家 weight 的索引对应关系保持可预测。</p>
+<p>共享专家（shared experts，DeepSeek-V3 中有 2 个）不参与 EP 切分——它们处理的是「所有 token 不经过路由都会经过的专家」，所以每张 GPU 都需要完整副本。相较于每个 MoE 层 256 个路由专家的总权重（<del>22.5 GB FP16），2 个共享专家的开销（</del>176 MB）可忽略不计。</p>
+<h3 id="2-2-一个-token-的完整-EP-旅程"><a href="#2-2-一个-token-的完整-EP-旅程" class="headerlink" title="2.2 一个 token 的完整 EP 旅程"></a>2.2 一个 token 的完整 EP 旅程</h3><p>当一个 token 进入 MoE 层时，完整的 EP 执行流程如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">时间线：一个 token 在 EP=8 的 MoE 层中的旅程</span><br><span class="line"></span><br><span class="line">Step 1 — Router 计算（本 GPU ⊗，无通信）</span><br><span class="line">  hidden_states: [1, 7168]</span><br><span class="line">  Router Linear: [7168, 256] → logits: [1, 256]</span><br><span class="line">  Top-K: K=8, 选中 Expert &#123;5, 23, 67, 89, 130, 155, 201, 244&#125;</span><br><span class="line">  映射到 GPU: &#123;GPU 0: Expert 5, 23&#125;, &#123;GPU 2: Expert 67, 89&#125;,</span><br><span class="line">             &#123;GPU 4: Expert 130, 155&#125;, &#123;GPU 6: Expert 201&#125;, &#123;GPU 7: Expert 244&#125;</span><br><span class="line"></span><br><span class="line">Step 2 — Dispatch All-to-All（跨 GPU 通信）</span><br><span class="line">  本 GPU 需要计算 Expert 5 和 23（在本地），其余 6 个专家分布在其他 GPU 上</span><br><span class="line">  将 token 的 hidden_states 发送到 GPU 2、4、6、7（scatter）</span><br><span class="line">  同时接收其他 GPU 发来的需要本 GPU 专家计算的 token</span><br><span class="line"></span><br><span class="line">Step 3 — 专家计算（本 GPU ⊗，各自计算）</span><br><span class="line">  GPU 0: Expert 5(token_A 的 hidden) + Expert 23(token_A 的 hidden) +</span><br><span class="line">         其他 GPU 路由到 GPU 0 的 tokens</span><br><span class="line">  每张 GPU 独立计算自己负责的专家的 FFN 输出</span><br><span class="line"></span><br><span class="line">Step 4 — Combine All-to-All（跨 GPU 通信）</span><br><span class="line">  GPU 2、4、6、7 将专家计算结果发回原始 GPU（gather）</span><br><span class="line">  原始 GPU 收到所有 8 个专家的输出</span><br><span class="line"></span><br><span class="line">Step 5 — Router 加权求和（本 GPU ⊗，无通信）</span><br><span class="line">  output = Σ softmax(logits[i]) × expert_output[i]  (i ∈ Top-8)</span><br><span class="line">  + shared_expert_output × shared_expert_gate</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键观察</strong>：一个 token 的 EP 旅程中，只有 Step 2 和 Step 4 有跨 GPU 通信。Step 1、3、5 都在本 GPU 完成。而且通信的是 token 的 hidden states（7168 维 × FP16 &#x3D; ~14 KB），不是专家权重。</p>
+<h3 id="2-3-Dispatch-和-Combine-的通信量"><a href="#2-3-Dispatch-和-Combine-的通信量" class="headerlink" title="2.3 Dispatch 和 Combine 的通信量"></a>2.3 Dispatch 和 Combine 的通信量</h3><p>通信量的精算：</p>
+<ul>
+<li><strong>Dispatch</strong>：token 被发送到它路由到的专家所在的 GPU。最坏情况每个 token 的 Top-8 分布在 8 张不同的 GPU 上，数据量 &#x3D; $\mathrm{batch size} \times \mathrm{top k} \times \mathrm{hidden size} \times \mathrm{dtype size}$。但实际上，一个 token 的 Top-8 通常集中分布在 2-4 张 GPU 上（因为相邻编号的专家在连续 token 上有相似的激活模式）。</li>
+<li><strong>Combine</strong>：与 dispatch 对称，从各 GPU 收回专家计算结果，数据量与 dispatch 相同。</li>
+<li><strong>总通信量（每 token 每 MoE 层）</strong>： $2 \times \mathrm{top k} \times \mathrm{hidden size} \times 2,\text{bytes}$（FP16）&#x3D; $2 \times 8 \times 7168 \times 2 \approx 229,\text{KB}$。如果使用 FP8 通信，减半至 $\approx 115,\text{KB}$。</li>
+</ul>
+<p>对比 TP 的 All-Reduce：TP&#x3D;8 的每次 All-Reduce 通信量 $\approx 2 \times \mathrm{hidden size} \times 2,\text{bytes} \times (N-1)&#x2F;N \approx 2 \times 7168 \times 2 \times 7&#x2F;8 \approx 25,\text{KB}$。但 TP 每层有多次 All-Reduce（QKV proj、output proj、FFN up、FFN down），总共约 4-6 次 All-Reduce 每层。</p>
+<p>EP 的每次通信量比 TP 大（229 KB vs 25 KB），但 EP 只在 MoE 层通信（attention 层无 EP 通信），且 EP 的 combine 可以和最后一轮专家计算并行。</p>
+<blockquote>
+<p><strong>Given</strong>：EP 的通信模式是 All-to-All（一对多 + 多对一）→ <strong>New</strong>：为什么 EP 的通信开销在 MoE 架构下是可接受的——因为它只在需要时才发生，而非每层无差别执行。</p>
+</blockquote>
+<hr>
+<h2 id="三、EP-和-DP-的耦合：不可分割的并行对"><a href="#三、EP-和-DP-的耦合：不可分割的并行对" class="headerlink" title="三、EP 和 DP 的耦合：不可分割的并行对"></a>三、EP 和 DP 的耦合：不可分割的并行对</h2><h3 id="3-1-EP-不能独立存在"><a href="#3-1-EP-不能独立存在" class="headerlink" title="3.1 EP 不能独立存在"></a>3.1 EP 不能独立存在</h3><p>TP 可以独立配置（TP&#x3D;8，单节点跑一个模型副本）。PP 可以独立配置。</p>
+<p>EP 不行。**EP 需要并发请求驱动多个 rank 同时工作。**原因非常直观：EP 只切了专家的存储和计算，每个 rank 只持有 1&#x2F;N 的专家——某个请求的 token 路由到了 GPU 2 和 4 的专家，GPU 1 和 3 上如果没有其他请求的 token 在处理，它们就空闲。只有多路请求并发时，各 GPU 上的专家才都有活干，模型才能形成可服务的推理流水线。</p>
+<p>这个”并发请求喂饱所有 rank”的能力，在 vLLM 中由 <code>--data-parallel-size</code> 提供。但需要区分两种 DP 概念：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>传统多实例 DP</th>
+<th>vLLM 引擎内 DP（<code>--data-parallel-size</code>）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>概念</td>
+<td>每个实例有完整模型副本，独立服务</td>
+<td>EP 组内划分的并行维度，rank 间共享专家切分</td>
+</tr>
+<tr>
+<td>通信</td>
+<td>无需通信</td>
+<td>有元数据通信（调度、负载均衡）</td>
+</tr>
+<tr>
+<td>适用模型</td>
+<td>Dense 和 MoE 均可</td>
+<td><strong>仅 MoE</strong>（<code>parallel.py:859</code> 阻止 Dense 模型使用）</td>
+</tr>
+<tr>
+<td>实现方式</td>
+<td>启动多个 vLLM 实例 + 外部 LB</td>
+<td><code>--data-parallel-size N --enable-expert-parallel</code></td>
+</tr>
+</tbody></table>
+<p>本文后续讨论的”DP”均指 vLLM 引擎内 DP——它在 EP 语境下与 <code>--data-parallel-size</code> 含义一致。传统多实例 DP 不在 EP 讨论范围内。</p>
+<h3 id="3-2-EP-组的大小推导"><a href="#3-2-EP-组的大小推导" class="headerlink" title="3.2 EP 组的大小推导"></a>3.2 EP 组的大小推导</h3><p>vLLM 中 EP 组的大小由源码 <code>parallel_state.py</code> 的初始化逻辑决定，而非由用户直接配置：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">vLLM EP 组的 rank 编排（parallel_state.py:1894-1901）</span><br><span class="line"></span><br><span class="line">WORLD_SIZE = PP_SIZE × TP_SIZE × DP_SIZE × CP_SIZE</span><br><span class="line">  （WORLD_SIZE 为本次推理作业的总 GPU 数，</span><br><span class="line">   PP 为流水线并行、TP 为张量并行、DP 为数据并行、CP 为 Prefill Context Parallel）</span><br><span class="line"></span><br><span class="line">EP 组大小 = DP_SIZE × TP_SIZE × CP_SIZE</span><br><span class="line"></span><br><span class="line">简化情况（CP=1, PP=1）：</span><br><span class="line">  EP 组大小 = DP_SIZE × TP_SIZE = WORLD_SIZE</span><br><span class="line">  → 所有 rank 在同一个 EP 组内，专家切分跨全部 WORLD_SIZE</span><br></pre></td></tr></table></figure>
+
+<p><code>parallel.py:127-128</code> 的注释明确了这一设计意图：<em>“MoE layers will be sharded according to the product of the tensor parallel size and data parallel size.”</em></p>
+<p>实际的 EP rank 数 &#x3D; <code>TP_SIZE × DP_SIZE</code>（当 CP&#x3D;1、PP&#x3D;1 时就等于 WORLD_SIZE）。每张 GPU 持有的专家数 &#x3D; 总路由专家数 ÷ (TP_SIZE × DP_SIZE)。TP 也在专家维度上生效——如果用 TP&#x3D;4、DP&#x3D;1，每卡持有 256&#x2F;4 &#x3D; 64 个专家；如果用 TP&#x3D;1、DP&#x3D;8，每卡持有 256&#x2F;8 &#x3D; 32 个专家。DP 提供了比 TP 更粗粒度的专家切分，且避免了每层 All-Reduce 的开销。</p>
+<p>SGLang 的 EP 关系略有不同：<code>ep_size × moe_dp_size = tp_size</code>（见 <code>server_args.py:5273</code>）。SGLang 将 TP 视为总并行度，从中分出 EP 和 DP 两个子维度。这与 vLLM 的「EP &#x3D; TP × DP」在数学上等价，但概念上 SGLang 将 EP 和 DP 作为 TP 的子划分。</p>
+<p>典型配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8 GPU, DP=8, EP=8（EP 覆盖所有 8 张 GPU，每卡 32 个专家）</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel</span><br><span class="line"></span><br><span class="line"><span class="comment"># 32 GPU, TP=4, DP=8, EP=32（EP 组 = 32 张 GPU，TP 组 = 4 张 GPU 节点内）</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --tensor-parallel-size 4 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-EP-下的-KV-Cache-归属"><a href="#3-3-EP-下的-KV-Cache-归属" class="headerlink" title="3.3 EP 下的 KV Cache 归属"></a>3.3 EP 下的 KV Cache 归属</h3><p>当一个 token 被 dispatch 到远程 GPU 计算专家后，它的 KV Cache 存放在哪？</p>
+<p><strong>答案：KV Cache 始终驻留在 Router 计算发生的那张 GPU 上（即 dispatch 前的 GPU）——token 的 hidden states 被 dispatch 到远程，但 KV 不搬。</strong></p>
+<p>token 被 dispatch 到远程 GPU 后，仅执行专家 FFN 计算。计算完成后 combine 回到原始 GPU，attention 层的 K&#x2F;V 在原始 GPU 上存储和读取。这意味着：</p>
+<ol>
+<li><strong>EP 不影响 KV Cache 的分布</strong>。KV Cache 的切分仍由 DP 决定——每个 DP rank 持有自己服务的请求的完整 KV Cache。</li>
+<li><strong>Attention 计算也在原 GPU 完成</strong>。MLA 的 QKV 计算和 attention scoring 都发生在原始 GPU，不需要跨 EP rank 搬运 K&#x2F;V。</li>
+<li><strong>vLLM 中 EP 组内的 DP rank 各自独立管理 KV Cache</strong>：每个 DP rank 持有自己服务的请求的完整 KV Cache，EP rank 之间的专家计算不涉及 KV Cache 的搬运或共享。源码中 <code>KVCacheGroupSpec</code>（<code>v1/kv_cache_interface.py:905</code>）用于管理混合注意力架构下不同层组的 KV Cache 规格（如 MHA + MLA 层混合），与 EP 的 rank 分组无关。</li>
+</ol>
+<p>这个设计很巧妙：EP 借助了「attention 的计算量和 KV Cache 的大小都远小于专家 FFN 的权重」这个事实。如果 attention 本身也需要跨 GPU 切分（如超长上下文下的 SP），那才需要额外的策略——EP 和 SP 可以叠加使用，但它们在 KV Cache 的管理上是独立的。</p>
+<blockquote>
+<p><strong>Given</strong>：DP 是「每张 GPU 有完整模型副本，各处理不同的请求」→ <strong>New</strong>：EP 在 DP 的基础上把专家权重进一步切分，但 attention 和 KV Cache 仍由 DP 管理，EP 和 DP 各有分工、不可互换。</p>
+</blockquote>
+<hr>
+<h2 id="四、All-to-All-通信：EP-的正反面"><a href="#四、All-to-All-通信：EP-的正反面" class="headerlink" title="四、All-to-All 通信：EP 的正反面"></a>四、All-to-All 通信：EP 的正反面</h2><h3 id="4-1-All-to-All-与-All-Reduce-的本质区别"><a href="#4-1-All-to-All-与-All-Reduce-的本质区别" class="headerlink" title="4.1 All-to-All 与 All-Reduce 的本质区别"></a>4.1 All-to-All 与 All-Reduce 的本质区别</h3><p>TP 用 All-Reduce（all-reduce：每张 GPU 贡献 1&#x2F;N 结果，求和后广播回每张 GPU）。通信模式是「所有人的结果，所有人都需要」。</p>
+<p>EP 用 All-to-All（dispatch + combine）：每张 GPU 把需要远程专家计算的 token 发出去，收回自己需要的专家输出。通信模式是「只有路由到的 GPU 才需要通信」。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>All-Reduce（TP）</th>
+<th>All-to-All（EP）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模式</td>
+<td>全对全归约</td>
+<td>全对全散射+收集</td>
+</tr>
+<tr>
+<td>触发条件</td>
+<td>每次矩阵乘之后</td>
+<td>仅在 MoE 层</td>
+</tr>
+<tr>
+<td>频率</td>
+<td>每层 4-6 次</td>
+<td>每 MoE 层 2 次</td>
+</tr>
+<tr>
+<td>通信量（每 token）</td>
+<td>~25 KB × 次数</td>
+<td>~229 KB × 2（FP16）&#x2F; ~115 KB × 2（FP8）</td>
+</tr>
+<tr>
+<td>延迟特征</td>
+<td>与 hidden_size 相关</td>
+<td>与 top_k × hidden_size 相关</td>
+</tr>
+<tr>
+<td>是否可重叠</td>
+<td>与下一层重叠（PP 场景）</td>
+<td>与专家计算重叠</td>
+</tr>
+</tbody></table>
+<p>EP 的 All-to-All 在数据量上打不过 TP 的 All-Reduce——每次通信量更大。但它的优势在于<strong>稀疏触发</strong>：不是每层都通信（MoE 模型约 50% 的层是 MoE 层，其余是 attention + shared expert），且每次都经过的 attention 层和 LayerNorm 无 EP 通信。</p>
+<h3 id="4-2-NCCL-标准-All-to-All-在-EP-场景下的瓶颈"><a href="#4-2-NCCL-标准-All-to-All-在-EP-场景下的瓶颈" class="headerlink" title="4.2 NCCL 标准 All-to-All 在 EP 场景下的瓶颈"></a>4.2 NCCL 标准 All-to-All 在 EP 场景下的瓶颈</h3><p>NCCL 的 All-to-All 实现是为通用场景设计的。在 EP 场景下暴露了两个特定瓶颈：</p>
+<p><strong>瓶颈 1：decode 阶段的小批量高频率</strong>。在 decode 阶段，每个 step 只有 1 个 token（per request），batch 通常在几个到几十个。每次 All-to-All 的数据量 &#x3D; <code>batch_size × hidden_size / num_gpus</code>。当 batch_size&#x3D;8、hidden_size&#x3D;7168、num_gpus&#x3D;8 时，每张 GPU 的发送量仅约 14 KB。在这个量级，延迟由 kernel launch 开销（~5-10μs）主导，而非带宽。而 DeepSeek-V3 有 58 个 MoE 层，每个 decode step 触发 58 × 2 &#x3D; 116 次 All-to-All——即使每次仅 5μs 的 launch 开销，累积也达 0.58ms，成为不可忽视的延迟项。</p>
+<p><strong>瓶颈 2：dispatch 和 combine 之间的 SM 空转</strong>。NCCL 的标准实现是「先完成全部 dispatch，再做专家计算，再等全部 combine 完成」。在此模式中，第一轮 dispatch 的数据到达后 GPU 就开始等待，直到所有 dispatch 都完成。专家计算结束后又等待 combine 完成。SM 利用率远不到 100%。</p>
+<hr>
+<h2 id="六、负载均衡：当专家们的工作量不一样"><a href="#六、负载均衡：当专家们的工作量不一样" class="headerlink" title="六、负载均衡：当专家们的工作量不一样"></a>六、负载均衡：当专家们的工作量不一样</h2><h3 id="6-1-推理负载天然不均衡"><a href="#6-1-推理负载天然不均衡" class="headerlink" title="6.1 推理负载天然不均衡"></a>6.1 推理负载天然不均衡</h3><p>训练中可以用 auxiliary load balancing loss 强制专家均衡——损失函数里加一项惩罚专家负载方差。推理中没法这么做——请求的 token 路由分布完全由输入内容决定。</p>
+<p>根据 DeepSeek-V3 技术报告中路由器饱和度的分析，256 个专家在推理时呈长尾激活分布——少数热门专家承载了大部分 token，但绝大多数专家仍然被激活（覆盖面广），极少出现「某专家完全不被使用」的情况。以经验值估算：约 30% 的专家处理了 60% 的 token，其余 70% 的专家处理 40% 的 token。</p>
+<p>真正的问题是<strong>空间局部性</strong>：如果 GPU 3 上的 32 个专家中恰好有 8 个是热门专家，GPU 3 会成为整个 EP 组的瓶颈——其他 GPU 都在等它的专家计算完成。</p>
+<h3 id="6-2-EPLB：不停机地迁移专家"><a href="#6-2-EPLB：不停机地迁移专家" class="headerlink" title="6.2 EPLB：不停机地迁移专家"></a>6.2 EPLB：不停机地迁移专家</h3><p>SGLang 率先实现了 <strong>EPLB（Expert Parallel Load Balancer）</strong>，vLLM 后续跟进：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">EPLB 工作流程：</span><br><span class="line"></span><br><span class="line">1. 监控（持续进行）</span><br><span class="line">   滑动窗口统计每个专家的 token 到达率（如过去 100ms 内）</span><br><span class="line">   计算每张 GPU 的负载总和 = Σ(该 GPU 上各专家的 token 到达率)</span><br><span class="line"></span><br><span class="line">2. 检测（周期触发）</span><br><span class="line">   IF max(GPU 负载) / avg(GPU 负载) &gt; 阈值（典型 1.2）:</span><br><span class="line">       触发重平衡</span><br><span class="line"></span><br><span class="line">3. 迁移（在线执行）</span><br><span class="line">   - 选择过载 GPU 上最热门的 1-2 个专家</span><br><span class="line">   - 在目标空闲 GPU 上创建这些专家的权重副本</span><br><span class="line">   - 等待副本同步完成</span><br><span class="line">   - 原子性更新 Router 映射表：后续 token 立即路由到新位置</span><br><span class="line">   - 原 GPU 上的专家权重保留（仍在处理路由表中的旧 token）</span><br><span class="line"></span><br><span class="line">4. 清理</span><br><span class="line">   旧映射表中的请求全部处理完毕后，可以选择回收原位置的专家副本</span><br><span class="line">   （可选，取决于显存压力）</span><br></pre></td></tr></table></figure>
+
+<p>关键设计决策：<strong>迁移期间不中断推理</strong>。这通过双缓冲路由表实现——Router 维护两套映射表，迁移期间的旧请求仍使用旧表，新请求使用新表。类似于 RCU（Read-Copy-Update）。</p>
+<h3 id="6-3-冗余专家：以空间换均衡"><a href="#6-3-冗余专家：以空间换均衡" class="headerlink" title="6.3 冗余专家：以空间换均衡"></a>6.3 冗余专家：以空间换均衡</h3><p>当迁移频率太高（某些专家持续热门）时，EPLB 的收益被迁移开销吃掉。另一种互补策略是<strong>冗余专家</strong>——允许特定热门专家在多个 GPU 上有副本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># vLLM 冗余专家配置</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel \</span><br><span class="line">  --num-redundant-experts 8     <span class="comment"># 8 个额外专家副本</span></span><br></pre></td></tr></table></figure>
+
+<p>256 个路由专家 + 8 个冗余 &#x3D; 264 个专家分布在 8 张 GPU 上。每卡 33 个专家（比原来多 1 个），但 8 个热门专家被复制到其他 GPU 上——Router 可以将 token 随机路由到副本中的任意一个，分散负载。</p>
+<p>多余显存开销：每个冗余专家 ≈ 专家 FFN 权重大小（DeepSeek-V3 中约 88 MB FP16），8 个副本 ≈ 700 MB——对于每个 MoE 层 ~22.5 GB 的专家总权重来说，是 ~3% 的额外开销。</p>
+<blockquote>
+<p><strong>Given</strong>：EP 的静态分布（256 专家均匀分到 8 GPU）无法适应推理负载的不均衡 → <strong>New</strong>：EPLB 动态迁移和冗余专家两种策略如何在延迟和显存之间做权衡。</p>
+</blockquote>
+<hr>
+<h2 id="七、EP-的边界：什么时候该用，什么时候不该用"><a href="#七、EP-的边界：什么时候该用，什么时候不该用" class="headerlink" title="七、EP 的边界：什么时候该用，什么时候不该用"></a>七、EP 的边界：什么时候该用，什么时候不该用</h2><h3 id="7-1-EP-的前提条件"><a href="#7-1-EP-的前提条件" class="headerlink" title="7.1 EP 的前提条件"></a>7.1 EP 的前提条件</h3><p>EP 不是万能药。它的适用边界非常清晰：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>EP 收益</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MoE 模型，专家数 ≥ 64</td>
+<td>✅ 强烈推荐</td>
+<td>专家存储瓶颈，EP 是最优解</td>
+</tr>
+<tr>
+<td>MoE 模型，专家数 8-64</td>
+<td>⚠️ 视情况</td>
+<td>小专家数下 EP 通信占比高</td>
+</tr>
+<tr>
+<td>MoE 模型，专家数 &lt; 8</td>
+<td>❌ 不推荐</td>
+<td>All-to-All 开销 &gt; 存储收益</td>
+</tr>
+<tr>
+<td>Dense 模型（LLaMA, Qwen）</td>
+<td>❌ 不需要</td>
+<td>没有专家，EP 无意义</td>
+</tr>
+<tr>
+<td>单卡能装下所有专家</td>
+<td>❌ 通常不需要</td>
+<td>EP 不会带来吞吐收益</td>
+</tr>
+</tbody></table>
+<p>一个反直觉的结论：EP 的价值不在于「让推理更快」，而在于「让 MoE 模型能在多卡上跑」。如果只有 1 张 A100 但 Qwen2.5-72B（Dense 模型）装不下——用 TP（或量化）。如果有 8 张 H100 跑 DeepSeek-V3（MoE 模型）——首选 EP。两者的应用场景完全不同。</p>
+<blockquote>
+<p><strong>Dense 模型需要多副本怎么办？</strong> vLLM 的 <code>--data-parallel-size</code> 仅用于 MoE + EP 场景（§3.1 中已区分两种 DP）。Dense 模型（LLaMA&#x2F;Qwen）的多副本部署推荐多实例 DP：启动多个独立的 vLLM 实例，由外部负载均衡器分发请求。各实例之间无通信，不使用 <code>--data-parallel-*</code> 参数。</p>
+</blockquote>
+<h3 id="7-2-EP-vs-TP-在-MoE-场景下的决策框架"><a href="#7-2-EP-vs-TP-在-MoE-场景下的决策框架" class="headerlink" title="7.2 EP vs TP 在 MoE 场景下的决策框架"></a>7.2 EP vs TP 在 MoE 场景下的决策框架</h3><p>MoE 模型部署中最常见的困惑：「我用 TP 也能切权重，为什么还要学 EP？」</p>
+<table>
+<thead>
+<tr>
+<th>决策维度</th>
+<th>TP</th>
+<th>EP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>切分对象</td>
+<td>所有层的权重矩阵</td>
+<td>仅 MoE 层的专家 FFN</td>
+</tr>
+<tr>
+<td>Attention 层</td>
+<td>切（head 维度）</td>
+<td>不切</td>
+</tr>
+<tr>
+<td>每层通信</td>
+<td>是</td>
+<td>仅 MoE 层</td>
+</tr>
+<tr>
+<td>单层通信量</td>
+<td>低（多次小 All-Reduce）</td>
+<td>高（2 次大 All-to-All）</td>
+</tr>
+<tr>
+<td>总通信量</td>
+<td>与层数成比例</td>
+<td>与 MoE 层数成比例</td>
+</tr>
+<tr>
+<td>存储效率</td>
+<td>降至 1&#x2F;N（N&#x3D;TP size）</td>
+<td>专家权重降至 1&#x2F;N，attention 不变</td>
+</tr>
+<tr>
+<td>关键约束</td>
+<td>跨 NVLink 延迟</td>
+<td>All-to-All 延迟</td>
+</tr>
+</tbody></table>
+<p><strong>经验法则</strong>：</p>
+<ul>
+<li><strong>MoE 模型优先考虑 EP</strong>：先用 EP 解决专家存储（EP&#x3D;8, 每卡 32 专家），再看 attention 层是否需要 TP（通常 MLA 的 attention 权重很小，单卡可装，不需要 TP）。</li>
+<li><strong>Dense 模型只能用 TP&#x2F;PP</strong>：没有专家，不存在 EP 选项。</li>
+<li><strong>超大 MoE 模型 EP + TP 组合</strong>：当 attention 层的隐藏维度太大以至于单卡装不下 attention 权重时（如将来的 DeepSeek 模型 hidden_size 扩展到 12288 以上），EP + TP 叠加。TP 切 attention，EP 切专家。</li>
+</ul>
+<h3 id="7-3-典型配置速查"><a href="#7-3-典型配置速查" class="headerlink" title="7.3 典型配置速查"></a>7.3 典型配置速查</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 场景 1：单节点 8×H100，DeepSeek-V3（推荐配置）</span></span><br><span class="line"><span class="comment"># TP=1, EP=8, 每卡 32 专家</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel</span><br><span class="line"></span><br><span class="line"><span class="comment"># 场景 2：单节点 8×H100，DeepSeek-V3，低延迟优化</span></span><br><span class="line"><span class="comment"># TP=1, EP=8, 每卡 32 专家, DeepEP 低延迟 All-to-All</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel \</span><br><span class="line">  --all2all-backend deepep_low_latency</span><br><span class="line"></span><br><span class="line"><span class="comment"># 场景 3：4 节点 32×H100，DeepSeek-V3（TP+EP 组合）</span></span><br><span class="line"><span class="comment"># TP=4, EP=32, 每卡 8 专家</span></span><br><span class="line"><span class="comment"># TP=4 用于 attention 层的 NVLink 内切分，EP 覆盖全部 32 张 GPU</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --tensor-parallel-size 4 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel</span><br><span class="line"></span><br><span class="line"><span class="comment"># 场景 4：单节点 8×H100，DeepSeek-V3，开启冗余专家</span></span><br><span class="line">vllm serve deepseek-ai/DeepSeek-V3 \</span><br><span class="line">  --data-parallel-size 8 \</span><br><span class="line">  --enable-expert-parallel \</span><br><span class="line">  --num-redundant-experts 8</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>EP 不是「比 TP 更好的并行策略」。它是在 MoE 成为主流模型架构之后才成为必需品的第五个并行维度——在 Dense 模型时代，DP+TP+PP 覆盖了所有部署场景；MoE 的 256 专家 × 每 token 只用 8 个专家的稀疏激活模式，彻底改变了并行切分的基本假设。</p>
+<p>EP 的核心取舍：</p>
+<ul>
+<li><strong>收益</strong>：让 MoE 模型能在多卡上跑，专家权重存储降低到 1&#x2F;N。对于 DeepSeek-V3 的 256 专家，EP&#x3D;8 意味着每 GPU 只需存储 32 个专家（而非全部 256 个）。</li>
+<li><strong>代价</strong>：每次 MoE 层引入两次 All-to-All 通信（dispatch + combine），每次 ~115-229 KB per token。负载不均衡导致部分 GPU 过载。</li>
+<li><strong>应对</strong>：DeepEP 用专用化、persistent kernel、FP8 通信、计算-通信重叠来压延迟。EPLB 用动态迁移和冗余副本解决负载均衡。</li>
+<li><strong>边界</strong>：EP 永远与 DP 耦合——没有 DP 的并行请求，EP 无法工作。Dense 模型不需要 EP。</li>
+</ul>
+<p>向前看：随着 MoE 模型专家数从 256 增长到 512、1024，EP 的 All-to-All 延迟瓶颈将被进一步放大。FP4 通信（Blackwell 支持）、更激进的计算-通信全重叠、以及专家分组（先按组路由再按专家路由）是下一代 EP 优化的探索方向。</p>
+<hr>
+</article>
+
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2026/09/19/LLM/LLM%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5/">2026-09-19</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">John Doe</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C%EF%BC%88EP%EF%BC%89"><span class="toc-text">专家并行（EP）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81DP%E3%80%81TP%E3%80%81PP-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%83%BD%E8%A7%A3%E5%86%B3%E4%B8%8D%E4%BA%86-MoE%EF%BC%9F"><span class="toc-text">一、DP、TP、PP 为什么都解决不了 MoE？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81EP-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6%EF%BC%9A%E5%88%86%E5%B8%83%E3%80%81%E8%B7%AF%E7%94%B1%E3%80%81%E9%80%9A%E4%BF%A1"><span class="toc-text">二、EP 的核心机制：分布、路由、通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%B8%93%E5%AE%B6%E5%A6%82%E4%BD%95%E5%88%86%E5%B8%83%E5%88%B0-GPU-%E4%B8%8A"><span class="toc-text">2.1 专家如何分布到 GPU 上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%80%E4%B8%AA-token-%E7%9A%84%E5%AE%8C%E6%95%B4-EP-%E6%97%85%E7%A8%8B"><span class="toc-text">2.2 一个 token 的完整 EP 旅程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Dispatch-%E5%92%8C-Combine-%E7%9A%84%E9%80%9A%E4%BF%A1%E9%87%8F"><span class="toc-text">2.3 Dispatch 和 Combine 的通信量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81EP-%E5%92%8C-DP-%E7%9A%84%E8%80%A6%E5%90%88%EF%BC%9A%E4%B8%8D%E5%8F%AF%E5%88%86%E5%89%B2%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%AF%B9"><span class="toc-text">三、EP 和 DP 的耦合：不可分割的并行对</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-EP-%E4%B8%8D%E8%83%BD%E7%8B%AC%E7%AB%8B%E5%AD%98%E5%9C%A8"><span class="toc-text">3.1 EP 不能独立存在</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-EP-%E7%BB%84%E7%9A%84%E5%A4%A7%E5%B0%8F%E6%8E%A8%E5%AF%BC"><span class="toc-text">3.2 EP 组的大小推导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-EP-%E4%B8%8B%E7%9A%84-KV-Cache-%E5%BD%92%E5%B1%9E"><span class="toc-text">3.3 EP 下的 KV Cache 归属</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81All-to-All-%E9%80%9A%E4%BF%A1%EF%BC%9AEP-%E7%9A%84%E6%AD%A3%E5%8F%8D%E9%9D%A2"><span class="toc-text">四、All-to-All 通信：EP 的正反面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-All-to-All-%E4%B8%8E-All-Reduce-%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%8C%BA%E5%88%AB"><span class="toc-text">4.1 All-to-All 与 All-Reduce 的本质区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-NCCL-%E6%A0%87%E5%87%86-All-to-All-%E5%9C%A8-EP-%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E7%93%B6%E9%A2%88"><span class="toc-text">4.2 NCCL 标准 All-to-All 在 EP 场景下的瓶颈</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%9A%E5%BD%93%E4%B8%93%E5%AE%B6%E4%BB%AC%E7%9A%84%E5%B7%A5%E4%BD%9C%E9%87%8F%E4%B8%8D%E4%B8%80%E6%A0%B7"><span class="toc-text">六、负载均衡：当专家们的工作量不一样</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%8E%A8%E7%90%86%E8%B4%9F%E8%BD%BD%E5%A4%A9%E7%84%B6%E4%B8%8D%E5%9D%87%E8%A1%A1"><span class="toc-text">6.1 推理负载天然不均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-EPLB%EF%BC%9A%E4%B8%8D%E5%81%9C%E6%9C%BA%E5%9C%B0%E8%BF%81%E7%A7%BB%E4%B8%93%E5%AE%B6"><span class="toc-text">6.2 EPLB：不停机地迁移专家</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%86%97%E4%BD%99%E4%B8%93%E5%AE%B6%EF%BC%9A%E4%BB%A5%E7%A9%BA%E9%97%B4%E6%8D%A2%E5%9D%87%E8%A1%A1"><span class="toc-text">6.3 冗余专家：以空间换均衡</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81EP-%E7%9A%84%E8%BE%B9%E7%95%8C%EF%BC%9A%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E7%94%A8%EF%BC%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E7%94%A8"><span class="toc-text">七、EP 的边界：什么时候该用，什么时候不该用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-EP-%E7%9A%84%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-text">7.1 EP 的前提条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-EP-vs-TP-%E5%9C%A8-MoE-%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E5%86%B3%E7%AD%96%E6%A1%86%E6%9E%B6"><span class="toc-text">7.2 EP vs TP 在 MoE 场景下的决策框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E5%85%B8%E5%9E%8B%E9%85%8D%E7%BD%AE%E9%80%9F%E6%9F%A5"><span class="toc-text">7.3 典型配置速查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">八、总结</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `Just`,
+      min: `minutes ago`,
+      hour: `hours ago`,
+      day: `days ago`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `Switched to Light Mode`,
+      dark: `Switched to Dark Mode`,
+      auto: `Switched to Auto Mode`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

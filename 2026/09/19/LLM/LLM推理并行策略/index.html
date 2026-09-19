@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
   
-  <meta name="robots" content="noindex,follow">
+  
   <meta name="generator" content="Hexo 8.1.2">
   <meta http-equiv='x-dns-prefetch-control' content='on' />
   
@@ -17,17 +17,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
   <meta name="theme-color" content="#f9fafb">
-  <title>Archives - Yveltals</title>
+  <title>Yveltals</title>
 
   
-    <meta name="description" content="N&#x2F;A">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Archives">
-<meta property="og:url" content="http://blog.yveltals.top/archives/2023/08/">
+    <meta name="description" content="大模型推理并行策略70B 的模型塞不进一张 80GB 的 H100——这是所有推理工程师都会遇到的第一道墙。解法不是换更大的 GPU，而是把模型拆开、把数据拆开、把计算拆开，让多张 GPU 协作完成推理。 「拆」的方式有五种：DP（数据并行）、TP（张量并行）、PP（流水线并行）、EP（专家并行）、SP（序列并行）。它们的名字听起来相似，但切的东西完全不同——有的切权重，有的切数据，有的切 KV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yveltals">
+<meta property="og:url" content="http://blog.yveltals.top/2026/09/19/LLM/LLM%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5/">
 <meta property="og:site_name" content="Yveltals">
-<meta property="og:description" content="N&#x2F;A">
+<meta property="og:description" content="大模型推理并行策略70B 的模型塞不进一张 80GB 的 H100——这是所有推理工程师都会遇到的第一道墙。解法不是换更大的 GPU，而是把模型拆开、把数据拆开、把计算拆开，让多张 GPU 协作完成推理。 「拆」的方式有五种：DP（数据并行）、TP（张量并行）、PP（流水线并行）、EP（专家并行）、SP（序列并行）。它们的名字听起来相似，但切的东西完全不同——有的切权重，有的切数据，有的切 KV">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
+<meta property="article:published_time" content="2026-09-19T13:18:50.160Z">
+<meta property="article:modified_time" content="2026-09-19T13:23:00.079Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg">
@@ -48,12 +50,12 @@
 
   
 
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Website","@id":"http://blog.yveltals.top","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"name":"Yveltals","description":"N/A","url":"http://blog.yveltals.top"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"},"dateCreated":"2026-09-19T21:18:50+08:00","dateModified":"2026-09-19T21:23:00+08:00","datePublished":"2026-09-19T21:18:50+08:00","description":"","headline":"","mainEntityOfPage":{"@type":"WebPage","@id":"http://blog.yveltals.top/2026/09/19/LLM/LLM%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5/"},"publisher":{"@type":"Organization","name":"John Doe","sameAs":[],"image":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg","logo":{"@type":"ImageObject","url":"https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg"}},"url":"http://blog.yveltals.top/2026/09/19/LLM/LLM%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5/","image":[]}</script>
   
 </head>
 <body>
 
-<div class="l_body index" id="start" layout="undefined" type="undefined" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
 
 
 <header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
@@ -65,21 +67,191 @@
 <div class="widgets">
 <div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="Search"></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div>
 
+
+
 <widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">Recent Update</span></div><div class="widget-body fs14"><a class="item title" href="/2025/02/03/OS/Notes/"><span class="title">Notes</span></a><a class="item title" href="/2024/07/04/CPP/Cpp/"><span class="title">Cpp</span></a><a class="item title" href="/2024/09/25/OS/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><span class="title">Linux内存与存储</span></a><a class="item title" href="/2023/07/03/Software/Git/"><span class="title">Git</span></a><a class="item title" href="/2023/07/03/Archive/Stellar/"><span class="title">Stellar</span></a><a class="item title" href="/2024/12/18/Software/Design%20pattern/"><span class="title">Design pattern</span></a><a class="item title" href="/2024/05/15/OS/CPU%20Cache/"><span class="title">CPU Cache</span></a><a class="item title" href="/2024/07/27/Archive/ShardKV/"><span class="title">MIT 6.824</span></a><a class="item title" href="/2021/12/26/GRE/%E9%AB%98%E6%95%B0/"><span class="title">高数十八讲</span></a><a class="item title" href="/2023/02/01/CPP/STL/"><span class="title">STL</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
 
-<header class="header mobile-only"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://res.xaox.cc/gh/cdn-x/wiki@main/stellar/icon.svg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Yveltals</div><div class="sub cap">Hello World!</div></a></div></header>
-
- 
 
 
-<div class="navbar top"><div class="navbar-blur"><div class="navbar-container"><nav class="post"><a href="/">Recent</a><a href="/categories/">Categories</a><a href="/tags/">Tags</a><a class="active" href="/archives/">Archives</a></nav></div></div></div><div class="post-list archives"><article class="" id="archive"><div class='archive-header h4'>2026</div><div class="archive-list"><a class='post fs14' href="/2026/09/19/LLM/%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C(EP)/"><time>09-19</time><span>2026-09-19</span></a></div><div class="archive-list"><a class='post fs14' href="/2026/09/19/LLM/LLM%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5/"><time>09-19</time><span>2026-09-19</span></a></div><div class="archive-list"><a class='post fs14' href="/2026/07/15/LLM/KV-Cache/"><time>07-15</time><span>KV Cache</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2025</div><div class="archive-list"><a class='post fs14' href="/2025/06/30/Distribution/GFS/"><time>06-30</time><span>GFS</span></a></div><div class="archive-list"><a class='post fs14' href="/2025/02/15/Storage/RocksDB/"><time>02-15</time><span>RocksDB</span></a></div><div class="archive-list"><a class='post fs14' href="/2025/02/03/OS/Notes/"><time>02-03</time><span>Notes</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2024</div><div class="archive-list"><a class='post fs14' href="/2024/12/18/Software/Design%20pattern/"><time>12-18</time><span>Design pattern</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/12/13/CPP/Example/"><time>12-13</time><span>Example</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/11/11/CPP/CPP%E7%BC%96%E8%AF%91/"><time>11-11</time><span>Cpp编译链接</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/09/25/OS/Linux%E5%86%85%E5%AD%98%E4%B8%8E%E5%AD%98%E5%82%A8/"><time>09-25</time><span>Linux内存与存储</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/09/17/Distribution/Distribution/"><time>09-17</time><span>分布式理论</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/07/27/Archive/ShardKV/"><time>07-27</time><span>MIT 6.824</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/07/04/CPP/Cpp/"><time>07-04</time><span>Cpp</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/05/15/OS/CPU%20Cache/"><time>05-15</time><span>CPU Cache</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/04/15/Distribution/MapReduce/"><time>04-15</time><span>MapReduce</span></a></div><div class="archive-list"><a class='post fs14' href="/2024/04/07/Storage/Sparse%20Index/"><time>04-07</time><span>Sparse Index</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2023</div><div class="archive-list"><a class='post fs14' href="/2023/08/15/OS/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E4%B8%AD%E6%96%AD/"><time>08-15</time><span>进程线程与中断</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/07/26/Distribution/Zookeeper/"><time>07-26</time><span>Zookeeper</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/07/03/Archive/Stellar/"><time>07-03</time><span>Stellar</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/07/03/Software/Git/"><time>07-03</time><span>Git</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/05/09/Archive/%E6%97%A5%E5%B8%B8%E5%AE%9E%E4%B9%A0%E9%9D%A2%E7%BB%8F/"><time>05-09</time><span>日常实习面经</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/04/26/Archive/CMU%2015445/"><time>04-26</time><span>CMU 15445</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/04/20/Archive/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"><time>04-20</time><span>操作系统</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/04/05/Archive/%E8%AE%A1%E7%AE%97%E8%AE%A1%E7%BD%91%E7%BB%9C/"><time>04-05</time><span>计算计网络</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/04/01/Archive/Redis/"><time>04-01</time><span>Redis</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/03/30/Archive/Mysql/"><time>03-30</time><span>MySQL</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/03/24/Archive/Leetcode/"><time>03-24</time><span>Leetcode</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/02/01/CPP/STL/"><time>02-01</time><span>STL</span></a></div><div class="archive-list"><a class='post fs14' href="/2023/01/22/Storage/Kafka/"><time>01-22</time><span>Kafka</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2022</div><div class="archive-list"><a class='post fs14' href="/2022/11/01/Archive/Cpp%20trivial/"><time>11-01</time><span>Cpp trivial</span></a></div><div class="archive-list"><a class='post fs14' href="/2022/11/01/Archive/%E6%B5%81%E5%AA%92%E4%BD%93%E5%8D%8F%E8%AE%AE/"><time>11-01</time><span>流媒体协议</span></a></div><div class="archive-list"><a class='post fs14' href="/2022/10/01/Archive/FFmpeg/"><time>10-01</time><span>FFmpeg</span></a></div><div class="archive-list"><a class='post fs14' href="/2022/04/08/GRE/%E5%A4%8D%E8%AF%95/"><time>04-08</time><span>复试</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2021</div><div class="archive-list"><a class='post fs14' href="/2021/12/26/GRE/%E6%94%BF%E6%B2%BB/"><time>12-26</time><span>政治知识点</span></a></div><div class="archive-list"><a class='post fs14' href="/2021/12/26/GRE/%E8%AE%A1%E7%BD%91/"><time>12-26</time><span>408计网</span></a></div><div class="archive-list"><a class='post fs14' href="/2021/12/26/GRE/%E9%AB%98%E6%95%B0/"><time>12-26</time><span>高数十八讲</span></a></div><div class="archive-list"><a class='post fs14' href="/2021/12/26/GRE/%E8%8B%B1%E8%AF%AD/"><time>12-26</time><span>英语作文</span></a></div></article><article class="" id="archive"><div class='archive-header h4'>2020</div><div class="archive-list"><a class='post fs14' href="/2020/07/20/Archive/Financing/"><time>07-20</time><span>Financing</span></a></div></article></div>
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">Posted on: <time datetime="2026-09-19T13:18:50.160Z">2026-09-19</time></span><span class="sep updated"></span><span class="text updated">Updated on: <time datetime="2026-09-19T13:23:00.079Z">2026-09-19</time></span></div></div></div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="大模型推理并行策略"><a href="#大模型推理并行策略" class="headerlink" title="大模型推理并行策略"></a>大模型推理并行策略</h1><p>70B 的模型塞不进一张 80GB 的 H100——这是所有推理工程师都会遇到的第一道墙。解法不是换更大的 GPU，而是把模型拆开、把数据拆开、把计算拆开，让多张 GPU 协作完成推理。</p>
+<p>「拆」的方式有五种：<strong>DP（数据并行）、TP（张量并行）、PP（流水线并行）、EP（专家并行）、SP（序列并行）</strong>。它们的名字听起来相似，但切的东西完全不同——有的切权重，有的切数据，有的切 KV Cache。本文从「切的到底是什么」出发，用统一的图示把五种策略讲清楚。</p>
+<hr>
+<h2 id="一、总览：五种策略，切三种东西"><a href="#一、总览：五种策略，切三种东西" class="headerlink" title="一、总览：五种策略，切三种东西"></a>一、总览：五种策略，切三种东西</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>DP</th>
+<th>TP</th>
+<th>PP</th>
+<th>EP</th>
+<th>SP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>切的维度</td>
+<td>batch</td>
+<td>hidden</td>
+<td>layers</td>
+<td>experts</td>
+<td>seq_len</td>
+</tr>
+<tr>
+<td>每张 GPU 有</td>
+<td>完整模型</td>
+<td>1&#x2F;N 权重</td>
+<td>1&#x2F;N 层</td>
+<td>1&#x2F;N 专家</td>
+<td>完整模型</td>
+</tr>
+<tr>
+<td>KV Cache</td>
+<td>独立</td>
+<td>分片</td>
+<td>独立</td>
+<td>独立</td>
+<td>分片</td>
+</tr>
+<tr>
+<td>通信量</td>
+<td>无¹ &#x2F; 高²</td>
+<td>极高</td>
+<td>中</td>
+<td>低</td>
+<td>中</td>
+</tr>
+<tr>
+<td>典型场景</td>
+<td>训练</td>
+<td>大模型推理</td>
+<td>超大模型</td>
+<td>MoE 推理</td>
+<td>长上下文</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>¹ 多实例推理 DP：每个实例是独立进程，无通信。<br><br>² 训练 DP &#x2F; vLLM 引擎内 DP：rank 间有梯度同步或元数据通信。<br></p>
+</blockquote>
+<hr>
+<h2 id="二、数据并行（DP）"><a href="#二、数据并行（DP）" class="headerlink" title="二、数据并行（DP）"></a>二、数据并行（DP）</h2><p>DP 在不同语境下含义不同，先说清楚这三种场景，再聚焦本文的核心——多实例推理 DP。</p>
+<table>
+<thead>
+<tr>
+<th>语境</th>
+<th>模型副本</th>
+<th>GPU 间通信</th>
+<th>调度方式</th>
+<th>典型用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>训练 DP</strong></td>
+<td>完全相同</td>
+<td>每步 AllReduce 梯度</td>
+<td>框架（DDP&#x2F;FSDP）</td>
+<td>所有分布式训练</td>
+</tr>
+<tr>
+<td><strong>多实例推理 DP</strong></td>
+<td>完全相同</td>
+<td><strong>无</strong></td>
+<td>外部负载均衡器</td>
+<td>LLaMA&#x2F;Qwen 单卡部署</td>
+</tr>
+<tr>
+<td><strong>vLLM 引擎内 DP</strong></td>
+<td>可不同（MoE 下各 rank 专家不同）</td>
+<td>元数据同步</td>
+<td>vLLM scheduler 显式分配</td>
+<td><code>--data-parallel-size N</code>，多与 EP 联用</td>
+</tr>
+</tbody></table>
+<p>本文聚焦<strong>多实例推理 DP</strong>——这是推理部署中最常见的 DP 形式。vLLM 引擎内 DP（<code>--data-parallel-size</code>）将在下文中单独说明。</p>
+<h3 id="多实例推理-DP"><a href="#多实例推理-DP" class="headerlink" title="多实例推理 DP"></a>多实例推理 DP</h3><p><strong>场景</strong>：你有 4 张 H100，要跑 4 个 LLaMA-70B 的推理实例，每个实例独立服务不同的用户请求。所有 4 个实例用同一份模型权重，不需要互相通信——这是最简单的并行方式，也是推理部署的默认策略。</p>
+<p><strong>问题</strong>：单 GPU 能装下整个模型，但一个实例的吞吐有限——同一时间只能服务有限数量的请求。你需要把请求分发到多个实例上，但每个实例的 KV Cache 是隔离的：实例 A 算过的 prompt，实例 B 不知道，如果 B 后来遇到同样的 prompt 还得重算。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GPU 0: [模型副本 0] ← 请求 1,2      GPU 1: [模型副本 1] ← 请求 3,4</span><br><span class="line">        ├─ 权重: 完整                     ├─ 权重: 完整</span><br><span class="line">        ├─ KV Cache: 独立                  ├─ KV Cache: 独立</span><br><span class="line">        └─ 计算: 1/N batch                 └─ 计算: 1/N batch</span><br><span class="line"></span><br><span class="line">训练时: GPU 间 AllReduce 梯度。推理时: 无需 GPU 间通信。</span><br></pre></td></tr></table></figure>
+
+<p><strong>方案</strong>：起多个独立的 vLLM 或 SGLang 服务进程，每个绑定不同的 GPU（如 <code>CUDA_VISIBLE_DEVICES=0</code>），前面挂一个负载均衡器（如 Nginx、Envoy 或 Ray Serve）。每个实例是完全自治的——独立加载权重、独立管理 KV Cache、独立处理请求。不需要任何 GPU 间通信，也不需要框架层面的 DP 感知。</p>
+<p><strong>权衡</strong>：KV Cache 不共享是多实例 DP 最大的代价。实例 A 算过的 prompt，实例 B 不知道——如果 B 后来遇到同样的 prompt，Prefill 还得重做。跨实例的 Cache 复用需要额外的基础设施——LMCache 用磁盘做共享存储，Mooncake 用 RDMA 传输，HiCache 用 Mooncake 后端。这些方案的复杂度远高于单实例部署。</p>
+<h3 id="vLLM-引擎内-DP（-data-parallel-size）"><a href="#vLLM-引擎内-DP（-data-parallel-size）" class="headerlink" title="vLLM 引擎内 DP（--data-parallel-size）"></a>vLLM 引擎内 DP（<code>--data-parallel-size</code>）</h3><p>另一种 DP 形态：引擎内原生 DP。与多实例推理 DP 不同，多个 DP rank 共享同一个 scheduler 进程，请求被显式分配到不同 rank，rank 间通过 <code>_synchronize_dp_ranks()</code> 同步 batch 元数据（ubatch 大小、cudagraph 模式）。多节点时通过 <code>--data-parallel-backend ray</code> 用 Ray placement group 编排。SGLang 目前没有引擎内 DP。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Dense 模型（LLaMA/Qwen）：</span><br><span class="line">  --data-parallel-size 4 --tensor-parallel-size 2 (单节点 8 GPU)</span><br><span class="line">  → 4 个 DP rank，每个 rank 是 TP=2 的模型副本</span><br><span class="line">  → 每 rank 完整模型权重，rank 间共享同一份 KV Cache pool</span><br><span class="line">  → 当前主要用于 testing/development，生产环境更常用多实例推理 DP</span><br><span class="line"></span><br><span class="line">MoE 模型（DeepSeek V4 Pro）：</span><br><span class="line">  --data-parallel-size 8 --enable-expert-parallel</span><br><span class="line">  → 8 个 DP rank，每个 rank 的 attention 权重相同，expert 分片不同</span><br><span class="line">  → `--enable-expert-parallel` 是关键：专家分布在 DP rank 间，路由协同</span><br></pre></td></tr></table></figure>
+
+<p>引擎内 DP 的 DP rank 间<strong>存在元数据通信</strong>——<code>_synchronize_dp_ranks()</code> 同步 ubatch 大小、cudagraph 模式等。这与多实例推理 DP 的”零通信”不同。当前引擎内 DP 在 Dense 模型上主要用于 testing&#x2F;development，生产级 Dense 模型部署仍以多实例推理 DP 为主；在 MoE 模型上则是与 EP 联用的生产级方案。</p>
+<hr>
+<h2 id="三、张量并行（TP）"><a href="#三、张量并行（TP）" class="headerlink" title="三、张量并行（TP）"></a>三、张量并行（TP）</h2><p><strong>场景</strong>：70B 的 LLaMA-2 在 FP16 下需要 ~140GB 显存，一张 80GB 的 H100 装不下。DP 不能解决这个问题——DP 只复制模型，每张卡还是需要装完整的 140GB。</p>
+<p><strong>问题</strong>：你需要把单层权重矩阵切成小块，让每张 GPU 只持有 1&#x2F;N，从而突破单卡显存上限。但这引入了新的问题——每张 GPU 只有部分权重，如何拼出完整的前向计算结果？</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GPU 0: [W_Q 第0-7头]   GPU 1: [W_Q 第8-15头]  GPU 2: [W_Q 第16-23头] GPU 3: [W_Q 第24-31头]</span><br><span class="line">       [W_K 第0-7头]          [W_K 第8-15头]         [W_K 第16-23头]        [W_K 第24-31头]</span><br><span class="line">       [W_V 第0-7头]          [W_V 第8-15头]         [W_V 第16-23头]        [W_V 第24-31头]</span><br><span class="line">       [FFN 第1/4]            [FFN 第2/4]            [FFN 第3/4]            [FFN 第4/4]</span><br><span class="line"></span><br><span class="line">       每张 GPU 的权重分片是唯一的——不存在重复。</span><br></pre></td></tr></table></figure>
+
+<p><strong>方案</strong>：Megatron-style TP 是业界标准——每层 Attention 和 FFN 被拆成一对 column-parallel + row-parallel 矩阵。列切（column-parallel）的矩阵各 GPU 输入相同（X 被复制到所有 rank），各自算完产生分片输出，不需要通信；紧接着的行切（row-parallel）矩阵接收上一层分片后的输入，各自算完本地结果后 <strong>AllReduce 求和合并</strong>，产生完整输出传给下一层。vLLM 的 <code>--tensor-parallel-size 4</code> 和 SGLang 的 <code>--tp-size 4</code> 都遵循此实现。</p>
+<p>KV Cache 也随权重一起按 head 切分：每个 TP rank 只存自己负责的那部分 head 的 K 和 V。总量不变，但分散后单卡显存压力降为 1&#x2F;N。</p>
+<p><strong>权衡</strong>：TP 是突破单卡显存上限最直接的方式，代价是<strong>通信量极高</strong>——每层 Attention 和 FFN 之后都需要 AllReduce。在 NVLink 互联的同一节点内这可以接受（~450 GB&#x2F;s，延迟 ~5μs），但跨节点时延迟上升 5-10 倍，性能不可接受。因此 TP 的硬约束是：TP size ≤ 单节点 GPU 数，TP 组内所有 GPU 必须在同一 NVSwitch 域内。</p>
+<p>另一个权衡是故障域：TP 组内任何一张 GPU 挂掉，整个组的 KV Cache 都不可用。生产环境通常用多组较小的 TP（如 2×TP&#x3D;4）而非一组大 TP（1×TP&#x3D;8），牺牲单组吞吐换取更小的故障域。</p>
+<p><strong>KV Cache offloading 在 TP 下的行为</strong>（LMCache 与 SGLang HiCache 源码逻辑一致）：</p>
+<table>
+<thead>
+<tr>
+<th>模型架构</th>
+<th>存储行为</th>
+<th>物理文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>标准 MHA&#x2F;GQA（LLaMA、Qwen）</td>
+<td>N 个 rank 各自独立写自己的 shard</td>
+<td><code>rank_0/block_N.bin</code> … <code>rank_N/block_N.bin</code></td>
+</tr>
+<tr>
+<td>MLA（DeepSeek V2&#x2F;V3）</td>
+<td>只有 rank 0 写，其余 rank 被动 broadcast</td>
+<td><code>block_N.bin</code>，1 份完整文件</td>
+</tr>
+</tbody></table>
+<p>MLA 将 KV 压缩后体积仅为标准 MHA 的 1&#x2F;4–1&#x2F;8，一份完整文件不是瓶颈。LMCache 通过 <code>save_only_first_rank</code>（<code>cache_engine.py</code> L113）、SGLang 通过 <code>is_mla_model</code>（<code>hicache_storage.py</code> L335）控制此差异。</p>
+<hr>
+<h2 id="四、流水线并行（PP）"><a href="#四、流水线并行（PP）" class="headerlink" title="四、流水线并行（PP）"></a>四、流水线并行（PP）</h2><p><strong>场景</strong>：模型有 64 层，单节点 8 张 GPU 做了 TP&#x3D;4 已经装下了权重，但还有 4 张 GPU 闲着。或者模型大到 TP&#x3D;8 也不够——需要跨节点了。</p>
+<p><strong>问题</strong>：跨节点的 TP 不可行（NVLink 只在节点内）。你需要一种通信量更低的并行方式，能在跨节点时将模型拆开，而不需要每层都 AllReduce。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GPU 0: Layer 0-15 ──→ GPU 1: Layer 16-31 ──→ GPU 2: Layer 32-47 ──→ GPU 3: Layer 48-63</span><br><span class="line">        ├─ 权重: 16 层               ├─ 权重: 16 层               ├─ 权重: 16 层</span><br><span class="line">        ├─ KV Cache: 16 层            ├─ KV Cache: 16 层            ├─ KV Cache: 16 层</span><br><span class="line">        └─ 激活: 传给下一张 GPU        └─ 激活: 传给下一张 GPU        └─ 激活: 传给下一张 GPU</span><br></pre></td></tr></table></figure>
+
+<p><strong>方案</strong>：PP 按层切分——每张 GPU 负责一段连续的层，每段内的权重完整。通信只在层边界发生：当前 GPU 算完最后层的激活值，传给下一张 GPU 的第一层。通信量远低于 TP（只传激活值，不传权重梯度）。vLLM 通过 <code>--pipeline-parallel-size 2</code>、SGLang 通过 <code>--pp-size 2</code> 启用。</p>
+<p><strong>权衡</strong>：PP 的主要代价是<strong>流水线气泡和延迟放大</strong>。气泡来自串行依赖——GPU 0 在处理 token t+1 时，GPU 1 还在处理 token t，越靠后的 GPU 等待越久。推理中延迟随 stage 数线性增长——每个 token 必须串行经过所有 PP stage。因此纯 PP 在在线推理中不常用，更常见的是 PP+TP 混合：节点内 TP&#x3D;4 突破单卡显存，节点间 PP&#x3D;2 突破单节点显存。</p>
+<p>KV Cache 按层分段——PP stage 0 的 GPU 不存 stage 1 的 KV。读取历史 KV 时可能触发跨 stage 查询，需要框架的 block table 支持跨 stage 寻址。</p>
+<hr>
+<h2 id="五、专家并行（EP）"><a href="#五、专家并行（EP）" class="headerlink" title="五、专家并行（EP）"></a>五、专家并行（EP）</h2><p><strong>场景</strong>：DeepSeek-V3 有 671B 总参数、256 个路由专家。如果所有专家都装在一张 GPU 上，显存会瞬间爆炸。但它的 MLA 架构让单 token 的计算量很小（每次只激活 37B），问题不在计算而在存储。</p>
+<p><strong>问题</strong>：你需要把 256 个专家分散到多张 GPU 上，每个 token 的前向计算只经过少数被路由到的专家所在的 GPU。但这些专家的权重怎么分布？token 到专家的路由怎么跨 GPU 通信？</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GPU 0: Expert 0-63       GPU 1: Expert 64-127     GPU 2: Expert 128-191    GPU 3: Expert 192-255</span><br><span class="line">       ↑                        ↑                        ↑                        ↑</span><br><span class="line">       └── token A→Expert 5     └── token B→Expert 80   └── token C→Expert 150</span><br><span class="line"></span><br><span class="line">       每个 token 只激活 Top-K 专家，跨 GPU 通信只在有 token 路由过去时发生</span><br></pre></td></tr></table></figure>
+
+<p><strong>方案</strong>：每个 GPU 固定持有 1&#x2F;N 的专家权重。路由层计算 token 到专家的匹配分数后，通过 All-to-All 通信将 token 的隐藏状态发送到对应专家所在的 GPU，专家计算完成后 All-to-All 返回。DeepSeek-V3 在 vLLM 和 SGLang 中均默认 EP&#x3D;8（256 专家 ÷ 8 GPU &#x3D; 每卡 32 专家）。</p>
+<p><strong>权衡</strong>：EP 的最大优势是通信量天然低——每个 token 只路由到 Top-K 专家（K&#x3D;8），大部分 GPU 之间不需要通信。代价是负载均衡：如果某几个专家特别热门（token 大量涌向 Expert 5），对应的 GPU 会过载。SGLang 的 EPLB（Expert Parallel Load Balancer）动态监控各专家负载，将热门专家副本迁移到空闲 GPU 来解决。vLLM 通过 &#96;KVCacheGroup</p>
+</article>
+
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">Newer</div><a href="/2026/09/19/LLM/%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C(EP)/">2026-09-19</a></div><div class="item" id="next"><div class="note">Older</div><a href="/2026/07/15/LLM/KV-Cache/">KV Cache</a></div></section></div>
+
+
+
+
+
+
 <footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">John Doe</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
 </div></footer>
 <div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
-</aside><div class='float-panel'>
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">On This Page</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5"><span class="toc-text">大模型推理并行策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%80%BB%E8%A7%88%EF%BC%9A%E4%BA%94%E7%A7%8D%E7%AD%96%E7%95%A5%EF%BC%8C%E5%88%87%E4%B8%89%E7%A7%8D%E4%B8%9C%E8%A5%BF"><span class="toc-text">一、总览：五种策略，切三种东西</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C%EF%BC%88DP%EF%BC%89"><span class="toc-text">二、数据并行（DP）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%AE%9E%E4%BE%8B%E6%8E%A8%E7%90%86-DP"><span class="toc-text">多实例推理 DP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vLLM-%E5%BC%95%E6%93%8E%E5%86%85-DP%EF%BC%88-data-parallel-size%EF%BC%89"><span class="toc-text">vLLM 引擎内 DP（--data-parallel-size）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C%EF%BC%88TP%EF%BC%89"><span class="toc-text">三、张量并行（TP）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C%EF%BC%88PP%EF%BC%89"><span class="toc-text">四、流水线并行（PP）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%93%E5%AE%B6%E5%B9%B6%E8%A1%8C%EF%BC%88EP%EF%BC%89"><span class="toc-text">五、专家并行（EP）</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>Scroll to Top</span></a></div></widget>
+</div></aside><div class='float-panel'>
   <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
   </button>
